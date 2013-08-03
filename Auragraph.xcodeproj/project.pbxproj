@@ -20,8 +20,11 @@
 		095D12DE17ACA36C0048A012 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 095D12DD17ACA36C0048A012 /* Default-568h@2x.png */; };
 		095D12E017ACA36C0048A012 /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 095D12DF17ACA36C0048A012 /* Shader.fsh */; };
 		095D12E217ACA36C0048A012 /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 095D12E117ACA36C0048A012 /* Shader.vsh */; };
-		095D12E517ACA36C0048A012 /* AGViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 095D12E417ACA36C0048A012 /* AGViewController.m */; };
+		095D12E517ACA36C0048A012 /* AGViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095D12E417ACA36C0048A012 /* AGViewController.mm */; };
 		095D12E817ACA36C0048A012 /* AGViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 095D12E617ACA36C0048A012 /* AGViewController.xib */; };
+		095D12FB17ACAA100048A012 /* Geometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 095D12F617ACAA100048A012 /* Geometry.cpp */; };
+		095D12FC17ACAA100048A012 /* Texture.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095D12FA17ACAA100048A012 /* Texture.mm */; };
+		095D12FF17ACAB7B0048A012 /* ShaderHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 095D12FE17ACAB7B0048A012 /* ShaderHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,8 +46,15 @@
 		095D12DF17ACA36C0048A012 /* Shader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = Shader.fsh; path = Shaders/Shader.fsh; sourceTree = "<group>"; };
 		095D12E117ACA36C0048A012 /* Shader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = Shader.vsh; path = Shaders/Shader.vsh; sourceTree = "<group>"; };
 		095D12E317ACA36C0048A012 /* AGViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGViewController.h; sourceTree = "<group>"; };
-		095D12E417ACA36C0048A012 /* AGViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AGViewController.m; sourceTree = "<group>"; };
+		095D12E417ACA36C0048A012 /* AGViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AGViewController.mm; sourceTree = "<group>"; };
 		095D12E717ACA36C0048A012 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/AGViewController.xib; sourceTree = "<group>"; };
+		095D12F617ACAA100048A012 /* Geometry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Geometry.cpp; sourceTree = "<group>"; };
+		095D12F717ACAA100048A012 /* Geometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Geometry.h; sourceTree = "<group>"; };
+		095D12F817ACAA100048A012 /* hsv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hsv.h; sourceTree = "<group>"; };
+		095D12F917ACAA100048A012 /* Texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Texture.h; sourceTree = "<group>"; };
+		095D12FA17ACAA100048A012 /* Texture.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Texture.mm; sourceTree = "<group>"; };
+		095D12FD17ACAB7B0048A012 /* ShaderHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderHelper.h; sourceTree = "<group>"; };
+		095D12FE17ACAB7B0048A012 /* ShaderHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShaderHelper.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +76,7 @@
 		095D12B717ACA36C0048A012 = {
 			isa = PBXGroup;
 			children = (
+				095D12EE17ACA9CA0048A012 /* libsp */,
 				095D12CD17ACA36C0048A012 /* Auragraph */,
 				095D12C217ACA36C0048A012 /* Frameworks */,
 				095D12C117ACA36C0048A012 /* Products */,
@@ -100,7 +111,7 @@
 				095D12DF17ACA36C0048A012 /* Shader.fsh */,
 				095D12E117ACA36C0048A012 /* Shader.vsh */,
 				095D12E317ACA36C0048A012 /* AGViewController.h */,
-				095D12E417ACA36C0048A012 /* AGViewController.m */,
+				095D12E417ACA36C0048A012 /* AGViewController.mm */,
 				095D12E617ACA36C0048A012 /* AGViewController.xib */,
 				095D12CE17ACA36C0048A012 /* Supporting Files */,
 			);
@@ -119,6 +130,20 @@
 				095D12DD17ACA36C0048A012 /* Default-568h@2x.png */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		095D12EE17ACA9CA0048A012 /* libsp */ = {
+			isa = PBXGroup;
+			children = (
+				095D12F617ACAA100048A012 /* Geometry.cpp */,
+				095D12F717ACAA100048A012 /* Geometry.h */,
+				095D12F817ACAA100048A012 /* hsv.h */,
+				095D12F917ACAA100048A012 /* Texture.h */,
+				095D12FA17ACAA100048A012 /* Texture.mm */,
+				095D12FD17ACAB7B0048A012 /* ShaderHelper.h */,
+				095D12FE17ACAB7B0048A012 /* ShaderHelper.m */,
+			);
+			path = libsp;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -192,7 +217,10 @@
 			files = (
 				095D12D417ACA36C0048A012 /* main.m in Sources */,
 				095D12D817ACA36C0048A012 /* AGAppDelegate.m in Sources */,
-				095D12E517ACA36C0048A012 /* AGViewController.m in Sources */,
+				095D12E517ACA36C0048A012 /* AGViewController.mm in Sources */,
+				095D12FB17ACAA100048A012 /* Geometry.cpp in Sources */,
+				095D12FC17ACAA100048A012 /* Texture.mm in Sources */,
+				095D12FF17ACAB7B0048A012 /* ShaderHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
