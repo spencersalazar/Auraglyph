@@ -9,6 +9,7 @@
 #import "AGViewController.h"
 #import "Geometry.h"
 #import "ShaderHelper.h"
+#import "hsv.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -77,7 +78,8 @@ GLfloat gCubeVertexData[216] =
 };
 
 
-//GLvncprimf
+const int nDrawline = 48;
+GLvncprimf drawline[nDrawline];
 
 
 @interface AGViewController () {
@@ -155,6 +157,20 @@ GLfloat gCubeVertexData[216] =
     uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
     uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program, "normalMatrix");
     
+    float rho = 1;
+    float theta;
+    
+    for(int i = 0; i < nDrawline; i++)
+    {
+        theta = 2*M_PI*((float)i)/((float)nDrawline-1);
+        drawline[i].vertex.x = rho*cosf(theta);
+        drawline[i].vertex.y = rho*sinf(theta);
+        drawline[i].vertex.z = 0;
+        
+        drawline[i].normal = GLvertex3f(0,0,1);
+        drawline[i].color = hsv2rgb(GLcolor4f(theta/(2*M_PI), 0.5, 0.9, 1.0));
+    }
+    
     glEnable(GL_DEPTH_TEST);
     
     glGenVertexArraysOES(1, &_vertexArray);
@@ -162,14 +178,17 @@ GLfloat gCubeVertexData[216] =
     
     glGenBuffers(1, &_vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(gCubeVertexData), gCubeVertexData, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(drawline), drawline, GL_DYNAMIC_DRAW);
     
     glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 24, BUFFER_OFFSET(0));
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(0));
     glEnableVertexAttribArray(GLKVertexAttribNormal);
-    glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, 24, BUFFER_OFFSET(12));
+    glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(sizeof(GLvertex3f)));
+    glEnableVertexAttribArray(GLKVertexAttribColor);
+    glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(2*sizeof(GLvertex3f)));
     
     glBindVertexArrayOES(0);
+    
 }
 
 - (void)tearDownGL
@@ -195,18 +214,18 @@ GLfloat gCubeVertexData[216] =
     GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
     
     GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
-    baseModelViewMatrix = GLKMatrix4Rotate(baseModelViewMatrix, _rotation, 0.0f, 1.0f, 0.0f);
+    //baseModelViewMatrix = GLKMatrix4Rotate(baseModelViewMatrix, _rotation, 0.0f, 1.0f, 0.0f);
     
     // Compute the model view matrix for the object rendered with GLKit
     GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 0.0f);
-    modelViewMatrix = GLKMatrix4Rotate(modelViewMatrix, _rotation, 1.0f, 1.0f, 1.0f);
+//    modelViewMatrix = GLKMatrix4Rotate(modelViewMatrix, _rotation, 1.0f, 1.0f, 1.0f);
     modelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, modelViewMatrix);
     
     _normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
     
     _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
     
-    _rotation += self.timeSinceLastUpdate * 0.5f;
+//    _rotation += self.timeSinceLastUpdate * 0.5f;
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
@@ -222,7 +241,8 @@ GLfloat gCubeVertexData[216] =
     glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
     glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
     
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glLineWidth(4.0f);
+    glDrawArrays(GL_LINE_STRIP, 0, nDrawline);
 }
 
 

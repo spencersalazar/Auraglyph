@@ -105,7 +105,7 @@ struct GLvertex2f
 
 } __attribute__((packed));
 
-// geometry primitve, i.e. vertex/normal/color/uv
+// geometry primitve, i.e. vertex/normal/uv/color
 struct GLgeoprimf
 {
     GLvertex3f vertex;
@@ -114,7 +114,7 @@ struct GLgeoprimf
     GLcolor4f color;
 } __attribute__((packed));
 
-// vertex + color primitve, i.e. vertex/normal/color/uv
+// vertex + color primitve, i.e. vertex/color
 struct GLvcprimf
 {
     GLvertex3f vertex;
@@ -122,7 +122,7 @@ struct GLvcprimf
 } __attribute__((packed));
 
 
-// vertex + normal + color primitve, i.e. vertex/normal/color/uv
+// vertex + normal + color primitve, i.e. vertex/normal/color
 struct GLvncprimf
 {
     GLvertex3f vertex;
