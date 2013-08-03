@@ -10,6 +10,7 @@
 #import "Geometry.h"
 #import "ShaderHelper.h"
 #import "hsv.h"
+#import "UIKitGL.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -30,64 +31,22 @@ enum
     NUM_ATTRIBUTES
 };
 
-GLfloat gCubeVertexData[216] = 
-{
-    // Data layout for each line below is:
-    // positionX, positionY, positionZ,     normalX, normalY, normalZ,
-    0.5f, -0.5f, -0.5f,        1.0f, 0.0f, 0.0f,
-    0.5f, 0.5f, -0.5f,         1.0f, 0.0f, 0.0f,
-    0.5f, -0.5f, 0.5f,         1.0f, 0.0f, 0.0f,
-    0.5f, -0.5f, 0.5f,         1.0f, 0.0f, 0.0f,
-    0.5f, 0.5f, -0.5f,          1.0f, 0.0f, 0.0f,
-    0.5f, 0.5f, 0.5f,         1.0f, 0.0f, 0.0f,
-    
-    0.5f, 0.5f, -0.5f,         0.0f, 1.0f, 0.0f,
-    -0.5f, 0.5f, -0.5f,        0.0f, 1.0f, 0.0f,
-    0.5f, 0.5f, 0.5f,          0.0f, 1.0f, 0.0f,
-    0.5f, 0.5f, 0.5f,          0.0f, 1.0f, 0.0f,
-    -0.5f, 0.5f, -0.5f,        0.0f, 1.0f, 0.0f,
-    -0.5f, 0.5f, 0.5f,         0.0f, 1.0f, 0.0f,
-    
-    -0.5f, 0.5f, -0.5f,        -1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,       -1.0f, 0.0f, 0.0f,
-    -0.5f, 0.5f, 0.5f,         -1.0f, 0.0f, 0.0f,
-    -0.5f, 0.5f, 0.5f,         -1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,       -1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, 0.5f,        -1.0f, 0.0f, 0.0f,
-    
-    -0.5f, -0.5f, -0.5f,       0.0f, -1.0f, 0.0f,
-    0.5f, -0.5f, -0.5f,        0.0f, -1.0f, 0.0f,
-    -0.5f, -0.5f, 0.5f,        0.0f, -1.0f, 0.0f,
-    -0.5f, -0.5f, 0.5f,        0.0f, -1.0f, 0.0f,
-    0.5f, -0.5f, -0.5f,        0.0f, -1.0f, 0.0f,
-    0.5f, -0.5f, 0.5f,         0.0f, -1.0f, 0.0f,
-    
-    0.5f, 0.5f, 0.5f,          0.0f, 0.0f, 1.0f,
-    -0.5f, 0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
-    0.5f, -0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
-    0.5f, -0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
-    -0.5f, 0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
-    -0.5f, -0.5f, 0.5f,        0.0f, 0.0f, 1.0f,
-    
-    0.5f, -0.5f, -0.5f,        0.0f, 0.0f, -1.0f,
-    -0.5f, -0.5f, -0.5f,       0.0f, 0.0f, -1.0f,
-    0.5f, 0.5f, -0.5f,         0.0f, 0.0f, -1.0f,
-    0.5f, 0.5f, -0.5f,         0.0f, 0.0f, -1.0f,
-    -0.5f, -0.5f, -0.5f,       0.0f, 0.0f, -1.0f,
-    -0.5f, 0.5f, -0.5f,        0.0f, 0.0f, -1.0f
-};
-
-
-const int nDrawline = 48;
+const int nDrawline = 1024;
+int nDrawlineUsed = 0;
 GLvncprimf drawline[nDrawline];
 
 
 @interface AGViewController () {
     GLuint _program;
     
+    GLKMatrix4 _modelView;
+    GLKMatrix4 _projection;
     GLKMatrix4 _modelViewProjectionMatrix;
+    GLKMatrix4 _uiMatrix;
     GLKMatrix3 _normalMatrix;
     float _rotation;
+    
+    float _osc;
     
     GLuint _vertexArray;
     GLuint _vertexBuffer;
@@ -157,19 +116,19 @@ GLvncprimf drawline[nDrawline];
     uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
     uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program, "normalMatrix");
     
-    float rho = 1;
-    float theta;
-    
-    for(int i = 0; i < nDrawline; i++)
-    {
-        theta = 2*M_PI*((float)i)/((float)nDrawline-1);
-        drawline[i].vertex.x = rho*cosf(theta);
-        drawline[i].vertex.y = rho*sinf(theta);
-        drawline[i].vertex.z = 0;
-        
-        drawline[i].normal = GLvertex3f(0,0,1);
-        drawline[i].color = hsv2rgb(GLcolor4f(theta/(2*M_PI), 0.5, 0.9, 1.0));
-    }
+//    float rho = 1;
+//    float theta;
+//    
+//    for(int i = 0; i < nDrawline; i++)
+//    {
+//        theta = 2*M_PI*((float)i)/((float)nDrawline-1);
+//        drawline[i].vertex.x = rho*cosf(theta);
+//        drawline[i].vertex.y = rho*sinf(theta);
+//        drawline[i].vertex.z = 0;
+//        
+//        drawline[i].normal = GLvertex3f(0,0,1);
+//        drawline[i].color = hsv2rgb(GLcolor4f(theta/(2*M_PI), 0.5, 0.9, 1.0));
+//    }
     
     glEnable(GL_DEPTH_TEST);
     
@@ -214,6 +173,7 @@ GLvncprimf drawline[nDrawline];
     GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
     
     GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
+    //GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 0.0f);
     //baseModelViewMatrix = GLKMatrix4Rotate(baseModelViewMatrix, _rotation, 0.0f, 1.0f, 0.0f);
     
     // Compute the model view matrix for the object rendered with GLKit
@@ -224,8 +184,20 @@ GLvncprimf drawline[nDrawline];
     _normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
     
     _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
+    //_uiMatrix = GLKMatrix4Identity;
+    _uiMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 4.0f);
+    _modelView = modelViewMatrix;
+    _projection = projectionMatrix;
+    //_uiMatrix = GLKMatrix4Multiply(modelViewMatrix, projectionMatrix);
+    //_uiMatrix = GLKMatrix4Multiply(GLKMatrix4Multiply(modelViewMatrix, projectionMatrix), projectionMatrix);
+    //_uiMatrix = GLKMatrix4InvertAndTranspose(_modelViewProjectionMatrix, NULL);
+    //_uiMatrix = GLKMatrix4Invert(projectionMatrix, NULL);
+    //_uiMatrix = GLKMatrix4Multiply(GLKMatrix4Invert(projectionMatrix, NULL), GLKMatrix4Invert(modelViewMatrix, NULL));
     
-//    _rotation += self.timeSinceLastUpdate * 0.5f;
+    _osc += self.timeSinceLastUpdate * 1.0f;
+    
+    glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(drawline), drawline, GL_DYNAMIC_DRAW);
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
@@ -242,7 +214,53 @@ GLvncprimf drawline[nDrawline];
     glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
     
     glLineWidth(4.0f);
-    glDrawArrays(GL_LINE_STRIP, 0, nDrawline);
+    glDrawArrays(GL_LINE_STRIP, 0, nDrawlineUsed);
+}
+
+
+#pragma Touch handling
+
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    nDrawlineUsed = 1;
+    
+    CGPoint p = [[touches anyObject] locationInView:self.view];
+    
+    int viewport[] = { (int)self.view.frame.origin.x, (int)self.view.frame.origin.y,
+        (int)self.view.frame.size.width, (int)self.view.frame.size.height };
+    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, p.y, 0),
+                                      _modelView, _projection, viewport, NULL);
+    
+    drawline[0].vertex = GLvertex3f(vec.x, -vec.y, vec.z);
+    drawline[0].color = GLcolor4f(1, 1, 1, 1);
+    drawline[0].normal = GLvertex3f(0, 0, 1);
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    CGPoint p = [[touches anyObject] locationInView:self.view];
+    
+    int viewport[] = { (int)self.view.frame.origin.x, (int)self.view.frame.origin.y,
+        (int)self.view.frame.size.width, (int)self.view.frame.size.height };
+    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, p.y, 0),
+                                      _modelView, _projection, viewport, NULL);
+    
+    drawline[nDrawlineUsed].vertex = GLvertex3f(vec.x, -vec.y, vec.z);
+    drawline[nDrawlineUsed].color = GLcolor4f(1, 1, 1, 1);
+    drawline[nDrawlineUsed].normal = GLvertex3f(0, 0, 1);
+    
+    nDrawlineUsed++;
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    
+}
+
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [self touchesMoved:touches withEvent:event];
 }
 
 

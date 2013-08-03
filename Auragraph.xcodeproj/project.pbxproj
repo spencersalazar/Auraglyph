@@ -55,6 +55,7 @@
 		095D12FA17ACAA100048A012 /* Texture.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Texture.mm; sourceTree = "<group>"; };
 		095D12FD17ACAB7B0048A012 /* ShaderHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderHelper.h; sourceTree = "<group>"; };
 		095D12FE17ACAB7B0048A012 /* ShaderHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShaderHelper.m; sourceTree = "<group>"; };
+		095D130017ACC5120048A012 /* UIKitGL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIKitGL.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,6 +143,7 @@
 				095D12FA17ACAA100048A012 /* Texture.mm */,
 				095D12FD17ACAB7B0048A012 /* ShaderHelper.h */,
 				095D12FE17ACAB7B0048A012 /* ShaderHelper.m */,
+				095D130017ACC5120048A012 /* UIKitGL.h */,
 			);
 			path = libsp;
 			sourceTree = "<group>";
@@ -345,6 +347,7 @@
 				095D12ED17ACA36C0048A012 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
