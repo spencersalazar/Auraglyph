@@ -25,6 +25,24 @@
 		095D12FB17ACAA100048A012 /* Geometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 095D12F617ACAA100048A012 /* Geometry.cpp */; };
 		095D12FC17ACAA100048A012 /* Texture.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095D12FA17ACAA100048A012 /* Texture.mm */; };
 		095D12FF17ACAB7B0048A012 /* ShaderHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 095D12FE17ACAB7B0048A012 /* ShaderHelper.m */; };
+		095E851D17B354BE0065EF8E /* libactivedtw.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E850D17B354BE0065EF8E /* libactivedtw.a */; };
+		095E851E17B354BE0065EF8E /* libboxfld.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E850E17B354BE0065EF8E /* libboxfld.a */; };
+		095E851F17B354BE0065EF8E /* libcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E850F17B354BE0065EF8E /* libcommon.a */; };
+		095E852017B354BE0065EF8E /* libfeatureextractorcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851017B354BE0065EF8E /* libfeatureextractorcommon.a */; };
+		095E852117B354BE0065EF8E /* libl7.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851117B354BE0065EF8E /* libl7.a */; };
+		095E852217B354BE0065EF8E /* liblipiengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851217B354BE0065EF8E /* liblipiengine.a */; };
+		095E852317B354BE0065EF8E /* liblogger.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851317B354BE0065EF8E /* liblogger.a */; };
+		095E852417B354BE0065EF8E /* libneuralnet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851417B354BE0065EF8E /* libneuralnet.a */; };
+		095E852517B354BE0065EF8E /* libnn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851517B354BE0065EF8E /* libnn.a */; };
+		095E852617B354BE0065EF8E /* libnpen.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851617B354BE0065EF8E /* libnpen.a */; };
+		095E852717B354BE0065EF8E /* libpointfloat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851717B354BE0065EF8E /* libpointfloat.a */; };
+		095E852817B354BE0065EF8E /* libpreproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851817B354BE0065EF8E /* libpreproc.a */; };
+		095E852917B354BE0065EF8E /* libshaperecommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851917B354BE0065EF8E /* libshaperecommon.a */; };
+		095E852A17B354BE0065EF8E /* libsubstroke.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851A17B354BE0065EF8E /* libsubstroke.a */; };
+		095E852B17B354BE0065EF8E /* libutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851B17B354BE0065EF8E /* libutil.a */; };
+		095E852C17B354BE0065EF8E /* libwordreccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851C17B354BE0065EF8E /* libwordreccommon.a */; };
+		095E852E17B358B00065EF8E /* projects in Resources */ = {isa = PBXBuildFile; fileRef = 095E852D17B358B00065EF8E /* projects */; };
+		095E853117B358FC0065EF8E /* shaperectst.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E852F17B358FC0065EF8E /* shaperectst.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +74,71 @@
 		095D12FD17ACAB7B0048A012 /* ShaderHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderHelper.h; sourceTree = "<group>"; };
 		095D12FE17ACAB7B0048A012 /* ShaderHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShaderHelper.m; sourceTree = "<group>"; };
 		095D130017ACC5120048A012 /* UIKitGL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIKitGL.h; sourceTree = "<group>"; };
+		095E84EC17B354BE0065EF8E /* LTKCaptureDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKCaptureDevice.h; sourceTree = "<group>"; };
+		095E84ED17B354BE0065EF8E /* LTKChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKChannel.h; sourceTree = "<group>"; };
+		095E84EE17B354BE0065EF8E /* LTKClassifierDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKClassifierDefaults.h; sourceTree = "<group>"; };
+		095E84EF17B354BE0065EF8E /* LTKErrorsList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKErrorsList.h; sourceTree = "<group>"; };
+		095E84F017B354BE0065EF8E /* LTKException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKException.h; sourceTree = "<group>"; };
+		095E84F117B354BE0065EF8E /* LTKInc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKInc.h; sourceTree = "<group>"; };
+		095E84F217B354BE0065EF8E /* LTKLipiEngineInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKLipiEngineInterface.h; sourceTree = "<group>"; };
+		095E84F317B354BE0065EF8E /* LTKLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKLogger.h; sourceTree = "<group>"; };
+		095E84F417B354BE0065EF8E /* LTKLoggerInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKLoggerInterface.h; sourceTree = "<group>"; };
+		095E84F517B354BE0065EF8E /* LTKMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKMacros.h; sourceTree = "<group>"; };
+		095E84F617B354BE0065EF8E /* LTKOSUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKOSUtil.h; sourceTree = "<group>"; };
+		095E84F717B354BE0065EF8E /* LTKOSUtilFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKOSUtilFactory.h; sourceTree = "<group>"; };
+		095E84F817B354BE0065EF8E /* LTKPreprocDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKPreprocDefaults.h; sourceTree = "<group>"; };
+		095E84F917B354BE0065EF8E /* LTKPreprocessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKPreprocessor.h; sourceTree = "<group>"; };
+		095E84FA17B354BE0065EF8E /* LTKPreprocessorInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKPreprocessorInterface.h; sourceTree = "<group>"; };
+		095E84FB17B354BE0065EF8E /* LTKRecognitionContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKRecognitionContext.h; sourceTree = "<group>"; };
+		095E84FC17B354BE0065EF8E /* LTKRefCountedPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKRefCountedPtr.h; sourceTree = "<group>"; };
+		095E84FD17B354BE0065EF8E /* LTKScreenContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKScreenContext.h; sourceTree = "<group>"; };
+		095E84FE17B354BE0065EF8E /* LTKShapeFeatureMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKShapeFeatureMacros.h; sourceTree = "<group>"; };
+		095E84FF17B354BE0065EF8E /* LTKShapeRecoConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKShapeRecoConfig.h; sourceTree = "<group>"; };
+		095E850017B354BE0065EF8E /* LTKShapeRecoEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKShapeRecoEngine.h; sourceTree = "<group>"; };
+		095E850117B354BE0065EF8E /* LTKShapeRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKShapeRecognizer.h; sourceTree = "<group>"; };
+		095E850217B354BE0065EF8E /* LTKShapeRecoResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKShapeRecoResult.h; sourceTree = "<group>"; };
+		095E850317B354BE0065EF8E /* LTKShapeRecoUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKShapeRecoUtil.h; sourceTree = "<group>"; };
+		095E850417B354BE0065EF8E /* LTKTrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKTrace.h; sourceTree = "<group>"; };
+		095E850517B354BE0065EF8E /* LTKTraceFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKTraceFormat.h; sourceTree = "<group>"; };
+		095E850617B354BE0065EF8E /* LTKTraceGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKTraceGroup.h; sourceTree = "<group>"; };
+		095E850717B354BE0065EF8E /* LTKTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKTypes.h; sourceTree = "<group>"; };
+		095E850817B354BE0065EF8E /* LTKWordRecoConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKWordRecoConfig.h; sourceTree = "<group>"; };
+		095E850917B354BE0065EF8E /* LTKWordRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKWordRecognizer.h; sourceTree = "<group>"; };
+		095E850A17B354BE0065EF8E /* LTKWordRecoResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LTKWordRecoResult.h; sourceTree = "<group>"; };
+		095E850B17B354BE0065EF8E /* TpcError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TpcError.h; sourceTree = "<group>"; };
+		095E850D17B354BE0065EF8E /* libactivedtw.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libactivedtw.a; sourceTree = "<group>"; };
+		095E850E17B354BE0065EF8E /* libboxfld.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libboxfld.a; sourceTree = "<group>"; };
+		095E850F17B354BE0065EF8E /* libcommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcommon.a; sourceTree = "<group>"; };
+		095E851017B354BE0065EF8E /* libfeatureextractorcommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libfeatureextractorcommon.a; sourceTree = "<group>"; };
+		095E851117B354BE0065EF8E /* libl7.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libl7.a; sourceTree = "<group>"; };
+		095E851217B354BE0065EF8E /* liblipiengine.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = liblipiengine.a; sourceTree = "<group>"; };
+		095E851317B354BE0065EF8E /* liblogger.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = liblogger.a; sourceTree = "<group>"; };
+		095E851417B354BE0065EF8E /* libneuralnet.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libneuralnet.a; sourceTree = "<group>"; };
+		095E851517B354BE0065EF8E /* libnn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libnn.a; sourceTree = "<group>"; };
+		095E851617B354BE0065EF8E /* libnpen.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libnpen.a; sourceTree = "<group>"; };
+		095E851717B354BE0065EF8E /* libpointfloat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpointfloat.a; sourceTree = "<group>"; };
+		095E851817B354BE0065EF8E /* libpreproc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpreproc.a; sourceTree = "<group>"; };
+		095E851917B354BE0065EF8E /* libshaperecommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libshaperecommon.a; sourceTree = "<group>"; };
+		095E851A17B354BE0065EF8E /* libsubstroke.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsubstroke.a; sourceTree = "<group>"; };
+		095E851B17B354BE0065EF8E /* libutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libutil.a; sourceTree = "<group>"; };
+		095E851C17B354BE0065EF8E /* libwordreccommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwordreccommon.a; sourceTree = "<group>"; };
+		095E852D17B358B00065EF8E /* projects */ = {isa = PBXFileReference; lastKnownFileType = folder; path = projects; sourceTree = "<group>"; };
+		095E852F17B358FC0065EF8E /* shaperectst.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = shaperectst.mm; sourceTree = "<group>"; };
+		095E853017B358FC0065EF8E /* shaperectst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shaperectst.h; sourceTree = "<group>"; };
+		095E853217B35A330065EF8E /* LTKCheckSumGenerate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKCheckSumGenerate.h; sourceTree = "<group>"; };
+		095E853317B35A330065EF8E /* LTKConfigFileReader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKConfigFileReader.h; sourceTree = "<group>"; };
+		095E853417B35A330065EF8E /* LTKDynamicTimeWarping.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKDynamicTimeWarping.h; sourceTree = "<group>"; };
+		095E853517B35A330065EF8E /* LTKErrors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKErrors.h; sourceTree = "<group>"; };
+		095E853617B35A330065EF8E /* LTKHierarchicalClustering.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKHierarchicalClustering.h; sourceTree = "<group>"; };
+		095E853717B35A330065EF8E /* LTKImageWriter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKImageWriter.h; sourceTree = "<group>"; };
+		095E853817B35A330065EF8E /* LTKInkFileReader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKInkFileReader.h; sourceTree = "<group>"; };
+		095E853917B35A330065EF8E /* LTKInkFileWriter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKInkFileWriter.h; sourceTree = "<group>"; };
+		095E853A17B35A330065EF8E /* LTKInkUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKInkUtils.h; sourceTree = "<group>"; };
+		095E853B17B35A330065EF8E /* LTKLinuxUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKLinuxUtil.h; sourceTree = "<group>"; };
+		095E853C17B35A330065EF8E /* LTKLoggerUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKLoggerUtil.h; sourceTree = "<group>"; };
+		095E853D17B35A330065EF8E /* LTKStrEncoding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKStrEncoding.h; sourceTree = "<group>"; };
+		095E853E17B35A330065EF8E /* LTKStringUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKStringUtil.h; sourceTree = "<group>"; };
+		095E853F17B35A330065EF8E /* LTKVersionCompatibilityCheck.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKVersionCompatibilityCheck.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +151,22 @@
 				095D12C817ACA36C0048A012 /* CoreGraphics.framework in Frameworks */,
 				095D12CA17ACA36C0048A012 /* GLKit.framework in Frameworks */,
 				095D12CC17ACA36C0048A012 /* OpenGLES.framework in Frameworks */,
+				095E851D17B354BE0065EF8E /* libactivedtw.a in Frameworks */,
+				095E851E17B354BE0065EF8E /* libboxfld.a in Frameworks */,
+				095E851F17B354BE0065EF8E /* libcommon.a in Frameworks */,
+				095E852017B354BE0065EF8E /* libfeatureextractorcommon.a in Frameworks */,
+				095E852117B354BE0065EF8E /* libl7.a in Frameworks */,
+				095E852217B354BE0065EF8E /* liblipiengine.a in Frameworks */,
+				095E852317B354BE0065EF8E /* liblogger.a in Frameworks */,
+				095E852417B354BE0065EF8E /* libneuralnet.a in Frameworks */,
+				095E852517B354BE0065EF8E /* libnn.a in Frameworks */,
+				095E852617B354BE0065EF8E /* libnpen.a in Frameworks */,
+				095E852717B354BE0065EF8E /* libpointfloat.a in Frameworks */,
+				095E852817B354BE0065EF8E /* libpreproc.a in Frameworks */,
+				095E852917B354BE0065EF8E /* libshaperecommon.a in Frameworks */,
+				095E852A17B354BE0065EF8E /* libsubstroke.a in Frameworks */,
+				095E852B17B354BE0065EF8E /* libutil.a in Frameworks */,
+				095E852C17B354BE0065EF8E /* libwordreccommon.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,6 +194,7 @@
 		095D12C217ACA36C0048A012 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				095E84EA17B354BE0065EF8E /* LipiTk */,
 				095D12C317ACA36C0048A012 /* UIKit.framework */,
 				095D12C517ACA36C0048A012 /* Foundation.framework */,
 				095D12C717ACA36C0048A012 /* CoreGraphics.framework */,
@@ -107,6 +207,8 @@
 		095D12CD17ACA36C0048A012 /* Auragraph */ = {
 			isa = PBXGroup;
 			children = (
+				095E852F17B358FC0065EF8E /* shaperectst.mm */,
+				095E853017B358FC0065EF8E /* shaperectst.h */,
 				095D12D617ACA36C0048A012 /* AGAppDelegate.h */,
 				095D12D717ACA36C0048A012 /* AGAppDelegate.m */,
 				095D12DF17ACA36C0048A012 /* Shader.fsh */,
@@ -146,6 +248,92 @@
 				095D130017ACC5120048A012 /* UIKitGL.h */,
 			);
 			path = libsp;
+			sourceTree = "<group>";
+		};
+		095E84EA17B354BE0065EF8E /* LipiTk */ = {
+			isa = PBXGroup;
+			children = (
+				095E852D17B358B00065EF8E /* projects */,
+				095E84EB17B354BE0065EF8E /* include */,
+				095E850C17B354BE0065EF8E /* lib */,
+			);
+			path = LipiTk;
+			sourceTree = "<group>";
+		};
+		095E84EB17B354BE0065EF8E /* include */ = {
+			isa = PBXGroup;
+			children = (
+				095E853217B35A330065EF8E /* LTKCheckSumGenerate.h */,
+				095E853317B35A330065EF8E /* LTKConfigFileReader.h */,
+				095E853417B35A330065EF8E /* LTKDynamicTimeWarping.h */,
+				095E853517B35A330065EF8E /* LTKErrors.h */,
+				095E853617B35A330065EF8E /* LTKHierarchicalClustering.h */,
+				095E853717B35A330065EF8E /* LTKImageWriter.h */,
+				095E853817B35A330065EF8E /* LTKInkFileReader.h */,
+				095E853917B35A330065EF8E /* LTKInkFileWriter.h */,
+				095E853A17B35A330065EF8E /* LTKInkUtils.h */,
+				095E853B17B35A330065EF8E /* LTKLinuxUtil.h */,
+				095E853C17B35A330065EF8E /* LTKLoggerUtil.h */,
+				095E853D17B35A330065EF8E /* LTKStrEncoding.h */,
+				095E853E17B35A330065EF8E /* LTKStringUtil.h */,
+				095E853F17B35A330065EF8E /* LTKVersionCompatibilityCheck.h */,
+				095E84EC17B354BE0065EF8E /* LTKCaptureDevice.h */,
+				095E84ED17B354BE0065EF8E /* LTKChannel.h */,
+				095E84EE17B354BE0065EF8E /* LTKClassifierDefaults.h */,
+				095E84EF17B354BE0065EF8E /* LTKErrorsList.h */,
+				095E84F017B354BE0065EF8E /* LTKException.h */,
+				095E84F117B354BE0065EF8E /* LTKInc.h */,
+				095E84F217B354BE0065EF8E /* LTKLipiEngineInterface.h */,
+				095E84F317B354BE0065EF8E /* LTKLogger.h */,
+				095E84F417B354BE0065EF8E /* LTKLoggerInterface.h */,
+				095E84F517B354BE0065EF8E /* LTKMacros.h */,
+				095E84F617B354BE0065EF8E /* LTKOSUtil.h */,
+				095E84F717B354BE0065EF8E /* LTKOSUtilFactory.h */,
+				095E84F817B354BE0065EF8E /* LTKPreprocDefaults.h */,
+				095E84F917B354BE0065EF8E /* LTKPreprocessor.h */,
+				095E84FA17B354BE0065EF8E /* LTKPreprocessorInterface.h */,
+				095E84FB17B354BE0065EF8E /* LTKRecognitionContext.h */,
+				095E84FC17B354BE0065EF8E /* LTKRefCountedPtr.h */,
+				095E84FD17B354BE0065EF8E /* LTKScreenContext.h */,
+				095E84FE17B354BE0065EF8E /* LTKShapeFeatureMacros.h */,
+				095E84FF17B354BE0065EF8E /* LTKShapeRecoConfig.h */,
+				095E850017B354BE0065EF8E /* LTKShapeRecoEngine.h */,
+				095E850117B354BE0065EF8E /* LTKShapeRecognizer.h */,
+				095E850217B354BE0065EF8E /* LTKShapeRecoResult.h */,
+				095E850317B354BE0065EF8E /* LTKShapeRecoUtil.h */,
+				095E850417B354BE0065EF8E /* LTKTrace.h */,
+				095E850517B354BE0065EF8E /* LTKTraceFormat.h */,
+				095E850617B354BE0065EF8E /* LTKTraceGroup.h */,
+				095E850717B354BE0065EF8E /* LTKTypes.h */,
+				095E850817B354BE0065EF8E /* LTKWordRecoConfig.h */,
+				095E850917B354BE0065EF8E /* LTKWordRecognizer.h */,
+				095E850A17B354BE0065EF8E /* LTKWordRecoResult.h */,
+				095E850B17B354BE0065EF8E /* TpcError.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		095E850C17B354BE0065EF8E /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				095E850D17B354BE0065EF8E /* libactivedtw.a */,
+				095E850E17B354BE0065EF8E /* libboxfld.a */,
+				095E850F17B354BE0065EF8E /* libcommon.a */,
+				095E851017B354BE0065EF8E /* libfeatureextractorcommon.a */,
+				095E851117B354BE0065EF8E /* libl7.a */,
+				095E851217B354BE0065EF8E /* liblipiengine.a */,
+				095E851317B354BE0065EF8E /* liblogger.a */,
+				095E851417B354BE0065EF8E /* libneuralnet.a */,
+				095E851517B354BE0065EF8E /* libnn.a */,
+				095E851617B354BE0065EF8E /* libnpen.a */,
+				095E851717B354BE0065EF8E /* libpointfloat.a */,
+				095E851817B354BE0065EF8E /* libpreproc.a */,
+				095E851917B354BE0065EF8E /* libshaperecommon.a */,
+				095E851A17B354BE0065EF8E /* libsubstroke.a */,
+				095E851B17B354BE0065EF8E /* libutil.a */,
+				095E851C17B354BE0065EF8E /* libwordreccommon.a */,
+			);
+			path = lib;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -207,6 +395,7 @@
 				095D12E017ACA36C0048A012 /* Shader.fsh in Resources */,
 				095D12E217ACA36C0048A012 /* Shader.vsh in Resources */,
 				095D12E817ACA36C0048A012 /* AGViewController.xib in Resources */,
+				095E852E17B358B00065EF8E /* projects in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,6 +412,7 @@
 				095D12FB17ACAA100048A012 /* Geometry.cpp in Sources */,
 				095D12FC17ACAA100048A012 /* Texture.mm in Sources */,
 				095D12FF17ACAB7B0048A012 /* ShaderHelper.m in Sources */,
+				095E853117B358FC0065EF8E /* shaperectst.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -309,9 +499,15 @@
 		095D12EC17ACA36C0048A012 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LIBRARY = "libstdc++";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Auragraph/Auragraph-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/LipiTk/include\"";
 				INFOPLIST_FILE = "Auragraph/Auragraph-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/LipiTk/lib\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -320,9 +516,15 @@
 		095D12ED17ACA36C0048A012 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LIBRARY = "libstdc++";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Auragraph/Auragraph-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/LipiTk/include\"";
 				INFOPLIST_FILE = "Auragraph/Auragraph-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/LipiTk/lib\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

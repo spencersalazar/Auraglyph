@@ -10,7 +10,21 @@
 
 #import "AGViewController.h"
 
+int shaperecst(int argc, const char** argv);
+
+
 @implementation AGAppDelegate
+
+
+- (void)testHWR
+{
+    const char *argv[3];
+    argv[0] = "shaperecst";
+    argv[1] = "SHAPEREC_NUMERALS";
+    argv[2] = [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"/projects/demonumerals/data/1/1_0.txt"] UTF8String];
+    shaperecst(3, argv);
+}
+
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -19,6 +33,9 @@
     self.viewController = [[AGViewController alloc] initWithNibName:@"AGViewController" bundle:nil];
     self.window.rootViewController = self.viewController;
     [self.window makeKeyAndVisible];
+    
+    [self testHWR];
+    
     return YES;
 }
 
