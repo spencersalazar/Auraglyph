@@ -49,3 +49,27 @@ GLvertex3f operator/(const GLvertex3f &v, const GLfloat &s)
     GLvertex3f v2 = GLvertex3f(v.x/s, v.y/s, v.z/s);
     return v2;
 }
+
+GLvertex2f operator+(const GLvertex2f &v1, const GLvertex2f &v2)
+{
+    GLvertex2f v3 = GLvertex2f(v1.x+v2.x, v1.y+v2.y);
+    return v3;
+}
+
+GLvertex2f operator-(const GLvertex2f &v1, const GLvertex2f &v2)
+{
+    GLvertex2f v3 = GLvertex2f(v1.x-v2.x, v1.y-v2.y);
+    return v3;
+}
+
+GLvertex2f operator*(const GLvertex2f &v, const GLfloat &s)
+{
+    GLvertex2f v2 = GLvertex2f(v.x*s, v.y*s);
+    return v2;
+}
+
+GLvertex2f operator/(const GLvertex2f &v, const GLfloat &s)
+{
+    GLvertex2f v2 = GLvertex2f(v.x/s, v.y/s);
+    return v2;
+}

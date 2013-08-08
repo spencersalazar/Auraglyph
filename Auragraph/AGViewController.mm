@@ -12,6 +12,124 @@
 #import "hsv.h"
 #import "UIKitGL.h"
 
+
+#include <vector>
+
+struct FeaturePoint
+{
+    GLvertex2f p;   // position
+    float dp;  // direction (angle)
+    float d2p; // curvature
+};
+
+struct Figure
+{
+public:
+    
+    Figure(){ }
+    
+    void addPoint(const FeaturePoint & fp)
+    {
+        m_points.push_back(fp);
+    }
+    
+    // note: be sure to call calculateDirectionAndCurvature() later
+    void addPoint(const GLvertex2f & p)
+    {
+        FeaturePoint fp;
+        fp.p = p;
+        fp.dp = fp.d2p = 0;
+        m_points.push_back(fp);
+    }
+    
+    void calculateDirectionAndCurvature(bool close)
+    {
+        // assume each point connects to its successor
+        // if close==true, last point connects to first point
+        
+        // compute direction
+        for(int curr = 0; curr < m_points.size(); curr++)
+        {
+            int prev = curr-1;
+            int next = curr+1;
+            
+            if(curr == 0)
+            {
+                if(close)
+                    prev = m_points.size()-1;
+                else
+                    prev = curr;
+            }
+            if(curr == m_points.size()-1)
+            {
+                if(close)
+                    next = 0;
+                else
+                    next = curr;
+            }
+            
+            m_points[curr].dp = (m_points[next].p - m_points[prev].p).angle();
+        }
+        
+        // compute curvature
+        for(int curr = 0; curr < m_points.size(); curr++)
+        {
+            int prev = curr-1;
+            int next = curr+1;
+            
+            if(curr == 0)
+            {
+                if(close)
+                    prev = m_points.size()-1;
+                else
+                    prev = curr;
+            }
+            if(curr == m_points.size()-1)
+            {
+                if(close)
+                    next = 0;
+                else
+                    next = curr;
+            }
+            
+            m_points[curr].d2p = m_points[next].dp - m_points[prev].dp;
+        }
+    }
+    
+    int numPoints() const
+    {
+        return m_points.size();
+    }
+    
+    const FeaturePoint &point(int idx) const
+    {
+        return m_points[idx];
+    }
+    
+    int closestPointTo(const GLvertex2f &p) const
+    {
+        int min = -1;
+        float mindist = FLT_MAX;
+        // linear brute force!
+        for(int i = 0; i < m_points.size(); i++)
+        {
+            float dist = m_points[i].p.distanceSquaredTo(p);
+            if(dist < mindist)
+            {
+                min = i;
+                mindist = dist;
+            }
+        }
+        
+        return min;
+    }
+    
+private:
+    std::vector<FeaturePoint> m_points;
+};
+
+
+
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 // Uniform index.
@@ -31,9 +149,17 @@ enum
     NUM_ATTRIBUTES
 };
 
+
+struct DrawPoint
+{
+    GLvncprimf geo; // GL geometry
+    
+    FeaturePoint fp;
+};
+
 const int nDrawline = 1024;
 int nDrawlineUsed = 0;
-GLvncprimf drawline[nDrawline];
+DrawPoint drawline[nDrawline];
 
 
 @interface AGViewController () {
@@ -42,7 +168,6 @@ GLvncprimf drawline[nDrawline];
     GLKMatrix4 _modelView;
     GLKMatrix4 _projection;
     GLKMatrix4 _modelViewProjectionMatrix;
-    GLKMatrix4 _uiMatrix;
     GLKMatrix3 _normalMatrix;
     float _rotation;
     
@@ -50,6 +175,8 @@ GLvncprimf drawline[nDrawline];
     
     GLuint _vertexArray;
     GLuint _vertexBuffer;
+    
+    Figure circle;
 }
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) GLKBaseEffect *effect;
@@ -76,6 +203,14 @@ GLvncprimf drawline[nDrawline];
     view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
     
     [self setupGL];
+    
+    int N_CIRCLE_PTS = 32;
+    for(int i = 0; i < N_CIRCLE_PTS; i++)
+    {
+        double theta = M_PI*2*((float)i)/((float)N_CIRCLE_PTS);
+        circle.addPoint(GLvertex2f(cos(theta), sin(theta)));
+    }
+    circle.calculateDirectionAndCurvature(true);
 }
 
 - (void)dealloc
@@ -140,11 +275,11 @@ GLvncprimf drawline[nDrawline];
     glBufferData(GL_ARRAY_BUFFER, sizeof(drawline), drawline, GL_DYNAMIC_DRAW);
     
     glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(0));
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(DrawPoint), BUFFER_OFFSET(0));
     glEnableVertexAttribArray(GLKVertexAttribNormal);
-    glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(sizeof(GLvertex3f)));
+    glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, sizeof(DrawPoint), BUFFER_OFFSET(sizeof(GLvertex3f)));
     glEnableVertexAttribArray(GLKVertexAttribColor);
-    glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(2*sizeof(GLvertex3f)));
+    glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(DrawPoint), BUFFER_OFFSET(2*sizeof(GLvertex3f)));
     
     glBindVertexArrayOES(0);
     
@@ -173,26 +308,16 @@ GLvncprimf drawline[nDrawline];
     GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
     
     GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
-    //GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 0.0f);
-    //baseModelViewMatrix = GLKMatrix4Rotate(baseModelViewMatrix, _rotation, 0.0f, 1.0f, 0.0f);
     
     // Compute the model view matrix for the object rendered with GLKit
     GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 0.0f);
-//    modelViewMatrix = GLKMatrix4Rotate(modelViewMatrix, _rotation, 1.0f, 1.0f, 1.0f);
     modelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, modelViewMatrix);
     
     _normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
     
     _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
-    //_uiMatrix = GLKMatrix4Identity;
-    _uiMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 4.0f);
     _modelView = modelViewMatrix;
     _projection = projectionMatrix;
-    //_uiMatrix = GLKMatrix4Multiply(modelViewMatrix, projectionMatrix);
-    //_uiMatrix = GLKMatrix4Multiply(GLKMatrix4Multiply(modelViewMatrix, projectionMatrix), projectionMatrix);
-    //_uiMatrix = GLKMatrix4InvertAndTranspose(_modelViewProjectionMatrix, NULL);
-    //_uiMatrix = GLKMatrix4Invert(projectionMatrix, NULL);
-    //_uiMatrix = GLKMatrix4Multiply(GLKMatrix4Invert(projectionMatrix, NULL), GLKMatrix4Invert(modelViewMatrix, NULL));
     
     _osc += self.timeSinceLastUpdate * 1.0f;
     
@@ -214,12 +339,14 @@ GLvncprimf drawline[nDrawline];
     glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
     
     glLineWidth(4.0f);
-    glDrawArrays(GL_LINE_STRIP, 0, nDrawlineUsed);
+    if(nDrawlineUsed == 1)
+        glDrawArrays(GL_POINTS, 0, nDrawlineUsed);
+    else
+        glDrawArrays(GL_LINE_STRIP, 0, nDrawlineUsed);
 }
 
 
 #pragma Touch handling
-
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
@@ -232,9 +359,11 @@ GLvncprimf drawline[nDrawline];
     GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, p.y, 0),
                                       _modelView, _projection, viewport, NULL);
     
-    drawline[0].vertex = GLvertex3f(vec.x, -vec.y, vec.z);
-    drawline[0].color = GLcolor4f(1, 1, 1, 1);
-    drawline[0].normal = GLvertex3f(0, 0, 1);
+    drawline[0].geo.vertex = GLvertex3f(vec.x, -vec.y, vec.z);
+    drawline[0].geo.color = GLcolor4f(1, 1, 1, 1);
+    drawline[0].geo.normal = GLvertex3f(0, 0, 1);
+    
+    drawline[0].fp.p = GLvertex2f(vec.x, vec.y);
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -246,16 +375,61 @@ GLvncprimf drawline[nDrawline];
     GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, p.y, 0),
                                       _modelView, _projection, viewport, NULL);
     
-    drawline[nDrawlineUsed].vertex = GLvertex3f(vec.x, -vec.y, vec.z);
-    drawline[nDrawlineUsed].color = GLcolor4f(1, 1, 1, 1);
-    drawline[nDrawlineUsed].normal = GLvertex3f(0, 0, 1);
+    drawline[nDrawlineUsed].geo.vertex = GLvertex3f(vec.x, -vec.y, vec.z);
+    drawline[nDrawlineUsed].geo.color = GLcolor4f(1, 1, 1, 1);
+    drawline[nDrawlineUsed].geo.normal = GLvertex3f(0, 0, 1);
+    
+    drawline[nDrawlineUsed].fp.p = GLvertex2f(vec.x, vec.y);
+    if(nDrawlineUsed >= 2)
+        drawline[nDrawlineUsed-1].fp.dp = (drawline[nDrawlineUsed].fp.p - drawline[nDrawlineUsed-2].fp.p).angle();
+    else
+        drawline[nDrawlineUsed-1].fp.dp = (drawline[nDrawlineUsed].fp.p - drawline[nDrawlineUsed-1].fp.p).angle();
+    drawline[nDrawlineUsed].fp.dp = (drawline[nDrawlineUsed].fp.p - drawline[nDrawlineUsed-1].fp.p).angle();
     
     nDrawlineUsed++;
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    // analysis
     
+    // find center
+    GLvertex2f sum;
+    for(int i = 0; i < nDrawlineUsed; i++)
+        sum = sum + drawline[i].fp.p;
+    GLvertex2f center = sum / nDrawlineUsed;
+    
+    // find normalization
+    float mag_sq_max = 0;
+    for(int i = 0; i < nDrawlineUsed; i++)
+    {
+        float mag_sq = (drawline[i].fp.p - center).magnitudeSquared();
+        if(mag_sq > mag_sq_max)
+            mag_sq_max = mag_sq;
+    }
+    float norm = 1.0/sqrtf(mag_sq_max);
+    
+    float score = 0;
+    // compare points to circle
+    for(int i = 1; i < nDrawlineUsed-1; i++)
+    {
+        GLvertex2f p_draw = (drawline[i].fp.p-center)*norm;
+        
+        int p_fig_idx = circle.closestPointTo(p_draw);
+        
+        const FeaturePoint &fp = circle.point(p_fig_idx);
+        
+        float dist = p_draw.distanceTo(fp.p);
+        float dist_dp = fabsf(fp.dp - drawline[i].fp.dp);
+        float d2p_draw = drawline[i+1].fp.d2p - drawline[i-1].fp.d2p;
+        float dist_d2p = fabsf(fp.d2p - d2p_draw);
+        
+        score += (powf(dist,4) * powf(dist_dp,2) * dist_d2p)*sinf(M_PI*((float)i)/((float)nDrawlineUsed));
+    }
+    
+    score /= (nDrawlineUsed-2);
+    
+    NSLog(@"score: %f", score);
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
