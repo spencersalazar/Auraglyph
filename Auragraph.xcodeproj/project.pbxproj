@@ -25,20 +25,13 @@
 		095D12FB17ACAA100048A012 /* Geometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 095D12F617ACAA100048A012 /* Geometry.cpp */; };
 		095D12FC17ACAA100048A012 /* Texture.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095D12FA17ACAA100048A012 /* Texture.mm */; };
 		095D12FF17ACAB7B0048A012 /* ShaderHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 095D12FE17ACAB7B0048A012 /* ShaderHelper.m */; };
-		095E851D17B354BE0065EF8E /* libactivedtw.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E850D17B354BE0065EF8E /* libactivedtw.a */; };
-		095E851E17B354BE0065EF8E /* libboxfld.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E850E17B354BE0065EF8E /* libboxfld.a */; };
 		095E851F17B354BE0065EF8E /* libcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E850F17B354BE0065EF8E /* libcommon.a */; };
 		095E852017B354BE0065EF8E /* libfeatureextractorcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851017B354BE0065EF8E /* libfeatureextractorcommon.a */; };
-		095E852117B354BE0065EF8E /* libl7.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851117B354BE0065EF8E /* libl7.a */; };
 		095E852217B354BE0065EF8E /* liblipiengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851217B354BE0065EF8E /* liblipiengine.a */; };
-		095E852317B354BE0065EF8E /* liblogger.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851317B354BE0065EF8E /* liblogger.a */; };
-		095E852417B354BE0065EF8E /* libneuralnet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851417B354BE0065EF8E /* libneuralnet.a */; };
 		095E852517B354BE0065EF8E /* libnn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851517B354BE0065EF8E /* libnn.a */; };
-		095E852617B354BE0065EF8E /* libnpen.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851617B354BE0065EF8E /* libnpen.a */; };
 		095E852717B354BE0065EF8E /* libpointfloat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851717B354BE0065EF8E /* libpointfloat.a */; };
 		095E852817B354BE0065EF8E /* libpreproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851817B354BE0065EF8E /* libpreproc.a */; };
 		095E852917B354BE0065EF8E /* libshaperecommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851917B354BE0065EF8E /* libshaperecommon.a */; };
-		095E852A17B354BE0065EF8E /* libsubstroke.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851A17B354BE0065EF8E /* libsubstroke.a */; };
 		095E852B17B354BE0065EF8E /* libutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851B17B354BE0065EF8E /* libutil.a */; };
 		095E852C17B354BE0065EF8E /* libwordreccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851C17B354BE0065EF8E /* libwordreccommon.a */; };
 		095E852E17B358B00065EF8E /* projects in Resources */ = {isa = PBXBuildFile; fileRef = 095E852D17B358B00065EF8E /* projects */; };
@@ -151,20 +144,13 @@
 				095D12C817ACA36C0048A012 /* CoreGraphics.framework in Frameworks */,
 				095D12CA17ACA36C0048A012 /* GLKit.framework in Frameworks */,
 				095D12CC17ACA36C0048A012 /* OpenGLES.framework in Frameworks */,
-				095E851D17B354BE0065EF8E /* libactivedtw.a in Frameworks */,
-				095E851E17B354BE0065EF8E /* libboxfld.a in Frameworks */,
 				095E851F17B354BE0065EF8E /* libcommon.a in Frameworks */,
 				095E852017B354BE0065EF8E /* libfeatureextractorcommon.a in Frameworks */,
-				095E852117B354BE0065EF8E /* libl7.a in Frameworks */,
 				095E852217B354BE0065EF8E /* liblipiengine.a in Frameworks */,
-				095E852317B354BE0065EF8E /* liblogger.a in Frameworks */,
-				095E852417B354BE0065EF8E /* libneuralnet.a in Frameworks */,
 				095E852517B354BE0065EF8E /* libnn.a in Frameworks */,
-				095E852617B354BE0065EF8E /* libnpen.a in Frameworks */,
 				095E852717B354BE0065EF8E /* libpointfloat.a in Frameworks */,
 				095E852817B354BE0065EF8E /* libpreproc.a in Frameworks */,
 				095E852917B354BE0065EF8E /* libshaperecommon.a in Frameworks */,
-				095E852A17B354BE0065EF8E /* libsubstroke.a in Frameworks */,
 				095E852B17B354BE0065EF8E /* libutil.a in Frameworks */,
 				095E852C17B354BE0065EF8E /* libwordreccommon.a in Frameworks */,
 			);
@@ -318,18 +304,18 @@
 			children = (
 				095E850D17B354BE0065EF8E /* libactivedtw.a */,
 				095E850E17B354BE0065EF8E /* libboxfld.a */,
-				095E850F17B354BE0065EF8E /* libcommon.a */,
-				095E851017B354BE0065EF8E /* libfeatureextractorcommon.a */,
-				095E851117B354BE0065EF8E /* libl7.a */,
-				095E851217B354BE0065EF8E /* liblipiengine.a */,
-				095E851317B354BE0065EF8E /* liblogger.a */,
 				095E851417B354BE0065EF8E /* libneuralnet.a */,
 				095E851517B354BE0065EF8E /* libnn.a */,
+				095E851117B354BE0065EF8E /* libl7.a */,
 				095E851617B354BE0065EF8E /* libnpen.a */,
 				095E851717B354BE0065EF8E /* libpointfloat.a */,
 				095E851817B354BE0065EF8E /* libpreproc.a */,
-				095E851917B354BE0065EF8E /* libshaperecommon.a */,
 				095E851A17B354BE0065EF8E /* libsubstroke.a */,
+				095E851217B354BE0065EF8E /* liblipiengine.a */,
+				095E851317B354BE0065EF8E /* liblogger.a */,
+				095E850F17B354BE0065EF8E /* libcommon.a */,
+				095E851017B354BE0065EF8E /* libfeatureextractorcommon.a */,
+				095E851917B354BE0065EF8E /* libshaperecommon.a */,
 				095E851B17B354BE0065EF8E /* libutil.a */,
 				095E851C17B354BE0065EF8E /* libwordreccommon.a */,
 			);
@@ -500,14 +486,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LIBRARY = "libstdc++";
+				DEAD_CODE_STRIPPING = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Auragraph/Auragraph-Prefix.pch";
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/LipiTk/include\"";
 				INFOPLIST_FILE = "Auragraph/Auragraph-Info.plist";
+				KEEP_PRIVATE_EXTERNS = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/LipiTk/lib\"",
 				);
+				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -517,14 +506,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LIBRARY = "libstdc++";
+				DEAD_CODE_STRIPPING = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Auragraph/Auragraph-Prefix.pch";
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/LipiTk/include\"";
 				INFOPLIST_FILE = "Auragraph/Auragraph-Info.plist";
+				KEEP_PRIVATE_EXTERNS = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/LipiTk/lib\"",
 				);
+				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
