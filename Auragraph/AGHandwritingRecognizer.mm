@@ -38,8 +38,8 @@ static AGHandwritingRecognizerFigure g_figureForNumeralShape[] =
 
 static AGHandwritingRecognizerFigure g_figureForShape[] =
 {
-    AG_FIGURE_SQUARE,
     AG_FIGURE_CIRCLE,
+    AG_FIGURE_SQUARE,
     AG_FIGURE_TRIANGLE_UP,
     AG_FIGURE_TRIANGLE_DOWN,
 };

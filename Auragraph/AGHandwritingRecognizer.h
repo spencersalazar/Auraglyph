@@ -28,8 +28,8 @@ enum AGHandwritingRecognizerFigure
     AG_FIGURE_9 = '9',
     
     // start geometric figures after ASCII range
-    AG_FIGURE_SQUARE = 128,
-    AG_FIGURE_CIRCLE,
+    AG_FIGURE_CIRCLE = 128,
+    AG_FIGURE_SQUARE,
     AG_FIGURE_TRIANGLE_UP,
     AG_FIGURE_TRIANGLE_DOWN,
 };
