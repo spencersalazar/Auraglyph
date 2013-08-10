@@ -34,7 +34,7 @@ int shaperecst(int argc, const char** argv);
     self.window.rootViewController = self.viewController;
     [self.window makeKeyAndVisible];
     
-    [self testHWR];
+//    [self testHWR];
     
     return YES;
 }

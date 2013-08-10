@@ -11,123 +11,7 @@
 #import "ShaderHelper.h"
 #import "hsv.h"
 #import "UIKitGL.h"
-
-
-#include <vector>
-
-struct FeaturePoint
-{
-    GLvertex2f p;   // position
-    float dp;  // direction (angle)
-    float d2p; // curvature
-};
-
-struct Figure
-{
-public:
-    
-    Figure(){ }
-    
-    void addPoint(const FeaturePoint & fp)
-    {
-        m_points.push_back(fp);
-    }
-    
-    // note: be sure to call calculateDirectionAndCurvature() later
-    void addPoint(const GLvertex2f & p)
-    {
-        FeaturePoint fp;
-        fp.p = p;
-        fp.dp = fp.d2p = 0;
-        m_points.push_back(fp);
-    }
-    
-    void calculateDirectionAndCurvature(bool close)
-    {
-        // assume each point connects to its successor
-        // if close==true, last point connects to first point
-        
-        // compute direction
-        for(int curr = 0; curr < m_points.size(); curr++)
-        {
-            int prev = curr-1;
-            int next = curr+1;
-            
-            if(curr == 0)
-            {
-                if(close)
-                    prev = m_points.size()-1;
-                else
-                    prev = curr;
-            }
-            if(curr == m_points.size()-1)
-            {
-                if(close)
-                    next = 0;
-                else
-                    next = curr;
-            }
-            
-            m_points[curr].dp = (m_points[next].p - m_points[prev].p).angle();
-        }
-        
-        // compute curvature
-        for(int curr = 0; curr < m_points.size(); curr++)
-        {
-            int prev = curr-1;
-            int next = curr+1;
-            
-            if(curr == 0)
-            {
-                if(close)
-                    prev = m_points.size()-1;
-                else
-                    prev = curr;
-            }
-            if(curr == m_points.size()-1)
-            {
-                if(close)
-                    next = 0;
-                else
-                    next = curr;
-            }
-            
-            m_points[curr].d2p = m_points[next].dp - m_points[prev].dp;
-        }
-    }
-    
-    int numPoints() const
-    {
-        return m_points.size();
-    }
-    
-    const FeaturePoint &point(int idx) const
-    {
-        return m_points[idx];
-    }
-    
-    int closestPointTo(const GLvertex2f &p) const
-    {
-        int min = -1;
-        float mindist = FLT_MAX;
-        // linear brute force!
-        for(int i = 0; i < m_points.size(); i++)
-        {
-            float dist = m_points[i].p.distanceSquaredTo(p);
-            if(dist < mindist)
-            {
-                min = i;
-                mindist = dist;
-            }
-        }
-        
-        return min;
-    }
-    
-private:
-    std::vector<FeaturePoint> m_points;
-};
-
+#import "AGHandwritingRecognizer.h"
 
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
@@ -153,8 +37,6 @@ enum
 struct DrawPoint
 {
     GLvncprimf geo; // GL geometry
-    
-    FeaturePoint fp;
 };
 
 const int nDrawline = 1024;
@@ -176,7 +58,8 @@ DrawPoint drawline[nDrawline];
     GLuint _vertexArray;
     GLuint _vertexBuffer;
     
-    Figure circle;
+    AGHandwritingRecognizer *_hwRecognizer;
+    LTKTrace _currentTrace;
 }
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) GLKBaseEffect *effect;
@@ -204,17 +87,12 @@ DrawPoint drawline[nDrawline];
     
     [self setupGL];
     
-    int N_CIRCLE_PTS = 32;
-    for(int i = 0; i < N_CIRCLE_PTS; i++)
-    {
-        double theta = M_PI*2*((float)i)/((float)N_CIRCLE_PTS);
-        circle.addPoint(GLvertex2f(cos(theta), sin(theta)));
-    }
-    circle.calculateDirectionAndCurvature(true);
+    _hwRecognizer = [AGHandwritingRecognizer new];
+    _currentTrace = LTKTrace();
 }
 
 - (void)dealloc
-{    
+{
     [self tearDownGL];
     
     if ([EAGLContext currentContext] == self.context) {
@@ -363,7 +241,10 @@ DrawPoint drawline[nDrawline];
     drawline[0].geo.color = GLcolor4f(1, 1, 1, 1);
     drawline[0].geo.normal = GLvertex3f(0, 0, 1);
     
-    drawline[0].fp.p = GLvertex2f(vec.x, vec.y);
+    floatVector point;
+    point.push_back(p.x);
+    point.push_back(p.y);
+    _currentTrace.addPoint(point);
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -378,58 +259,25 @@ DrawPoint drawline[nDrawline];
     drawline[nDrawlineUsed].geo.vertex = GLvertex3f(vec.x, -vec.y, vec.z);
     drawline[nDrawlineUsed].geo.color = GLcolor4f(1, 1, 1, 1);
     drawline[nDrawlineUsed].geo.normal = GLvertex3f(0, 0, 1);
-    
-    drawline[nDrawlineUsed].fp.p = GLvertex2f(vec.x, vec.y);
-    if(nDrawlineUsed >= 2)
-        drawline[nDrawlineUsed-1].fp.dp = (drawline[nDrawlineUsed].fp.p - drawline[nDrawlineUsed-2].fp.p).angle();
-    else
-        drawline[nDrawlineUsed-1].fp.dp = (drawline[nDrawlineUsed].fp.p - drawline[nDrawlineUsed-1].fp.p).angle();
-    drawline[nDrawlineUsed].fp.dp = (drawline[nDrawlineUsed].fp.p - drawline[nDrawlineUsed-1].fp.p).angle();
-    
+        
     nDrawlineUsed++;
+    
+    floatVector point;
+    point.push_back(p.x);
+    point.push_back(p.y);
+    _currentTrace.addPoint(point);
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     // analysis
     
-    // find center
-    GLvertex2f sum;
-    for(int i = 0; i < nDrawlineUsed; i++)
-        sum = sum + drawline[i].fp.p;
-    GLvertex2f center = sum / nDrawlineUsed;
+    AGHandwritingRecognizerFigure figure = [_hwRecognizer recognizeHandwritingInView:self.view
+                                                                               trace:_currentTrace];
     
-    // find normalization
-    float mag_sq_max = 0;
-    for(int i = 0; i < nDrawlineUsed; i++)
-    {
-        float mag_sq = (drawline[i].fp.p - center).magnitudeSquared();
-        if(mag_sq > mag_sq_max)
-            mag_sq_max = mag_sq;
-    }
-    float norm = 1.0/sqrtf(mag_sq_max);
+    NSLog(@"figure: %i", figure);
     
-    float score = 0;
-    // compare points to circle
-    for(int i = 1; i < nDrawlineUsed-1; i++)
-    {
-        GLvertex2f p_draw = (drawline[i].fp.p-center)*norm;
-        
-        int p_fig_idx = circle.closestPointTo(p_draw);
-        
-        const FeaturePoint &fp = circle.point(p_fig_idx);
-        
-        float dist = p_draw.distanceTo(fp.p);
-        float dist_dp = fabsf(fp.dp - drawline[i].fp.dp);
-        float d2p_draw = drawline[i+1].fp.d2p - drawline[i-1].fp.d2p;
-        float dist_d2p = fabsf(fp.d2p - d2p_draw);
-        
-        score += (powf(dist,4) * powf(dist_dp,2) * dist_d2p)*sinf(M_PI*((float)i)/((float)nDrawlineUsed));
-    }
-    
-    score /= (nDrawlineUsed-2);
-    
-    NSLog(@"score: %f", score);
+    _currentTrace = LTKTrace();
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
