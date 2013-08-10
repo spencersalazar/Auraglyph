@@ -129,20 +129,6 @@ DrawPoint drawline[nDrawline];
     uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
     uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program, "normalMatrix");
     
-//    float rho = 1;
-//    float theta;
-//    
-//    for(int i = 0; i < nDrawline; i++)
-//    {
-//        theta = 2*M_PI*((float)i)/((float)nDrawline-1);
-//        drawline[i].vertex.x = rho*cosf(theta);
-//        drawline[i].vertex.y = rho*sinf(theta);
-//        drawline[i].vertex.z = 0;
-//        
-//        drawline[i].normal = GLvertex3f(0,0,1);
-//        drawline[i].color = hsv2rgb(GLcolor4f(theta/(2*M_PI), 0.5, 0.9, 1.0));
-//    }
-    
     glEnable(GL_DEPTH_TEST);
     
     glGenVertexArraysOES(1, &_vertexArray);
@@ -272,11 +258,12 @@ DrawPoint drawline[nDrawline];
 {
     // analysis
     
-    AGHandwritingRecognizerFigure figure = [_hwRecognizer recognizeHandwritingInView:self.view
-                                                                               trace:_currentTrace];
+    AGHandwritingRecognizerFigure figure = [_hwRecognizer recognizeShapeInView:self.view
+                                                                         trace:_currentTrace];
     
     NSLog(@"figure: %i", figure);
     
+    // reset trace
     _currentTrace = LTKTrace();
 }
 
