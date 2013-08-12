@@ -37,6 +37,7 @@
 		095E852E17B358B00065EF8E /* projects in Resources */ = {isa = PBXBuildFile; fileRef = 095E852D17B358B00065EF8E /* projects */; };
 		095E853117B358FC0065EF8E /* shaperectst.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E852F17B358FC0065EF8E /* shaperectst.mm */; };
 		095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */; };
+		0987409C17B98D7C0098511A /* AGNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0987409A17B98D7C0098511A /* AGNode.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -135,6 +136,8 @@
 		095E853F17B35A330065EF8E /* LTKVersionCompatibilityCheck.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKVersionCompatibilityCheck.h; sourceTree = "<group>"; };
 		095E854017B5E1D30065EF8E /* AGHandwritingRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGHandwritingRecognizer.h; sourceTree = "<group>"; };
 		095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGHandwritingRecognizer.mm; sourceTree = "<group>"; };
+		0987409A17B98D7C0098511A /* AGNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGNode.mm; sourceTree = "<group>"; };
+		0987409B17B98D7C0098511A /* AGNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGNode.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -207,6 +210,8 @@
 				095D12E617ACA36C0048A012 /* AGViewController.xib */,
 				095E854017B5E1D30065EF8E /* AGHandwritingRecognizer.h */,
 				095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */,
+				0987409B17B98D7C0098511A /* AGNode.h */,
+				0987409A17B98D7C0098511A /* AGNode.mm */,
 				095D12CE17ACA36C0048A012 /* Supporting Files */,
 			);
 			path = Auragraph;
@@ -405,6 +410,7 @@
 				095D12FF17ACAB7B0048A012 /* ShaderHelper.m in Sources */,
 				095E853117B358FC0065EF8E /* shaperectst.mm in Sources */,
 				095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */,
+				0987409C17B98D7C0098511A /* AGNode.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

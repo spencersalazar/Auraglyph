@@ -17,7 +17,7 @@
 // name: uiview2gl
 // desc: convert UIView coordinates to the OpenGL coordinate space
 //------------------------------------------------------------------------------
-GLvertex2f uiview2gl(CGPoint p, UIView * view)
+static GLvertex2f uiview2gl(CGPoint p, UIView * view)
 {
     GLvertex2f v;
     float aspect = fabsf(view.bounds.size.width / view.bounds.size.height);
@@ -25,6 +25,9 @@ GLvertex2f uiview2gl(CGPoint p, UIView * view)
     v.y = (((p.y - view.bounds.origin.y)/view.bounds.size.height)*2-1);
     return v;
 }
+
+
+#define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 
 #endif

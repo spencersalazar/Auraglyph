@@ -12,11 +12,10 @@
 #import "hsv.h"
 #import "UIKitGL.h"
 #import "AGHandwritingRecognizer.h"
+#import "AGNode.h"
 
 #import <list>
 
-
-#define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 // Uniform index.
 enum
@@ -34,141 +33,6 @@ enum
     ATTRIB_NORMAL,
     NUM_ATTRIBUTES
 };
-
-
-
-class AGNode
-{
-public:
-        
-    virtual void update(float t, float dt) = 0;
-    virtual void render() = 0;
-    
-    static void setProjectionMatrix(const GLKMatrix4 &proj)
-    {
-        s_projectionMatrix = proj;
-    }
-    
-    static GLKMatrix4 projectionMatrix() { return s_projectionMatrix; }
-    
-    static void setGlobalModelViewMatrix(const GLKMatrix4 &modelview)
-    {
-        s_modelViewMatrix = modelview;
-    }
-    
-    static GLKMatrix4 globalModelViewMatrix() { return s_modelViewMatrix; }
-    
-private:
-    
-    static GLKMatrix4 s_projectionMatrix;
-    static GLKMatrix4 s_modelViewMatrix;
-};
-
-GLKMatrix4 AGNode::s_projectionMatrix = GLKMatrix4Identity;
-GLKMatrix4 AGNode::s_modelViewMatrix = GLKMatrix4Identity;
-
-class AGAudioNode : public AGNode
-{
-public:
-    
-    static void initialize()
-    {
-        if(!s_init)
-        {
-            s_init = true;
-            
-            // generate circle
-            s_geoSize = 64;
-            s_geo = new GLvncprimf[s_geoSize];
-            float radius = 0.01;
-            for(int i = 0; i < s_geoSize; i++)
-            {
-                float theta = 2*M_PI*((float)i)/((float)(s_geoSize-1));
-                s_geo[i].vertex = GLvertex3f(radius*cosf(theta), radius*sinf(theta), 0);
-                s_geo[i].normal = GLvertex3f(0, 0, 1);
-                s_geo[i].color = GLcolor4f(1, 1, 1, 1);
-            }
-            
-            glGenVertexArraysOES(1, &s_vertexArray);
-            glBindVertexArrayOES(s_vertexArray);
-            
-            glGenBuffers(1, &s_vertexBuffer);
-            glBindBuffer(GL_ARRAY_BUFFER, s_vertexBuffer);
-            glBufferData(GL_ARRAY_BUFFER, s_geoSize*sizeof(GLvncprimf), s_geo, GL_STATIC_DRAW);
-            
-            glEnableVertexAttribArray(GLKVertexAttribPosition);
-            glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(0));
-            glEnableVertexAttribArray(GLKVertexAttribNormal);
-            glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(sizeof(GLvertex3f)));
-            glEnableVertexAttribArray(GLKVertexAttribColor);
-            glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(2*sizeof(GLvertex3f)));
-            
-            glBindVertexArrayOES(0);
-        }
-    }
-    
-    AGAudioNode(GLvertex3f pos = GLvertex3f()) :
-    m_pos(pos)
-    {
-        initialize();
-        
-        NSLog(@"pos: (%f, %f, %f)", pos.x, pos.y, pos.z);
-    }
-    
-    virtual void renderAudio(float *input, float *output, int nFrames)
-    {
-    }
-    
-    virtual void update(float t, float dt)
-    {
-        GLKMatrix4 projection = projectionMatrix();
-        GLKMatrix4 modelView = globalModelViewMatrix();
-
-        //modelView = GLKMatrix4MakeTranslation(m_pos.x, m_pos.y, m_pos.z);
-        modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
-        //modelView = GLKMatrix4Multiply(trans, modelView);
-        
-        m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
-        
-        m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, modelView);
-        //m_modelViewProjectionMatrix = GLKMatrix4Multiply(trans, m_modelViewProjectionMatrix);
-    }
-    
-    virtual void render()
-    {
-        glBindVertexArrayOES(s_vertexArray);
-//        glBindBuffer(GL_ARRAY_BUFFER, s_vertexBuffer);
-        
-        // Render the object again with ES2
-//        glUseProgram(_program);
-        
-        glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, m_modelViewProjectionMatrix.m);
-        glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, m_normalMatrix.m);
-        
-        glLineWidth(4.0f);
-        glDrawArrays(GL_LINE_STRIP, 0, s_geoSize);
-    }
-    
-private:
-    
-    static bool s_init;
-    static GLuint s_vertexArray;
-    static GLuint s_vertexBuffer;
-    
-    static GLvncprimf *s_geo;
-    static GLuint s_geoSize;
-    
-    GLvertex3f m_pos;
-    GLKMatrix4 m_modelViewProjectionMatrix;
-    GLKMatrix3 m_normalMatrix;
-};
-
-bool AGAudioNode::s_init = false;
-GLuint AGAudioNode::s_vertexArray = 0;
-GLuint AGAudioNode::s_vertexBuffer = 0;
-GLvncprimf *AGAudioNode::s_geo = NULL;
-GLuint AGAudioNode::s_geoSize = 0;
-
 
 
 struct DrawPoint
@@ -384,6 +248,9 @@ DrawPoint drawline[nDrawline];
     drawline[0].geo.color = GLcolor4f(1, 1, 1, 1);
     drawline[0].geo.normal = GLvertex3f(0, 0, 1);
     
+    // reset trace
+    _currentTrace = LTKTrace();
+
     floatVector point;
     point.push_back(p.x);
     point.push_back(p.y);
@@ -426,21 +293,36 @@ DrawPoint drawline[nDrawline];
     
     NSLog(@"figure: %i", figure);
     
+    int viewport[] = { (int)self.view.frame.origin.x, (int)self.view.frame.origin.y,
+        (int)self.view.frame.size.width, (int)self.view.frame.size.height };
+    GLvertex3f centroid = _currentTraceSum/nDrawlineUsed;
+    GLKVector3 centroidMVP = GLKMathUnproject(GLKVector3Make(centroid.x, centroid.y, 0.01),
+                                              _modelView, _projection, viewport, NULL);
+    
     if(figure == AG_FIGURE_CIRCLE)
     {
-        int viewport[] = { (int)self.view.frame.origin.x, (int)self.view.frame.origin.y,
-            (int)self.view.frame.size.width, (int)self.view.frame.size.height };
-        GLvertex3f centroid = _currentTraceSum/nDrawlineUsed;
-        GLKVector3 vec = GLKMathUnproject(GLKVector3Make(centroid.x, centroid.y, 0.01),
-                                          _modelView, _projection, viewport, NULL);
-        
-        AGAudioNode * node = new AGAudioNode(GLvertex3f(vec.x, -vec.y, vec.z));
+        AGAudioNode * node = new AGAudioNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
         _nodes.push_back(node);
         nDrawlineUsed = 0;
     }
-    
-    // reset trace
-    _currentTrace = LTKTrace();
+    else if(figure == AG_FIGURE_SQUARE)
+    {
+        AGControlNode * node = new AGControlNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
+        _nodes.push_back(node);
+        nDrawlineUsed = 0;
+    }
+    else if(figure == AG_FIGURE_TRIANGLE_DOWN)
+    {
+        AGInputNode * node = new AGInputNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
+        _nodes.push_back(node);
+        nDrawlineUsed = 0;
+    }
+    else if(figure == AG_FIGURE_TRIANGLE_UP)
+    {
+        AGOutputNode * node = new AGOutputNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
+        _nodes.push_back(node);
+        nDrawlineUsed = 0;
+    }
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
