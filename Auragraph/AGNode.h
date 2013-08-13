@@ -15,6 +15,7 @@
 #import <GLKit/GLKit.h>
 #import <Foundation/Foundation.h>
 #import "ShaderHelper.h"
+#import <list>
 
 class AGNode
 {
@@ -30,12 +31,27 @@ public:
                                                     fragmentShader:[[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"fsh"]];
             s_uniformMVPMatrix = glGetUniformLocation(s_program, "modelViewProjectionMatrix");
             s_uniformNormalMatrix = glGetUniformLocation(s_program, "normalMatrix");
+            s_uniformColor2 = glGetUniformLocation(s_program, "color2");
         }
     }
     
     virtual void update(float t, float dt) = 0;
     virtual void render() = 0;
     
+    enum HitTestResult
+    {
+        HIT_NONE = 0,
+        HIT_INPUT_NODE,
+        HIT_OUTPUT_NODE,
+    };
+    
+    virtual HitTestResult hit(const GLvertex2f &hit) = 0;
+    virtual void unhit() = 0;
+    
+    // 1: positive activation; 0: deactivation; -1: negative activation
+    virtual void activateInputPort(int type) { }
+    virtual void activateOutputPort(int type) { }
+
     static void setProjectionMatrix(const GLKMatrix4 &proj)
     {
         s_projectionMatrix = proj;
@@ -61,6 +77,7 @@ protected:
     static GLuint s_program;
     static GLint s_uniformMVPMatrix;
     static GLint s_uniformNormalMatrix;
+    static GLint s_uniformColor2;
 };
 
 
@@ -68,80 +85,18 @@ class AGAudioNode : public AGNode
 {
 public:
     
-    static void initializeAudioNode()
-    {
-        initalizeNode();
-        
-        if(!s_init)
-        {
-            s_init = true;
-            
-            // generate circle
-            s_geoSize = 64;
-            s_geo = new GLvncprimf[s_geoSize];
-            float radius = 0.01;
-            for(int i = 0; i < s_geoSize; i++)
-            {
-                float theta = 2*M_PI*((float)i)/((float)(s_geoSize));
-                s_geo[i].vertex = GLvertex3f(radius*cosf(theta), radius*sinf(theta), 0);
-                s_geo[i].normal = GLvertex3f(0, 0, 1);
-                s_geo[i].color = GLcolor4f(1, 1, 1, 1);
-            }
-            
-            glGenVertexArraysOES(1, &s_vertexArray);
-            glBindVertexArrayOES(s_vertexArray);
-            
-            glGenBuffers(1, &s_vertexBuffer);
-            glBindBuffer(GL_ARRAY_BUFFER, s_vertexBuffer);
-            glBufferData(GL_ARRAY_BUFFER, s_geoSize*sizeof(GLvncprimf), s_geo, GL_STATIC_DRAW);
-            
-            glEnableVertexAttribArray(GLKVertexAttribPosition);
-            glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(0));
-            glEnableVertexAttribArray(GLKVertexAttribNormal);
-            glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(sizeof(GLvertex3f)));
-            glEnableVertexAttribArray(GLKVertexAttribColor);
-            glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(2*sizeof(GLvertex3f)));
-            
-            glBindVertexArrayOES(0);
-        }
-    }
+    static void initializeAudioNode();
     
-    AGAudioNode(GLvertex3f pos = GLvertex3f()) :
-    m_pos(pos)
-    {
-        initializeAudioNode();
-        
-        //        NSLog(@"pos: (%f, %f, %f)", pos.x, pos.y, pos.z);
-    }
+    AGAudioNode(GLvertex3f pos = GLvertex3f());
     
-    virtual void renderAudio(float *input, float *output, int nFrames)
-    {
-    }
+    virtual void renderAudio(float *input, float *output, int nFrames);
+    virtual void update(float t, float dt);
+    virtual void render();
+    virtual HitTestResult hit(const GLvertex2f &hit);
+    virtual void unhit();
     
-    virtual void update(float t, float dt)
-    {
-        GLKMatrix4 projection = projectionMatrix();
-        GLKMatrix4 modelView = globalModelViewMatrix();
-        
-        modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
-        
-        m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
-        
-        m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, modelView);
-    }
-    
-    virtual void render()
-    {
-        glBindVertexArrayOES(s_vertexArray);
-        
-        glUseProgram(s_program);
-        
-        glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
-        glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
-        
-        glLineWidth(4.0f);
-        glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
-    }
+    virtual void activateInputPort(int type) { m_inputActivation = type; }
+    virtual void activateOutputPort(int type) { m_outputActivation = type; }
     
 private:
     
@@ -152,9 +107,15 @@ private:
     static GLvncprimf *s_geo;
     static GLuint s_geoSize;
     
+    float m_radius;
+    float m_portRadius;
+
     GLvertex3f m_pos;
     GLKMatrix4 m_modelViewProjectionMatrix;
     GLKMatrix3 m_normalMatrix;
+    
+    int m_inputActivation;
+    int m_outputActivation;
 };
 
 
@@ -169,10 +130,11 @@ public:
     AGControlNode(GLvertex3f pos = GLvertex3f());
     
     virtual void renderAudio(float *input, float *output, int nFrames);
-    
     virtual void update(float t, float dt);
     virtual void render();
-    
+    virtual HitTestResult hit(const GLvertex2f &hit);
+    virtual void unhit();
+
 private:
     
     static bool s_init;
@@ -201,7 +163,9 @@ public:
     
     virtual void update(float t, float dt);    
     virtual void render();
-    
+    virtual HitTestResult hit(const GLvertex2f &hit);
+    virtual void unhit();
+
 private:
     
     static bool s_init;
@@ -230,7 +194,9 @@ public:
     
     virtual void update(float t, float dt);
     virtual void render();
-    
+    virtual HitTestResult hit(const GLvertex2f &hit);
+    virtual void unhit();
+
 private:
     
     static bool s_init;

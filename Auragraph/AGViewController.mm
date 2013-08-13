@@ -22,6 +22,7 @@ enum
 {
     UNIFORM_MODELVIEWPROJECTION_MATRIX,
     UNIFORM_NORMAL_MATRIX,
+    UNIFORM_COLOR2,
     NUM_UNIFORMS
 };
 GLint uniforms[NUM_UNIFORMS];
@@ -45,6 +46,14 @@ int nDrawlineUsed = 0;
 DrawPoint drawline[nDrawline];
 
 
+enum TouchMode
+{
+    TOUCHMODE_NONE,
+    TOUCHMODE_DRAWNODE,
+    TOUCHMODE_CONNECT,
+};
+
+
 @interface AGViewController ()
 {
     GLuint _program;
@@ -61,9 +70,17 @@ DrawPoint drawline[nDrawline];
     GLuint _vertexArray;
     GLuint _vertexBuffer;
     
+    TouchMode _mode;
+  
+    // DRAWNODE mode state
     AGHandwritingRecognizer *_hwRecognizer;
     LTKTrace _currentTrace;
     GLvertex3f _currentTraceSum;
+    
+    // CONNECT mode state
+    AGNode * _connectInput;
+    AGNode * _connectOutput;
+    AGNode * _currentHit;
     
     std::list<AGNode *> _nodes;
 }
@@ -98,6 +115,8 @@ DrawPoint drawline[nDrawline];
     
     _nodes = std::list<AGNode *>();
     _t = 0;
+    _mode = TOUCHMODE_NONE;
+    _connectInput = _connectOutput = _currentHit = NULL;
 }
 
 - (void)dealloc
@@ -137,6 +156,7 @@ DrawPoint drawline[nDrawline];
     // Get uniform locations.
     uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
     uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program, "normalMatrix");
+    uniforms[UNIFORM_COLOR2] = glGetUniformLocation(_program, "color2");
     
     glEnable(GL_DEPTH_TEST);
     
@@ -222,6 +242,8 @@ DrawPoint drawline[nDrawline];
     
     glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
     glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
+    GLcolor4f color2(1, 1, 1, 1);
+    glUniform4fv(uniforms[UNIFORM_COLOR2], 1, (float*)&color2);
     
     glBindVertexArrayOES(_vertexArray);
     
@@ -239,90 +261,207 @@ DrawPoint drawline[nDrawline];
 {
     CGPoint p = [[touches anyObject] locationInView:self.view];
     
-    int viewport[] = { (int)self.view.frame.origin.x, (int)self.view.frame.origin.y,
-        (int)self.view.frame.size.width, (int)self.view.frame.size.height };
+    int viewport[] = { (int)self.view.bounds.origin.x, (int)self.view.bounds.origin.y,
+        (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
     GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, p.y, 0.01),
                                       _modelView, _projection, viewport, NULL);
+    
+    AGNode::HitTestResult hit;
+    GLvertex2f pos(vec.x, -vec.y);
+    AGNode * hitNode = NULL;
+    
+    for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
+    {
+        hit = (*i)->hit(pos);
+        if(hit != AGNode::HIT_NONE)
+        {
+            hitNode = *i;
+            break;
+        }
+    }
     
     drawline[0].geo.vertex = GLvertex3f(vec.x, -vec.y, vec.z);
     drawline[0].geo.color = GLcolor4f(1, 1, 1, 1);
     drawline[0].geo.normal = GLvertex3f(0, 0, 1);
-    
-    // reset trace
-    _currentTrace = LTKTrace();
-
-    floatVector point;
-    point.push_back(p.x);
-    point.push_back(p.y);
-    _currentTrace.addPoint(point);
-    
-    _currentTraceSum = GLvertex3f(p.x, p.y, 0);
-    
     nDrawlineUsed = 1;
+
+    if(hit == AGNode::HIT_INPUT_NODE || hit == AGNode::HIT_OUTPUT_NODE)
+    {
+        _mode = TOUCHMODE_CONNECT;
+        
+        if(hit == AGNode::HIT_INPUT_NODE)
+        {
+            _connectInput = hitNode;
+            _connectInput->activateInputPort(1);
+        }
+        else
+        {
+            _connectOutput = hitNode;
+            _connectOutput->activateOutputPort(1);
+        }
+    }
+    else
+    {
+        _mode = TOUCHMODE_DRAWNODE;
+
+        // reset trace
+        _currentTrace = LTKTrace();
+        
+        floatVector point;
+        point.push_back(p.x);
+        point.push_back(p.y);
+        _currentTrace.addPoint(point);
+        
+        _currentTraceSum = GLvertex3f(p.x, p.y, 0);
+    }
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
     CGPoint p = [[touches anyObject] locationInView:self.view];
     
-    int viewport[] = { (int)self.view.frame.origin.x, (int)self.view.frame.origin.y,
-        (int)self.view.frame.size.width, (int)self.view.frame.size.height };
+    int viewport[] = { (int)self.view.bounds.origin.x, (int)self.view.bounds.origin.y,
+        (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
     GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, p.y, 0.01),
                                       _modelView, _projection, viewport, NULL);
     
-    drawline[nDrawlineUsed].geo.vertex = GLvertex3f(vec.x, -vec.y, vec.z);
-    drawline[nDrawlineUsed].geo.color = GLcolor4f(0.75, 0.75, 0.75, 1);
-    drawline[nDrawlineUsed].geo.normal = GLvertex3f(0, 0, 1);
+    // continue drawline
+    if(_mode == TOUCHMODE_CONNECT || _mode == TOUCHMODE_DRAWNODE)
+    {
+        drawline[nDrawlineUsed].geo.vertex = GLvertex3f(vec.x, -vec.y, vec.z);
+        drawline[nDrawlineUsed].geo.color = GLcolor4f(0.75, 0.75, 0.75, 1);
+        drawline[nDrawlineUsed].geo.normal = GLvertex3f(0, 0, 1);
+        
+        nDrawlineUsed++;
+    }
     
-    _currentTraceSum = _currentTraceSum + GLvertex3f(p.x, p.y, 0);
+    if(_mode == TOUCHMODE_CONNECT)
+    {
+        AGNode::HitTestResult hit;
+        GLvertex2f pos(vec.x, -vec.y);
+        AGNode * hitNode = NULL;
+        
+        for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
+        {
+            hit = (*i)->hit(pos);
+            if(hit != AGNode::HIT_NONE)
+            {
+                hitNode = *i;
+                break;
+            }
+        }
+        
+        if(hit == AGNode::HIT_INPUT_NODE)
+        {
+            if(hitNode != _currentHit && hitNode != _connectInput)
+            {
+                // deactivate previous hit if needed
+                if(_currentHit)
+                {
+                    _currentHit->activateInputPort(0);
+                    _currentHit->activateOutputPort(0);
+                }
+                
+                if(_connectInput)
+                    // input node -> input node: invalid
+                    hitNode->activateInputPort(-1);
+                else
+                    // output node -> input node: valid
+                    hitNode->activateInputPort(1);
+                
+                _currentHit = hitNode;
+            }
+        }
+        else if(hit == AGNode::HIT_OUTPUT_NODE)
+        {
+            if(hitNode != _currentHit && hitNode != _connectOutput)
+            {
+                // deactivate previous hit if needed
+                if(_currentHit)
+                {
+                    _currentHit->activateInputPort(0);
+                    _currentHit->activateOutputPort(0);
+                }
+                
+                if(_connectOutput)
+                    // output node -> output node: invalid
+                    hitNode->activateOutputPort(-1);
+                else
+                    // input node -> output node: valid
+                    hitNode->activateOutputPort(1);
+                
+                _currentHit = hitNode;
+            }
+        }
+    }
     
-    floatVector point;
-    point.push_back(p.x);
-    point.push_back(p.y);
-    _currentTrace.addPoint(point);
-    
-    nDrawlineUsed++;
+    else if(_mode == TOUCHMODE_DRAWNODE)
+    {
+        _currentTraceSum = _currentTraceSum + GLvertex3f(p.x, p.y, 0);
+        
+        floatVector point;
+        point.push_back(p.x);
+        point.push_back(p.y);
+        _currentTrace.addPoint(point);
+    }
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    // analysis
-    
-    AGHandwritingRecognizerFigure figure = [_hwRecognizer recognizeShapeInView:self.view
-                                                                         trace:_currentTrace];
-    
-    NSLog(@"figure: %i", figure);
-    
-    int viewport[] = { (int)self.view.frame.origin.x, (int)self.view.frame.origin.y,
-        (int)self.view.frame.size.width, (int)self.view.frame.size.height };
-    GLvertex3f centroid = _currentTraceSum/nDrawlineUsed;
-    GLKVector3 centroidMVP = GLKMathUnproject(GLKVector3Make(centroid.x, centroid.y, 0.01),
-                                              _modelView, _projection, viewport, NULL);
-    
-    if(figure == AG_FIGURE_CIRCLE)
+    if(_mode == TOUCHMODE_CONNECT)
     {
-        AGAudioNode * node = new AGAudioNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
-        _nodes.push_back(node);
-        nDrawlineUsed = 0;
+        if(_currentHit)
+        {
+            _currentHit->activateInputPort(0);
+            _currentHit->activateOutputPort(0);
+        }
+
+        if(_connectInput) _connectInput->activateInputPort(0);
+        if(_connectOutput) _connectOutput->activateOutputPort(0);
+        _connectInput = _connectOutput = _currentHit = NULL;
     }
-    else if(figure == AG_FIGURE_SQUARE)
+    else if(_mode == TOUCHMODE_DRAWNODE)
     {
-        AGControlNode * node = new AGControlNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
-        _nodes.push_back(node);
-        nDrawlineUsed = 0;
+        // analysis
+        
+        AGHandwritingRecognizerFigure figure = [_hwRecognizer recognizeShapeInView:self.view
+                                                                             trace:_currentTrace];
+        
+        NSLog(@"figure: %i", figure);
+        
+        int viewport[] = { (int)self.view.bounds.origin.x, (int)self.view.bounds.origin.y,
+            (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
+        GLvertex3f centroid = _currentTraceSum/nDrawlineUsed;
+        GLKVector3 centroidMVP = GLKMathUnproject(GLKVector3Make(centroid.x, centroid.y, 0.01),
+                                                  _modelView, _projection, viewport, NULL);
+        
+        if(figure == AG_FIGURE_CIRCLE)
+        {
+            AGAudioNode * node = new AGAudioNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
+            _nodes.push_back(node);
+            nDrawlineUsed = 0;
+        }
+        else if(figure == AG_FIGURE_SQUARE)
+        {
+            AGControlNode * node = new AGControlNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
+            _nodes.push_back(node);
+            nDrawlineUsed = 0;
+        }
+        else if(figure == AG_FIGURE_TRIANGLE_DOWN)
+        {
+            AGInputNode * node = new AGInputNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
+            _nodes.push_back(node);
+            nDrawlineUsed = 0;
+        }
+        else if(figure == AG_FIGURE_TRIANGLE_UP)
+        {
+            AGOutputNode * node = new AGOutputNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
+            _nodes.push_back(node);
+            nDrawlineUsed = 0;
+        }
     }
-    else if(figure == AG_FIGURE_TRIANGLE_DOWN)
-    {
-        AGInputNode * node = new AGInputNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
-        _nodes.push_back(node);
-        nDrawlineUsed = 0;
-    }
-    else if(figure == AG_FIGURE_TRIANGLE_UP)
-    {
-        AGOutputNode * node = new AGOutputNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
-        _nodes.push_back(node);
-        nDrawlineUsed = 0;
-    }
+    
+    _mode = TOUCHMODE_NONE;
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
