@@ -23,6 +23,7 @@ GLuint AGAudioNode::s_vertexArray = 0;
 GLuint AGAudioNode::s_vertexBuffer = 0;
 GLvncprimf *AGAudioNode::s_geo = NULL;
 GLuint AGAudioNode::s_geoSize = 0;
+int AGAudioNode::s_sampleRate = 44100;
 
 
 bool AGControlNode::s_init = false;
@@ -44,6 +45,15 @@ GLuint AGOutputNode::s_vertexArray = 0;
 GLuint AGOutputNode::s_vertexBuffer = 0;
 GLvncprimf *AGOutputNode::s_geo = NULL;
 GLuint AGOutputNode::s_geoSize = 0;
+
+
+
+AGConnection::AGConnection(AGNode * src, AGNode * dst) :
+m_src(src),
+m_dst(dst)
+{
+    AGNode::connect(this);
+}
 
 
 
@@ -195,6 +205,25 @@ void AGAudioNode::unhit()
 }
 
 
+void AGAudioOutputNode::renderAudio(float *input, float *output, int nFrames)
+{
+    for(std::list<AGConnection *>::iterator i = m_inbound.begin(); i != m_inbound.end(); i++)
+    {
+        ((AGAudioNode *)(*i)->src())->renderAudio(input, output, nFrames);
+    }
+}
+
+void AGAudioSineWaveNode::renderAudio(float *input, float *output, int nFrames)
+{
+    for(int i = 0; i < nFrames; i++)
+    {
+        output[i] += sinf(m_phase*2.0*M_PI);
+        m_phase += m_freq/sampleRate();
+        if(m_phase > 1.0) m_phase -= 1.0;
+    }
+}
+
+
 void AGControlNode::initializeControlNode()
 {
     initalizeNode();
@@ -237,10 +266,6 @@ AGControlNode::AGControlNode(GLvertex3f pos) :
 m_pos(pos)
 {
     initializeControlNode();
-}
-
-void AGControlNode::renderAudio(float *input, float *output, int nFrames)
-{
 }
 
 void AGControlNode::update(float t, float dt)
@@ -323,10 +348,6 @@ m_pos(pos)
     initializeInputNode();
 }
 
-void AGInputNode::renderAudio(float *input, float *output, int nFrames)
-{
-}
-
 void AGInputNode::update(float t, float dt)
 {
     GLKMatrix4 projection = projectionMatrix();
@@ -407,10 +428,6 @@ AGOutputNode::AGOutputNode(GLvertex3f pos) :
 m_pos(pos)
 {
     initializeOutputNode();
-}
-
-void AGOutputNode::renderAudio(float *input, float *output, int nFrames)
-{
 }
 
 void AGOutputNode::update(float t, float dt)

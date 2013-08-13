@@ -13,6 +13,7 @@
 #import "UIKitGL.h"
 #import "AGHandwritingRecognizer.h"
 #import "AGNode.h"
+#import "AGAudioManager.h"
 
 #import <list>
 
@@ -83,12 +84,16 @@ enum TouchMode
     AGNode * _currentHit;
     
     std::list<AGNode *> _nodes;
+    std::list<AGConnection *> _connections;
 }
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) GLKBaseEffect *effect;
+@property (strong, nonatomic) AGAudioManager *audioManager;
 
 - (void)setupGL;
 - (void)tearDownGL;
+- (void)updateMatrices;
+- (GLvertex3f)worldCoordinateForScreenCoordinate:(CGPoint)p;
 
 @end
 
@@ -97,6 +102,12 @@ enum TouchMode
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    _nodes = std::list<AGNode *>();
+    _connections = std::list<AGConnection *>();
+    _t = 0;
+    _mode = TOUCHMODE_NONE;
+    _connectInput = _connectOutput = _currentHit = NULL;
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 
@@ -109,14 +120,16 @@ enum TouchMode
     view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
     
     [self setupGL];
-    
+        
     _hwRecognizer = [AGHandwritingRecognizer new];
     _currentTrace = LTKTrace();
     
-    _nodes = std::list<AGNode *>();
-    _t = 0;
-    _mode = TOUCHMODE_NONE;
-    _connectInput = _connectOutput = _currentHit = NULL;
+    self.audioManager = [AGAudioManager new];
+    [self updateMatrices];
+    AGAudioOutputNode * outputNode = new AGAudioOutputNode([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)]);
+    self.audioManager.outputNode = outputNode;
+    
+    _nodes.push_back(outputNode);
 }
 
 - (void)dealloc
@@ -195,7 +208,7 @@ enum TouchMode
 
 #pragma mark - GLKView and GLKViewController delegate methods
 
-- (void)update
+- (void)updateMatrices
 {
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
@@ -213,7 +226,12 @@ enum TouchMode
     _projection = projectionMatrix;
     
     AGNode::setProjectionMatrix(projectionMatrix);
-    AGNode::setGlobalModelViewMatrix(modelViewMatrix);
+    AGNode::setGlobalModelViewMatrix(modelViewMatrix);    
+}
+
+- (void)update
+{
+    [self updateMatrices];
     
     _osc += self.timeSinceLastUpdate * 1.0f;
     _t += self.timeSinceLastUpdate;
@@ -408,8 +426,46 @@ enum TouchMode
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    CGPoint p = [[touches anyObject] locationInView:self.view];
+    
+    int viewport[] = { (int)self.view.bounds.origin.x, (int)self.view.bounds.origin.y,
+        (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
+    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, p.y, 0.01),
+                                      _modelView, _projection, viewport, NULL);
+
     if(_mode == TOUCHMODE_CONNECT)
     {
+        AGNode::HitTestResult hit;
+        GLvertex2f pos(vec.x, -vec.y);
+        AGNode * hitNode = NULL;
+        
+        for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
+        {
+            hit = (*i)->hit(pos);
+            if(hit != AGNode::HIT_NONE)
+            {
+                hitNode = *i;
+                break;
+            }
+        }
+        
+        if(hit == AGNode::HIT_INPUT_NODE)
+        {
+            if(_connectOutput != NULL && hitNode != _connectOutput)
+            {
+                AGConnection * connection = new AGConnection(_connectOutput, hitNode);
+                _connections.push_back(connection);
+            }
+        }
+        else if(hit == AGNode::HIT_OUTPUT_NODE)
+        {
+            if(_connectInput != NULL && hitNode != _connectInput)
+            {
+                AGConnection * connection = new AGConnection(hitNode, _connectInput);
+                _connections.push_back(connection);
+            }
+        }
+        
         if(_currentHit)
         {
             _currentHit->activateInputPort(0);
@@ -429,15 +485,13 @@ enum TouchMode
         
         NSLog(@"figure: %i", figure);
         
-        int viewport[] = { (int)self.view.bounds.origin.x, (int)self.view.bounds.origin.y,
-            (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
         GLvertex3f centroid = _currentTraceSum/nDrawlineUsed;
         GLKVector3 centroidMVP = GLKMathUnproject(GLKVector3Make(centroid.x, centroid.y, 0.01),
                                                   _modelView, _projection, viewport, NULL);
         
         if(figure == AG_FIGURE_CIRCLE)
         {
-            AGAudioNode * node = new AGAudioNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
+            AGAudioNode * node = new AGAudioSineWaveNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
             _nodes.push_back(node);
             nDrawlineUsed = 0;
         }
@@ -467,6 +521,17 @@ enum TouchMode
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [self touchesMoved:touches withEvent:event];
+}
+
+
+- (GLvertex3f)worldCoordinateForScreenCoordinate:(CGPoint)p
+{
+    int viewport[] = { (int)self.view.bounds.origin.x, (int)self.view.bounds.origin.y,
+        (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
+    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, p.y, 0.01),
+                                      _modelView, _projection, viewport, NULL);
+    
+    return GLvertex3f(vec.x, -vec.y, vec.z);
 }
 
 

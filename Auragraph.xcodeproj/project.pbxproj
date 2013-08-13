@@ -38,6 +38,9 @@
 		095E853117B358FC0065EF8E /* shaperectst.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E852F17B358FC0065EF8E /* shaperectst.mm */; };
 		095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */; };
 		0987409C17B98D7C0098511A /* AGNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0987409A17B98D7C0098511A /* AGNode.mm */; };
+		098740A017BA2AB90098511A /* mo_audio.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0987409E17BA2AB90098511A /* mo_audio.mm */; };
+		098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740A217BA2EA70098511A /* AGAudioManager.mm */; };
+		098740A617BA317E0098511A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 098740A417BA317E0098511A /* AudioToolbox.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -138,6 +141,12 @@
 		095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGHandwritingRecognizer.mm; sourceTree = "<group>"; };
 		0987409A17B98D7C0098511A /* AGNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGNode.mm; sourceTree = "<group>"; };
 		0987409B17B98D7C0098511A /* AGNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGNode.h; sourceTree = "<group>"; };
+		0987409D17BA2AB90098511A /* mo_audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mo_audio.h; sourceTree = "<group>"; };
+		0987409E17BA2AB90098511A /* mo_audio.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = mo_audio.mm; sourceTree = "<group>"; };
+		0987409F17BA2AB90098511A /* mo_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mo_def.h; sourceTree = "<group>"; };
+		098740A117BA2EA70098511A /* AGAudioManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAudioManager.h; sourceTree = "<group>"; };
+		098740A217BA2EA70098511A /* AGAudioManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGAudioManager.mm; sourceTree = "<group>"; };
+		098740A417BA317E0098511A /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,6 +154,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				098740A617BA317E0098511A /* AudioToolbox.framework in Frameworks */,
 				095D12C417ACA36C0048A012 /* UIKit.framework in Frameworks */,
 				095D12C617ACA36C0048A012 /* Foundation.framework in Frameworks */,
 				095D12C817ACA36C0048A012 /* CoreGraphics.framework in Frameworks */,
@@ -186,6 +196,7 @@
 		095D12C217ACA36C0048A012 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				098740A417BA317E0098511A /* AudioToolbox.framework */,
 				095E84EA17B354BE0065EF8E /* LipiTk */,
 				095D12C317ACA36C0048A012 /* UIKit.framework */,
 				095D12C517ACA36C0048A012 /* Foundation.framework */,
@@ -212,6 +223,8 @@
 				095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */,
 				0987409B17B98D7C0098511A /* AGNode.h */,
 				0987409A17B98D7C0098511A /* AGNode.mm */,
+				098740A117BA2EA70098511A /* AGAudioManager.h */,
+				098740A217BA2EA70098511A /* AGAudioManager.mm */,
 				095D12CE17ACA36C0048A012 /* Supporting Files */,
 			);
 			path = Auragraph;
@@ -234,6 +247,9 @@
 		095D12EE17ACA9CA0048A012 /* libsp */ = {
 			isa = PBXGroup;
 			children = (
+				0987409D17BA2AB90098511A /* mo_audio.h */,
+				0987409E17BA2AB90098511A /* mo_audio.mm */,
+				0987409F17BA2AB90098511A /* mo_def.h */,
 				095D12F617ACAA100048A012 /* Geometry.cpp */,
 				095D12F717ACAA100048A012 /* Geometry.h */,
 				095D12F817ACAA100048A012 /* hsv.h */,
@@ -411,6 +427,8 @@
 				095E853117B358FC0065EF8E /* shaperectst.mm in Sources */,
 				095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */,
 				0987409C17B98D7C0098511A /* AGNode.mm in Sources */,
+				098740A017BA2AB90098511A /* mo_audio.mm in Sources */,
+				098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

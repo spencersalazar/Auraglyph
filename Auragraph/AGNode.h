@@ -17,6 +17,29 @@
 #import "ShaderHelper.h"
 #import <list>
 
+
+class AGNode;
+
+
+class AGConnection
+{
+public:
+    
+    AGConnection(AGNode * src, AGNode * dst);
+    
+    virtual void update(float t, float dt) { }
+    virtual void render() { }
+    
+    AGNode * src() const { return m_src; }
+    AGNode * dst() const { return m_dst; }
+    
+private:
+    
+    AGNode * const m_src;
+    AGNode * const m_dst;
+};
+
+
 class AGNode
 {
 public:
@@ -66,6 +89,12 @@ public:
     
     static GLKMatrix4 globalModelViewMatrix() { return s_modelViewMatrix; }
     
+    static void connect(AGConnection * connection)
+    {
+        connection->src()->m_outbound.push_back(connection);
+        connection->dst()->m_inbound.push_back(connection);
+    }
+    
 private:
     
     static bool s_initNode;
@@ -78,6 +107,9 @@ protected:
     static GLint s_uniformMVPMatrix;
     static GLint s_uniformNormalMatrix;
     static GLint s_uniformColor2;
+    
+    std::list<AGConnection *> m_inbound;
+    std::list<AGConnection *> m_outbound;
 };
 
 
@@ -98,11 +130,14 @@ public:
     virtual void activateInputPort(int type) { m_inputActivation = type; }
     virtual void activateOutputPort(int type) { m_outputActivation = type; }
     
+    static int sampleRate() { return s_sampleRate; }
+    
 private:
     
     static bool s_init;
     static GLuint s_vertexArray;
     static GLuint s_vertexBuffer;
+    static int s_sampleRate;
     
     static GLvncprimf *s_geo;
     static GLuint s_geoSize;
@@ -119,6 +154,33 @@ private:
 };
 
 
+class AGAudioOutputNode : public AGAudioNode
+{
+public:
+    AGAudioOutputNode(GLvertex3f pos) : AGAudioNode(pos) { }
+    
+    virtual void renderAudio(float *input, float *output, int nFrames);
+    
+};
+
+
+class AGAudioSineWaveNode : public AGAudioNode
+{
+public:
+    AGAudioSineWaveNode(GLvertex3f pos) : AGAudioNode(pos)
+    {
+        m_freq = 220;
+        m_phase = 0;
+    }
+
+    virtual void renderAudio(float *input, float *output, int nFrames);
+    
+private:
+    float m_freq;
+    float m_phase;
+};
+
+
 
 
 class AGControlNode : public AGNode
@@ -129,7 +191,6 @@ public:
     
     AGControlNode(GLvertex3f pos = GLvertex3f());
     
-    virtual void renderAudio(float *input, float *output, int nFrames);
     virtual void update(float t, float dt);
     virtual void render();
     virtual HitTestResult hit(const GLvertex2f &hit);
@@ -159,8 +220,6 @@ public:
     
     AGInputNode(struct GLvertex3f pos = GLvertex3f());
     
-    virtual void renderAudio(float *input, float *output, int nFrames);
-    
     virtual void update(float t, float dt);    
     virtual void render();
     virtual HitTestResult hit(const GLvertex2f &hit);
@@ -189,8 +248,6 @@ public:
     static void initializeOutputNode();
     
     AGOutputNode(GLvertex3f pos = GLvertex3f());
-    
-    virtual void renderAudio(float *input, float *output, int nFrames);
     
     virtual void update(float t, float dt);
     virtual void render();
