@@ -196,7 +196,7 @@ void AGAudioNode::initializeAudioNode()
 }
 
 AGAudioNode::AGAudioNode(GLvertex3f pos) :
-m_pos(pos)
+AGNode(pos)
 {
     initializeAudioNode();
     
@@ -398,7 +398,7 @@ void AGControlNode::initializeControlNode()
 }
 
 AGControlNode::AGControlNode(GLvertex3f pos) :
-m_pos(pos)
+AGNode(pos)
 {
     initializeControlNode();
 }
@@ -483,7 +483,7 @@ void AGInputNode::initializeInputNode()
 }
 
 AGInputNode::AGInputNode(GLvertex3f pos) :
-m_pos(pos)
+AGNode(pos)
 {
     initializeInputNode();
 }
@@ -570,7 +570,7 @@ void AGOutputNode::initializeOutputNode()
 }
 
 AGOutputNode::AGOutputNode(GLvertex3f pos) :
-m_pos(pos)
+AGNode(pos)
 {
     initializeOutputNode();
 }

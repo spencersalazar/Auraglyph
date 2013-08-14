@@ -98,6 +98,9 @@ public:
     }
     
     
+    AGNode(GLvertex3f pos = GLvertex3f()) :
+    m_pos(pos)
+    { }
     
     virtual void update(float t, float dt) = 0;
     virtual void render() = 0;
@@ -137,6 +140,10 @@ protected:
     
     std::list<AGConnection *> m_inbound;
     std::list<AGConnection *> m_outbound;
+    
+    GLvertex3f m_pos;
+    GLKMatrix4 m_modelViewProjectionMatrix;
+    GLKMatrix3 m_normalMatrix;
 };
 
 
@@ -175,10 +182,6 @@ private:
     float m_radius;
     float m_portRadius;
 
-    GLvertex3f m_pos;
-    GLKMatrix4 m_modelViewProjectionMatrix;
-    GLKMatrix3 m_normalMatrix;
-    
     int m_inputActivation;
     int m_outputActivation;
 };
@@ -241,9 +244,6 @@ private:
     static GLvncprimf *s_geo;
     static GLuint s_geoSize;
     
-    GLvertex3f m_pos;
-    GLKMatrix4 m_modelViewProjectionMatrix;
-    GLKMatrix3 m_normalMatrix;
 };
 
 
@@ -254,7 +254,7 @@ public:
     
     static void initializeInputNode();
     
-    AGInputNode(struct GLvertex3f pos = GLvertex3f());
+    AGInputNode(GLvertex3f pos = GLvertex3f());
     
     virtual void update(float t, float dt);    
     virtual void render();
@@ -269,10 +269,6 @@ private:
     
     static GLvncprimf *s_geo;
     static GLuint s_geoSize;
-    
-    GLvertex3f m_pos;
-    GLKMatrix4 m_modelViewProjectionMatrix;
-    GLKMatrix3 m_normalMatrix;
 };
 
 
@@ -298,10 +294,6 @@ private:
     
     static GLvncprimf *s_geo;
     static GLuint s_geoSize;
-    
-    GLvertex3f m_pos;
-    GLKMatrix4 m_modelViewProjectionMatrix;
-    GLKMatrix3 m_normalMatrix;
 };
 
 
