@@ -13,6 +13,7 @@
 #import "UIKitGL.h"
 #import "AGHandwritingRecognizer.h"
 #import "AGNode.h"
+#import "AGAudioNode.h"
 #import "AGAudioManager.h"
 
 #import <list>

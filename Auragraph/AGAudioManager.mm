@@ -8,6 +8,7 @@
 
 #import "AGAudioManager.h"
 #import "AGNode.h"
+#import "AGAudioNode.h"
 #import "mo_audio.h"
 
 
