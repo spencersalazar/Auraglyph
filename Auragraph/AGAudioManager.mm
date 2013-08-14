@@ -46,6 +46,8 @@ void audio_cb( Float32 * buffer, UInt32 numFrames, void * userData )
 
 - (void)renderAudio:(Float32 *)buffer numFrames:(UInt32)numFrames
 {
+    memset(g_audio_buf, 0, sizeof(float)*1024);
+
     if(self.outputNode)
     {
         self.outputNode->renderAudio(NULL, g_audio_buf, numFrames);
