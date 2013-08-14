@@ -237,12 +237,14 @@ enum TouchMode
     _t += self.timeSinceLastUpdate;
     
     for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
-    {
         (*i)->update(_t, self.timeSinceLastUpdate);
-    }
+    for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
+        (*i)->update(_t, self.timeSinceLastUpdate);
     
+    glBindVertexArrayOES(_vertexArray);
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(drawline), drawline, GL_DYNAMIC_DRAW);
+    glBindVertexArrayOES(0);
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
@@ -253,10 +255,11 @@ enum TouchMode
     // Render the object again with ES2
     glUseProgram(_program);
     
-    for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
-    {
+    for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
         (*i)->render();
-    }
+    
+    for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
+        (*i)->render();
     
     glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
     glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
@@ -455,6 +458,7 @@ enum TouchMode
             {
                 AGConnection * connection = new AGConnection(_connectOutput, hitNode);
                 _connections.push_back(connection);
+                nDrawlineUsed = 0;
             }
         }
         else if(hit == AGNode::HIT_OUTPUT_NODE)
@@ -463,6 +467,7 @@ enum TouchMode
             {
                 AGConnection * connection = new AGConnection(hitNode, _connectInput);
                 _connections.push_back(connection);
+                nDrawlineUsed = 0;
             }
         }
         

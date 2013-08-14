@@ -45,6 +45,8 @@ GLvertex3f operator+(const GLvertex3f &v1, const GLvertex3f &v2);
 GLvertex3f operator-(const GLvertex3f &v1, const GLvertex3f &v2);
 GLvertex3f operator*(const GLvertex3f &v, const GLfloat &s);
 GLvertex3f operator/(const GLvertex3f &v, const GLfloat &s);
+bool operator==(const GLvertex3f &v, const GLvertex3f &v2);
+bool operator!=(const GLvertex3f &v, const GLvertex3f &v2);
 
 struct GLcolor4f
 {
@@ -82,6 +84,12 @@ struct GLcolor4f
         this->a = a;
     }
     
+    static const GLcolor4f &white();
+    static const GLcolor4f &red();
+    static const GLcolor4f &green();
+    static const GLcolor4f &blue();
+    static const GLcolor4f &black();
+    
 } __attribute__((packed));
 
 
@@ -89,7 +97,8 @@ GLvertex2f operator+(const GLvertex2f &v1, const GLvertex2f &v2);
 GLvertex2f operator-(const GLvertex2f &v1, const GLvertex2f &v2);
 GLvertex2f operator*(const GLvertex2f &v, const GLfloat &s);
 GLvertex2f operator/(const GLvertex2f &v, const GLfloat &s);
-
+bool operator==(const GLvertex2f &v, const GLvertex2f &v2);
+bool operator!=(const GLvertex2f &v, const GLvertex2f &v2);
 
 struct GLvertex2f
 {
