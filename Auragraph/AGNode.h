@@ -110,16 +110,20 @@ public:
         HIT_NONE = 0,
         HIT_INPUT_NODE,
         HIT_OUTPUT_NODE,
+        HIT_MAIN_NODE,
     };
     
     virtual HitTestResult hit(const GLvertex2f &hit) = 0;
     virtual void unhit() = 0;
     
-    virtual int numOutputPorts() { return 0; }
-    virtual int numInputPorts() { return 0; }
+    void setPosition(const GLvertex3f &pos) { m_pos = pos; }
+    const GLvertex3f &position() const { return m_pos; }
     
-    virtual GLvertex3f positionForInboundConnection(AGConnection * connection) { return GLvertex3f(); }
-    virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) { return GLvertex3f(); }
+    virtual int numOutputPorts() const { return 0; }
+    virtual int numInputPorts() const { return 0; }
+    
+    virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const { return GLvertex3f(); }
+    virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const { return GLvertex3f(); }
     
     // 1: positive activation; 0: deactivation; -1: negative activation
     virtual void activateInputPort(int type) { }
@@ -161,8 +165,8 @@ public:
     virtual HitTestResult hit(const GLvertex2f &hit);
     virtual void unhit();
     
-    virtual GLvertex3f positionForInboundConnection(AGConnection * connection);
-    virtual GLvertex3f positionForOutboundConnection(AGConnection * connection);
+    virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const;
+    virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const;
 
     virtual void activateInputPort(int type) { m_inputActivation = type; }
     virtual void activateOutputPort(int type) { m_outputActivation = type; }
@@ -192,8 +196,8 @@ class AGAudioOutputNode : public AGAudioNode
 public:
     AGAudioOutputNode(GLvertex3f pos) : AGAudioNode(pos) { }
     
-    virtual int numOutputPorts() { return 0; }
-    virtual int numInputPorts() { return 1; }
+    virtual int numOutputPorts() const { return 0; }
+    virtual int numInputPorts() const { return 1; }
     
     virtual void renderAudio(float *input, float *output, int nFrames);
     
@@ -209,8 +213,8 @@ public:
         m_phase = 0;
     }
 
-    virtual int numOutputPorts() { return 1; }
-    virtual int numInputPorts() { return 0; }
+    virtual int numOutputPorts() const { return 1; }
+    virtual int numInputPorts() const { return 0; }
     
     virtual void renderAudio(float *input, float *output, int nFrames);
     

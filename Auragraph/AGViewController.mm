@@ -51,6 +51,7 @@ enum TouchMode
 {
     TOUCHMODE_NONE,
     TOUCHMODE_DRAWNODE,
+    TOUCHMODE_MOVENODE,
     TOUCHMODE_CONNECT,
 };
 
@@ -82,6 +83,10 @@ enum TouchMode
     AGNode * _connectInput;
     AGNode * _connectOutput;
     AGNode * _currentHit;
+    
+    // MOVENODE state
+    GLvertex3f _anchorOffset;
+    AGNode * _moveNode;
     
     std::list<AGNode *> _nodes;
     std::list<AGConnection *> _connections;
@@ -301,11 +306,6 @@ enum TouchMode
         }
     }
     
-    drawline[0].geo.vertex = GLvertex3f(vec.x, -vec.y, vec.z);
-    drawline[0].geo.color = GLcolor4f(1, 1, 1, 1);
-    drawline[0].geo.normal = GLvertex3f(0, 0, 1);
-    nDrawlineUsed = 1;
-
     if(hit == AGNode::HIT_INPUT_NODE || hit == AGNode::HIT_OUTPUT_NODE)
     {
         _mode = TOUCHMODE_CONNECT;
@@ -321,6 +321,15 @@ enum TouchMode
             _connectOutput->activateOutputPort(1);
         }
     }
+    else if(hit == AGNode::HIT_MAIN_NODE)
+    {
+        _mode = TOUCHMODE_MOVENODE;
+        
+        GLvertex3f pos2(vec.x, -vec.y, vec.z);
+        _anchorOffset = pos2 - hitNode->position();
+        
+        _moveNode = hitNode;
+    }
     else
     {
         _mode = TOUCHMODE_DRAWNODE;
@@ -334,6 +343,14 @@ enum TouchMode
         _currentTrace.addPoint(point);
         
         _currentTraceSum = GLvertex3f(p.x, p.y, 0);
+    }
+    
+    if(_mode == TOUCHMODE_DRAWNODE || _mode == TOUCHMODE_CONNECT)
+    {
+        drawline[0].geo.vertex = GLvertex3f(vec.x, -vec.y, vec.z);
+        drawline[0].geo.color = GLcolor4f(1, 1, 1, 1);
+        drawline[0].geo.normal = GLvertex3f(0, 0, 1);
+        nDrawlineUsed = 1;
     }
 }
 
@@ -415,7 +432,11 @@ enum TouchMode
             }
         }
     }
-    
+    else if(_mode == TOUCHMODE_MOVENODE)
+    {
+        GLvertex3f pos(vec.x, -vec.y, vec.z);
+        _moveNode->setPosition(pos - _anchorOffset);
+    }
     else if(_mode == TOUCHMODE_DRAWNODE)
     {
         _currentTraceSum = _currentTraceSum + GLvertex3f(p.x, p.y, 0);

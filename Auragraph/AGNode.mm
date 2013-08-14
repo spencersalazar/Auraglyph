@@ -305,7 +305,7 @@ AGNode::HitTestResult AGAudioNode::hit(const GLvertex2f &hit)
     y = hit.y - m_pos.y;
     if(x*x + y*y <= m_radius*m_radius)
     {
-        return HIT_NONE;
+        return HIT_MAIN_NODE;
     }
     
     return HIT_NONE;
@@ -316,12 +316,12 @@ void AGAudioNode::unhit()
     //m_hitInput = m_hitOutput = false;
 }
 
-GLvertex3f AGAudioNode::positionForInboundConnection(AGConnection * connection)
+GLvertex3f AGAudioNode::positionForInboundConnection(AGConnection * connection) const
 {
     return GLvertex3f(m_pos.x - m_radius, m_pos.y, m_pos.z);
 }
 
-GLvertex3f AGAudioNode::positionForOutboundConnection(AGConnection * connection)
+GLvertex3f AGAudioNode::positionForOutboundConnection(AGConnection * connection) const
 {
     return GLvertex3f(m_pos.x + m_radius, m_pos.y, m_pos.z);
 }
