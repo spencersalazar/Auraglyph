@@ -26,6 +26,7 @@ public:
     static void initializeAudioNode();
     
     AGAudioNode(GLvertex3f pos = GLvertex3f());
+    virtual ~AGAudioNode();
     
     virtual void renderAudio(float *input, float *output, int nFrames);
     virtual void update(float t, float dt);
@@ -39,7 +40,10 @@ public:
     virtual void activateInputPort(int type) { m_inputActivation = type; }
     virtual void activateOutputPort(int type) { m_outputActivation = type; }
     
+    virtual AGRate rate() { return RATE_AUDIO; }
+    
     static int sampleRate() { return s_sampleRate; }
+    static int bufferSize() { return 256; }
     
 private:
     
@@ -61,6 +65,8 @@ protected:
     GLuint m_iconVertexArray;
     GLuint m_iconGeoSize;
     GLuint m_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
+    
+    float ** m_inputPortBuffer;
 };
 
 
@@ -72,6 +78,8 @@ public:
     {
         initializeAudioOutputNode();
         
+        m_inputPortInfo = s_portInfo;
+        
         m_iconVertexArray = s_iconVertexArray;
         m_iconGeoSize = s_iconGeoSize;
         m_iconGeoType = s_iconGeoType;
@@ -79,7 +87,7 @@ public:
     
     virtual int numOutputPorts() const { return 0; }
     virtual int numInputPorts() const { return 1; }
-    
+
     virtual void renderAudio(float *input, float *output, int nFrames);
     
 private:
@@ -89,6 +97,7 @@ private:
     static GLuint s_iconGeoSize;
     static GLvncprimf * s_iconGeo;
     static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
+    static AGPortInfo * s_portInfo;
     
     static void initializeAudioOutputNode();
 };
@@ -97,20 +106,10 @@ private:
 class AGAudioSineWaveNode : public AGAudioNode
 {
 public:
-    AGAudioSineWaveNode(GLvertex3f pos) : AGAudioNode(pos)
-    {
-        initializeAudioSineWaveNode();
-        
-        m_iconVertexArray = s_iconVertexArray;
-        m_iconGeoSize = s_iconGeoSize;
-        m_iconGeoType = s_iconGeoType;
-        
-        m_freq = 220;
-        m_phase = 0;
-    }
+    AGAudioSineWaveNode(GLvertex3f pos);
     
     virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { return 0; }
+    virtual int numInputPorts() const { return 2; }
     
     virtual void renderAudio(float *input, float *output, int nFrames);
     
@@ -128,7 +127,8 @@ private:
     static GLuint s_iconGeoSize;
     static GLvncprimf * s_iconGeo;
     static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
-    
+    static AGPortInfo * s_portInfo;
+
     static void initializeAudioSineWaveNode();
 };
 
@@ -158,7 +158,8 @@ private:
     static GLuint s_iconGeoSize;
     static GLvncprimf * s_iconGeo;
     static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
-    
+    static AGPortInfo * s_portInfo;
+
     static void initializeAudioSquareWaveNode();
 };
 
@@ -188,7 +189,8 @@ private:
     static GLuint s_iconGeoSize;
     static GLvncprimf * s_iconGeo;
     static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
-    
+    static AGPortInfo * s_portInfo;
+
     static void initializeAudioSawtoothWaveNode();
 };
 
@@ -218,7 +220,8 @@ private:
     static GLuint s_iconGeoSize;
     static GLvncprimf * s_iconGeo;
     static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
-    
+    static AGPortInfo * s_portInfo;
+
     static void initializeAudioTriangleWaveNode();
 };
 

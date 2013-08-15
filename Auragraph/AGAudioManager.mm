@@ -37,7 +37,7 @@ void audio_cb( Float32 * buffer, UInt32 numFrames, void * userData )
         
         memset(g_audio_buf, 0, sizeof(float)*1024);
         
-        MoAudio::init(AGAudioNode::sampleRate(), 256, 2);
+        MoAudio::init(AGAudioNode::sampleRate(), AGAudioNode::bufferSize(), 2);
         MoAudio::start(audio_cb, (__bridge void *) self);
     }
     

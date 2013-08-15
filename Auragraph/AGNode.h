@@ -16,22 +16,33 @@
 #import <Foundation/Foundation.h>
 #import "ShaderHelper.h"
 #import <list>
+#import <string>
+#import <vector>
 
 
 class AGNode;
+
+enum AGRate
+{
+    RATE_CONTROL,
+    RATE_AUDIO,
+};
 
 
 class AGConnection
 {
 public:
     
-    AGConnection(AGNode * src, AGNode * dst);
+    AGConnection(AGNode * src, AGNode * dst, int dstPort);
     
     virtual void update(float t, float dt);
     virtual void render();
     
     AGNode * src() const { return m_src; }
     AGNode * dst() const { return m_dst; }
+    int dstPort() const { return m_dstPort; }
+    
+    AGRate rate() { return m_rate; }
     
 private:
     
@@ -49,13 +60,26 @@ private:
     
     AGNode * const m_src;
     AGNode * const m_dst;
+    const int m_dstPort;
     
     GLvertex3f m_outTerminal;
     GLvertex3f m_inTerminal;
     
+    const AGRate m_rate;
+    
     static void initalize();
     
     void updatePath();
+};
+
+
+struct AGPortInfo
+{
+    std::string name;
+    bool canConnect; // can create connection btw this port and another port
+    bool canEdit; // should this port appear in the node's editor window
+    
+    // TODO: min, max, units label, etc.
 };
 
 
@@ -121,6 +145,7 @@ public:
     
     virtual int numOutputPorts() const { return 0; }
     virtual int numInputPorts() const { return 0; }
+    virtual const AGPortInfo &inputPortInfo(int port) { return m_inputPortInfo[port]; }
     
     virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const { return GLvertex3f(); }
     virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const { return GLvertex3f(); }
@@ -128,6 +153,8 @@ public:
     // 1: positive activation; 0: deactivation; -1: negative activation
     virtual void activateInputPort(int type) { }
     virtual void activateOutputPort(int type) { }
+    
+    virtual AGRate rate() { return RATE_CONTROL; }
     
 private:
     
@@ -142,8 +169,11 @@ protected:
     static GLint s_uniformNormalMatrix;
     static GLint s_uniformColor2;
     
+    const static float s_sizeFactor;
+    
     std::list<AGConnection *> m_inbound;
     std::list<AGConnection *> m_outbound;
+    AGPortInfo * m_inputPortInfo;
     
     GLvertex3f m_pos;
     GLKMatrix4 m_modelViewProjectionMatrix;

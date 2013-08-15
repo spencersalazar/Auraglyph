@@ -541,7 +541,7 @@ enum TouchMode
         {
             if(_connectOutput != NULL && hitNode != _connectOutput)
             {
-                AGConnection * connection = new AGConnection(_connectOutput, hitNode);
+                AGConnection * connection = new AGConnection(_connectOutput, hitNode, 0);
                 _connections.push_back(connection);
                 nDrawlineUsed = 0;
             }
@@ -550,7 +550,7 @@ enum TouchMode
         {
             if(_connectInput != NULL && hitNode != _connectInput)
             {
-                AGConnection * connection = new AGConnection(hitNode, _connectInput);
+                AGConnection * connection = new AGConnection(hitNode, _connectInput, 0);
                 _connections.push_back(connection);
                 nDrawlineUsed = 0;
             }

@@ -9,6 +9,9 @@
 #include "AGNode.h"
 
 
+static const float G_RATIO = 1.61803398875;
+
+
 bool AGConnection::s_init = false;
 GLuint AGConnection::s_program = 0;
 GLint AGConnection::s_uniformMVPMatrix = 0;
@@ -23,6 +26,7 @@ GLint AGNode::s_uniformNormalMatrix = 0;
 GLint AGNode::s_uniformColor2 = 0;
 GLKMatrix4 AGNode::s_projectionMatrix = GLKMatrix4Identity;
 GLKMatrix4 AGNode::s_modelViewMatrix = GLKMatrix4Identity;
+const float AGNode::s_sizeFactor = 0.01;
 
 
 bool AGControlNode::s_init = false;
@@ -64,9 +68,11 @@ void AGConnection::initalize()
     }
 }
 
-AGConnection::AGConnection(AGNode * src, AGNode * dst) :
+AGConnection::AGConnection(AGNode * src, AGNode * dst, int dstPort) :
 m_src(src),
 m_dst(dst),
+m_dstPort(dstPort),
+m_rate((src->rate() == RATE_AUDIO && dst->rate() == RATE_CONTROL) ? RATE_AUDIO : RATE_CONTROL), 
 m_geo(NULL),
 m_geoSize(0)
 {
@@ -159,7 +165,7 @@ void AGControlNode::initializeControlNode()
         // generate circle
         s_geoSize = 4;
         s_geo = new GLvncprimf[s_geoSize];
-        float radius = 0.01/(sqrt(sqrtf(2)));
+        float radius = AGNode::s_sizeFactor/(sqrt(sqrtf(2)));
         
         s_geo[0].vertex = GLvertex3f(radius, radius, 0);
         s_geo[1].vertex = GLvertex3f(radius, -radius, 0);
@@ -243,7 +249,7 @@ void AGInputNode::initializeInputNode()
         // generate triangle
         s_geoSize = 3;
         s_geo = new GLvncprimf[s_geoSize];
-        float radius = 0.01;
+        float radius = AGNode::s_sizeFactor/G_RATIO;
         
         s_geo[0].vertex = GLvertex3f(-radius, radius, 0);
         s_geo[1].vertex = GLvertex3f(radius, radius, 0);
@@ -328,7 +334,7 @@ void AGOutputNode::initializeOutputNode()
         // generate triangle
         s_geoSize = 3;
         s_geo = new GLvncprimf[s_geoSize];
-        float radius = 0.01;
+        float radius = AGNode::s_sizeFactor/G_RATIO;
         
         s_geo[0].vertex = GLvertex3f(-radius, -radius, 0);
         s_geo[1].vertex = GLvertex3f(radius, -radius, 0);

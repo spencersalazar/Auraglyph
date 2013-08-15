@@ -162,7 +162,7 @@ void TexFont::render(const std::string &text, const GLcolor4f &color,
                      const GLKMatrix4 &_modelView, const GLKMatrix4 &proj)
 {
     glEnable(GL_TEXTURE_2D);
-
+    
     GLKMatrix3 normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(_modelView), NULL);
     
     glUseProgram(s_program);
