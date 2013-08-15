@@ -31,6 +31,20 @@ GLuint AGAudioSineWaveNode::s_iconGeoSize = 0;
 GLvncprimf * AGAudioSineWaveNode::s_iconGeo = NULL;
 GLuint AGAudioSineWaveNode::s_iconGeoType = 0; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
 
+bool AGAudioSquareWaveNode::s_initAudioSquareWaveNode = false;
+GLuint AGAudioSquareWaveNode::s_iconVertexArray = 0;
+GLuint AGAudioSquareWaveNode::s_iconVertexBuffer = 0;
+GLuint AGAudioSquareWaveNode::s_iconGeoSize = 0;
+GLvncprimf * AGAudioSquareWaveNode::s_iconGeo = NULL;
+GLuint AGAudioSquareWaveNode::s_iconGeoType = 0; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
+
+bool AGAudioSawtoothWaveNode::s_initAudioSawtoothWaveNode = false;
+GLuint AGAudioSawtoothWaveNode::s_iconVertexArray = 0;
+GLuint AGAudioSawtoothWaveNode::s_iconVertexBuffer = 0;
+GLuint AGAudioSawtoothWaveNode::s_iconGeoSize = 0;
+GLvncprimf * AGAudioSawtoothWaveNode::s_iconGeo = NULL;
+GLuint AGAudioSawtoothWaveNode::s_iconGeoType = 0; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
+
 
 //------------------------------------------------------------------------------
 // ### AGAudioNode ###
@@ -56,21 +70,7 @@ void AGAudioNode::initializeAudioNode()
             s_geo[i].color = GLcolor4f(1, 1, 1, 1);
         }
         
-        glGenVertexArraysOES(1, &s_vertexArray);
-        glBindVertexArrayOES(s_vertexArray);
-        
-        glGenBuffers(1, &s_vertexBuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, s_vertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, s_geoSize*sizeof(GLvncprimf), s_geo, GL_STATIC_DRAW);
-        
-        glEnableVertexAttribArray(GLKVertexAttribPosition);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(0));
-        glEnableVertexAttribArray(GLKVertexAttribNormal);
-        glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(sizeof(GLvertex3f)));
-        glEnableVertexAttribArray(GLKVertexAttribColor);
-        glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(2*sizeof(GLvertex3f)));
-        
-        glBindVertexArrayOES(0);
+        genVertexArrayAndBuffer(s_geoSize, s_geo, s_vertexArray, s_vertexBuffer);
     }
 }
 
@@ -238,14 +238,14 @@ void AGAudioOutputNode::initializeAudioOutputNode()
         float radius = 0.005;
         
         // speaker icon
-        s_iconGeo[0].vertex = GLvertex3f(0, radius*0.5, 0);
+        s_iconGeo[0].vertex = GLvertex3f(-radius*0.5*0.16, radius*0.5, 0);
         s_iconGeo[1].vertex = GLvertex3f(-radius*0.5, radius*0.5, 0);
         s_iconGeo[2].vertex = GLvertex3f(-radius*0.5, -radius*0.5, 0);
-        s_iconGeo[3].vertex = GLvertex3f(0, -radius*0.5, 0);
+        s_iconGeo[3].vertex = GLvertex3f(-radius*0.5*0.16, -radius*0.5, 0);
         s_iconGeo[4].vertex = GLvertex3f(radius*0.5, -radius, 0);
         s_iconGeo[5].vertex = GLvertex3f(radius*0.5, radius, 0);
-        s_iconGeo[6].vertex = GLvertex3f(0, radius*0.5, 0);
-        s_iconGeo[7].vertex = GLvertex3f(0, -radius*0.5, 0);
+        s_iconGeo[6].vertex = GLvertex3f(-radius*0.5*0.16, radius*0.5, 0);
+        s_iconGeo[7].vertex = GLvertex3f(-radius*0.5*0.16, -radius*0.5, 0);
         
         for(int i = 0; i < s_iconGeoSize; i++)
         {
@@ -253,21 +253,7 @@ void AGAudioOutputNode::initializeAudioOutputNode()
             s_iconGeo[i].color = GLcolor4f(1, 1, 1, 1);
         }
 
-        glGenVertexArraysOES(1, &s_iconVertexArray);
-        glBindVertexArrayOES(s_iconVertexArray);
-        
-        glGenBuffers(1, &s_iconVertexBuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, s_iconVertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, s_iconGeoSize*sizeof(GLvncprimf), s_iconGeo, GL_STATIC_DRAW);
-        
-        glEnableVertexAttribArray(GLKVertexAttribPosition);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(0));
-        glEnableVertexAttribArray(GLKVertexAttribNormal);
-        glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(sizeof(GLvertex3f)));
-        glEnableVertexAttribArray(GLKVertexAttribColor);
-        glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(2*sizeof(GLvertex3f)));
-        
-        glBindVertexArrayOES(0);
+        genVertexArrayAndBuffer(s_iconGeoSize, s_iconGeo, s_iconVertexArray, s_iconVertexBuffer);
     }
 }
 
@@ -291,7 +277,7 @@ void AGAudioSineWaveNode::initializeAudioSineWaveNode()
     {
         s_initAudioSineWaveNode = true;
         
-        // generate circle
+        // generate geometry
         s_iconGeoSize = 32;
         s_iconGeo = new GLvncprimf[s_iconGeoSize];
         s_iconGeoType = GL_LINE_STRIP;
@@ -300,28 +286,14 @@ void AGAudioSineWaveNode::initializeAudioSineWaveNode()
         {
             float t = ((float)i)/((float)(s_iconGeoSize-1));
             float x = (t*2-1) * radius;
-            float y = radius*0.75*sinf(t*M_PI*2);
+            float y = radius*0.66*sinf(t*M_PI*2);
             
             s_iconGeo[i].vertex = GLvertex3f(x, y, 0);
             s_iconGeo[i].normal = GLvertex3f(0, 0, 1);
             s_iconGeo[i].color = GLcolor4f(1, 1, 1, 1);
         }
         
-        glGenVertexArraysOES(1, &s_iconVertexArray);
-        glBindVertexArrayOES(s_iconVertexArray);
-        
-        glGenBuffers(1, &s_iconVertexBuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, s_iconVertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, s_iconGeoSize*sizeof(GLvncprimf), s_iconGeo, GL_STATIC_DRAW);
-        
-        glEnableVertexAttribArray(GLKVertexAttribPosition);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(0));
-        glEnableVertexAttribArray(GLKVertexAttribNormal);
-        glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(sizeof(GLvertex3f)));
-        glEnableVertexAttribArray(GLKVertexAttribColor);
-        glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(2*sizeof(GLvertex3f)));
-        
-        glBindVertexArrayOES(0);
+        genVertexArrayAndBuffer(s_iconGeoSize, s_iconGeo, s_iconVertexArray, s_iconVertexBuffer);
     }
 }
 
@@ -332,6 +304,123 @@ void AGAudioSineWaveNode::renderAudio(float *input, float *output, int nFrames)
         output[i] += sinf(m_phase*2.0*M_PI);
         m_phase += m_freq/sampleRate();
         if(m_phase > 1.0) m_phase -= 1.0;
+    }
+}
+
+//------------------------------------------------------------------------------
+// ### AGAudioSquareWaveNode ###
+//------------------------------------------------------------------------------
+
+void AGAudioSquareWaveNode::initializeAudioSquareWaveNode()
+{
+    if(!s_initAudioSquareWaveNode)
+    {
+        s_initAudioSquareWaveNode = true;
+        
+        // generate geometry
+        s_iconGeoSize = 6;
+        s_iconGeo = new GLvncprimf[s_iconGeoSize];
+        s_iconGeoType = GL_LINE_STRIP;
+        float radius_x = 0.005;
+        float radius_y = radius_x * 0.66;
+        
+        // square wave shape
+        s_iconGeo[0].vertex = GLvertex3f(-radius_x, 0, 0);
+        s_iconGeo[1].vertex = GLvertex3f(-radius_x, radius_y, 0);
+        s_iconGeo[2].vertex = GLvertex3f(0, radius_y, 0);
+        s_iconGeo[3].vertex = GLvertex3f(0, -radius_y, 0);
+        s_iconGeo[4].vertex = GLvertex3f(radius_x, -radius_y, 0);
+        s_iconGeo[5].vertex = GLvertex3f(radius_x, 0, 0);
+        
+        for(int i = 0; i < s_iconGeoSize; i++)
+        {
+            s_iconGeo[i].normal = GLvertex3f(0, 0, 1);
+            s_iconGeo[i].color = GLcolor4f(1, 1, 1, 1);
+        }
+        
+        genVertexArrayAndBuffer(s_iconGeoSize, s_iconGeo, s_iconVertexArray, s_iconVertexBuffer);
+    }
+}
+
+AGAudioSquareWaveNode::AGAudioSquareWaveNode(GLvertex3f pos) : AGAudioNode(pos)
+{
+    initializeAudioSquareWaveNode();
+    
+    m_iconVertexArray = s_iconVertexArray;
+    m_iconGeoSize = s_iconGeoSize;
+    m_iconGeoType = s_iconGeoType;
+    
+    m_freq = 220;
+    m_phase = 0;
+}
+
+
+void AGAudioSquareWaveNode::renderAudio(float *input, float *output, int nFrames)
+{
+    for(int i = 0; i < nFrames; i++)
+    {
+        output[i] += m_phase < 0.5 ? 1 : -1;
+        
+        m_phase += m_freq/sampleRate();
+        if(m_phase >= 1.0) m_phase -= 1.0;
+    }
+}
+
+
+//------------------------------------------------------------------------------
+// ### AGAudioSawtoothWaveNode ###
+//------------------------------------------------------------------------------
+
+void AGAudioSawtoothWaveNode::initializeAudioSawtoothWaveNode()
+{
+    if(!s_initAudioSawtoothWaveNode)
+    {
+        s_initAudioSawtoothWaveNode = true;
+        
+        // generate geometry
+        s_iconGeoSize = 4;
+        s_iconGeo = new GLvncprimf[s_iconGeoSize];
+        s_iconGeoType = GL_LINE_STRIP;
+        float radius_x = 0.005;
+        float radius_y = radius_x * 0.66;
+        
+        // sawtooth wave shape
+        s_iconGeo[0].vertex = GLvertex3f(-radius_x, 0, 0);
+        s_iconGeo[1].vertex = GLvertex3f(-radius_x, radius_y, 0);
+        s_iconGeo[2].vertex = GLvertex3f(radius_x, -radius_y, 0);
+        s_iconGeo[3].vertex = GLvertex3f(radius_x, 0, 0);
+        
+        for(int i = 0; i < s_iconGeoSize; i++)
+        {
+            s_iconGeo[i].normal = GLvertex3f(0, 0, 1);
+            s_iconGeo[i].color = GLcolor4f(1, 1, 1, 1);
+        }
+        
+        genVertexArrayAndBuffer(s_iconGeoSize, s_iconGeo, s_iconVertexArray, s_iconVertexBuffer);
+    }
+}
+
+AGAudioSawtoothWaveNode::AGAudioSawtoothWaveNode(GLvertex3f pos) : AGAudioNode(pos)
+{
+    initializeAudioSawtoothWaveNode();
+    
+    m_iconVertexArray = s_iconVertexArray;
+    m_iconGeoSize = s_iconGeoSize;
+    m_iconGeoType = s_iconGeoType;
+    
+    m_freq = 220;
+    m_phase = 0;
+}
+
+
+void AGAudioSawtoothWaveNode::renderAudio(float *input, float *output, int nFrames)
+{
+    for(int i = 0; i < nFrames; i++)
+    {
+        output[i] += (1-m_phase)*2-1;
+        
+        m_phase += m_freq/sampleRate();
+        if(m_phase >= 1.0) m_phase -= 1.0;
     }
 }
 

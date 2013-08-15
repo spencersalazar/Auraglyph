@@ -43,6 +43,7 @@
 		098740A617BA317E0098511A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 098740A417BA317E0098511A /* AudioToolbox.framework */; };
 		098740AA17BB99DE0098511A /* TexFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740A817BB99DE0098511A /* TexFont.mm */; };
 		098740AD17BC377E0098511A /* AGAudioNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740AB17BC377E0098511A /* AGAudioNode.mm */; };
+		098740B017BC527E0098511A /* ES2Render.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740AE17BC527E0098511A /* ES2Render.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -153,6 +154,8 @@
 		098740A917BB99DE0098511A /* TexFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TexFont.h; sourceTree = "<group>"; };
 		098740AB17BC377E0098511A /* AGAudioNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGAudioNode.mm; sourceTree = "<group>"; };
 		098740AC17BC377E0098511A /* AGAudioNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAudioNode.h; sourceTree = "<group>"; };
+		098740AE17BC527E0098511A /* ES2Render.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ES2Render.mm; sourceTree = "<group>"; };
+		098740AF17BC527E0098511A /* ES2Render.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ES2Render.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -268,6 +271,8 @@
 				095D130017ACC5120048A012 /* UIKitGL.h */,
 				098740A817BB99DE0098511A /* TexFont.mm */,
 				098740A917BB99DE0098511A /* TexFont.h */,
+				098740AF17BC527E0098511A /* ES2Render.h */,
+				098740AE17BC527E0098511A /* ES2Render.mm */,
 			);
 			path = libsp;
 			sourceTree = "<group>";
@@ -441,6 +446,7 @@
 				098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */,
 				098740AA17BB99DE0098511A /* TexFont.mm in Sources */,
 				098740AD17BC377E0098511A /* AGAudioNode.mm in Sources */,
+				098740B017BC527E0098511A /* ES2Render.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

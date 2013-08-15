@@ -27,7 +27,4 @@ static GLvertex2f uiview2gl(CGPoint p, UIView * view)
 }
 
 
-#define BUFFER_OFFSET(i) ((char *)NULL + (i))
-
-
 #endif

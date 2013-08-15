@@ -102,7 +102,7 @@ public:
         m_iconVertexArray = s_iconVertexArray;
         m_iconGeoSize = s_iconGeoSize;
         m_iconGeoType = s_iconGeoType;
-
+        
         m_freq = 220;
         m_phase = 0;
     }
@@ -125,6 +125,60 @@ private:
     static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
     
     static void initializeAudioSineWaveNode();
+};
+
+
+
+class AGAudioSquareWaveNode : public AGAudioNode
+{
+public:
+    AGAudioSquareWaveNode(GLvertex3f pos);
+    
+    virtual int numOutputPorts() const { return 1; }
+    virtual int numInputPorts() const { return 0; }
+    
+    virtual void renderAudio(float *input, float *output, int nFrames);
+    
+private:
+    float m_freq;
+    float m_phase;
+    
+private:
+    static bool s_initAudioSquareWaveNode;
+    static GLuint s_iconVertexArray;
+    static GLuint s_iconVertexBuffer;
+    static GLuint s_iconGeoSize;
+    static GLvncprimf * s_iconGeo;
+    static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
+    
+    static void initializeAudioSquareWaveNode();
+};
+
+
+
+class AGAudioSawtoothWaveNode : public AGAudioNode
+{
+public:
+    AGAudioSawtoothWaveNode(GLvertex3f pos);
+    
+    virtual int numOutputPorts() const { return 1; }
+    virtual int numInputPorts() const { return 0; }
+    
+    virtual void renderAudio(float *input, float *output, int nFrames);
+    
+private:
+    float m_freq;
+    float m_phase;
+    
+private:
+    static bool s_initAudioSawtoothWaveNode;
+    static GLuint s_iconVertexArray;
+    static GLuint s_iconVertexBuffer;
+    static GLuint s_iconGeoSize;
+    static GLvncprimf * s_iconGeo;
+    static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
+    
+    static void initializeAudioSawtoothWaveNode();
 };
 
 
