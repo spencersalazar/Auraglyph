@@ -112,8 +112,10 @@ m_tex(0)
     
     CGContextSetFont(spriteContext, font);
     CGContextSetFontSize(spriteContext, size);
+    
     CGContextSetFillColor(spriteContext, white);
     CGContextSetStrokeColor(spriteContext, white);
+    
     CGContextTranslateCTM(spriteContext, 0, height);
     CGContextScaleCTM(spriteContext, 1, -1);
     
@@ -162,7 +164,6 @@ void TexFont::render(const std::string &text, const GLcolor4f &color,
     glEnable(GL_TEXTURE_2D);
 
     GLKMatrix3 normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(_modelView), NULL);
-//    GLKMatrix4 mvp = GLKMatrix4Multiply(proj, modelView);
     
     glUseProgram(s_program);
     
@@ -183,17 +184,18 @@ void TexFont::render(const std::string &text, const GLcolor4f &color,
     for(int i = 0; i < text.size(); i++)
     {
         int idx = g_asciiToIndex[text[i]];
-        int x = idx % g_linebreak;
-        int y = idx / g_linebreak;
-        
-//        float texpos[4] = { x*res_width, y*res_height, res_width, res_height };
-        
-        glUniformMatrix4fv(s_uniformMVMatrix, 1, 0, modelView.m);
-        glUniform4f(s_uniformTexpos, x*res_width, y*res_height, res_width, res_height);
-        
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-        
-        modelView = GLKMatrix4Translate(modelView, s_radius, 0, 0);
+        if(idx != -1) // skip unrendered chars
+        {
+            int x = idx % g_linebreak;
+            int y = idx / g_linebreak;
+            
+            glUniformMatrix4fv(s_uniformMVMatrix, 1, 0, modelView.m);
+            glUniform4f(s_uniformTexpos, x*res_width, y*res_height, res_width, res_height);
+            
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            
+            modelView = GLKMatrix4Translate(modelView, s_radius, 0, 0);
+        }
     }
 }
 
