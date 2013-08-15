@@ -24,11 +24,20 @@ public:
 private:
     
     static bool s_init;
+
     static GLuint s_program;
+    static GLint s_uniformMVMatrix;
+    static GLint s_uniformProjMatrix;
+    static GLint s_uniformNormalMatrix;
+    static GLint s_uniformColor2;
+    static GLint s_uniformTexture;
+    static GLint s_uniformTexpos;
+
     static GLuint s_vertexArray;
     static GLuint s_vertexBuffer;
     static GLuint s_geoSize;
     static GLgeoprimf *s_geo;
+    static float s_radius;
 
     static void initalizeTexFont();
     
@@ -40,6 +49,8 @@ private:
     GLuint m_tex;
     GlyphInfo m_info[127];
     float m_width;
+    float m_height;
+    float m_res;
 };
 
 

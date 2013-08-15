@@ -16,6 +16,7 @@
 #import "AGAudioNode.h"
 #import "AGAudioManager.h"
 #import "AGUserInterface.h"
+#import "TexFont.h"
 
 #import <list>
 
@@ -96,6 +97,8 @@ enum TouchMode
     
     std::list<AGNode *> _nodes;
     std::list<AGConnection *> _connections;
+    
+    TexFont * _font;
 }
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) GLKBaseEffect *effect;
@@ -141,6 +144,11 @@ enum TouchMode
     self.audioManager.outputNode = outputNode;
     
     _nodes.push_back(outputNode);
+    
+    
+    const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Consolas.ttf" ofType:@""] UTF8String];
+    //const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
+    _font = new TexFont(fontPath, 96);
 }
 
 - (void)dealloc
@@ -301,6 +309,9 @@ enum TouchMode
     // render node selector
     if(_nodeSelector)
         _nodeSelector->render();
+    
+    GLKMatrix4 textMV = GLKMatrix4Translate(_modelView, -0.0225, -0.07, 3.89);
+    _font->render("auragraph", GLcolor4f::white(), textMV, _projection);
 }
 
 

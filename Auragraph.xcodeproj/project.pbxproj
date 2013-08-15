@@ -48,6 +48,8 @@
 		098740B517BCBA4C0098511A /* Consolas.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 098740B417BCBA4C0098511A /* Consolas.ttf */; };
 		098740BA17BCC2EA0098511A /* TexFont.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 098740B617BCC16B0098511A /* TexFont.fsh */; };
 		098740BB17BCC2EC0098511A /* TexFont.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 098740B717BCC16B0098511A /* TexFont.vsh */; };
+		098740BD17BCD9820098511A /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 098740BC17BCD9810098511A /* CoreText.framework */; };
+		098740BF17BCE0130098511A /* Perfect DOS VGA 437.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 098740BE17BCE0130098511A /* Perfect DOS VGA 437.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -165,6 +167,8 @@
 		098740B417BCBA4C0098511A /* Consolas.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Consolas.ttf; sourceTree = "<group>"; };
 		098740B617BCC16B0098511A /* TexFont.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = TexFont.fsh; sourceTree = "<group>"; };
 		098740B717BCC16B0098511A /* TexFont.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = TexFont.vsh; sourceTree = "<group>"; };
+		098740BC17BCD9810098511A /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		098740BE17BCE0130098511A /* Perfect DOS VGA 437.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Perfect DOS VGA 437.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -172,6 +176,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				098740BD17BCD9820098511A /* CoreText.framework in Frameworks */,
 				098740A617BA317E0098511A /* AudioToolbox.framework in Frameworks */,
 				095D12C417ACA36C0048A012 /* UIKit.framework in Frameworks */,
 				095D12C617ACA36C0048A012 /* Foundation.framework in Frameworks */,
@@ -214,6 +219,7 @@
 		095D12C217ACA36C0048A012 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				098740BC17BCD9810098511A /* CoreText.framework */,
 				098740A417BA317E0098511A /* AudioToolbox.framework */,
 				095E84EA17B354BE0065EF8E /* LipiTk */,
 				095D12C317ACA36C0048A012 /* UIKit.framework */,
@@ -255,6 +261,7 @@
 		095D12CE17ACA36C0048A012 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				098740BE17BCE0130098511A /* Perfect DOS VGA 437.ttf */,
 				098740B417BCBA4C0098511A /* Consolas.ttf */,
 				095D12CF17ACA36C0048A012 /* Auragraph-Info.plist */,
 				095D12D017ACA36C0048A012 /* InfoPlist.strings */,
@@ -440,6 +447,7 @@
 				095D12E817ACA36C0048A012 /* AGViewController.xib in Resources */,
 				095E852E17B358B00065EF8E /* projects in Resources */,
 				098740B517BCBA4C0098511A /* Consolas.ttf in Resources */,
+				098740BF17BCE0130098511A /* Perfect DOS VGA 437.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
