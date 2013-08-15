@@ -45,6 +45,13 @@ GLuint AGAudioSawtoothWaveNode::s_iconGeoSize = 0;
 GLvncprimf * AGAudioSawtoothWaveNode::s_iconGeo = NULL;
 GLuint AGAudioSawtoothWaveNode::s_iconGeoType = 0; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
 
+bool AGAudioTriangleWaveNode::s_initAudioTriangleWaveNode = false;
+GLuint AGAudioTriangleWaveNode::s_iconVertexArray = 0;
+GLuint AGAudioTriangleWaveNode::s_iconVertexBuffer = 0;
+GLuint AGAudioTriangleWaveNode::s_iconGeoSize = 0;
+GLvncprimf * AGAudioTriangleWaveNode::s_iconGeo = NULL;
+GLuint AGAudioTriangleWaveNode::s_iconGeoType = 0; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
+
 
 //------------------------------------------------------------------------------
 // ### AGAudioNode ###
@@ -418,6 +425,67 @@ void AGAudioSawtoothWaveNode::renderAudio(float *input, float *output, int nFram
     for(int i = 0; i < nFrames; i++)
     {
         output[i] += (1-m_phase)*2-1;
+        
+        m_phase += m_freq/sampleRate();
+        if(m_phase >= 1.0) m_phase -= 1.0;
+    }
+}
+
+
+//------------------------------------------------------------------------------
+// ### AGAudioTriangleWaveNode ###
+//------------------------------------------------------------------------------
+
+void AGAudioTriangleWaveNode::initializeAudioTriangleWaveNode()
+{
+    if(!s_initAudioTriangleWaveNode)
+    {
+        s_initAudioTriangleWaveNode = true;
+        
+        // generate geometry
+        s_iconGeoSize = 4;
+        s_iconGeo = new GLvncprimf[s_iconGeoSize];
+        s_iconGeoType = GL_LINE_STRIP;
+        float radius_x = 0.005;
+        float radius_y = radius_x * 0.66;
+        
+        // sawtooth wave shape
+        s_iconGeo[0].vertex = GLvertex3f(-radius_x, 0, 0);
+        s_iconGeo[1].vertex = GLvertex3f(-radius_x*0.5, radius_y, 0);
+        s_iconGeo[2].vertex = GLvertex3f(radius_x*0.5, -radius_y, 0);
+        s_iconGeo[3].vertex = GLvertex3f(radius_x, 0, 0);
+        
+        for(int i = 0; i < s_iconGeoSize; i++)
+        {
+            s_iconGeo[i].normal = GLvertex3f(0, 0, 1);
+            s_iconGeo[i].color = GLcolor4f(1, 1, 1, 1);
+        }
+        
+        genVertexArrayAndBuffer(s_iconGeoSize, s_iconGeo, s_iconVertexArray, s_iconVertexBuffer);
+    }
+}
+
+AGAudioTriangleWaveNode::AGAudioTriangleWaveNode(GLvertex3f pos) : AGAudioNode(pos)
+{
+    initializeAudioTriangleWaveNode();
+    
+    m_iconVertexArray = s_iconVertexArray;
+    m_iconGeoSize = s_iconGeoSize;
+    m_iconGeoType = s_iconGeoType;
+    
+    m_freq = 220;
+    m_phase = 0;
+}
+
+
+void AGAudioTriangleWaveNode::renderAudio(float *input, float *output, int nFrames)
+{
+    for(int i = 0; i < nFrames; i++)
+    {
+        if(m_phase < 0.5)
+            output[i] += (1-m_phase*2)*2-1;
+        else
+            output[i] += (m_phase-0.5)*4-1;
         
         m_phase += m_freq/sampleRate();
         if(m_phase >= 1.0) m_phase -= 1.0;

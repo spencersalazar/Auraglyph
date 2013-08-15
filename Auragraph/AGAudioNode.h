@@ -183,4 +183,31 @@ private:
 
 
 
+class AGAudioTriangleWaveNode : public AGAudioNode
+{
+public:
+    AGAudioTriangleWaveNode(GLvertex3f pos);
+    
+    virtual int numOutputPorts() const { return 1; }
+    virtual int numInputPorts() const { return 0; }
+    
+    virtual void renderAudio(float *input, float *output, int nFrames);
+    
+private:
+    float m_freq;
+    float m_phase;
+    
+private:
+    static bool s_initAudioTriangleWaveNode;
+    static GLuint s_iconVertexArray;
+    static GLuint s_iconVertexBuffer;
+    static GLuint s_iconGeoSize;
+    static GLvncprimf * s_iconGeo;
+    static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
+    
+    static void initializeAudioTriangleWaveNode();
+};
+
+
+
 #endif /* defined(__Auragraph__AGAudioNode__) */

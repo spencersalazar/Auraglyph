@@ -520,9 +520,11 @@ enum TouchMode
         {
             AGAudioNode * node;
             int r = rand();
-            if(r > RAND_MAX/3*2)
+            if(r > RAND_MAX/4*3)
+                node = new AGAudioTriangleWaveNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
+            else if(r > RAND_MAX/2)
                 node = new AGAudioSineWaveNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
-            else if(r > RAND_MAX/3)
+            else if(r > RAND_MAX/4)
                 node = new AGAudioSawtoothWaveNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
             else
                 node = new AGAudioSquareWaveNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
