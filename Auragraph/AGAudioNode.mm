@@ -45,7 +45,6 @@ GLuint AGAudioSawtoothWaveNode::s_iconGeoSize = 0;
 GLvncprimf * AGAudioSawtoothWaveNode::s_iconGeo = NULL;
 GLuint AGAudioSawtoothWaveNode::s_iconGeoType = 0; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
 
-<<<<<<< HEAD
 bool AGAudioTriangleWaveNode::s_initAudioTriangleWaveNode = false;
 GLuint AGAudioTriangleWaveNode::s_iconVertexArray = 0;
 GLuint AGAudioTriangleWaveNode::s_iconVertexBuffer = 0;
@@ -53,8 +52,6 @@ GLuint AGAudioTriangleWaveNode::s_iconGeoSize = 0;
 GLvncprimf * AGAudioTriangleWaveNode::s_iconGeo = NULL;
 GLuint AGAudioTriangleWaveNode::s_iconGeoType = 0; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
 
-=======
->>>>>>> c2f4ca67b8c0ea380cf1da1c2c7b1d9f9b8767d6
 
 //------------------------------------------------------------------------------
 // ### AGAudioNode ###
