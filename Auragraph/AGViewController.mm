@@ -10,7 +10,7 @@
 #import "Geometry.h"
 #import "ShaderHelper.h"
 #import "hsv.h"
-#import "UIKitGL.h"
+#import "ES2Render.h"
 #import "AGHandwritingRecognizer.h"
 #import "AGNode.h"
 #import "AGAudioNode.h"
@@ -518,7 +518,14 @@ enum TouchMode
         
         if(figure == AG_FIGURE_CIRCLE)
         {
-            AGAudioNode * node = new AGAudioSineWaveNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
+            AGAudioNode * node;
+            int r = rand();
+            if(r > RAND_MAX/3*2)
+                node = new AGAudioSineWaveNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
+            else if(r > RAND_MAX/3)
+                node = new AGAudioSawtoothWaveNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
+            else
+                node = new AGAudioSquareWaveNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
             _nodes.push_back(node);
             nDrawlineUsed = 0;
         }

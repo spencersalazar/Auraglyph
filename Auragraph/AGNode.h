@@ -10,8 +10,8 @@
 #define __Auragraph__AGNode__
 
 
-#include "Geometry.h"
-#import "UIKitGL.h"
+#import "Geometry.h"
+#import "ES2Render.h"
 #import <GLKit/GLKit.h>
 #import <Foundation/Foundation.h>
 #import "ShaderHelper.h"
