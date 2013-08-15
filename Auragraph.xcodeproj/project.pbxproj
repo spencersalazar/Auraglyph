@@ -45,6 +45,9 @@
 		098740AD17BC377E0098511A /* AGAudioNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740AB17BC377E0098511A /* AGAudioNode.mm */; };
 		098740B017BC527E0098511A /* ES2Render.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740AE17BC527E0098511A /* ES2Render.mm */; };
 		098740B317BC61410098511A /* AGUserInterface.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740B117BC61410098511A /* AGUserInterface.mm */; };
+		098740B517BCBA4C0098511A /* Consolas.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 098740B417BCBA4C0098511A /* Consolas.ttf */; };
+		098740BA17BCC2EA0098511A /* TexFont.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 098740B617BCC16B0098511A /* TexFont.fsh */; };
+		098740BB17BCC2EC0098511A /* TexFont.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 098740B717BCC16B0098511A /* TexFont.vsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -159,6 +162,9 @@
 		098740AF17BC527E0098511A /* ES2Render.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ES2Render.h; sourceTree = "<group>"; };
 		098740B117BC61410098511A /* AGUserInterface.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGUserInterface.mm; sourceTree = "<group>"; };
 		098740B217BC61410098511A /* AGUserInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGUserInterface.h; sourceTree = "<group>"; };
+		098740B417BCBA4C0098511A /* Consolas.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Consolas.ttf; sourceTree = "<group>"; };
+		098740B617BCC16B0098511A /* TexFont.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = TexFont.fsh; sourceTree = "<group>"; };
+		098740B717BCC16B0098511A /* TexFont.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = TexFont.vsh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -237,11 +243,11 @@
 				0987409A17B98D7C0098511A /* AGNode.mm */,
 				098740A117BA2EA70098511A /* AGAudioManager.h */,
 				098740A217BA2EA70098511A /* AGAudioManager.mm */,
-				095D12CE17ACA36C0048A012 /* Supporting Files */,
 				098740AC17BC377E0098511A /* AGAudioNode.h */,
 				098740AB17BC377E0098511A /* AGAudioNode.mm */,
 				098740B217BC61410098511A /* AGUserInterface.h */,
 				098740B117BC61410098511A /* AGUserInterface.mm */,
+				095D12CE17ACA36C0048A012 /* Supporting Files */,
 			);
 			path = Auragraph;
 			sourceTree = "<group>";
@@ -249,6 +255,7 @@
 		095D12CE17ACA36C0048A012 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				098740B417BCBA4C0098511A /* Consolas.ttf */,
 				095D12CF17ACA36C0048A012 /* Auragraph-Info.plist */,
 				095D12D017ACA36C0048A012 /* InfoPlist.strings */,
 				095D12D317ACA36C0048A012 /* main.m */,
@@ -274,8 +281,10 @@
 				095D12FD17ACAB7B0048A012 /* ShaderHelper.h */,
 				095D12FE17ACAB7B0048A012 /* ShaderHelper.m */,
 				095D130017ACC5120048A012 /* UIKitGL.h */,
-				098740A817BB99DE0098511A /* TexFont.mm */,
 				098740A917BB99DE0098511A /* TexFont.h */,
+				098740A817BB99DE0098511A /* TexFont.mm */,
+				098740B617BCC16B0098511A /* TexFont.fsh */,
+				098740B717BCC16B0098511A /* TexFont.vsh */,
 				098740AF17BC527E0098511A /* ES2Render.h */,
 				098740AE17BC527E0098511A /* ES2Render.mm */,
 			);
@@ -426,8 +435,11 @@
 				095D12DE17ACA36C0048A012 /* Default-568h@2x.png in Resources */,
 				095D12E017ACA36C0048A012 /* Shader.fsh in Resources */,
 				095D12E217ACA36C0048A012 /* Shader.vsh in Resources */,
+				098740BA17BCC2EA0098511A /* TexFont.fsh in Resources */,
+				098740BB17BCC2EC0098511A /* TexFont.vsh in Resources */,
 				095D12E817ACA36C0048A012 /* AGViewController.xib in Resources */,
 				095E852E17B358B00065EF8E /* projects in Resources */,
+				098740B517BCBA4C0098511A /* Consolas.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

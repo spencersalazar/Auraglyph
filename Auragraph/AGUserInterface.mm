@@ -55,16 +55,10 @@ void AGUINodeSelector::initializeNodeSelector()
         s_geo[6].vertex = GLvertex3f(-radius, radius, 0);
         s_geo[7].vertex = GLvertex3f(radius, radius, 0);
         
-        for(int i = 0; i < s_geoSize; i++)
-        {
-            s_geo[i].normal = GLvertex3f(0, 0, 1);
-            s_geo[i].color = GLcolor4f(1, 1, 1, 1);
-        }
-        
         genVertexArrayAndBuffer(s_geoSize, s_geo, s_vertexArray, s_vertexBuffer);
         
-        s_program = [ShaderHelper createProgramForVertexShader:[[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"vsh"]
-                                                fragmentShader:[[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"fsh"]];
+        s_program = [ShaderHelper createProgram:@"Shader"
+                                 withAttributes:SHADERHELPER_PNC];
         s_uniformMVPMatrix = glGetUniformLocation(s_program, "modelViewProjectionMatrix");
         s_uniformNormalMatrix = glGetUniformLocation(s_program, "normalMatrix");
         s_uniformColor2 = glGetUniformLocation(s_program, "color2");

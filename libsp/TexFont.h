@@ -16,7 +16,7 @@
 class TexFont
 {
 public:
-    TexFont(const std::string &family, int size);
+    TexFont(const std::string &filepath, int size);
     
     void render(const std::string &text, const GLcolor4f &color,
                 const GLKMatrix4 &modelView, const GLKMatrix4 &proj);
@@ -32,15 +32,14 @@ private:
 
     static void initalizeTexFont();
     
-    GLuint m_tex;
-    
     struct GlyphInfo
     {
-        float baselineHeight;
         float width;
     };
     
+    GLuint m_tex;
     GlyphInfo m_info[127];
+    float m_width;
 };
 
 

@@ -14,6 +14,8 @@
 
 void genVertexArrayAndBuffer(const GLuint size, GLvncprimf * const geo,
                              GLuint &vertexArray, GLuint &vertexBuffer);
+void genVertexArrayAndBuffer(const GLuint size, GLgeoprimf * const geo,
+                             GLuint &vertexArray, GLuint &vertexBuffer);
 
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))

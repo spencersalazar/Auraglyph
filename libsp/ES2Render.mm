@@ -27,3 +27,25 @@ void genVertexArrayAndBuffer(const GLuint size, GLvncprimf * const geo,
     
     glBindVertexArrayOES(0);
 }
+
+void genVertexArrayAndBuffer(const GLuint size, GLgeoprimf * const geo,
+                             GLuint &vertexArray, GLuint &vertexBuffer)
+{
+    glGenVertexArraysOES(1, &vertexArray);
+    glBindVertexArrayOES(vertexArray);
+    
+    glGenBuffers(1, &vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, size*sizeof(GLvncprimf), geo, GL_STATIC_DRAW);
+    
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(0));
+    glEnableVertexAttribArray(GLKVertexAttribNormal);
+    glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(sizeof(GLvertex3f)));
+    glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(2*sizeof(GLvertex3f)));
+    glEnableVertexAttribArray(GLKVertexAttribColor);
+    glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(2*sizeof(GLvertex3f) + sizeof(GLvertex2f)));
+    
+    glBindVertexArrayOES(0);
+}

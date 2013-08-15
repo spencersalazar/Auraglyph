@@ -174,8 +174,8 @@ enum TouchMode
 {
     [EAGLContext setCurrentContext:self.context];
     
-    _program = [ShaderHelper createProgramForVertexShader:[[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"vsh"]
-                                           fragmentShader:[[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"fsh"]];
+    _program = [ShaderHelper createProgram:@"Shader"
+                            withAttributes:SHADERHELPER_PNC];
     
     // Get uniform locations.
     uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");

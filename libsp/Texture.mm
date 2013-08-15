@@ -23,23 +23,7 @@ GLuint loadTexture(NSString *name)
 	CGContextRef spriteContext;
 	GLubyte *spriteData;
 	size_t	width, height;
-	
-//	// Sets up matrices and transforms for OpenGL ES
-//	glViewport(0, 0, backingWidth, backingHeight);
-//	glMatrixMode(GL_PROJECTION);
-//	glLoadIdentity();
-//	glOrthof(-1.0f, 1.0f, -1.5f, 1.5f, -1.0f, 1.0f);
-//	glMatrixMode(GL_MODELVIEW);
-//	
-//	// Clears the view with black
-//	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-//	
-//	// Sets up pointers and enables states needed for using vertex arrays and textures
-//	glVertexPointer(2, GL_FLOAT, 0, spriteVertices);
-//	glEnableClientState(GL_VERTEX_ARRAY);
-//	glTexCoordPointer(2, GL_SHORT, 0, spriteTexcoords);
-//	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	
+		
 	// Creates a Core Graphics image from an image file
 	spriteImage = [UIImage imageNamed:name].CGImage;
     

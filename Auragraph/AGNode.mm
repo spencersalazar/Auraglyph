@@ -56,8 +56,8 @@ void AGConnection::initalize()
     {
         s_init = true;
         
-        s_program = [ShaderHelper createProgramForVertexShader:[[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"vsh"]
-                                                fragmentShader:[[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"fsh"]];
+        s_program = [ShaderHelper createProgram:@"Shader"
+                                 withAttributes:SHADERHELPER_ATTR_POSITION | SHADERHELPER_ATTR_NORMAL | SHADERHELPER_ATTR_COLOR];
         s_uniformMVPMatrix = glGetUniformLocation(s_program, "modelViewProjectionMatrix");
         s_uniformNormalMatrix = glGetUniformLocation(s_program, "normalMatrix");
         s_uniformColor2 = glGetUniformLocation(s_program, "color2");
@@ -102,7 +102,6 @@ void AGConnection::updatePath()
     
     m_geo[0].vertex = m_inTerminal;
     m_geo[1].vertex = m_outTerminal;
-    m_geo[0].normal = m_geo[1].normal = GLvertex3f(0, 0, 1);
     m_geo[0].color = m_geo[1].color = GLcolor4f(0.75, 0.75, 0.75, 1);
     
     glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
@@ -166,8 +165,6 @@ void AGControlNode::initializeControlNode()
         s_geo[1].vertex = GLvertex3f(radius, -radius, 0);
         s_geo[2].vertex = GLvertex3f(-radius, -radius, 0);
         s_geo[3].vertex = GLvertex3f(-radius, radius, 0);
-        s_geo[0].normal = s_geo[1].normal = s_geo[2].normal = s_geo[3].normal = GLvertex3f(0, 0, 1);
-        s_geo[0].color = s_geo[1].color = s_geo[2].color = s_geo[3].color = GLcolor4f(1, 1, 1, 1);
         
         glGenVertexArraysOES(1, &s_vertexArray);
         glBindVertexArrayOES(s_vertexArray);
@@ -251,8 +248,6 @@ void AGInputNode::initializeInputNode()
         s_geo[0].vertex = GLvertex3f(-radius, radius, 0);
         s_geo[1].vertex = GLvertex3f(radius, radius, 0);
         s_geo[2].vertex = GLvertex3f(0, -(sqrtf(radius*radius*4 - radius*radius) - radius), 0);
-        s_geo[0].normal = s_geo[1].normal = s_geo[2].normal = GLvertex3f(0, 0, 1);
-        s_geo[0].color = s_geo[1].color = s_geo[2].color = GLcolor4f(1, 1, 1, 1);
         
         glGenVertexArraysOES(1, &s_vertexArray);
         glBindVertexArrayOES(s_vertexArray);
@@ -338,8 +333,6 @@ void AGOutputNode::initializeOutputNode()
         s_geo[0].vertex = GLvertex3f(-radius, -radius, 0);
         s_geo[1].vertex = GLvertex3f(radius, -radius, 0);
         s_geo[2].vertex = GLvertex3f(0, sqrtf(radius*radius*4 - radius*radius) - radius, 0);
-        s_geo[0].normal = s_geo[1].normal = s_geo[2].normal = GLvertex3f(0, 0, 1);
-        s_geo[0].color = s_geo[1].color = s_geo[2].color = GLcolor4f(1, 1, 1, 1);
         
         glGenVertexArraysOES(1, &s_vertexArray);
         glBindVertexArrayOES(s_vertexArray);

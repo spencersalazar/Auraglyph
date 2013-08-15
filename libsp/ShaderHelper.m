@@ -13,8 +13,17 @@
 
 #pragma mark -  OpenGL ES 2 shader compilation
 
++ (GLuint)createProgram:(NSString *)name
+         withAttributes:(int)attributes
+{
+    return [ShaderHelper createProgramForVertexShader:[[NSBundle mainBundle] pathForResource:name ofType:@"vsh"]
+                                       fragmentShader:[[NSBundle mainBundle] pathForResource:name ofType:@"fsh"]
+            withAttributes:attributes];
+}
+
 + (GLuint)createProgramForVertexShader:(NSString *)vsh
-                        fragmentShader:(NSString *)fsh;
+                        fragmentShader:(NSString *)fsh
+                        withAttributes:(int)attributes
 {
     GLuint vertShader, fragShader;
     NSString *vertShaderPathname, *fragShaderPathname;
@@ -47,8 +56,14 @@
     
     // Bind attribute locations.
     // This needs to be done prior to linking.
-    glBindAttribLocation(_program, GLKVertexAttribPosition, "position");
-    glBindAttribLocation(_program, GLKVertexAttribNormal, "normal");
+    if(attributes & SHADERHELPER_ATTR_POSITION)
+        glBindAttribLocation(_program, GLKVertexAttribPosition, "position");
+    if(attributes & SHADERHELPER_ATTR_NORMAL)
+        glBindAttribLocation(_program, GLKVertexAttribNormal, "normal");
+    if(attributes & SHADERHELPER_ATTR_COLOR)
+        glBindAttribLocation(_program, GLKVertexAttribColor, "color");
+    if(attributes & SHADERHELPER_ATTR_TEXCOORD0)
+        glBindAttribLocation(_program, GLKVertexAttribTexCoord0, "texcoord0");
     
     // Link program.
     if (![ShaderHelper linkProgram:_program]) {

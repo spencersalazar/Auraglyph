@@ -74,8 +74,6 @@ void AGAudioNode::initializeAudioNode()
         {
             float theta = 2*M_PI*((float)i)/((float)(s_geoSize));
             s_geo[i].vertex = GLvertex3f(radius*cosf(theta), radius*sinf(theta), 0);
-            s_geo[i].normal = GLvertex3f(0, 0, 1);
-            s_geo[i].color = GLcolor4f(1, 1, 1, 1);
         }
         
         genVertexArrayAndBuffer(s_geoSize, s_geo, s_vertexArray, s_vertexBuffer);
@@ -258,12 +256,6 @@ void AGAudioOutputNode::initializeAudioOutputNode()
         s_iconGeo[6].vertex = GLvertex3f(-radius*0.5*0.16, radius*0.5, 0);
         s_iconGeo[7].vertex = GLvertex3f(-radius*0.5*0.16, -radius*0.5, 0);
         
-        for(int i = 0; i < s_iconGeoSize; i++)
-        {
-            s_iconGeo[i].normal = GLvertex3f(0, 0, 1);
-            s_iconGeo[i].color = GLcolor4f(1, 1, 1, 1);
-        }
-
         genVertexArrayAndBuffer(s_iconGeoSize, s_iconGeo, s_iconVertexArray, s_iconVertexBuffer);
     }
 }
@@ -303,8 +295,6 @@ void AGAudioSineWaveNode::initializeAudioSineWaveNode()
             float y = radius*0.66*sinf(t*M_PI*2);
             
             s_iconGeo[i].vertex = GLvertex3f(x, y, 0);
-            s_iconGeo[i].normal = GLvertex3f(0, 0, 1);
-            s_iconGeo[i].color = GLcolor4f(1, 1, 1, 1);
         }
         
         genVertexArrayAndBuffer(s_iconGeoSize, s_iconGeo, s_iconVertexArray, s_iconVertexBuffer);
@@ -363,12 +353,6 @@ void AGAudioSquareWaveNode::initializeAudioSquareWaveNode()
         s_iconGeo[3].vertex = GLvertex3f(0, -radius_y, 0);
         s_iconGeo[4].vertex = GLvertex3f(radius_x, -radius_y, 0);
         s_iconGeo[5].vertex = GLvertex3f(radius_x, 0, 0);
-        
-        for(int i = 0; i < s_iconGeoSize; i++)
-        {
-            s_iconGeo[i].normal = GLvertex3f(0, 0, 1);
-            s_iconGeo[i].color = GLcolor4f(1, 1, 1, 1);
-        }
         
         genVertexArrayAndBuffer(s_iconGeoSize, s_iconGeo, s_iconVertexArray, s_iconVertexBuffer);
     }
@@ -441,12 +425,6 @@ void AGAudioSawtoothWaveNode::initializeAudioSawtoothWaveNode()
         s_iconGeo[2].vertex = GLvertex3f(radius_x, -radius_y, 0);
         s_iconGeo[3].vertex = GLvertex3f(radius_x, 0, 0);
         
-        for(int i = 0; i < s_iconGeoSize; i++)
-        {
-            s_iconGeo[i].normal = GLvertex3f(0, 0, 1);
-            s_iconGeo[i].color = GLcolor4f(1, 1, 1, 1);
-        }
-        
         genVertexArrayAndBuffer(s_iconGeoSize, s_iconGeo, s_iconVertexArray, s_iconVertexBuffer);
     }
 }
@@ -517,12 +495,6 @@ void AGAudioTriangleWaveNode::initializeAudioTriangleWaveNode()
         s_iconGeo[1].vertex = GLvertex3f(-radius_x*0.5, radius_y, 0);
         s_iconGeo[2].vertex = GLvertex3f(radius_x*0.5, -radius_y, 0);
         s_iconGeo[3].vertex = GLvertex3f(radius_x, 0, 0);
-        
-        for(int i = 0; i < s_iconGeoSize; i++)
-        {
-            s_iconGeo[i].normal = GLvertex3f(0, 0, 1);
-            s_iconGeo[i].color = GLcolor4f(1, 1, 1, 1);
-        }
         
         genVertexArrayAndBuffer(s_iconGeoSize, s_iconGeo, s_iconVertexArray, s_iconVertexBuffer);
     }

@@ -69,8 +69,8 @@ public:
         {
             s_initNode = true;
             
-            s_program = [ShaderHelper createProgramForVertexShader:[[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"vsh"]
-                                                    fragmentShader:[[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"fsh"]];
+            s_program = [ShaderHelper createProgram:@"Shader"
+                                     withAttributes:SHADERHELPER_ATTR_POSITION | SHADERHELPER_ATTR_NORMAL | SHADERHELPER_ATTR_COLOR];
             s_uniformMVPMatrix = glGetUniformLocation(s_program, "modelViewProjectionMatrix");
             s_uniformNormalMatrix = glGetUniformLocation(s_program, "normalMatrix");
             s_uniformColor2 = glGetUniformLocation(s_program, "color2");
