@@ -56,6 +56,7 @@ GLuint AGAudioTriangleWaveNode::s_iconGeoType = 0; // e.g. GL_LINE_STRIP, GL_LIN
 //------------------------------------------------------------------------------
 // ### AGAudioNode ###
 //------------------------------------------------------------------------------
+#pragma mark AGAudioNode
 
 void AGAudioNode::initializeAudioNode()
 {
@@ -232,9 +233,12 @@ GLvertex3f AGAudioNode::positionForOutboundConnection(AGConnection * connection)
 //------------------------------------------------------------------------------
 // ### AGAudioOutputNode ###
 //------------------------------------------------------------------------------
+#pragma mark AGAudioOutputNode
 
 void AGAudioOutputNode::initializeAudioOutputNode()
 {
+    initializeAudioNode();
+    
     if(!s_initAudioOutputNode)
     {
         s_initAudioOutputNode = true;
@@ -277,9 +281,12 @@ void AGAudioOutputNode::renderAudio(float *input, float *output, int nFrames)
 //------------------------------------------------------------------------------
 // ### AGAudioSineWaveNode ###
 //------------------------------------------------------------------------------
+#pragma mark AGAudioSineWaveNode
 
 void AGAudioSineWaveNode::initializeAudioSineWaveNode()
 {
+    initializeAudioNode();
+    
     if(!s_initAudioSineWaveNode)
     {
         s_initAudioSineWaveNode = true;
@@ -314,12 +321,30 @@ void AGAudioSineWaveNode::renderAudio(float *input, float *output, int nFrames)
     }
 }
 
+void AGAudioSineWaveNode::renderIcon()
+{
+    initializeAudioSineWaveNode();
+    
+    // render icon
+    glBindVertexArrayOES(s_iconVertexArray);
+    
+    glDrawArrays(s_iconGeoType, 0, s_iconGeoSize);
+}
+
+AGAudioNode *AGAudioSineWaveNode::create(const GLvertex3f &pos)
+{
+    return new AGAudioSineWaveNode(pos);
+}
+
 //------------------------------------------------------------------------------
 // ### AGAudioSquareWaveNode ###
 //------------------------------------------------------------------------------
+#pragma mark AGAudioSquareWaveNode
 
 void AGAudioSquareWaveNode::initializeAudioSquareWaveNode()
 {
+    initializeAudioNode();
+    
     if(!s_initAudioSquareWaveNode)
     {
         s_initAudioSquareWaveNode = true;
@@ -374,12 +399,31 @@ void AGAudioSquareWaveNode::renderAudio(float *input, float *output, int nFrames
 }
 
 
+void AGAudioSquareWaveNode::renderIcon()
+{
+    initializeAudioSquareWaveNode();
+    
+    // render icon
+    glBindVertexArrayOES(s_iconVertexArray);
+    
+    glDrawArrays(s_iconGeoType, 0, s_iconGeoSize);
+}
+
+AGAudioNode *AGAudioSquareWaveNode::create(const GLvertex3f &pos)
+{
+    return new AGAudioSquareWaveNode(pos);
+}
+
+
 //------------------------------------------------------------------------------
 // ### AGAudioSawtoothWaveNode ###
 //------------------------------------------------------------------------------
+#pragma mark AGAudioSawtoothWaveNode
 
 void AGAudioSawtoothWaveNode::initializeAudioSawtoothWaveNode()
 {
+    initializeAudioNode();
+    
     if(!s_initAudioSawtoothWaveNode)
     {
         s_initAudioSawtoothWaveNode = true;
@@ -432,12 +476,31 @@ void AGAudioSawtoothWaveNode::renderAudio(float *input, float *output, int nFram
 }
 
 
+void AGAudioSawtoothWaveNode::renderIcon()
+{
+    initializeAudioSawtoothWaveNode();
+    
+    // render icon
+    glBindVertexArrayOES(s_iconVertexArray);
+    
+    glDrawArrays(s_iconGeoType, 0, s_iconGeoSize);
+}
+
+AGAudioNode *AGAudioSawtoothWaveNode::create(const GLvertex3f &pos)
+{
+    return new AGAudioSawtoothWaveNode(pos);
+}
+
+
 //------------------------------------------------------------------------------
 // ### AGAudioTriangleWaveNode ###
 //------------------------------------------------------------------------------
+#pragma mark AGAudioTriangleWaveNode
 
 void AGAudioTriangleWaveNode::initializeAudioTriangleWaveNode()
 {
+    initializeAudioNode();
+    
     if(!s_initAudioTriangleWaveNode)
     {
         s_initAudioTriangleWaveNode = true;
@@ -490,6 +553,64 @@ void AGAudioTriangleWaveNode::renderAudio(float *input, float *output, int nFram
         m_phase += m_freq/sampleRate();
         if(m_phase >= 1.0) m_phase -= 1.0;
     }
+}
+
+
+void AGAudioTriangleWaveNode::renderIcon()
+{
+    initializeAudioTriangleWaveNode();
+    
+    // render icon
+    glBindVertexArrayOES(s_iconVertexArray);
+    
+    glDrawArrays(s_iconGeoType, 0, s_iconGeoSize);
+}
+
+
+AGAudioNode *AGAudioTriangleWaveNode::create(const GLvertex3f &pos)
+{
+    return new AGAudioTriangleWaveNode(pos);
+}
+
+
+//------------------------------------------------------------------------------
+// ### AGAudioNodeManager ###
+//------------------------------------------------------------------------------
+#pragma mark AGAudioNodeManager
+
+AGAudioNodeManager *AGAudioNodeManager::s_instance = NULL;
+
+const AGAudioNodeManager &AGAudioNodeManager::instance()
+{
+    if(s_instance == NULL)
+    {
+        s_instance = new AGAudioNodeManager();
+    }
+    
+    return *s_instance;
+}
+
+AGAudioNodeManager::AGAudioNodeManager()
+{
+    m_audioNodeTypes.push_back(new AudioNodeType("SineWave", AGAudioSineWaveNode::renderIcon, AGAudioSineWaveNode::create));
+    m_audioNodeTypes.push_back(new AudioNodeType("SquareWave", AGAudioSquareWaveNode::renderIcon, AGAudioSquareWaveNode::create));
+    m_audioNodeTypes.push_back(new AudioNodeType("SawtoothWave", AGAudioSawtoothWaveNode::renderIcon, AGAudioSawtoothWaveNode::create));
+    m_audioNodeTypes.push_back(new AudioNodeType("SquareWave", AGAudioTriangleWaveNode::renderIcon, AGAudioTriangleWaveNode::create));
+}
+
+const std::vector<AGAudioNodeManager::AudioNodeType *> &AGAudioNodeManager::audioNodeTypes() const
+{
+    return m_audioNodeTypes;
+}
+
+void AGAudioNodeManager::renderNodeTypeIcon(AudioNodeType *type) const
+{
+    type->renderIcon();
+}
+
+AGAudioNode * AGAudioNodeManager::createNodeType(AudioNodeType *type, const GLvertex3f &pos) const
+{
+    return type->createNode(pos);
 }
 
 

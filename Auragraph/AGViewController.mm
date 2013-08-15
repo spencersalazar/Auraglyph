@@ -15,6 +15,7 @@
 #import "AGNode.h"
 #import "AGAudioNode.h"
 #import "AGAudioManager.h"
+#import "AGUserInterface.h"
 
 #import <list>
 
@@ -50,10 +51,11 @@ DrawPoint drawline[nDrawline];
 
 enum TouchMode
 {
-    TOUCHMODE_NONE,
+    TOUCHMODE_NONE = 0,
     TOUCHMODE_DRAWNODE,
     TOUCHMODE_MOVENODE,
     TOUCHMODE_CONNECT,
+    TOUCHMODE_SELECTNODETYPE,
 };
 
 
@@ -88,6 +90,9 @@ enum TouchMode
     // MOVENODE state
     GLvertex3f _anchorOffset;
     AGNode * _moveNode;
+    
+    // SELECTNODETYPE
+    AGUINodeSelector * _nodeSelector;
     
     std::list<AGNode *> _nodes;
     std::list<AGConnection *> _connections;
@@ -240,13 +245,17 @@ enum TouchMode
     [self updateMatrices];
     
     _osc += self.timeSinceLastUpdate * 1.0f;
-    _t += self.timeSinceLastUpdate;
+    float dt = self.timeSinceLastUpdate;
+    _t += dt;
     
     for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
-        (*i)->update(_t, self.timeSinceLastUpdate);
+        (*i)->update(_t, dt);
     for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
-        (*i)->update(_t, self.timeSinceLastUpdate);
+        (*i)->update(_t, dt);
     
+    if(_nodeSelector)
+        _nodeSelector->update(_t, dt);
+
     glBindVertexArrayOES(_vertexArray);
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(drawline), drawline, GL_DYNAMIC_DRAW);
@@ -258,27 +267,40 @@ enum TouchMode
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    // Render the object again with ES2
-    glUseProgram(_program);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    // normal blending
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // additive blending
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     
+    // render connections
     for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
         (*i)->render();
     
+    // render nodes
     for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
         (*i)->render();
     
+    // render drawing outline    
+    glUseProgram(_program);
+
     glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
     glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
-    GLcolor4f color2(1, 1, 1, 1);
-    glUniform4fv(uniforms[UNIFORM_COLOR2], 1, (float*)&color2);
+    glUniform4fv(uniforms[UNIFORM_COLOR2], 1, (float*) &GLcolor4f::white());
     
     glBindVertexArrayOES(_vertexArray);
     
+    glPointSize(4.0f);
     glLineWidth(4.0f);
     if(nDrawlineUsed == 1)
         glDrawArrays(GL_POINTS, 0, nDrawlineUsed);
     else
         glDrawArrays(GL_LINE_STRIP, 0, nDrawlineUsed);
+    
+    // render node selector
+    if(_nodeSelector)
+        _nodeSelector->render();
 }
 
 
@@ -292,6 +314,15 @@ enum TouchMode
         (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
     GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, p.y, 0.01),
                                       _modelView, _projection, viewport, NULL);
+    
+    if(_mode == TOUCHMODE_SELECTNODETYPE)
+    {
+        GLvertex3f pos(vec.x, -vec.y, vec.z);
+        
+        _nodeSelector->touchDown(pos);
+        
+        return;
+    }
     
     AGNode::HitTestResult hit;
     GLvertex2f pos(vec.x, -vec.y);
@@ -374,7 +405,13 @@ enum TouchMode
         nDrawlineUsed++;
     }
     
-    if(_mode == TOUCHMODE_CONNECT)
+    if(_mode == TOUCHMODE_SELECTNODETYPE)
+    {
+        GLvertex3f pos(vec.x, -vec.y, vec.z);
+        
+        _nodeSelector->touchMove(pos);
+    }
+    else if(_mode == TOUCHMODE_CONNECT)
     {
         AGNode::HitTestResult hit;
         GLvertex2f pos(vec.x, -vec.y);
@@ -458,7 +495,22 @@ enum TouchMode
     GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, p.y, 0.01),
                                       _modelView, _projection, viewport, NULL);
 
-    if(_mode == TOUCHMODE_CONNECT)
+    TouchMode newMode = TOUCHMODE_NONE;
+    
+    if(_mode == TOUCHMODE_SELECTNODETYPE)
+    {
+        GLvertex3f pos(vec.x, -vec.y, vec.z);
+        
+        _nodeSelector->touchUp(pos);
+        
+        AGNode * newNode = _nodeSelector->createNode();
+        if(newNode)
+            _nodes.push_back(newNode);
+        
+        delete _nodeSelector;
+        _nodeSelector = NULL;
+    }
+    else if(_mode == TOUCHMODE_CONNECT)
     {
         AGNode::HitTestResult hit;
         GLvertex2f pos(vec.x, -vec.y);
@@ -518,17 +570,23 @@ enum TouchMode
         
         if(figure == AG_FIGURE_CIRCLE)
         {
-            AGAudioNode * node;
-            int r = rand();
-            if(r > RAND_MAX/4*3)
-                node = new AGAudioTriangleWaveNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
-            else if(r > RAND_MAX/2)
-                node = new AGAudioSineWaveNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
-            else if(r > RAND_MAX/4)
-                node = new AGAudioSawtoothWaveNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
-            else
-                node = new AGAudioSquareWaveNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
-            _nodes.push_back(node);
+            GLvertex3f pos = GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z);
+            
+//            AGAudioNode * node;
+//            int r = rand();
+//            if(r > RAND_MAX/4*3)
+//                node = new AGAudioTriangleWaveNode(pos);
+//            else if(r > RAND_MAX/2)
+//                node = new AGAudioSineWaveNode(pos);
+//            else if(r > RAND_MAX/4)
+//                node = new AGAudioSawtoothWaveNode(pos);
+//            else
+//                node = new AGAudioSquareWaveNode(pos);
+//            _nodes.push_back(node);
+            
+            _nodeSelector = new AGUINodeSelector(pos);
+            newMode = TOUCHMODE_SELECTNODETYPE;
+            
             nDrawlineUsed = 0;
         }
         else if(figure == AG_FIGURE_SQUARE)
@@ -550,8 +608,13 @@ enum TouchMode
             nDrawlineUsed = 0;
         }
     }
+    else if(_mode == TOUCHMODE_SELECTNODETYPE)
+    {
+        delete _nodeSelector;
+        _nodeSelector = NULL;
+    }
     
-    _mode = TOUCHMODE_NONE;
+    _mode = newMode;
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event

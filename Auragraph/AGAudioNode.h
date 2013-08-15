@@ -14,6 +14,8 @@
 #import <Foundation/Foundation.h>
 #import "ShaderHelper.h"
 #import <list>
+#import <vector>
+#import <string>
 #import "AGNode.h"
 
 
@@ -112,6 +114,9 @@ public:
     
     virtual void renderAudio(float *input, float *output, int nFrames);
     
+    static void renderIcon();
+    static AGAudioNode *create(const GLvertex3f &pos);
+    
 private:
     float m_freq;
     float m_phase;
@@ -139,6 +144,9 @@ public:
     
     virtual void renderAudio(float *input, float *output, int nFrames);
     
+    static void renderIcon();
+    static AGAudioNode *create(const GLvertex3f &pos);
+
 private:
     float m_freq;
     float m_phase;
@@ -165,6 +173,9 @@ public:
     virtual int numInputPorts() const { return 0; }
     
     virtual void renderAudio(float *input, float *output, int nFrames);
+    
+    static void renderIcon();
+    static AGAudioNode *create(const GLvertex3f &pos);
     
 private:
     float m_freq;
@@ -193,6 +204,9 @@ public:
     
     virtual void renderAudio(float *input, float *output, int nFrames);
     
+    static void renderIcon();
+    static AGAudioNode *create(const GLvertex3f &pos);
+
 private:
     float m_freq;
     float m_phase;
@@ -206,6 +220,41 @@ private:
     static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
     
     static void initializeAudioTriangleWaveNode();
+};
+
+
+class AGAudioNodeManager
+{
+public:
+    static const AGAudioNodeManager &instance();
+    
+    struct AudioNodeType
+    {
+    private:
+        AudioNodeType(std::string _name, void (*_renderIcon)(),
+                      AGAudioNode *(*_createNode)(const GLvertex3f &pos)) :
+        name(_name),
+        renderIcon(_renderIcon),
+        createNode(_createNode)
+        { }
+        
+        std::string name;
+        void (*renderIcon)();
+        AGAudioNode *(*createNode)(const GLvertex3f &pos);
+        
+        friend class AGAudioNodeManager;
+    };
+    
+    const std::vector<AudioNodeType *> &audioNodeTypes() const;
+    void renderNodeTypeIcon(AudioNodeType *type) const;
+    AGAudioNode * createNodeType(AudioNodeType *type, const GLvertex3f &pos) const;
+    
+private:
+    static AGAudioNodeManager * s_instance;
+    
+    std::vector<AudioNodeType *> m_audioNodeTypes;
+    
+    AGAudioNodeManager();
 };
 
 

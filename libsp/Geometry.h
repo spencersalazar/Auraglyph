@@ -134,6 +134,11 @@ struct GLvertex2f
 // geometry primitve, i.e. vertex/normal/uv/color
 struct GLgeoprimf
 {
+    GLgeoprimf() :
+    vertex(GLvertex3f(0, 0, 0)), normal(GLvertex3f(0, 0, 1)),
+    texcoord(GLvertex2f(0, 0)), color(GLcolor4f(1, 1, 1, 1))
+    { }
+    
     GLvertex3f vertex;
     GLvertex3f normal;
     GLvertex2f texcoord;
@@ -151,6 +156,10 @@ struct GLvcprimf
 // vertex + normal + color primitve, i.e. vertex/normal/color
 struct GLvncprimf
 {
+    GLvncprimf() :
+    vertex(GLvertex3f(0, 0, 0)), normal(GLvertex3f(0, 0, 1)), color(GLcolor4f(1, 1, 1, 1))
+    { }
+
     GLvertex3f vertex;
     GLvertex3f normal;
     GLcolor4f color;
