@@ -99,12 +99,12 @@ void AGUINodeSelector::render()
     
     glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
     glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
-    glUniform4fv(s_uniformColor2, 1, (float*) &GLcolor4f::white());
+    glUniform4fv(s_uniformColor2, 1, (float*) &GLcolor4f::white);
     
     glLineWidth(4.0f);
     glDrawArrays(GL_LINE_LOOP, s_geoOutlineOffset, s_geoOutlineSize);
     
-    GLcolor4f blackA = GLcolor4f::black();
+    GLcolor4f blackA = GLcolor4f::black;
     blackA.a = 0.75;
     glUniform4fv(s_uniformColor2, 1, (float*) &blackA);
     
@@ -138,7 +138,7 @@ void AGUINodeSelector::render()
             GLKMatrix3 hitNormal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
             GLKMatrix4 hitMvp = GLKMatrix4Multiply(projection, hitModelView);
             
-            GLcolor4f whiteA = GLcolor4f::white();
+            GLcolor4f whiteA = GLcolor4f::white;
             whiteA.a = 0.75;
             
             glUniform4fv(s_uniformColor2, 1, (float*) &whiteA);
@@ -149,11 +149,11 @@ void AGUINodeSelector::render()
             
             glDrawArrays(GL_TRIANGLE_STRIP, s_geoFillOffset, s_geoFillSize);
             
-            glUniform4fv(s_uniformColor2, 1, (float*) &GLcolor4f::black());
+            glUniform4fv(s_uniformColor2, 1, (float*) &GLcolor4f::black);
         }
         else
         {
-            glUniform4fv(s_uniformColor2, 1, (float*) &GLcolor4f::white());
+            glUniform4fv(s_uniformColor2, 1, (float*) &GLcolor4f::white);
         }
         
         glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, mvp.m);

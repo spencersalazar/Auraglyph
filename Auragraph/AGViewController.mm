@@ -295,7 +295,7 @@ enum TouchMode
 
     glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
     glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
-    glUniform4fv(uniforms[UNIFORM_COLOR2], 1, (float*) &GLcolor4f::white());
+    glUniform4fv(uniforms[UNIFORM_COLOR2], 1, (float*) &GLcolor4f::white);
     
     glBindVertexArrayOES(_vertexArray);
     
@@ -311,7 +311,7 @@ enum TouchMode
         _nodeSelector->render();
     
     GLKMatrix4 textMV = GLKMatrix4Translate(_modelView, -0.0225, -0.07, 3.89);
-    _font->render("auragraph", GLcolor4f::white(), textMV, _projection);
+    _font->render("auragraph", GLcolor4f::white, textMV, _projection);
 }
 
 

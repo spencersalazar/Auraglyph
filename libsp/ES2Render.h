@@ -12,8 +12,14 @@
 #import <GLKit/GLKit.h>
 #import "Geometry.h"
 
+void genVertexArrayAndBuffer(const GLuint size, GLvertex3f * const geo,
+                             GLuint &vertexArray, GLuint &vertexBuffer,
+                             const GLcolor4f &color = GLcolor4f(1, 1, 1, 1),
+                             const GLvertex3f &normal = GLvertex3f(0, 0, 1));
+
 void genVertexArrayAndBuffer(const GLuint size, GLvncprimf * const geo,
                              GLuint &vertexArray, GLuint &vertexBuffer);
+
 void genVertexArrayAndBuffer(const GLuint size, GLgeoprimf * const geo,
                              GLuint &vertexArray, GLuint &vertexBuffer);
 

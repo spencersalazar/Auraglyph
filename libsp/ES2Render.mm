@@ -8,6 +8,30 @@
 
 #include "ES2Render.h"
 
+void genVertexArrayAndBuffer(const GLuint size, GLvertex3f * const geo,
+                             GLuint &vertexArray, GLuint &vertexBuffer,
+                             const GLcolor4f &color,
+                             const GLvertex3f &normal)
+{
+    glGenVertexArraysOES(1, &vertexArray);
+    glBindVertexArrayOES(vertexArray);
+    
+    glGenBuffers(1, &vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, size*sizeof(GLvertex3f), geo, GL_STATIC_DRAW);
+    
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), BUFFER_OFFSET(0));
+    
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
+    glDisableVertexAttribArray(GLKVertexAttribColor);
+    
+    glVertexAttrib3fv(GLKVertexAttribNormal, (const float *) &normal);
+    glDisableVertexAttribArray(GLKVertexAttribNormal);
+    
+    glBindVertexArrayOES(0);
+}
+
 void genVertexArrayAndBuffer(const GLuint size, GLvncprimf * const geo,
                              GLuint &vertexArray, GLuint &vertexBuffer)
 {

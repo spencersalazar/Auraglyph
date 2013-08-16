@@ -95,7 +95,6 @@ private:
     static GLuint s_iconVertexArray;
     static GLuint s_iconVertexBuffer;
     static GLuint s_iconGeoSize;
-    static GLvncprimf * s_iconGeo;
     static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
     static AGPortInfo * s_portInfo;
     
@@ -125,7 +124,6 @@ private:
     static GLuint s_iconVertexArray;
     static GLuint s_iconVertexBuffer;
     static GLuint s_iconGeoSize;
-    static GLvncprimf * s_iconGeo;
     static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
     static AGPortInfo * s_portInfo;
 
@@ -156,7 +154,6 @@ private:
     static GLuint s_iconVertexArray;
     static GLuint s_iconVertexBuffer;
     static GLuint s_iconGeoSize;
-    static GLvncprimf * s_iconGeo;
     static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
     static AGPortInfo * s_portInfo;
 
@@ -187,7 +184,6 @@ private:
     static GLuint s_iconVertexArray;
     static GLuint s_iconVertexBuffer;
     static GLuint s_iconGeoSize;
-    static GLvncprimf * s_iconGeo;
     static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
     static AGPortInfo * s_portInfo;
 
@@ -218,7 +214,6 @@ private:
     static GLuint s_iconVertexArray;
     static GLuint s_iconVertexBuffer;
     static GLuint s_iconGeoSize;
-    static GLvncprimf * s_iconGeo;
     static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
     static AGPortInfo * s_portInfo;
 

@@ -10,17 +10,17 @@
 #include <stdio.h>
 
 
-static const GLcolor4f g_white(1, 1, 1, 1);
-static const GLcolor4f g_red(1, 0, 0, 1);
-static const GLcolor4f g_green(0, 1, 0, 1);
-static const GLcolor4f g_blue(0, 0, 1, 1);
-static const GLcolor4f g_black(0, 0, 0, 1);
+const GLcolor4f GLcolor4f::white(1, 1, 1, 1);
+const GLcolor4f GLcolor4f::red(1, 0, 0, 1);
+const GLcolor4f GLcolor4f::green(0, 1, 0, 1);
+const GLcolor4f GLcolor4f::blue(0, 0, 1, 1);
+const GLcolor4f GLcolor4f::black(0, 0, 0, 1);
 
-const GLcolor4f &GLcolor4f::white() { return g_white; }
-const GLcolor4f &GLcolor4f::red() { return g_red; }
-const GLcolor4f &GLcolor4f::green() { return g_green; }
-const GLcolor4f &GLcolor4f::blue() { return g_blue; }
-const GLcolor4f &GLcolor4f::black() { return g_black; }
+//GLcolor4f GLcolor4f::white() { return GLcolor4f(1, 1, 1, 1); }
+//GLcolor4f GLcolor4f::red() { return GLcolor4f(1, 0, 0, 1); }
+//GLcolor4f GLcolor4f::green() { return GLcolor4f(0, 1, 0, 1); }
+//GLcolor4f GLcolor4f::blue() { return GLcolor4f(0, 0, 1, 1); }
+//GLcolor4f GLcolor4f::black() { return GLcolor4f(0, 0, 0, 1); }
 
 GLvertex3f::GLvertex3f(const GLvertex2f &v)
 {

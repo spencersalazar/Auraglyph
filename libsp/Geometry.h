@@ -84,11 +84,11 @@ struct GLcolor4f
         this->a = a;
     }
     
-    static const GLcolor4f &white();
-    static const GLcolor4f &red();
-    static const GLcolor4f &green();
-    static const GLcolor4f &blue();
-    static const GLcolor4f &black();
+    static const GLcolor4f white;
+    static const GLcolor4f red;
+    static const GLcolor4f green;
+    static const GLcolor4f blue;
+    static const GLcolor4f black;
     
 } __attribute__((packed));
 
