@@ -103,6 +103,7 @@ public:
     virtual int numInputPorts() const { return 2; }
     
     virtual void setInputPortValue(int port, float value);
+    virtual void getInputPortValue(int port, float &value) const;
     
     virtual void renderAudio(float *input, float *output, int nFrames);
     
@@ -135,7 +136,8 @@ public:
     virtual int numInputPorts() const { return 2; }
     
     virtual void setInputPortValue(int port, float value);
-    
+    virtual void getInputPortValue(int port, float &value) const;
+
     virtual void renderAudio(float *input, float *output, int nFrames);
     
     static void renderIcon();
@@ -167,7 +169,8 @@ public:
     virtual int numInputPorts() const { return 2; }
     
     virtual void setInputPortValue(int port, float value);
-    
+    virtual void getInputPortValue(int port, float &value) const;
+
     virtual void renderAudio(float *input, float *output, int nFrames);
     
     static void renderIcon();
@@ -199,7 +202,8 @@ public:
     virtual int numInputPorts() const { return 2; }
     
     virtual void setInputPortValue(int port, float value);
-    
+    virtual void getInputPortValue(int port, float &value) const;
+
     virtual void renderAudio(float *input, float *output, int nFrames);
     
     static void renderIcon();

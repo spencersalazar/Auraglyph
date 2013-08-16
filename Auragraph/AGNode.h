@@ -145,6 +145,7 @@ public:
     virtual int numInputPorts() const { return 0; }
     virtual const AGPortInfo &inputPortInfo(int port) { return m_inputPortInfo[port]; }
     virtual void setInputPortValue(int port, float value) { }
+    virtual void getInputPortValue(int port, float &value) const { }
     
     virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const { return GLvertex3f(); }
     virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const { return GLvertex3f(); }

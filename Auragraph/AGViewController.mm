@@ -56,6 +56,7 @@ enum TouchMode
     TOUCHMODE_MOVENODE,
     TOUCHMODE_CONNECT,
     TOUCHMODE_SELECTNODETYPE,
+    TOUCHMODE_EDITNODE,
 };
 
 
@@ -93,6 +94,9 @@ enum TouchMode
     
     // SELECTNODETYPE
     AGUINodeSelector * _nodeSelector;
+    
+    // EDITNODE
+    AGUINodeEditor * _nodeEditor;
     
     std::list<AGNode *> _nodes;
     std::list<AGConnection *> _connections;
@@ -144,9 +148,9 @@ enum TouchMode
     
     _nodes.push_back(outputNode);
     
-    
-    const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Consolas.ttf" ofType:@""] UTF8String];
-    //const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
+//    const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Consolas.ttf" ofType:@""] UTF8String];
+    const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
+//    const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"SourceCodePro-Regular.ttf" ofType:@""] UTF8String];
     _font = new TexFont(fontPath, 96);
 }
 
@@ -259,8 +263,8 @@ enum TouchMode
     for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
         (*i)->update(_t, dt);
     
-    if(_nodeSelector)
-        _nodeSelector->update(_t, dt);
+    if(_nodeEditor) _nodeEditor->update(_t, dt);
+    if(_nodeSelector) _nodeSelector->update(_t, dt);
 
     glBindVertexArrayOES(_vertexArray);
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
@@ -279,6 +283,10 @@ enum TouchMode
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // additive blending
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    
+    GLKMatrix4 textMV = GLKMatrix4Translate(_modelView, -0.0225, -0.07, 3.89);
+    //    textMV = GLKMatrix4Scale(textMV, 1, 0.75, 1);
+    _font->render("AURAGRAPH", GLcolor4f::white, textMV, _projection);
     
     // render connections
     for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
@@ -303,12 +311,9 @@ enum TouchMode
     else
         glDrawArrays(GL_LINE_STRIP, 0, nDrawlineUsed);
     
+    if(_nodeEditor) _nodeEditor->render();
     // render node selector
-    if(_nodeSelector)
-        _nodeSelector->render();
-    
-    GLKMatrix4 textMV = GLKMatrix4Translate(_modelView, -0.0225, -0.07, 3.89);
-    _font->render("auragraph", GLcolor4f::white, textMV, _projection);
+    if(_nodeSelector) _nodeSelector->render();
 }
 
 
@@ -515,6 +520,10 @@ enum TouchMode
         if(newNode)
             _nodes.push_back(newNode);
         
+        if(_nodeEditor) { delete _nodeEditor; _nodeEditor = NULL; }
+        if(newNode)
+            _nodeEditor = new AGUINodeEditor(newNode);
+        
         delete _nodeSelector;
         _nodeSelector = NULL;
     }
@@ -570,7 +579,7 @@ enum TouchMode
         AGHandwritingRecognizerFigure figure = [_hwRecognizer recognizeShapeInView:self.view
                                                                              trace:_currentTrace];
         
-        NSLog(@"figure: %i", figure);
+//        NSLog(@"figure: %i", figure);
         
         GLvertex3f centroid = _currentTraceSum/nDrawlineUsed;
         GLKVector3 centroidMVP = GLKMathUnproject(GLKVector3Make(centroid.x, centroid.y, 0.01),
@@ -579,18 +588,6 @@ enum TouchMode
         if(figure == AG_FIGURE_CIRCLE)
         {
             GLvertex3f pos = GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z);
-            
-//            AGAudioNode * node;
-//            int r = rand();
-//            if(r > RAND_MAX/4*3)
-//                node = new AGAudioTriangleWaveNode(pos);
-//            else if(r > RAND_MAX/2)
-//                node = new AGAudioSineWaveNode(pos);
-//            else if(r > RAND_MAX/4)
-//                node = new AGAudioSawtoothWaveNode(pos);
-//            else
-//                node = new AGAudioSquareWaveNode(pos);
-//            _nodes.push_back(node);
             
             _nodeSelector = new AGUINodeSelector(pos);
             newMode = TOUCHMODE_SELECTNODETYPE;
@@ -615,11 +612,6 @@ enum TouchMode
             _nodes.push_back(node);
             nDrawlineUsed = 0;
         }
-    }
-    else if(_mode == TOUCHMODE_SELECTNODETYPE)
-    {
-        delete _nodeSelector;
-        _nodeSelector = NULL;
     }
     
     _mode = newMode;

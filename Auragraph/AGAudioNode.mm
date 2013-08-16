@@ -391,6 +391,15 @@ void AGAudioSineWaveNode::setInputPortValue(int port, float value)
     }
 }
 
+void AGAudioSineWaveNode::getInputPortValue(int port, float &value) const
+{
+    switch(port)
+    {
+        case 0: value = m_freq; break;
+        case 1: value = m_gain; break;
+    }
+}
+
 void AGAudioSineWaveNode::renderAudio(float *input, float *output, int nFrames)
 {
     for(std::list<AGConnection *>::iterator c = m_inbound.begin(); c != m_inbound.end(); c++)
@@ -502,6 +511,15 @@ void AGAudioSquareWaveNode::setInputPortValue(int port, float value)
     {
         case 0: m_freq = value; break;
         case 1: m_gain = value; break;
+    }
+}
+
+void AGAudioSquareWaveNode::getInputPortValue(int port, float &value) const
+{
+    switch(port)
+    {
+        case 0: value = m_freq; break;
+        case 1: value = m_gain; break;
     }
 }
 
@@ -620,6 +638,15 @@ void AGAudioSawtoothWaveNode::setInputPortValue(int port, float value)
     }
 }
 
+void AGAudioSawtoothWaveNode::getInputPortValue(int port, float &value) const
+{
+    switch(port)
+    {
+        case 0: value = m_freq; break;
+        case 1: value = m_gain; break;
+    }
+}
+
 void AGAudioSawtoothWaveNode::renderAudio(float *input, float *output, int nFrames)
 {
     for(std::list<AGConnection *>::iterator c = m_inbound.begin(); c != m_inbound.end(); c++)
@@ -732,6 +759,15 @@ void AGAudioTriangleWaveNode::setInputPortValue(int port, float value)
     {
         case 0: m_freq = value; break;
         case 1: m_gain = value; break;
+    }
+}
+
+void AGAudioTriangleWaveNode::getInputPortValue(int port, float &value) const
+{
+    switch(port)
+    {
+        case 0: value = m_freq; break;
+        case 1: value = m_gain; break;
     }
 }
 

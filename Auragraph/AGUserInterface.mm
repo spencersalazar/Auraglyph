@@ -11,6 +11,8 @@
 #import "ES2Render.h"
 #import "ShaderHelper.h"
 #import "AGGenericShader.h"
+#import "TexFont.h"
+#import <sstream>
 
 
 static const float AGNODESELECTOR_RADIUS = 0.02;
@@ -22,13 +24,18 @@ GLuint AGUINodeSelector::s_vertexBuffer = 0;
 GLuint AGUINodeSelector::s_geoSize = 0;
 GLvertex3f * AGUINodeSelector::s_geo = NULL;
 
+//------------------------------------------------------------------------------
+// ### AGUINodeSelector ###
+//------------------------------------------------------------------------------
+#pragma mark AGUINodeSelector
+
 void AGUINodeSelector::initializeNodeSelector()
 {
     if(!s_initNodeSelector)
     {
         s_initNodeSelector = true;
         
-        s_geoSize = 4; // outline
+        s_geoSize = 4;
         s_geo = new GLvertex3f[s_geoSize];
         
         float radius = AGNODESELECTOR_RADIUS;
@@ -199,5 +206,131 @@ AGAudioNode *AGUINodeSelector::createNode()
         return NULL;
     }
 }
+
+
+//------------------------------------------------------------------------------
+// ### AGUINodeEditor ###
+//------------------------------------------------------------------------------
+#pragma mark AGUINodeEditor
+
+bool AGUINodeEditor::s_init = false;
+TexFont *AGUINodeEditor::s_text = NULL;
+float AGUINodeEditor::s_radius = 0;
+GLuint AGUINodeEditor::s_geoSize = 0;
+GLvertex3f * AGUINodeEditor::s_geo = NULL;
+GLuint AGUINodeEditor::s_boundingOffset = 0;
+GLuint AGUINodeEditor::s_innerboxOffset = 0;
+
+void AGUINodeEditor::initializeNodeEditor()
+{
+    if(!s_init)
+    {
+        s_init = false;
+        
+        const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
+        s_text = new TexFont(fontPath, 64);
+        
+        s_geoSize = 8;
+        s_geo = new GLvertex3f[s_geoSize];
+        
+        s_radius = AGNODESELECTOR_RADIUS;
+        float radius = s_radius;
+        
+        // outer box
+        // stroke GL_LINE_STRIP + fill GL_TRIANGLE_FAN
+        s_geo[0] = GLvertex3f(-radius, radius, 0);
+        s_geo[1] = GLvertex3f(-radius, -radius, 0);
+        s_geo[2] = GLvertex3f(radius, -radius, 0);
+        s_geo[3] = GLvertex3f(radius, radius, 0);
+        
+        // inner box(es)
+        // stroke GL_LINE_STRIP + fill GL_TRIANGLE_FAN
+        s_geo[4] = GLvertex3f(-radius/2, radius/4, 0);
+        s_geo[5] = GLvertex3f(-radius/2, -radius/4, 0);
+        s_geo[6] = GLvertex3f(radius/2, -radius/4, 0);
+        s_geo[7] = GLvertex3f(radius/2, radius/4, 0);
+        
+        s_boundingOffset = 0;
+        s_innerboxOffset = 4;
+    }
+}
+
+AGUINodeEditor::AGUINodeEditor(AGNode *node) :
+m_node(node)
+{
+    initializeNodeEditor();
+}
+
+void AGUINodeEditor::update(float t, float dt)
+{
+    GLKMatrix4 modelView = AGNode::globalModelViewMatrix();
+    GLKMatrix4 projection = AGNode::projectionMatrix();
+    
+    modelView = GLKMatrix4Translate(modelView, m_node->position().x, m_node->position().y, m_node->position().z);
+    
+    m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
+    
+    m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, modelView);
+}
+
+void AGUINodeEditor::render()
+{
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    /* draw bounding box */
+    
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_geo);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+    glDisableVertexAttribArray(GLKVertexAttribColor);
+    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    glDisableVertexAttribArray(GLKVertexAttribNormal);
+    
+    AGGenericShader::instance().useProgram();
+    
+    AGGenericShader::instance().setMVPMatrix(m_modelViewProjectionMatrix);
+    AGGenericShader::instance().setNormalMatrix(m_normalMatrix);
+    
+    // stroke
+    glLineWidth(4.0f);
+    glDrawArrays(GL_LINE_LOOP, 0, 4);
+    
+    GLcolor4f blackA = GLcolor4f(0, 0, 0, 0.75);
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &blackA);
+    
+    // fill
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    
+    float rowCount = 5;
+    
+    GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::globalModelViewMatrix(), m_node->position().x, m_node->position().y, m_node->position().z);
+    GLKMatrix4 proj = AGNode::projectionMatrix();
+    
+    GLKMatrix4 titleMV = AGNode::globalModelViewMatrix();
+    titleMV = GLKMatrix4Translate(modelView, -s_radius*0.9, s_radius - s_radius*2.0/rowCount, 0);
+    titleMV = GLKMatrix4Scale(titleMV, 0.61, 0.61, 0.61);
+    s_text->render("EDIT", GLcolor4f::white, titleMV, proj);
+    
+    int numPorts = m_node->numInputPorts();
+    
+    for(int i = 0; i < numPorts; i++)
+    {
+        float y = s_radius - s_radius*2.0*(i+2.0)/rowCount;
+        
+        GLKMatrix4 nameMV = GLKMatrix4Translate(modelView, -s_radius*0.9, y, 0);
+        nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
+        s_text->render(m_node->inputPortInfo(i).name, GLcolor4f::white, nameMV, proj);
+        
+        GLKMatrix4 valueMV = GLKMatrix4Translate(modelView, s_radius*0.1, y, 0);
+        valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
+        std::stringstream ss;
+        float v = 0;
+        m_node->getInputPortValue(i, v);
+        ss << v;
+        s_text->render(ss.str(), GLcolor4f::white, valueMV, proj);
+    }
+}
+
 
 

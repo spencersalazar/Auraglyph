@@ -49,14 +49,29 @@ private:
 };
 
 
+class TexFont;
+
 class AGUINodeEditor
 {
 public:
+    static void initializeNodeEditor();
+    
     AGUINodeEditor(AGNode *node);
+    
+    void update(float t, float dt);
+    void render();
     
 private:
     
-    const AGNode * m_node;
+    static bool s_init;
+    static TexFont *s_text;
+    static float s_radius;
+    static GLuint s_geoSize;
+    static GLvertex3f * s_geo;
+    static GLuint s_boundingOffset;
+    static GLuint s_innerboxOffset;
+
+    AGNode * const m_node;
     
     GLKMatrix4 m_modelViewProjectionMatrix;
     GLKMatrix3 m_normalMatrix;
