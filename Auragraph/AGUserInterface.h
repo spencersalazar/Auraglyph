@@ -61,6 +61,10 @@ public:
     void update(float t, float dt);
     void render();
     
+    void touchDown(const GLvertex3f &t);
+    void touchMove(const GLvertex3f &t);
+    void touchUp(const GLvertex3f &t);
+    
 private:
     
     static bool s_init;
@@ -76,6 +80,7 @@ private:
     GLKMatrix4 m_modelViewProjectionMatrix;
     GLKMatrix3 m_normalMatrix;
 
+    int m_hit;
 };
 
 

@@ -213,6 +213,9 @@ AGAudioNode *AGUINodeSelector::createNode()
 //------------------------------------------------------------------------------
 #pragma mark AGUINodeEditor
 
+static const int NODEEDITOR_ROWCOUNT = 5;
+
+
 bool AGUINodeEditor::s_init = false;
 TexFont *AGUINodeEditor::s_text = NULL;
 float AGUINodeEditor::s_radius = 0;
@@ -245,10 +248,10 @@ void AGUINodeEditor::initializeNodeEditor()
         
         // inner box(es)
         // stroke GL_LINE_STRIP + fill GL_TRIANGLE_FAN
-        s_geo[4] = GLvertex3f(-radius/2, radius/4, 0);
-        s_geo[5] = GLvertex3f(-radius/2, -radius/4, 0);
-        s_geo[6] = GLvertex3f(radius/2, -radius/4, 0);
-        s_geo[7] = GLvertex3f(radius/2, radius/4, 0);
+        s_geo[4] = GLvertex3f(-radius*0.95, radius/NODEEDITOR_ROWCOUNT, 0);
+        s_geo[5] = GLvertex3f(-radius*0.95, -radius/NODEEDITOR_ROWCOUNT, 0);
+        s_geo[6] = GLvertex3f(radius*0.95, -radius/NODEEDITOR_ROWCOUNT, 0);
+        s_geo[7] = GLvertex3f(radius*0.95, radius/NODEEDITOR_ROWCOUNT, 0);
         
         s_boundingOffset = 0;
         s_innerboxOffset = 4;
@@ -259,6 +262,8 @@ AGUINodeEditor::AGUINodeEditor(AGNode *node) :
 m_node(node)
 {
     initializeNodeEditor();
+    
+    m_hit = -1;
 }
 
 void AGUINodeEditor::update(float t, float dt)
@@ -294,16 +299,18 @@ void AGUINodeEditor::render()
     
     // stroke
     glLineWidth(4.0f);
-    glDrawArrays(GL_LINE_LOOP, 0, 4);
+    glDrawArrays(GL_LINE_LOOP, s_boundingOffset, 4);
     
     GLcolor4f blackA = GLcolor4f(0, 0, 0, 0.75);
     glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &blackA);
     
     // fill
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    glDrawArrays(GL_TRIANGLE_FAN, s_boundingOffset, 4);
     
-    float rowCount = 5;
     
+    /* draw title */
+    
+    float rowCount = NODEEDITOR_ROWCOUNT;
     GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::globalModelViewMatrix(), m_node->position().x, m_node->position().y, m_node->position().z);
     GLKMatrix4 proj = AGNode::projectionMatrix();
     
@@ -312,15 +319,47 @@ void AGUINodeEditor::render()
     titleMV = GLKMatrix4Scale(titleMV, 0.61, 0.61, 0.61);
     s_text->render("EDIT", GLcolor4f::white, titleMV, proj);
     
+    
+    /* draw items */
+
     int numPorts = m_node->numInputPorts();
     
     for(int i = 0; i < numPorts; i++)
     {
-        float y = s_radius - s_radius*2.0*(i+2.0)/rowCount;
+        float y = s_radius - s_radius*2.0*(i+2)/rowCount;
+        GLcolor4f nameColor(0.61, 0.61, 0.61, 1);
+        GLcolor4f valueColor = GLcolor4f::white;
+    
+        if(i == m_hit)
+        {
+            glBindVertexArrayOES(0);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            
+            /* draw hit box */
+            
+            glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_geo);
+            glEnableVertexAttribArray(GLKVertexAttribPosition);
+            glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+            glDisableVertexAttribArray(GLKVertexAttribColor);
+            glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+            glDisableVertexAttribArray(GLKVertexAttribNormal);
+            
+            AGGenericShader::instance().useProgram();
+            GLKMatrix4 hitMVP = GLKMatrix4Multiply(proj, GLKMatrix4Translate(modelView, 0, y + s_radius/rowCount, 0));
+            AGGenericShader::instance().setMVPMatrix(hitMVP);
+            AGGenericShader::instance().setNormalMatrix(m_normalMatrix);
+            
+            // fill
+            glDrawArrays(GL_TRIANGLE_FAN, s_innerboxOffset, 4);
+            
+            // invert colors
+            nameColor = GLcolor4f(1-nameColor.r, 1-nameColor.g, 1-nameColor.b, 1);
+            valueColor = GLcolor4f(1-valueColor.r, 1-valueColor.g, 1-valueColor.b, 1);
+        }
         
         GLKMatrix4 nameMV = GLKMatrix4Translate(modelView, -s_radius*0.9, y, 0);
         nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
-        s_text->render(m_node->inputPortInfo(i).name, GLcolor4f::white, nameMV, proj);
+        s_text->render(m_node->inputPortInfo(i).name, nameColor, nameMV, proj);
         
         GLKMatrix4 valueMV = GLKMatrix4Translate(modelView, s_radius*0.1, y, 0);
         valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
@@ -328,8 +367,45 @@ void AGUINodeEditor::render()
         float v = 0;
         m_node->getInputPortValue(i, v);
         ss << v;
-        s_text->render(ss.str(), GLcolor4f::white, valueMV, proj);
+        s_text->render(ss.str(), valueColor, valueMV, proj);
     }
+}
+
+
+void AGUINodeEditor::touchDown(const GLvertex3f &t)
+{
+    m_hit = -1;
+    float rowCount = NODEEDITOR_ROWCOUNT;
+
+    GLvertex3f pos = m_node->position();
+    
+    // check if in entire bounds
+    if(t.x > pos.x-s_radius && t.x < pos.x+s_radius &&
+       t.y > pos.y-s_radius && t.y < pos.y+s_radius)
+    {
+        int numPorts = m_node->numInputPorts();
+
+        for(int i = 0; i < numPorts; i++)
+        {
+            float y_max = pos.y + s_radius - s_radius*2.0*(i+1)/rowCount;
+            float y_min = pos.y + s_radius - s_radius*2.0*(i+2)/rowCount;
+            if(t.y > y_min && t.y < y_max)
+            {
+                m_hit = i;
+                break;
+            }
+        }
+    }
+}
+
+void AGUINodeEditor::touchMove(const GLvertex3f &t)
+{
+    touchDown(t);
+}
+
+void AGUINodeEditor::touchUp(const GLvertex3f &t)
+{
+    touchDown(t);
 }
 
 

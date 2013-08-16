@@ -60,7 +60,7 @@
 		0901C1BB17BE2F970032904B /* AGGenericShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGGenericShader.h; sourceTree = "<group>"; };
 		0901C1BF17BE3C460032904B /* SourceCodePro-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SourceCodePro-Regular.ttf"; sourceTree = "<group>"; };
 		0901C1C117BE3C4B0032904B /* eichante.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = eichante.ttf; sourceTree = "<group>"; };
-		095D12C017ACA36C0048A012 /* AURAGRAPH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AURAGRAPH.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		095D12C017ACA36C0048A012 /* AURAGRPH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AURAGRPH.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		095D12C317ACA36C0048A012 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		095D12C517ACA36C0048A012 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		095D12C717ACA36C0048A012 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -218,7 +218,7 @@
 		095D12C117ACA36C0048A012 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				095D12C017ACA36C0048A012 /* AURAGRAPH.app */,
+				095D12C017ACA36C0048A012 /* AURAGRPH.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -412,7 +412,7 @@
 			);
 			name = Auragraph;
 			productName = Auragraph;
-			productReference = 095D12C017ACA36C0048A012 /* AURAGRAPH.app */;
+			productReference = 095D12C017ACA36C0048A012 /* AURAGRPH.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -585,7 +585,7 @@
 					"\"$(SRCROOT)/LipiTk/lib\"",
 				);
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_NAME = AURAGRAPH;
+				PRODUCT_NAME = AURAGRPH;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -605,7 +605,7 @@
 					"\"$(SRCROOT)/LipiTk/lib\"",
 				);
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_NAME = AURAGRAPH;
+				PRODUCT_NAME = AURAGRPH;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

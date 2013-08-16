@@ -274,7 +274,8 @@ enum TouchMode
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(12.0f/255.0f, 16.0f/255.0f, 33.0f/255.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     glDisable(GL_DEPTH_TEST);
@@ -284,9 +285,9 @@ enum TouchMode
     // additive blending
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     
-    GLKMatrix4 textMV = GLKMatrix4Translate(_modelView, -0.0225, -0.07, 3.89);
+    GLKMatrix4 textMV = GLKMatrix4Translate(_modelView, -0.02, -0.07, 3.89);
     //    textMV = GLKMatrix4Scale(textMV, 1, 0.75, 1);
-    _font->render("AURAGRAPH", GLcolor4f::white, textMV, _projection);
+    _font->render("AURAGRPH", GLcolor4f::white, textMV, _projection);
     
     // render connections
     for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
@@ -333,6 +334,14 @@ enum TouchMode
         GLvertex3f pos(vec.x, -vec.y, vec.z);
         
         _nodeSelector->touchDown(pos);
+        
+        return;
+    }
+    else if(_mode == TOUCHMODE_EDITNODE)
+    {
+        GLvertex3f pos(vec.x, -vec.y, vec.z);
+        
+        _nodeEditor->touchDown(pos);
         
         return;
     }
@@ -423,6 +432,12 @@ enum TouchMode
         GLvertex3f pos(vec.x, -vec.y, vec.z);
         
         _nodeSelector->touchMove(pos);
+    }
+    else if(_mode == TOUCHMODE_EDITNODE)
+    {
+        GLvertex3f pos(vec.x, -vec.y, vec.z);
+        
+        _nodeEditor->touchMove(pos);
     }
     else if(_mode == TOUCHMODE_CONNECT)
     {
@@ -522,10 +537,22 @@ enum TouchMode
         
         if(_nodeEditor) { delete _nodeEditor; _nodeEditor = NULL; }
         if(newNode)
+        {
             _nodeEditor = new AGUINodeEditor(newNode);
+            newMode = TOUCHMODE_EDITNODE;
+        }
         
         delete _nodeSelector;
         _nodeSelector = NULL;
+    }
+    if(_mode == TOUCHMODE_EDITNODE)
+    {
+        GLvertex3f pos(vec.x, -vec.y, vec.z);
+        
+        _nodeEditor->touchUp(pos);
+        
+        delete _nodeEditor;
+        _nodeEditor = NULL;
     }
     else if(_mode == TOUCHMODE_CONNECT)
     {
