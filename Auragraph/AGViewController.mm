@@ -26,7 +26,6 @@ enum
 {
     UNIFORM_MODELVIEWPROJECTION_MATRIX,
     UNIFORM_NORMAL_MATRIX,
-    UNIFORM_COLOR2,
     NUM_UNIFORMS
 };
 GLint uniforms[NUM_UNIFORMS];
@@ -188,7 +187,6 @@ enum TouchMode
     // Get uniform locations.
     uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
     uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program, "normalMatrix");
-    uniforms[UNIFORM_COLOR2] = glGetUniformLocation(_program, "color2");
     
     glEnable(GL_DEPTH_TEST);
     
@@ -295,7 +293,6 @@ enum TouchMode
 
     glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
     glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
-    glUniform4fv(uniforms[UNIFORM_COLOR2], 1, (float*) &GLcolor4f::white);
     
     glBindVertexArrayOES(_vertexArray);
     

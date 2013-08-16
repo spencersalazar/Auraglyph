@@ -16,14 +16,12 @@ bool AGConnection::s_init = false;
 GLuint AGConnection::s_program = 0;
 GLint AGConnection::s_uniformMVPMatrix = 0;
 GLint AGConnection::s_uniformNormalMatrix = 0;
-GLint AGConnection::s_uniformColor2 = 0;
 
 
 bool AGNode::s_initNode = false;
 GLuint AGNode::s_program = 0;
 GLint AGNode::s_uniformMVPMatrix = 0;
 GLint AGNode::s_uniformNormalMatrix = 0;
-GLint AGNode::s_uniformColor2 = 0;
 GLKMatrix4 AGNode::s_projectionMatrix = GLKMatrix4Identity;
 GLKMatrix4 AGNode::s_modelViewMatrix = GLKMatrix4Identity;
 const float AGNode::s_sizeFactor = 0.01;
@@ -64,7 +62,6 @@ void AGConnection::initalize()
                                  withAttributes:SHADERHELPER_ATTR_POSITION | SHADERHELPER_ATTR_NORMAL | SHADERHELPER_ATTR_COLOR];
         s_uniformMVPMatrix = glGetUniformLocation(s_program, "modelViewProjectionMatrix");
         s_uniformNormalMatrix = glGetUniformLocation(s_program, "normalMatrix");
-        s_uniformColor2 = glGetUniformLocation(s_program, "color2");
     }
 }
 
@@ -142,7 +139,6 @@ void AGConnection::render()
     
     glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, modelViewProjectionMatrix.m);
     glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, normalMatrix.m);
-    glUniform4fv(s_uniformColor2, 1, (float*) &GLcolor4f::white);
     
     glLineWidth(2.0f);
     glDrawArrays(GL_LINE_STRIP, 0, m_geoSize);
@@ -216,7 +212,6 @@ void AGControlNode::render()
     
     glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
     glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
-    glUniform4fv(s_uniformColor2, 1, (float*) &GLcolor4f::white);
 
     glLineWidth(4.0f);
     glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
@@ -299,7 +294,6 @@ void AGInputNode::render()
     
     glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
     glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
-    glUniform4fv(s_uniformColor2, 1, (float*) &GLcolor4f::white);
 
     glLineWidth(4.0f);
     glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
@@ -384,7 +378,6 @@ void AGOutputNode::render()
     
     glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
     glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
-    glUniform4fv(s_uniformColor2, 1, (float*) &GLcolor4f::white);
 
     glLineWidth(4.0f);
     glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);

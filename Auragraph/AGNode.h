@@ -51,7 +51,6 @@ private:
     static GLuint s_program;
     static GLint s_uniformMVPMatrix;
     static GLint s_uniformNormalMatrix;
-    static GLint s_uniformColor2;
     
     GLvertex3f *m_geo;
     GLcolor4f m_color;
@@ -96,7 +95,6 @@ public:
                                      withAttributes:SHADERHELPER_ATTR_POSITION | SHADERHELPER_ATTR_NORMAL | SHADERHELPER_ATTR_COLOR];
             s_uniformMVPMatrix = glGetUniformLocation(s_program, "modelViewProjectionMatrix");
             s_uniformNormalMatrix = glGetUniformLocation(s_program, "normalMatrix");
-            s_uniformColor2 = glGetUniformLocation(s_program, "color2");
         }
     }
     
@@ -166,7 +164,6 @@ protected:
     static GLuint s_program;
     static GLint s_uniformMVPMatrix;
     static GLint s_uniformNormalMatrix;
-    static GLint s_uniformColor2;
     
     const static float s_sizeFactor;
     

@@ -27,7 +27,6 @@ GLuint AGUINodeSelector::s_geoFillSize = 0;
 GLuint AGUINodeSelector::s_program = 0;
 GLint AGUINodeSelector::s_uniformMVPMatrix = 0;
 GLint AGUINodeSelector::s_uniformNormalMatrix = 0;
-GLint AGUINodeSelector::s_uniformColor2 = 0;
 
 void AGUINodeSelector::initializeNodeSelector()
 {
@@ -61,7 +60,6 @@ void AGUINodeSelector::initializeNodeSelector()
                                  withAttributes:SHADERHELPER_PNC];
         s_uniformMVPMatrix = glGetUniformLocation(s_program, "modelViewProjectionMatrix");
         s_uniformNormalMatrix = glGetUniformLocation(s_program, "normalMatrix");
-        s_uniformColor2 = glGetUniformLocation(s_program, "color2");
     }
 }
 
@@ -94,21 +92,23 @@ void AGUINodeSelector::render()
     
     // draw bounding box
     glBindVertexArrayOES(s_vertexArray);
-    
+    glDisableVertexAttribArray(GLKVertexAttribColor);
+
     glUseProgram(s_program);
     
     glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
     glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
-    glUniform4fv(s_uniformColor2, 1, (float*) &GLcolor4f::white);
+    
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &GLcolor4f::white);
     
     glLineWidth(4.0f);
     glDrawArrays(GL_LINE_LOOP, s_geoOutlineOffset, s_geoOutlineSize);
     
-    GLcolor4f blackA = GLcolor4f::black;
-    blackA.a = 0.75;
-    glUniform4fv(s_uniformColor2, 1, (float*) &blackA);
     
-    glDrawArrays(GL_TRIANGLE_STRIP, s_geoFillOffset, s_geoFillSize);
+    GLcolor4f blackA = GLcolor4f(0, 0, 0, 0.75);
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &blackA);
+
+    glDrawArrays(GL_TRIANGLE_FAN, s_geoOutlineOffset, s_geoOutlineSize);
     
     
     // draw node types
@@ -141,19 +141,20 @@ void AGUINodeSelector::render()
             GLcolor4f whiteA = GLcolor4f::white;
             whiteA.a = 0.75;
             
-            glUniform4fv(s_uniformColor2, 1, (float*) &whiteA);
+            glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &whiteA);
             glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, hitMvp.m);
             glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, hitNormal.m);
             
             glBindVertexArrayOES(s_vertexArray);
             
+            
             glDrawArrays(GL_TRIANGLE_STRIP, s_geoFillOffset, s_geoFillSize);
             
-            glUniform4fv(s_uniformColor2, 1, (float*) &GLcolor4f::black);
+            glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &GLcolor4f::black);
         }
         else
         {
-            glUniform4fv(s_uniformColor2, 1, (float*) &GLcolor4f::white);
+            glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &GLcolor4f::white);
         }
         
         glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, mvp.m);

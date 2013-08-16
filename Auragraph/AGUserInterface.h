@@ -44,7 +44,6 @@ private:
     static GLuint s_program;
     static GLint s_uniformMVPMatrix;
     static GLint s_uniformNormalMatrix;
-    static GLint s_uniformColor2;
     
     GLvertex3f m_pos;
     

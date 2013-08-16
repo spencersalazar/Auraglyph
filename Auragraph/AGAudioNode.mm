@@ -146,7 +146,6 @@ void AGAudioNode::render()
     
     glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
     glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
-    glUniform4fv(s_uniformColor2, 1, (float*) &GLcolor4f::white);
     
     glLineWidth(4.0f);
     glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
@@ -195,7 +194,6 @@ void AGAudioNode::render()
         
         glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
         glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
-        glUniform4fv(s_uniformColor2, 1, (float*) &GLcolor4f::white);
 
         glLineWidth(2.0f);
         glDrawArrays(m_iconGeoType, 0, m_iconGeoSize);
