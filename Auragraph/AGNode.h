@@ -34,6 +34,7 @@ class AGConnection
 public:
     
     AGConnection(AGNode * src, AGNode * dst, int dstPort);
+    ~AGConnection();
     
     virtual void update(float t, float dt);
     virtual void render();
@@ -52,10 +53,8 @@ private:
     static GLint s_uniformNormalMatrix;
     static GLint s_uniformColor2;
     
-    GLuint m_vertexArray;
-    GLuint m_vertexBuffer;
-    
-    GLvncprimf *m_geo;
+    GLvertex3f *m_geo;
+    GLcolor4f m_color;
     GLuint m_geoSize;
     
     AGNode * const m_src;

@@ -83,35 +83,25 @@ m_geoSize(0)
     m_outTerminal = src->positionForOutboundConnection(this);
     m_inTerminal = dst->positionForOutboundConnection(this);
     
-    glGenVertexArraysOES(1, &m_vertexArray);
-    glBindVertexArrayOES(m_vertexArray);
-    
-    glGenBuffers(1, &m_vertexBuffer);
     // generate line
     updatePath();
-
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(0));
-    glEnableVertexAttribArray(GLKVertexAttribNormal);
-    glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(sizeof(GLvertex3f)));
-    glEnableVertexAttribArray(GLKVertexAttribColor);
-    glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(2*sizeof(GLvertex3f)));
     
-    glBindVertexArrayOES(0);
+    m_color = GLcolor4f(0.75, 0.75, 0.75, 1);
+}
+
+AGConnection::~AGConnection()
+{
+    if(m_geo != NULL) { delete[] m_geo; m_geo = NULL; }
 }
 
 void AGConnection::updatePath()
 {
     if(m_geo != NULL) delete[] m_geo;
     m_geoSize = 2;
-    m_geo = new GLvncprimf[m_geoSize];
+    m_geo = new GLvertex3f[m_geoSize];
     
-    m_geo[0].vertex = m_inTerminal;
-    m_geo[1].vertex = m_outTerminal;
-    m_geo[0].color = m_geo[1].color = GLcolor4f(0.75, 0.75, 0.75, 1);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, m_geoSize*sizeof(GLvncprimf), m_geo, GL_STATIC_DRAW);
+    m_geo[0] = m_inTerminal;
+    m_geo[1] = m_outTerminal;
 }
 
 void AGConnection::update(float t, float dt)
@@ -137,7 +127,16 @@ void AGConnection::render()
     GLKMatrix3 normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
     GLKMatrix4 modelViewProjectionMatrix = GLKMatrix4Multiply(projection, modelView);
 
-    glBindVertexArrayOES(m_vertexArray);
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    
+    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    glDisableVertexAttribArray(GLKVertexAttribNormal);
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &m_color);
+    glDisableVertexAttribArray(GLKVertexAttribColor);
     
     glUseProgram(s_program);
     

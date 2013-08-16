@@ -13,7 +13,6 @@
 bool AGAudioNode::s_init = false;
 GLuint AGAudioNode::s_vertexArray = 0;
 GLuint AGAudioNode::s_vertexBuffer = 0;
-GLvncprimf *AGAudioNode::s_geo = NULL;
 GLuint AGAudioNode::s_geoSize = 0;
 int AGAudioNode::s_sampleRate = 44100;
 
@@ -68,15 +67,18 @@ void AGAudioNode::initializeAudioNode()
         
         // generate circle
         s_geoSize = 64;
-        s_geo = new GLvncprimf[s_geoSize];
+        GLvertex3f *geo = new GLvertex3f[s_geoSize];
         float radius = 0.01;
         for(int i = 0; i < s_geoSize; i++)
         {
             float theta = 2*M_PI*((float)i)/((float)(s_geoSize));
-            s_geo[i].vertex = GLvertex3f(radius*cosf(theta), radius*sinf(theta), 0);
+            geo[i] = GLvertex3f(radius*cosf(theta), radius*sinf(theta), 0);
         }
         
-        genVertexArrayAndBuffer(s_geoSize, s_geo, s_vertexArray, s_vertexBuffer);
+        genVertexArrayAndBuffer(s_geoSize, geo, s_vertexArray, s_vertexBuffer);
+        
+        delete[] geo;
+        geo = NULL;
     }
 }
 
@@ -127,16 +129,18 @@ void AGAudioNode::update(float t, float dt)
     modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
     
     m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
-    
     m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, modelView);
 }
 
 void AGAudioNode::render()
 {
-    GLcolor4f color2(1, 1, 1, 1);
+    GLcolor4f color = GLcolor4f::white;
     
     // draw base outline
     glBindVertexArrayOES(s_vertexArray);
+    
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
+    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
     
     glUseProgram(s_program);
     
@@ -154,10 +158,11 @@ void AGAudioNode::render()
         mvpOutputPort = GLKMatrix4Scale(mvpOutputPort, 0.2, 0.2, 1);
         
         glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, mvpOutputPort.m);
-        if(m_outputActivation > 0)      color2 = GLcolor4f(0, 1, 0, 1);
-        else if(m_outputActivation < 0) color2 = GLcolor4f(1, 0, 0, 1);
-        else                            color2 = GLcolor4f(1, 1, 1, 1);
-        glUniform4fv(s_uniformColor2, 1, (float*)&color2);
+        if(m_outputActivation > 0)      color = GLcolor4f(0, 1, 0, 1);
+        else if(m_outputActivation < 0) color = GLcolor4f(1, 0, 0, 1);
+        else                            color = GLcolor4f(1, 1, 1, 1);
+        
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
         
         glLineWidth(2.0f);
         glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
@@ -170,20 +175,23 @@ void AGAudioNode::render()
         mvpInputPort = GLKMatrix4Scale(mvpInputPort, 0.2, 0.2, 1);
         
         glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, mvpInputPort.m);
-        if(m_inputActivation > 0)      color2 = GLcolor4f(0, 1, 0, 1);
-        else if(m_inputActivation < 0) color2 = GLcolor4f(1, 0, 0, 1);
-        else                           color2 = GLcolor4f(1, 1, 1, 1);
-        glUniform4fv(s_uniformColor2, 1, (float*)&color2);
+        if(m_inputActivation > 0)      color = GLcolor4f(0, 1, 0, 1);
+        else if(m_inputActivation < 0) color = GLcolor4f(1, 0, 0, 1);
+        else                           color = GLcolor4f(1, 1, 1, 1);
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
+        
+        glLineWidth(2.0f);
+        glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
     }
-    
-    glLineWidth(2.0f);
-    glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
     
     // render icon
     if(m_iconVertexArray)
     {
         // draw base outline
         glBindVertexArrayOES(m_iconVertexArray);
+        
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
         
         glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
         glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
@@ -390,6 +398,7 @@ void AGAudioSineWaveNode::renderIcon()
     // render icon
     glBindVertexArrayOES(s_iconVertexArray);
     
+    glLineWidth(2.0);
     glDrawArrays(s_iconGeoType, 0, s_iconGeoSize);
 }
 
@@ -471,6 +480,7 @@ void AGAudioSquareWaveNode::renderIcon()
     // render icon
     glBindVertexArrayOES(s_iconVertexArray);
     
+    glLineWidth(2.0);
     glDrawArrays(s_iconGeoType, 0, s_iconGeoSize);
 }
 
@@ -551,6 +561,7 @@ void AGAudioSawtoothWaveNode::renderIcon()
     // render icon
     glBindVertexArrayOES(s_iconVertexArray);
     
+    glLineWidth(2.0);
     glDrawArrays(s_iconGeoType, 0, s_iconGeoSize);
 }
 
@@ -634,6 +645,7 @@ void AGAudioTriangleWaveNode::renderIcon()
     // render icon
     glBindVertexArrayOES(s_iconVertexArray);
     
+    glLineWidth(2.0);
     glDrawArrays(s_iconGeoType, 0, s_iconGeoSize);
 }
 

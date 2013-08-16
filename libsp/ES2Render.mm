@@ -23,10 +23,7 @@ void genVertexArrayAndBuffer(const GLuint size, GLvertex3f * const geo,
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), BUFFER_OFFSET(0));
     
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
     glDisableVertexAttribArray(GLKVertexAttribColor);
-    
-    glVertexAttrib3fv(GLKVertexAttribNormal, (const float *) &normal);
     glDisableVertexAttribArray(GLKVertexAttribNormal);
     
     glBindVertexArrayOES(0);

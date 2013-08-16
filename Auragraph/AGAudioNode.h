@@ -50,10 +50,9 @@ private:
     static bool s_init;
     static GLuint s_vertexArray;
     static GLuint s_vertexBuffer;
-    static int s_sampleRate;
-    
-    static GLvncprimf *s_geo;
     static GLuint s_geoSize;
+    
+    static int s_sampleRate;
     
     float m_radius;
     float m_portRadius;
