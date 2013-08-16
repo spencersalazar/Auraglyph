@@ -19,11 +19,7 @@ bool AGUINodeSelector::s_initNodeSelector = false;
 GLuint AGUINodeSelector::s_vertexArray = 0;
 GLuint AGUINodeSelector::s_vertexBuffer = 0;
 GLuint AGUINodeSelector::s_geoSize = 0;
-GLvncprimf * AGUINodeSelector::s_geo = NULL;
-GLuint AGUINodeSelector::s_geoOutlineOffset = 0;
-GLuint AGUINodeSelector::s_geoOutlineSize = 0;
-GLuint AGUINodeSelector::s_geoFillOffset = 0;
-GLuint AGUINodeSelector::s_geoFillSize = 0;
+GLvertex3f * AGUINodeSelector::s_geo = NULL;
 GLuint AGUINodeSelector::s_program = 0;
 GLint AGUINodeSelector::s_uniformMVPMatrix = 0;
 GLint AGUINodeSelector::s_uniformNormalMatrix = 0;
@@ -34,25 +30,16 @@ void AGUINodeSelector::initializeNodeSelector()
     {
         s_initNodeSelector = true;
         
-        s_geoSize = 4 + 4; // outline + fill
-        s_geo = new GLvncprimf[s_geoSize];
-        s_geoOutlineOffset = 0;
-        s_geoOutlineSize = 4;
-        s_geoFillOffset = s_geoOutlineOffset + s_geoOutlineSize;
-        s_geoFillSize = 4;
+        s_geoSize = 4; // outline
+        s_geo = new GLvertex3f[s_geoSize];
         
         float radius = AGNODESELECTOR_RADIUS;
         
-        // stroke GL_LINE_STRIP
-        s_geo[0].vertex = GLvertex3f(-radius, radius, 0);
-        s_geo[1].vertex = GLvertex3f(-radius, -radius, 0);
-        s_geo[2].vertex = GLvertex3f(radius, -radius, 0);
-        s_geo[3].vertex = GLvertex3f(radius, radius, 0);
-        // fill GL_TRIANGLE_STRIP S-shape
-        s_geo[4].vertex = GLvertex3f(-radius, -radius, 0);
-        s_geo[5].vertex = GLvertex3f(radius, -radius, 0);
-        s_geo[6].vertex = GLvertex3f(-radius, radius, 0);
-        s_geo[7].vertex = GLvertex3f(radius, radius, 0);
+        // stroke GL_LINE_STRIP + fill GL_TRIANGLE_FAN
+        s_geo[0] = GLvertex3f(-radius, radius, 0);
+        s_geo[1] = GLvertex3f(-radius, -radius, 0);
+        s_geo[2] = GLvertex3f(radius, -radius, 0);
+        s_geo[3] = GLvertex3f(radius, radius, 0);
         
         genVertexArrayAndBuffer(s_geoSize, s_geo, s_vertexArray, s_vertexBuffer);
         
@@ -87,13 +74,16 @@ void AGUINodeSelector::update(float t, float dt)
 
 void AGUINodeSelector::render()
 {
-    // draw blank audio node
+    /* draw blank audio node */
     m_audioNode.render();
     
-    // draw bounding box
+    
+    /* draw bounding box */
+    
     glBindVertexArrayOES(s_vertexArray);
-    glDisableVertexAttribArray(GLKVertexAttribColor);
-
+    
+    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    
     glUseProgram(s_program);
     
     glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
@@ -101,17 +91,18 @@ void AGUINodeSelector::render()
     
     glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &GLcolor4f::white);
     
+    // stroke
     glLineWidth(4.0f);
-    glDrawArrays(GL_LINE_LOOP, s_geoOutlineOffset, s_geoOutlineSize);
-    
+    glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
     
     GLcolor4f blackA = GLcolor4f(0, 0, 0, 0.75);
     glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &blackA);
 
-    glDrawArrays(GL_TRIANGLE_FAN, s_geoOutlineOffset, s_geoOutlineSize);
+    // fill
+    glDrawArrays(GL_TRIANGLE_FAN, 0, s_geoSize);
     
     
-    // draw node types
+    /* draw node types */
     
     float radius = AGNODESELECTOR_RADIUS;
     GLvertex3f startPos(-radius/2, -radius/2, 0);
@@ -141,14 +132,13 @@ void AGUINodeSelector::render()
             GLcolor4f whiteA = GLcolor4f::white;
             whiteA.a = 0.75;
             
-            glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &whiteA);
             glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, hitMvp.m);
             glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, hitNormal.m);
+            glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &whiteA);
             
             glBindVertexArrayOES(s_vertexArray);
             
-            
-            glDrawArrays(GL_TRIANGLE_STRIP, s_geoFillOffset, s_geoFillSize);
+            glDrawArrays(GL_TRIANGLE_FAN, 0, s_geoSize);
             
             glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &GLcolor4f::black);
         }

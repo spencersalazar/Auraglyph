@@ -16,11 +16,8 @@ GLuint TexFont::s_program = 0;
 GLint TexFont::s_uniformMVMatrix = 0;
 GLint TexFont::s_uniformProjMatrix = 0;
 GLint TexFont::s_uniformNormalMatrix = 0;
-GLint TexFont::s_uniformColor2 = 0;
 GLint TexFont::s_uniformTexture = 0;
 GLint TexFont::s_uniformTexpos = 0;
-GLuint TexFont::s_vertexArray = 0;
-GLuint TexFont::s_vertexBuffer = 0;
 GLuint TexFont::s_geoSize = 0;
 GLgeoprimf *TexFont::s_geo = NULL;
 float TexFont::s_radius = 0;
@@ -52,7 +49,6 @@ void TexFont::initalizeTexFont()
         s_uniformMVMatrix = glGetUniformLocation(s_program, "modelViewMatrix");
         s_uniformProjMatrix = glGetUniformLocation(s_program, "projectionMatrix");
         s_uniformNormalMatrix = glGetUniformLocation(s_program, "normalMatrix");
-        s_uniformColor2 = glGetUniformLocation(s_program, "color2");
         s_uniformTexture = glGetUniformLocation(s_program, "texture");
         s_uniformTexpos = glGetUniformLocation(s_program, "texpos");
         
@@ -73,8 +69,6 @@ void TexFont::initalizeTexFont()
         s_geo[3].texcoord = GLvertex2f(1, 1);
         
         // use default normal (0,0,1) + color (1,1,1,1)
-        
-        genVertexArrayAndBuffer(s_geoSize, s_geo, s_vertexArray, s_vertexBuffer);
     }
 }
 
@@ -167,14 +161,26 @@ void TexFont::render(const std::string &text, const GLcolor4f &color,
     
     glUseProgram(s_program);
     
-    glBindVertexArrayOES(s_vertexArray);
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLgeoprimf), s_geo);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    
+    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLgeoprimf), &s_geo->texcoord);
+    glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+    
+    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    glDisableVertexAttribArray(GLKVertexAttribNormal);
+    
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
+    glDisableVertexAttribArray(GLKVertexAttribColor);
     
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_tex);
     
     glUniformMatrix4fv(s_uniformProjMatrix, 1, 0, proj.m);
     glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, normal.m);
-    glUniform4fv(s_uniformColor2, 1, (float*) &color);
     glUniform1i(s_uniformTexture, 0);
     
     GLKMatrix4 modelView = GLKMatrix4Scale(_modelView, 1, m_height/m_width, 1);

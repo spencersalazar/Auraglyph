@@ -17,7 +17,6 @@ varying lowp vec2 texcoord;
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
 uniform mat3 normalMatrix;
-uniform vec4 color2;
 uniform vec4 texpos;
 
 void main()
@@ -28,7 +27,7 @@ void main()
     
     float nDotVP = max(0.0, dot(eyeNormal, normalize(lightPosition)));
                  
-    colorVarying = diffuseColor * nDotVP * color * color2;
+    colorVarying = diffuseColor * nDotVP * color;
     
     texcoord.x = texpos.x + texcoord0.x*texpos.z;
     texcoord.y = texpos.y + texcoord0.y*texpos.w;

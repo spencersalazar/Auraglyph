@@ -34,12 +34,7 @@ private:
     static GLuint s_vertexBuffer;
     
     static GLuint s_geoSize;
-    static GLvncprimf * s_geo;
-    
-    static GLuint s_geoOutlineOffset;
-    static GLuint s_geoOutlineSize;
-    static GLuint s_geoFillOffset;
-    static GLuint s_geoFillSize;
+    static GLvertex3f * s_geo;
     
     static GLuint s_program;
     static GLint s_uniformMVPMatrix;
