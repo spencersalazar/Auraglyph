@@ -36,10 +36,6 @@ private:
     static GLuint s_geoSize;
     static GLvertex3f * s_geo;
     
-    static GLuint s_program;
-    static GLint s_uniformMVPMatrix;
-    static GLint s_uniformNormalMatrix;
-    
     GLvertex3f m_pos;
     
     GLKMatrix4 m_modelViewProjectionMatrix;
@@ -51,5 +47,21 @@ private:
     
     static void initializeNodeSelector();
 };
+
+
+class AGUINodeEditor
+{
+public:
+    AGUINodeEditor(AGNode *node);
+    
+private:
+    
+    const AGNode * m_node;
+    
+    GLKMatrix4 m_modelViewProjectionMatrix;
+    GLKMatrix3 m_normalMatrix;
+
+};
+
 
 #endif /* defined(__Auragraph__AGUserInterface__) */

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0901C1BA17BE2F970032904B /* AGGenericShader.mm */; };
 		095D12C417ACA36C0048A012 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C317ACA36C0048A012 /* UIKit.framework */; };
 		095D12C617ACA36C0048A012 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C517ACA36C0048A012 /* Foundation.framework */; };
 		095D12C817ACA36C0048A012 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C717ACA36C0048A012 /* CoreGraphics.framework */; };
@@ -53,6 +54,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0901C1BA17BE2F970032904B /* AGGenericShader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGGenericShader.mm; sourceTree = "<group>"; };
+		0901C1BB17BE2F970032904B /* AGGenericShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGGenericShader.h; sourceTree = "<group>"; };
 		095D12C017ACA36C0048A012 /* Auragraph.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Auragraph.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		095D12C317ACA36C0048A012 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		095D12C517ACA36C0048A012 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -241,8 +244,8 @@
 				095D12DF17ACA36C0048A012 /* Shader.fsh */,
 				095D12E117ACA36C0048A012 /* Shader.vsh */,
 				095D12E317ACA36C0048A012 /* AGViewController.h */,
-				095D12E417ACA36C0048A012 /* AGViewController.mm */,
 				095D12E617ACA36C0048A012 /* AGViewController.xib */,
+				095D12E417ACA36C0048A012 /* AGViewController.mm */,
 				095E854017B5E1D30065EF8E /* AGHandwritingRecognizer.h */,
 				095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */,
 				0987409B17B98D7C0098511A /* AGNode.h */,
@@ -253,6 +256,8 @@
 				098740AB17BC377E0098511A /* AGAudioNode.mm */,
 				098740B217BC61410098511A /* AGUserInterface.h */,
 				098740B117BC61410098511A /* AGUserInterface.mm */,
+				0901C1BB17BE2F970032904B /* AGGenericShader.h */,
+				0901C1BA17BE2F970032904B /* AGGenericShader.mm */,
 				095D12CE17ACA36C0048A012 /* Supporting Files */,
 			);
 			path = Auragraph;
@@ -473,6 +478,7 @@
 				098740AD17BC377E0098511A /* AGAudioNode.mm in Sources */,
 				098740B017BC527E0098511A /* ES2Render.mm in Sources */,
 				098740B317BC61410098511A /* AGUserInterface.mm in Sources */,
+				0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

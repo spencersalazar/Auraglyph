@@ -140,9 +140,11 @@ public:
     void setPosition(const GLvertex3f &pos) { m_pos = pos; }
     const GLvertex3f &position() const { return m_pos; }
     
+    // TODO: all of these should be virtual
     virtual int numOutputPorts() const { return 0; }
     virtual int numInputPorts() const { return 0; }
     virtual const AGPortInfo &inputPortInfo(int port) { return m_inputPortInfo[port]; }
+    virtual void setInputPortValue(int port, float value) { }
     
     virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const { return GLvertex3f(); }
     virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const { return GLvertex3f(); }

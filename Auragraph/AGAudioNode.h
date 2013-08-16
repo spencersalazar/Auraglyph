@@ -66,6 +66,8 @@ protected:
     GLuint m_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
     
     float ** m_inputPortBuffer;
+    
+    float m_gain;
 };
 
 
@@ -73,16 +75,7 @@ class AGAudioOutputNode : public AGAudioNode
 {
 public:
     
-    AGAudioOutputNode(GLvertex3f pos) : AGAudioNode(pos)
-    {
-        initializeAudioOutputNode();
-        
-        m_inputPortInfo = s_portInfo;
-        
-        m_iconVertexArray = s_iconVertexArray;
-        m_iconGeoSize = s_iconGeoSize;
-        m_iconGeoType = s_iconGeoType;
-    }
+    AGAudioOutputNode(GLvertex3f pos);
     
     virtual int numOutputPorts() const { return 0; }
     virtual int numInputPorts() const { return 1; }
@@ -108,6 +101,8 @@ public:
     
     virtual int numOutputPorts() const { return 1; }
     virtual int numInputPorts() const { return 2; }
+    
+    virtual void setInputPortValue(int port, float value);
     
     virtual void renderAudio(float *input, float *output, int nFrames);
     
@@ -137,7 +132,9 @@ public:
     AGAudioSquareWaveNode(GLvertex3f pos);
     
     virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { return 0; }
+    virtual int numInputPorts() const { return 2; }
+    
+    virtual void setInputPortValue(int port, float value);
     
     virtual void renderAudio(float *input, float *output, int nFrames);
     
@@ -167,7 +164,9 @@ public:
     AGAudioSawtoothWaveNode(GLvertex3f pos);
     
     virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { return 0; }
+    virtual int numInputPorts() const { return 2; }
+    
+    virtual void setInputPortValue(int port, float value);
     
     virtual void renderAudio(float *input, float *output, int nFrames);
     
@@ -197,7 +196,9 @@ public:
     AGAudioTriangleWaveNode(GLvertex3f pos);
     
     virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { return 0; }
+    virtual int numInputPorts() const { return 2; }
+    
+    virtual void setInputPortValue(int port, float value);
     
     virtual void renderAudio(float *input, float *output, int nFrames);
     

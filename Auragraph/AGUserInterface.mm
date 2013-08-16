@@ -10,6 +10,7 @@
 #import "AGNode.h"
 #import "ES2Render.h"
 #import "ShaderHelper.h"
+#import "AGGenericShader.h"
 
 
 static const float AGNODESELECTOR_RADIUS = 0.02;
@@ -20,9 +21,6 @@ GLuint AGUINodeSelector::s_vertexArray = 0;
 GLuint AGUINodeSelector::s_vertexBuffer = 0;
 GLuint AGUINodeSelector::s_geoSize = 0;
 GLvertex3f * AGUINodeSelector::s_geo = NULL;
-GLuint AGUINodeSelector::s_program = 0;
-GLint AGUINodeSelector::s_uniformMVPMatrix = 0;
-GLint AGUINodeSelector::s_uniformNormalMatrix = 0;
 
 void AGUINodeSelector::initializeNodeSelector()
 {
@@ -42,11 +40,6 @@ void AGUINodeSelector::initializeNodeSelector()
         s_geo[3] = GLvertex3f(radius, radius, 0);
         
         genVertexArrayAndBuffer(s_geoSize, s_geo, s_vertexArray, s_vertexBuffer);
-        
-        s_program = [ShaderHelper createProgram:@"Shader"
-                                 withAttributes:SHADERHELPER_PNC];
-        s_uniformMVPMatrix = glGetUniformLocation(s_program, "modelViewProjectionMatrix");
-        s_uniformNormalMatrix = glGetUniformLocation(s_program, "normalMatrix");
     }
 }
 
@@ -76,7 +69,7 @@ void AGUINodeSelector::render()
 {
     /* draw blank audio node */
     m_audioNode.render();
-    
+
     
     /* draw bounding box */
     
@@ -84,10 +77,10 @@ void AGUINodeSelector::render()
     
     glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
     
-    glUseProgram(s_program);
+    AGGenericShader::instance().useProgram();
     
-    glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
-    glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
+    AGGenericShader::instance().setMVPMatrix(m_modelViewProjectionMatrix);
+    AGGenericShader::instance().setNormalMatrix(m_normalMatrix);
     
     glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &GLcolor4f::white);
     
@@ -132,8 +125,8 @@ void AGUINodeSelector::render()
             GLcolor4f whiteA = GLcolor4f::white;
             whiteA.a = 0.75;
             
-            glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, hitMvp.m);
-            glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, hitNormal.m);
+            AGGenericShader::instance().setMVPMatrix(hitMvp);
+            AGGenericShader::instance().setNormalMatrix(hitNormal);
             glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &whiteA);
             
             glBindVertexArrayOES(s_vertexArray);
@@ -147,8 +140,8 @@ void AGUINodeSelector::render()
             glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &GLcolor4f::white);
         }
         
-        glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, mvp.m);
-        glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, normal.m);
+        AGGenericShader::instance().setMVPMatrix(mvp);
+        AGGenericShader::instance().setNormalMatrix(normal);
         
         glLineWidth(4.0f);
         AGAudioNodeManager::instance().renderNodeTypeIcon(nodeTypes[i]);

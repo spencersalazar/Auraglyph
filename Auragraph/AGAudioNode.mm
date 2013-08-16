@@ -87,6 +87,8 @@ AGNode(pos)
 {
     initializeAudioNode();
     
+    m_gain = 1;
+    
     m_radius = 0.01;
     m_portRadius = 0.01 * 0.2;
     
@@ -259,6 +261,17 @@ GLvertex3f AGAudioNode::positionForOutboundConnection(AGConnection * connection)
 //------------------------------------------------------------------------------
 #pragma mark AGAudioOutputNode
 
+AGAudioOutputNode::AGAudioOutputNode(GLvertex3f pos) : AGAudioNode(pos)
+{
+    initializeAudioOutputNode();
+    
+    m_inputPortInfo = s_portInfo;
+    
+    m_iconVertexArray = s_iconVertexArray;
+    m_iconGeoSize = s_iconGeoSize;
+    m_iconGeoType = s_iconGeoType;
+}
+
 void AGAudioOutputNode::initializeAudioOutputNode()
 {
     initializeAudioNode();
@@ -369,6 +382,15 @@ AGAudioSineWaveNode::AGAudioSineWaveNode(GLvertex3f pos) : AGAudioNode(pos)
     }
 }
 
+void AGAudioSineWaveNode::setInputPortValue(int port, float value)
+{
+    switch(port)
+    {
+        case 0: m_freq = value; break;
+        case 1: m_gain = value; break;
+    }
+}
+
 void AGAudioSineWaveNode::renderAudio(float *input, float *output, int nFrames)
 {
     for(std::list<AGConnection *>::iterator c = m_inbound.begin(); c != m_inbound.end(); c++)
@@ -383,9 +405,9 @@ void AGAudioSineWaveNode::renderAudio(float *input, float *output, int nFrames)
     
     for(int i = 0; i < nFrames; i++)
     {
-        output[i] += sinf(m_phase*2.0*M_PI) * (1 + m_inputPortBuffer[1][i]);
+        output[i] += sinf(m_phase*2.0*M_PI) * (m_gain + m_inputPortBuffer[1][i]);
         m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
-        if(m_phase > 1.0) m_phase -= 1.0;
+        while(m_phase >= 1.0) m_phase -= 1.0;
     }
 }
 
@@ -456,17 +478,51 @@ AGAudioSquareWaveNode::AGAudioSquareWaveNode(GLvertex3f pos) : AGAudioNode(pos)
     
     m_freq = 220;
     m_phase = 0;
+    
+    if(numInputPorts() > 0)
+    {
+        m_inputPortBuffer = new float*[numInputPorts()];
+        for(int i = 0; i < numInputPorts(); i++)
+        {
+            // TODO: allocate on demand
+            m_inputPortBuffer[i] = new float[bufferSize()];
+            memset(m_inputPortBuffer[i], 0, sizeof(float)*bufferSize());
+        }
+    }
+    else
+    {
+        m_inputPortBuffer = NULL;
+    }
 }
 
 
+void AGAudioSquareWaveNode::setInputPortValue(int port, float value)
+{
+    switch(port)
+    {
+        case 0: m_freq = value; break;
+        case 1: m_gain = value; break;
+    }
+}
+
 void AGAudioSquareWaveNode::renderAudio(float *input, float *output, int nFrames)
 {
+    for(std::list<AGConnection *>::iterator c = m_inbound.begin(); c != m_inbound.end(); c++)
+    {
+        AGConnection * conn = *c;
+        if(conn->rate() == RATE_AUDIO)
+        {
+            ((AGAudioNode *) conn->src())->renderAudio(input, m_inputPortBuffer[conn->dstPort()], nFrames);
+        }
+        //else TODO
+    }
+    
     for(int i = 0; i < nFrames; i++)
     {
-        output[i] += m_phase < 0.5 ? 1 : -1;
+        output[i] += (m_phase < 0.5 ? 1 : -1)  * (m_gain + m_inputPortBuffer[1][i]);
         
-        m_phase += m_freq/sampleRate();
-        if(m_phase >= 1.0) m_phase -= 1.0;
+        m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
+        while(m_phase >= 1.0) m_phase -= 1.0;
     }
 }
 
@@ -537,17 +593,51 @@ AGAudioSawtoothWaveNode::AGAudioSawtoothWaveNode(GLvertex3f pos) : AGAudioNode(p
     
     m_freq = 220;
     m_phase = 0;
+    
+    if(numInputPorts() > 0)
+    {
+        m_inputPortBuffer = new float*[numInputPorts()];
+        for(int i = 0; i < numInputPorts(); i++)
+        {
+            // TODO: allocate on demand
+            m_inputPortBuffer[i] = new float[bufferSize()];
+            memset(m_inputPortBuffer[i], 0, sizeof(float)*bufferSize());
+        }
+    }
+    else
+    {
+        m_inputPortBuffer = NULL;
+    }
 }
 
 
+void AGAudioSawtoothWaveNode::setInputPortValue(int port, float value)
+{
+    switch(port)
+    {
+        case 0: m_freq = value; break;
+        case 1: m_gain = value; break;
+    }
+}
+
 void AGAudioSawtoothWaveNode::renderAudio(float *input, float *output, int nFrames)
 {
+    for(std::list<AGConnection *>::iterator c = m_inbound.begin(); c != m_inbound.end(); c++)
+    {
+        AGConnection * conn = *c;
+        if(conn->rate() == RATE_AUDIO)
+        {
+            ((AGAudioNode *) conn->src())->renderAudio(input, m_inputPortBuffer[conn->dstPort()], nFrames);
+        }
+        //else TODO
+    }
+    
     for(int i = 0; i < nFrames; i++)
     {
-        output[i] += (1-m_phase)*2-1;
+        output[i] += ((1-m_phase)*2-1)  * (m_gain + m_inputPortBuffer[1][i]);
         
-        m_phase += m_freq/sampleRate();
-        if(m_phase >= 1.0) m_phase -= 1.0;
+        m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
+        while(m_phase >= 1.0) m_phase -= 1.0;
     }
 }
 
@@ -618,20 +708,54 @@ AGAudioTriangleWaveNode::AGAudioTriangleWaveNode(GLvertex3f pos) : AGAudioNode(p
     
     m_freq = 220;
     m_phase = 0;
+    
+    if(numInputPorts() > 0)
+    {
+        m_inputPortBuffer = new float*[numInputPorts()];
+        for(int i = 0; i < numInputPorts(); i++)
+        {
+            // TODO: allocate on demand
+            m_inputPortBuffer[i] = new float[bufferSize()];
+            memset(m_inputPortBuffer[i], 0, sizeof(float)*bufferSize());
+        }
+    }
+    else
+    {
+        m_inputPortBuffer = NULL;
+    }
 }
 
 
+void AGAudioTriangleWaveNode::setInputPortValue(int port, float value)
+{
+    switch(port)
+    {
+        case 0: m_freq = value; break;
+        case 1: m_gain = value; break;
+    }
+}
+
 void AGAudioTriangleWaveNode::renderAudio(float *input, float *output, int nFrames)
 {
+    for(std::list<AGConnection *>::iterator c = m_inbound.begin(); c != m_inbound.end(); c++)
+    {
+        AGConnection * conn = *c;
+        if(conn->rate() == RATE_AUDIO)
+        {
+            ((AGAudioNode *) conn->src())->renderAudio(input, m_inputPortBuffer[conn->dstPort()], nFrames);
+        }
+        //else TODO
+    }
+    
     for(int i = 0; i < nFrames; i++)
     {
         if(m_phase < 0.5)
-            output[i] += (1-m_phase*2)*2-1;
+            output[i] += ((1-m_phase*2)*2-1) * (m_gain + m_inputPortBuffer[1][i]);
         else
-            output[i] += (m_phase-0.5)*4-1;
-        
-        m_phase += m_freq/sampleRate();
-        if(m_phase >= 1.0) m_phase -= 1.0;
+            output[i] += ((m_phase-0.5)*4-1) * (m_gain + m_inputPortBuffer[1][i]);
+
+        m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
+        while(m_phase >= 1.0) m_phase -= 1.0;
     }
 }
 
