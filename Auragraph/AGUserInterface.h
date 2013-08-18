@@ -36,9 +36,12 @@ private:
     static GLuint s_geoSize;
     static GLvertex3f * s_geo;
     
+    float m_t;
+    
     GLvertex3f m_pos;
     
     GLKMatrix4 m_modelViewProjectionMatrix;
+    GLKMatrix4 m_modelView;
     GLKMatrix3 m_normalMatrix;
     
     AGAudioNode m_audioNode;
@@ -65,6 +68,8 @@ public:
     void touchMove(const GLvertex3f &t);
     void touchUp(const GLvertex3f &t);
     
+    bool doneEditing() { return m_doneEditing; }
+    
 private:
     
     static bool s_init;
@@ -77,10 +82,14 @@ private:
 
     AGNode * const m_node;
     
+    bool m_doneEditing;
+    
     GLKMatrix4 m_modelViewProjectionMatrix;
+    GLKMatrix4 m_modelView;
     GLKMatrix3 m_normalMatrix;
 
     int m_hit;
+    float m_t;
 };
 
 

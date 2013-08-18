@@ -17,6 +17,10 @@
 
 static const float AGNODESELECTOR_RADIUS = 0.02;
 
+static const float AGUIOpen_squeezeHeight = 0.00125;
+float AGUIOpen_animTimeX = 0.4;
+float AGUIOpen_animTimeY = 0.15;
+
 
 bool AGUINodeSelector::s_initNodeSelector = false;
 GLuint AGUINodeSelector::s_vertexArray = 0;
@@ -53,23 +57,35 @@ void AGUINodeSelector::initializeNodeSelector()
 AGUINodeSelector::AGUINodeSelector(const GLvertex3f &pos) :
 m_pos(pos),
 m_audioNode(pos),
-m_hit(-1)
+m_hit(-1),
+m_t(0)
 {
     initializeNodeSelector();
 }
 
 void AGUINodeSelector::update(float t, float dt)
 {
-    GLKMatrix4 modelView = AGNode::globalModelViewMatrix();
+    m_modelView = AGNode::globalModelViewMatrix();
     GLKMatrix4 projection = AGNode::projectionMatrix();
     
-    modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
+    m_modelView = GLKMatrix4Translate(m_modelView, m_pos.x, m_pos.y, m_pos.z);
     
-    m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
+    float squeezeHeight = AGUIOpen_squeezeHeight;
+    float animTimeX = AGUIOpen_animTimeX;
+    float animTimeY = AGUIOpen_animTimeY;
     
-    m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, modelView);
+    if(m_t < animTimeX)
+        m_modelView = GLKMatrix4Scale(m_modelView, squeezeHeight+(m_t/animTimeX)*(1-squeezeHeight), squeezeHeight, 1);
+    else if(m_t < animTimeX+animTimeY)
+        m_modelView = GLKMatrix4Scale(m_modelView, 1.0, squeezeHeight+((m_t-animTimeX)/animTimeY)*(1-squeezeHeight), 1);
+
+    m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_modelView), NULL);
+    
+    m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, m_modelView);
     
     m_audioNode.update(t, dt);
+    
+    m_t += dt;
 }
 
 void AGUINodeSelector::render()
@@ -109,16 +125,14 @@ void AGUINodeSelector::render()
     GLvertex3f xInc(radius, 0, 0);
     GLvertex3f yInc(0, radius, 0);
     
-    GLKMatrix4 baseModelView = AGNode::globalModelViewMatrix();
     GLKMatrix4 projection = AGNode::projectionMatrix();
-    baseModelView = GLKMatrix4Translate(baseModelView, m_pos.x, m_pos.y, m_pos.z);
     
     const std::vector<AGAudioNodeManager::AudioNodeType *> nodeTypes = AGAudioNodeManager::instance().audioNodeTypes();
     for(int i = 0; i < nodeTypes.size(); i++)
     {
         GLvertex3f iconPos = startPos + (xInc*(i%2)) + (yInc*(i/2));
         
-        GLKMatrix4 modelView = GLKMatrix4Translate(baseModelView, iconPos.x, iconPos.y, iconPos.z);
+        GLKMatrix4 modelView = GLKMatrix4Translate(m_modelView, iconPos.x, iconPos.y, iconPos.z);
         GLKMatrix3 normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
         GLKMatrix4 mvp = GLKMatrix4Multiply(projection, modelView);
         
@@ -259,23 +273,35 @@ void AGUINodeEditor::initializeNodeEditor()
 }
 
 AGUINodeEditor::AGUINodeEditor(AGNode *node) :
-m_node(node)
+m_node(node),
+m_hit(-1),
+m_t(0),
+m_doneEditing(false)
 {
     initializeNodeEditor();
-    
-    m_hit = -1;
 }
 
 void AGUINodeEditor::update(float t, float dt)
 {
-    GLKMatrix4 modelView = AGNode::globalModelViewMatrix();
+    m_modelView = AGNode::globalModelViewMatrix();
     GLKMatrix4 projection = AGNode::projectionMatrix();
     
-    modelView = GLKMatrix4Translate(modelView, m_node->position().x, m_node->position().y, m_node->position().z);
+    m_modelView = GLKMatrix4Translate(m_modelView, m_node->position().x, m_node->position().y, m_node->position().z);
     
-    m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
+    float squeezeHeight = AGUIOpen_squeezeHeight;
+    float animTimeX = AGUIOpen_animTimeX;
+    float animTimeY = AGUIOpen_animTimeY;
     
-    m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, modelView);
+    if(m_t < animTimeX)
+        m_modelView = GLKMatrix4Scale(m_modelView, squeezeHeight+(m_t/animTimeX)*(1-squeezeHeight), squeezeHeight, 1);
+    else if(m_t < animTimeX+animTimeY)
+        m_modelView = GLKMatrix4Scale(m_modelView, 1.0, squeezeHeight+((m_t-animTimeX)/animTimeY)*(1-squeezeHeight), 1);
+    
+    m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_modelView), NULL);
+    
+    m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, m_modelView);
+    
+    m_t += dt;
 }
 
 void AGUINodeEditor::render()
@@ -311,11 +337,9 @@ void AGUINodeEditor::render()
     /* draw title */
     
     float rowCount = NODEEDITOR_ROWCOUNT;
-    GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::globalModelViewMatrix(), m_node->position().x, m_node->position().y, m_node->position().z);
     GLKMatrix4 proj = AGNode::projectionMatrix();
     
-    GLKMatrix4 titleMV = AGNode::globalModelViewMatrix();
-    titleMV = GLKMatrix4Translate(modelView, -s_radius*0.9, s_radius - s_radius*2.0/rowCount, 0);
+    GLKMatrix4 titleMV = GLKMatrix4Translate(m_modelView, -s_radius*0.9, s_radius - s_radius*2.0/rowCount, 0);
     titleMV = GLKMatrix4Scale(titleMV, 0.61, 0.61, 0.61);
     s_text->render("EDIT", GLcolor4f::white, titleMV, proj);
     
@@ -345,7 +369,7 @@ void AGUINodeEditor::render()
             glDisableVertexAttribArray(GLKVertexAttribNormal);
             
             AGGenericShader::instance().useProgram();
-            GLKMatrix4 hitMVP = GLKMatrix4Multiply(proj, GLKMatrix4Translate(modelView, 0, y + s_radius/rowCount, 0));
+            GLKMatrix4 hitMVP = GLKMatrix4Multiply(proj, GLKMatrix4Translate(m_modelView, 0, y + s_radius/rowCount, 0));
             AGGenericShader::instance().setMVPMatrix(hitMVP);
             AGGenericShader::instance().setNormalMatrix(m_normalMatrix);
             
@@ -357,11 +381,11 @@ void AGUINodeEditor::render()
             valueColor = GLcolor4f(1-valueColor.r, 1-valueColor.g, 1-valueColor.b, 1);
         }
         
-        GLKMatrix4 nameMV = GLKMatrix4Translate(modelView, -s_radius*0.9, y, 0);
+        GLKMatrix4 nameMV = GLKMatrix4Translate(m_modelView, -s_radius*0.9, y, 0);
         nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
         s_text->render(m_node->inputPortInfo(i).name, nameColor, nameMV, proj);
         
-        GLKMatrix4 valueMV = GLKMatrix4Translate(modelView, s_radius*0.1, y, 0);
+        GLKMatrix4 valueMV = GLKMatrix4Translate(m_modelView, s_radius*0.1, y, 0);
         valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
         std::stringstream ss;
         float v = 0;
@@ -395,6 +419,10 @@ void AGUINodeEditor::touchDown(const GLvertex3f &t)
                 break;
             }
         }
+    }
+    else
+    {
+        m_doneEditing = true;
     }
 }
 

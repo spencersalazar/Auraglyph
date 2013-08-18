@@ -77,6 +77,9 @@ enum TouchMode
     GLuint _vertexBuffer;
     
     TouchMode _mode;
+    
+    GLvertex2f _firstPoint;
+    float _maxTouchTravel;
   
     // DRAWNODE mode state
     AGHandwritingRecognizer *_hwRecognizer;
@@ -329,6 +332,9 @@ enum TouchMode
     GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, p.y, 0.01),
                                       _modelView, _projection, viewport, NULL);
     
+    _firstPoint = GLvertex2f(p.x, p.y);
+    _maxTouchTravel = 0;
+    
     if(_mode == TOUCHMODE_SELECTNODETYPE)
     {
         GLvertex3f pos(vec.x, -vec.y, vec.z);
@@ -417,6 +423,10 @@ enum TouchMode
     GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, p.y, 0.01),
                                       _modelView, _projection, viewport, NULL);
     
+    float travel = _firstPoint.distanceSquaredTo(GLvertex2f(p.x, p.y));
+    if(travel > _maxTouchTravel)
+        _maxTouchTravel = travel;
+    
     // continue drawline
     if(_mode == TOUCHMODE_CONNECT || _mode == TOUCHMODE_DRAWNODE)
     {
@@ -500,8 +510,11 @@ enum TouchMode
     }
     else if(_mode == TOUCHMODE_MOVENODE)
     {
-        GLvertex3f pos(vec.x, -vec.y, vec.z);
-        _moveNode->setPosition(pos - _anchorOffset);
+        if(_maxTouchTravel >= 2*2)
+        {
+            GLvertex3f pos(vec.x, -vec.y, vec.z);
+            _moveNode->setPosition(pos - _anchorOffset);
+        }
     }
     else if(_mode == TOUCHMODE_DRAWNODE)
     {
@@ -534,14 +547,7 @@ enum TouchMode
         AGNode * newNode = _nodeSelector->createNode();
         if(newNode)
             _nodes.push_back(newNode);
-        
-        if(_nodeEditor) { delete _nodeEditor; _nodeEditor = NULL; }
-        if(newNode)
-        {
-            _nodeEditor = new AGUINodeEditor(newNode);
-            newMode = TOUCHMODE_EDITNODE;
-        }
-        
+                
         delete _nodeSelector;
         _nodeSelector = NULL;
     }
@@ -551,8 +557,15 @@ enum TouchMode
         
         _nodeEditor->touchUp(pos);
         
-        delete _nodeEditor;
-        _nodeEditor = NULL;
+        if(_nodeEditor->doneEditing())
+        {
+            delete _nodeEditor;
+            _nodeEditor = NULL;
+        }
+        else
+        {
+            newMode = TOUCHMODE_EDITNODE;
+        }
     }
     else if(_mode == TOUCHMODE_CONNECT)
     {
@@ -638,6 +651,15 @@ enum TouchMode
             AGOutputNode * node = new AGOutputNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
             _nodes.push_back(node);
             nDrawlineUsed = 0;
+        }
+    }
+    else if(_mode ==  TOUCHMODE_MOVENODE)
+    {
+        if(_nodeEditor) { delete _nodeEditor; _nodeEditor = NULL; }
+        if(_moveNode && _maxTouchTravel < 2*2)
+        {
+            _nodeEditor = new AGUINodeEditor(_moveNode);
+            newMode = TOUCHMODE_EDITNODE;
         }
     }
     
