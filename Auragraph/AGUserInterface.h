@@ -13,6 +13,10 @@
 #import <GLKit/GLKit.h>
 #import "AGAudioNode.h"
 
+#include "LTKTypes.h"
+#include "LTKTrace.h"
+
+
 class AGUINodeSelector
 {
 public:
@@ -64,11 +68,12 @@ public:
     void update(float t, float dt);
     void render();
     
-    void touchDown(const GLvertex3f &t);
-    void touchMove(const GLvertex3f &t);
-    void touchUp(const GLvertex3f &t);
+    void touchDown(const GLvertex3f &t, const CGPoint &screen);
+    void touchMove(const GLvertex3f &t, const CGPoint &screen);
+    void touchUp(const GLvertex3f &t, const CGPoint &screen);
     
     bool doneEditing() { return m_doneEditing; }
+    bool shouldRenderDrawline() { return m_editingPort >= 0; }
     
 private:
     
@@ -89,7 +94,14 @@ private:
     GLKMatrix3 m_normalMatrix;
 
     int m_hit;
+    int m_editingPort;
+    LTKTrace m_currentTrace;
+    float m_currentValue;
+    int m_currentDigit;
+    
     float m_t;
+    
+    int hitTest(const GLvertex3f &t, bool *inBbox);
 };
 
 

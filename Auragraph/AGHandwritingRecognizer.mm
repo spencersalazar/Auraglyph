@@ -56,7 +56,18 @@ static AGHandwritingRecognizerFigure g_figureForShape[] =
 @end
 
 
+static AGHandwritingRecognizer * g_instance = NULL;
+
 @implementation AGHandwritingRecognizer
+
+@synthesize view;
+
++ (id)instance
+{
+    if(g_instance == NULL)
+        g_instance = [AGHandwritingRecognizer new];
+    return g_instance;
+}
 
 - (id)init
 {
@@ -175,8 +186,7 @@ static AGHandwritingRecognizerFigure g_figureForShape[] =
     
 }
 
-- (AGHandwritingRecognizerFigure)recognizeNumeralInView:(UIView *)view
-                                                  trace:(const LTKTrace &)trace
+- (AGHandwritingRecognizerFigure)recognizeNumeral:(const LTKTrace &)trace
 {
 	LTKScreenContext screenContext;
 	vector<int> shapeSubset;
@@ -185,10 +195,10 @@ static AGHandwritingRecognizerFigure g_figureForShape[] =
 	vector<LTKShapeRecoResult> results;
 	LTKTraceGroup traceGroup;
     
-    screenContext.setBboxLeft(view.bounds.origin.x);
-    screenContext.setBboxRight(view.bounds.origin.x+view.bounds.size.width);
-    screenContext.setBboxTop(view.bounds.origin.y);
-    screenContext.setBboxBottom(view.bounds.origin.y+view.bounds.size.height);
+    screenContext.setBboxLeft(self.view.bounds.origin.x);
+    screenContext.setBboxRight(self.view.bounds.origin.x+view.bounds.size.width);
+    screenContext.setBboxTop(self.view.bounds.origin.y);
+    screenContext.setBboxBottom(self.view.bounds.origin.y+view.bounds.size.height);
     
     traceGroup.addTrace(trace);
     
@@ -210,8 +220,7 @@ static AGHandwritingRecognizerFigure g_figureForShape[] =
 }
 
 
-- (AGHandwritingRecognizerFigure)recognizeShapeInView:(UIView *)view
-                                                trace:(const LTKTrace &)trace
+- (AGHandwritingRecognizerFigure)recognizeShape:(const LTKTrace &)trace
 {
 	LTKScreenContext screenContext;
 	vector<int> shapeSubset;
@@ -220,10 +229,10 @@ static AGHandwritingRecognizerFigure g_figureForShape[] =
 	vector<LTKShapeRecoResult> results;
 	LTKTraceGroup traceGroup;
     
-    screenContext.setBboxLeft(view.bounds.origin.x);
-    screenContext.setBboxRight(view.bounds.origin.x+view.bounds.size.width);
-    screenContext.setBboxTop(view.bounds.origin.y);
-    screenContext.setBboxBottom(view.bounds.origin.y+view.bounds.size.height);
+    screenContext.setBboxLeft(self.view.bounds.origin.x);
+    screenContext.setBboxRight(self.view.bounds.origin.x+view.bounds.size.width);
+    screenContext.setBboxTop(self.view.bounds.origin.y);
+    screenContext.setBboxBottom(self.view.bounds.origin.y+view.bounds.size.height);
     
     traceGroup.addTrace(trace);
     

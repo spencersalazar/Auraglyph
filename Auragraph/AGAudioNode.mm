@@ -417,6 +417,9 @@ void AGAudioSineWaveNode::renderAudio(float *input, float *output, int nFrames)
         output[i] += sinf(m_phase*2.0*M_PI) * (m_gain + m_inputPortBuffer[1][i]);
         m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
         while(m_phase >= 1.0) m_phase -= 1.0;
+        
+        m_inputPortBuffer[0][i] = 0;
+        m_inputPortBuffer[1][i] = 0;
     }
 }
 

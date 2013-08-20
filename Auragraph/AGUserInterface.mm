@@ -12,6 +12,8 @@
 #import "ShaderHelper.h"
 #import "AGGenericShader.h"
 #import "TexFont.h"
+#import "AGHandwritingRecognizer.h"
+
 #import <sstream>
 
 
@@ -31,6 +33,7 @@ GLvertex3f * AGUINodeSelector::s_geo = NULL;
 //------------------------------------------------------------------------------
 // ### AGUINodeSelector ###
 //------------------------------------------------------------------------------
+#pragma mark -
 #pragma mark AGUINodeSelector
 
 void AGUINodeSelector::initializeNodeSelector()
@@ -225,6 +228,7 @@ AGAudioNode *AGUINodeSelector::createNode()
 //------------------------------------------------------------------------------
 // ### AGUINodeEditor ###
 //------------------------------------------------------------------------------
+#pragma mark -
 #pragma mark AGUINodeEditor
 
 static const int NODEEDITOR_ROWCOUNT = 5;
@@ -275,6 +279,7 @@ void AGUINodeEditor::initializeNodeEditor()
 AGUINodeEditor::AGUINodeEditor(AGNode *node) :
 m_node(node),
 m_hit(-1),
+m_editingPort(-1),
 m_t(0),
 m_doneEditing(false)
 {
@@ -396,44 +401,126 @@ void AGUINodeEditor::render()
 }
 
 
-void AGUINodeEditor::touchDown(const GLvertex3f &t)
+int AGUINodeEditor::hitTest(const GLvertex3f &t, bool *inBbox)
 {
-    m_hit = -1;
     float rowCount = NODEEDITOR_ROWCOUNT;
-
-    GLvertex3f pos = m_node->position();
     
+    GLvertex3f pos = m_node->position();
     // check if in entire bounds
     if(t.x > pos.x-s_radius && t.x < pos.x+s_radius &&
        t.y > pos.y-s_radius && t.y < pos.y+s_radius)
     {
+        *inBbox = true;
+        
         int numPorts = m_node->numInputPorts();
-
+        
         for(int i = 0; i < numPorts; i++)
         {
             float y_max = pos.y + s_radius - s_radius*2.0*(i+1)/rowCount;
             float y_min = pos.y + s_radius - s_radius*2.0*(i+2)/rowCount;
             if(t.y > y_min && t.y < y_max)
             {
-                m_hit = i;
-                break;
+                return i;
             }
         }
     }
     else
     {
-        m_doneEditing = true;
+        *inBbox = false;
+    }
+    
+    return -1;
+}
+
+
+void AGUINodeEditor::touchDown(const GLvertex3f &t, const CGPoint &screen)
+{
+    if(m_editingPort < 0)
+    {
+        m_hit = -1;
+        bool inBBox = false;
+        
+        // check if in entire bounds
+        m_hit = hitTest(t, &inBBox);
+        
+        m_doneEditing = !inBBox;
+    }
+    else
+    {
+        m_currentTrace = LTKTrace();
     }
 }
 
-void AGUINodeEditor::touchMove(const GLvertex3f &t)
+void AGUINodeEditor::touchMove(const GLvertex3f &t, const CGPoint &screen)
 {
-    touchDown(t);
+    if(!m_doneEditing)
+    {
+        if(m_editingPort >= 0)
+        {
+            floatVector point;
+            point.push_back(screen.x);
+            point.push_back(screen.y);
+            m_currentTrace.addPoint(point);
+        }
+        else
+        {
+            bool inBBox = false;
+            m_hit = hitTest(t, &inBBox);
+        }
+    }
 }
 
-void AGUINodeEditor::touchUp(const GLvertex3f &t)
+void AGUINodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
 {
-    touchDown(t);
+    if(!m_doneEditing)
+    {
+        if(m_editingPort >= 0)
+        {
+//            floatVector point;
+//            point.push_back(screen.x);
+//            point.push_back(screen.y);
+//            m_currentTrace.addPoint(point);
+
+            // attempt recognition
+            AGHandwritingRecognizerFigure figure = [[AGHandwritingRecognizer instance] recognizeNumeral:m_currentTrace];
+            
+            switch(figure)
+            {
+                case AG_FIGURE_0:
+                case AG_FIGURE_1:
+                case AG_FIGURE_2:
+                case AG_FIGURE_3:
+                case AG_FIGURE_4:
+                case AG_FIGURE_5:
+                case AG_FIGURE_6:
+                case AG_FIGURE_7:
+                case AG_FIGURE_8:
+                case AG_FIGURE_9:
+                    
+                    m_currentValue = (figure-'0') + m_currentValue*10;
+                    m_node->setInputPortValue(m_editingPort, m_currentValue);
+                    
+                    break;
+                    
+                default:
+                    m_doneEditing = true;
+                    m_editingPort = -1;
+            }
+        }
+        else
+        {
+            bool inBBox = false;
+            m_hit = hitTest(t, &inBBox);
+            
+            if(m_hit >= 0)
+            {
+                m_editingPort = m_hit;
+                m_hit = -1;
+                m_currentValue = 0;
+                m_currentDigit = 0;
+            }
+        }
+    }
 }
 
 

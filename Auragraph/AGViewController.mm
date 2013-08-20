@@ -141,7 +141,8 @@ enum TouchMode
     
     [self setupGL];
         
-    _hwRecognizer = [AGHandwritingRecognizer new];
+    _hwRecognizer = [AGHandwritingRecognizer instance];
+    _hwRecognizer.view = self.view;
     _currentTrace = LTKTrace();
     
     self.audioManager = [AGAudioManager new];
@@ -340,72 +341,71 @@ enum TouchMode
         GLvertex3f pos(vec.x, -vec.y, vec.z);
         
         _nodeSelector->touchDown(pos);
-        
-        return;
     }
     else if(_mode == TOUCHMODE_EDITNODE)
     {
         GLvertex3f pos(vec.x, -vec.y, vec.z);
         
-        _nodeEditor->touchDown(pos);
+        _nodeEditor->touchDown(pos, p);
         
-        return;
-    }
-    
-    AGNode::HitTestResult hit;
-    GLvertex2f pos(vec.x, -vec.y);
-    AGNode * hitNode = NULL;
-    
-    for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
-    {
-        hit = (*i)->hit(pos);
-        if(hit != AGNode::HIT_NONE)
-        {
-            hitNode = *i;
-            break;
-        }
-    }
-    
-    if(hit == AGNode::HIT_INPUT_NODE || hit == AGNode::HIT_OUTPUT_NODE)
-    {
-        _mode = TOUCHMODE_CONNECT;
-        
-        if(hit == AGNode::HIT_INPUT_NODE)
-        {
-            _connectInput = hitNode;
-            _connectInput->activateInputPort(1);
-        }
-        else
-        {
-            _connectOutput = hitNode;
-            _connectOutput->activateOutputPort(1);
-        }
-    }
-    else if(hit == AGNode::HIT_MAIN_NODE)
-    {
-        _mode = TOUCHMODE_MOVENODE;
-        
-        GLvertex3f pos2(vec.x, -vec.y, vec.z);
-        _anchorOffset = pos2 - hitNode->position();
-        
-        _moveNode = hitNode;
     }
     else
     {
-        _mode = TOUCHMODE_DRAWNODE;
-
-        // reset trace
-        _currentTrace = LTKTrace();
+        AGNode::HitTestResult hit;
+        GLvertex2f pos(vec.x, -vec.y);
+        AGNode * hitNode = NULL;
         
-        floatVector point;
-        point.push_back(p.x);
-        point.push_back(p.y);
-        _currentTrace.addPoint(point);
-        
-        _currentTraceSum = GLvertex3f(p.x, p.y, 0);
+        for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
+        {
+            hit = (*i)->hit(pos);
+            if(hit != AGNode::HIT_NONE)
+            {
+                hitNode = *i;
+                break;
+            }
+        }
+    
+        if(hit == AGNode::HIT_INPUT_NODE || hit == AGNode::HIT_OUTPUT_NODE)
+        {
+            _mode = TOUCHMODE_CONNECT;
+            
+            if(hit == AGNode::HIT_INPUT_NODE)
+            {
+                _connectInput = hitNode;
+                _connectInput->activateInputPort(1);
+            }
+            else
+            {
+                _connectOutput = hitNode;
+                _connectOutput->activateOutputPort(1);
+            }
+        }
+        else if(hit == AGNode::HIT_MAIN_NODE)
+        {
+            _mode = TOUCHMODE_MOVENODE;
+            
+            GLvertex3f pos2(vec.x, -vec.y, vec.z);
+            _anchorOffset = pos2 - hitNode->position();
+            
+            _moveNode = hitNode;
+        }
+        else
+        {
+            _mode = TOUCHMODE_DRAWNODE;
+            
+            // reset trace
+            _currentTrace = LTKTrace();
+            
+            floatVector point;
+            point.push_back(p.x);
+            point.push_back(p.y);
+            _currentTrace.addPoint(point);
+            
+            _currentTraceSum = GLvertex3f(p.x, p.y, 0);
+        }
     }
     
-    if(_mode == TOUCHMODE_DRAWNODE || _mode == TOUCHMODE_CONNECT)
+    if(_mode == TOUCHMODE_DRAWNODE || _mode == TOUCHMODE_CONNECT || (_mode == TOUCHMODE_EDITNODE && _nodeEditor->shouldRenderDrawline()))
     {
         drawline[0].geo.vertex = GLvertex3f(vec.x, -vec.y, vec.z);
         drawline[0].geo.color = GLcolor4f(1, 1, 1, 1);
@@ -428,7 +428,7 @@ enum TouchMode
         _maxTouchTravel = travel;
     
     // continue drawline
-    if(_mode == TOUCHMODE_CONNECT || _mode == TOUCHMODE_DRAWNODE)
+    if(_mode == TOUCHMODE_CONNECT || _mode == TOUCHMODE_DRAWNODE || (_mode == TOUCHMODE_EDITNODE && _nodeEditor->shouldRenderDrawline()))
     {
         drawline[nDrawlineUsed].geo.vertex = GLvertex3f(vec.x, -vec.y, vec.z);
         drawline[nDrawlineUsed].geo.color = GLcolor4f(0.75, 0.75, 0.75, 1);
@@ -447,7 +447,7 @@ enum TouchMode
     {
         GLvertex3f pos(vec.x, -vec.y, vec.z);
         
-        _nodeEditor->touchMove(pos);
+        _nodeEditor->touchMove(pos, p);
     }
     else if(_mode == TOUCHMODE_CONNECT)
     {
@@ -555,7 +555,7 @@ enum TouchMode
     {
         GLvertex3f pos(vec.x, -vec.y, vec.z);
         
-        _nodeEditor->touchUp(pos);
+        _nodeEditor->touchUp(pos, p);
         
         if(_nodeEditor->doneEditing())
         {
@@ -616,8 +616,7 @@ enum TouchMode
     {
         // analysis
         
-        AGHandwritingRecognizerFigure figure = [_hwRecognizer recognizeShapeInView:self.view
-                                                                             trace:_currentTrace];
+        AGHandwritingRecognizerFigure figure = [_hwRecognizer recognizeShape:_currentTrace];
         
 //        NSLog(@"figure: %i", figure);
         
@@ -653,7 +652,7 @@ enum TouchMode
             nDrawlineUsed = 0;
         }
     }
-    else if(_mode ==  TOUCHMODE_MOVENODE)
+    else if(_mode == TOUCHMODE_MOVENODE)
     {
         if(_nodeEditor) { delete _nodeEditor; _nodeEditor = NULL; }
         if(_moveNode && _maxTouchTravel < 2*2)

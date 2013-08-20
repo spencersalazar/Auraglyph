@@ -37,9 +37,11 @@ enum AGHandwritingRecognizerFigure
 
 @interface AGHandwritingRecognizer : NSObject
 
-- (AGHandwritingRecognizerFigure)recognizeNumeralInView:(UIView *)view
-                                                  trace:(const LTKTrace &)trace;
-- (AGHandwritingRecognizerFigure)recognizeShapeInView:(UIView *)view
-                                                trace:(const LTKTrace &)trace;
+@property (nonatomic, weak) UIView *view;
+
++ (id)instance;
+
+- (AGHandwritingRecognizerFigure)recognizeNumeral:(const LTKTrace &)trace;
+- (AGHandwritingRecognizerFigure)recognizeShape:(const LTKTrace &)trace;
 
 @end

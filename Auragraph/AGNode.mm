@@ -69,7 +69,7 @@ AGConnection::AGConnection(AGNode * src, AGNode * dst, int dstPort) :
 m_src(src),
 m_dst(dst),
 m_dstPort(dstPort),
-m_rate((src->rate() == RATE_AUDIO && dst->rate() == RATE_CONTROL) ? RATE_AUDIO : RATE_CONTROL), 
+m_rate((src->rate() == RATE_AUDIO && dst->rate() == RATE_AUDIO) ? RATE_AUDIO : RATE_CONTROL), 
 m_geo(NULL),
 m_geoSize(0)
 {
