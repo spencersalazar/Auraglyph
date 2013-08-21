@@ -53,6 +53,8 @@
 		098740BB17BCC2EC0098511A /* TexFont.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 098740B717BCC16B0098511A /* TexFont.vsh */; };
 		098740BD17BCD9820098511A /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 098740BC17BCD9810098511A /* CoreText.framework */; };
 		098740BF17BCE0130098511A /* Perfect DOS VGA 437.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 098740BE17BCE0130098511A /* Perfect DOS VGA 437.ttf */; };
+		098C0E1417C4278C00171366 /* Screen.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 098C0E1217C4278C00171366 /* Screen.fsh */; };
+		098C0E1517C4278C00171366 /* Screen.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 098C0E1317C4278C00171366 /* Screen.vsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -177,6 +179,8 @@
 		098740B717BCC16B0098511A /* TexFont.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = TexFont.vsh; sourceTree = "<group>"; };
 		098740BC17BCD9810098511A /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		098740BE17BCE0130098511A /* Perfect DOS VGA 437.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Perfect DOS VGA 437.ttf"; sourceTree = "<group>"; };
+		098C0E1217C4278C00171366 /* Screen.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Screen.fsh; path = Shaders/Screen.fsh; sourceTree = "<group>"; };
+		098C0E1317C4278C00171366 /* Screen.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Screen.vsh; path = Shaders/Screen.vsh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -242,12 +246,14 @@
 		095D12CD17ACA36C0048A012 /* Auragraph */ = {
 			isa = PBXGroup;
 			children = (
+				098C0E1317C4278C00171366 /* Screen.vsh */,
+				098C0E1217C4278C00171366 /* Screen.fsh */,
 				095E852F17B358FC0065EF8E /* shaperectst.mm */,
 				095E853017B358FC0065EF8E /* shaperectst.h */,
 				095D12D617ACA36C0048A012 /* AGAppDelegate.h */,
 				095D12D717ACA36C0048A012 /* AGAppDelegate.m */,
-				095D12DF17ACA36C0048A012 /* Shader.fsh */,
 				095D12E117ACA36C0048A012 /* Shader.vsh */,
+				095D12DF17ACA36C0048A012 /* Shader.fsh */,
 				095D12E317ACA36C0048A012 /* AGViewController.h */,
 				095D12E417ACA36C0048A012 /* AGViewController.mm */,
 				095D12E617ACA36C0048A012 /* AGViewController.xib */,
@@ -303,8 +309,8 @@
 				095D130017ACC5120048A012 /* UIKitGL.h */,
 				098740A917BB99DE0098511A /* TexFont.h */,
 				098740A817BB99DE0098511A /* TexFont.mm */,
-				098740B617BCC16B0098511A /* TexFont.fsh */,
 				098740B717BCC16B0098511A /* TexFont.vsh */,
+				098740B617BCC16B0098511A /* TexFont.fsh */,
 				098740AF17BC527E0098511A /* ES2Render.h */,
 				098740AE17BC527E0098511A /* ES2Render.mm */,
 			);
@@ -449,6 +455,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				098C0E1417C4278C00171366 /* Screen.fsh in Resources */,
+				098C0E1517C4278C00171366 /* Screen.vsh in Resources */,
 				095D12D217ACA36C0048A012 /* InfoPlist.strings in Resources */,
 				095D12DA17ACA36C0048A012 /* Default.png in Resources */,
 				095D12DC17ACA36C0048A012 /* Default@2x.png in Resources */,

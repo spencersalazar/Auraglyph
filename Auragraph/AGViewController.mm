@@ -26,17 +26,11 @@ enum
 {
     UNIFORM_MODELVIEWPROJECTION_MATRIX,
     UNIFORM_NORMAL_MATRIX,
-    NUM_UNIFORMS
+    UNIFORM_SCREEN_MVPMATRIX,
+    UNIFORM_SCREEN_TEX,
+    NUM_UNIFORMS,
 };
 GLint uniforms[NUM_UNIFORMS];
-
-// Attribute index.
-enum
-{
-    ATTRIB_VERTEX,
-    ATTRIB_NORMAL,
-    NUM_ATTRIBUTES
-};
 
 
 struct DrawPoint
@@ -75,6 +69,10 @@ enum TouchMode
     
     GLuint _vertexArray;
     GLuint _vertexBuffer;
+    
+    GLuint _screenTexture;
+    GLuint _screenFBO;
+    GLuint _screenProgram;
     
     TouchMode _mode;
     
@@ -188,13 +186,17 @@ enum TouchMode
 - (void)setupGL
 {
     [EAGLContext setCurrentContext:self.context];
-    
+        
     _program = [ShaderHelper createProgram:@"Shader"
                             withAttributes:SHADERHELPER_PNC];
     
     // Get uniform locations.
     uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
     uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program, "normalMatrix");
+    
+    _screenProgram = [ShaderHelper createProgram:@"Screen" withAttributes:SHADERHELPER_PTC];
+    uniforms[UNIFORM_SCREEN_MVPMATRIX] = glGetUniformLocation(_screenProgram, "modelViewProjectionMatrix");
+    uniforms[UNIFORM_SCREEN_TEX] = glGetUniformLocation(_screenProgram, "tex");
     
     glEnable(GL_DEPTH_TEST);
     
@@ -214,6 +216,10 @@ enum TouchMode
     
     glBindVertexArrayOES(0);
     
+    float scale = [UIScreen mainScreen].scale;
+    glGenTextureFromFramebuffer(&_screenTexture, &_screenFBO,
+                                self.view.bounds.size.width*scale,
+                                self.view.bounds.size.height*scale);
 }
 
 - (void)tearDownGL
@@ -278,6 +284,13 @@ enum TouchMode
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
+    GLint sysFBO;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &sysFBO);
+    
+    /* render scene to FBO texture */
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, _screenFBO);
+    
     //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClearColor(12.0f/255.0f, 16.0f/255.0f, 33.0f/255.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -290,7 +303,6 @@ enum TouchMode
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     
     GLKMatrix4 textMV = GLKMatrix4Translate(_modelView, -0.02, -0.07, 3.89);
-    //    textMV = GLKMatrix4Scale(textMV, 1, 0.75, 1);
     _font->render("AURAGRPH", GLcolor4f::white, textMV, _projection);
     
     // render connections
@@ -319,6 +331,60 @@ enum TouchMode
     if(_nodeEditor) _nodeEditor->render();
     // render node selector
     if(_nodeSelector) _nodeSelector->render();
+    
+    
+    /* render screen texture */
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, sysFBO);
+    
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    glDisable(GL_DEPTH_TEST);
+
+    glUseProgram(_screenProgram);
+    
+    glEnable(GL_TEXTURE_2D);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, _screenTexture);
+    
+    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
+    GLKMatrix4 ortho = GLKMatrix4MakeOrtho(-1, 1, -1.0/aspect, 1.0/aspect, -1, 1);
+
+    glUniformMatrix4fv(uniforms[UNIFORM_SCREEN_MVPMATRIX], 1, 0, ortho.m);
+    glUniform1i(uniforms[UNIFORM_SCREEN_TEX], 0);
+    
+    // GL_TRIANGLE_FAN quad
+    GLvertex3f screenGeo[] = {
+        GLvertex3f(-1, -1/aspect, 0),
+        GLvertex3f(1, -1/aspect, 0),
+        GLvertex3f(1, 1/aspect, 0),
+        GLvertex3f(-1, 1/aspect, 0),
+    };
+    
+    GLvertex2f screenUV[] = {
+        GLvertex2f(0, 0),
+        GLvertex2f(1, 0),
+        GLvertex2f(1, 1),
+        GLvertex2f(0, 1),
+    };
+    
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), screenGeo);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    
+    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLvertex2f), screenUV);
+    glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+    
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+    glDisableVertexAttribArray(GLKVertexAttribColor);
+    
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 
