@@ -21,6 +21,9 @@
 #import <list>
 
 
+#define AG_ENABLE_FBO 0
+
+
 // Uniform index.
 enum
 {
@@ -289,10 +292,12 @@ enum TouchMode
     
     /* render scene to FBO texture */
     
-    glBindFramebuffer(GL_FRAMEBUFFER, _screenFBO);
+    if(AG_ENABLE_FBO)
+        glBindFramebuffer(GL_FRAMEBUFFER, _screenFBO);
     
     //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClearColor(12.0f/255.0f, 16.0f/255.0f, 33.0f/255.0f, 1.0f);
+//    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     glDisable(GL_DEPTH_TEST);
@@ -332,59 +337,67 @@ enum TouchMode
     // render node selector
     if(_nodeSelector) _nodeSelector->render();
     
-    
-    /* render screen texture */
-    
-    glBindFramebuffer(GL_FRAMEBUFFER, sysFBO);
-    
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glBindVertexArrayOES(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
-    glDisable(GL_DEPTH_TEST);
-
-    glUseProgram(_screenProgram);
-    
-    glEnable(GL_TEXTURE_2D);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, _screenTexture);
-    
-    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
-    GLKMatrix4 ortho = GLKMatrix4MakeOrtho(-1, 1, -1.0/aspect, 1.0/aspect, -1, 1);
-
-    glUniformMatrix4fv(uniforms[UNIFORM_SCREEN_MVPMATRIX], 1, 0, ortho.m);
-    glUniform1i(uniforms[UNIFORM_SCREEN_TEX], 0);
-    
-    // GL_TRIANGLE_FAN quad
-    GLvertex3f screenGeo[] = {
-        GLvertex3f(-1, -1/aspect, 0),
-        GLvertex3f(1, -1/aspect, 0),
-        GLvertex3f(1, 1/aspect, 0),
-        GLvertex3f(-1, 1/aspect, 0),
-    };
-    
-    GLvertex2f screenUV[] = {
-        GLvertex2f(0, 0),
-        GLvertex2f(1, 0),
-        GLvertex2f(1, 1),
-        GLvertex2f(0, 1),
-    };
-    
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), screenGeo);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
-    
-    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLvertex2f), screenUV);
-    glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
-    
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
-    glDisableVertexAttribArray(GLKVertexAttribColor);
-    
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-    
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    if(AG_ENABLE_FBO)
+    {
+        /* render screen texture */
+        
+        glBindFramebuffer(GL_FRAMEBUFFER, sysFBO);
+        
+        //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(12.0f/255.0f, 16.0f/255.0f, 33.0f/255.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        glBindVertexArrayOES(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        // normal blending
+        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        // additive blending
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        
+        glUseProgram(_screenProgram);
+        
+        glEnable(GL_TEXTURE_2D);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, _screenTexture);
+        
+        float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
+        GLKMatrix4 ortho = GLKMatrix4MakeOrtho(-1, 1, -1.0/aspect, 1.0/aspect, -1, 1);
+        
+        glUniformMatrix4fv(uniforms[UNIFORM_SCREEN_MVPMATRIX], 1, 0, ortho.m);
+        glUniform1i(uniforms[UNIFORM_SCREEN_TEX], 0);
+        
+        // GL_TRIANGLE_FAN quad
+        GLvertex3f screenGeo[] = {
+            GLvertex3f(-1, -1/aspect, 0),
+            GLvertex3f(1, -1/aspect, 0),
+            GLvertex3f(1, 1/aspect, 0),
+            GLvertex3f(-1, 1/aspect, 0),
+        };
+        
+        GLvertex2f screenUV[] = {
+            GLvertex2f(0, 0),
+            GLvertex2f(1, 0),
+            GLvertex2f(1, 1),
+            GLvertex2f(0, 1),
+        };
+        
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), screenGeo);
+        glEnableVertexAttribArray(GLKVertexAttribPosition);
+        
+        glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLvertex2f), screenUV);
+        glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+        
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+        glDisableVertexAttribArray(GLKVertexAttribColor);
+        
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
 }
 
 

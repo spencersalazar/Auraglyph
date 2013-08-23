@@ -78,8 +78,8 @@
 		095D12D917ACA36C0048A012 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		095D12DB17ACA36C0048A012 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		095D12DD17ACA36C0048A012 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		095D12DF17ACA36C0048A012 /* Shader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = Shader.fsh; path = Shaders/Shader.fsh; sourceTree = "<group>"; };
-		095D12E117ACA36C0048A012 /* Shader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = Shader.vsh; path = Shaders/Shader.vsh; sourceTree = "<group>"; };
+		095D12DF17ACA36C0048A012 /* Shader.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; name = Shader.fsh; path = Shaders/Shader.fsh; sourceTree = "<group>"; };
+		095D12E117ACA36C0048A012 /* Shader.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; name = Shader.vsh; path = Shaders/Shader.vsh; sourceTree = "<group>"; };
 		095D12E317ACA36C0048A012 /* AGViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGViewController.h; sourceTree = "<group>"; };
 		095D12E417ACA36C0048A012 /* AGViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AGViewController.mm; sourceTree = "<group>"; };
 		095D12E717ACA36C0048A012 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/AGViewController.xib; sourceTree = "<group>"; };
@@ -175,12 +175,12 @@
 		098740B117BC61410098511A /* AGUserInterface.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGUserInterface.mm; sourceTree = "<group>"; };
 		098740B217BC61410098511A /* AGUserInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGUserInterface.h; sourceTree = "<group>"; };
 		098740B417BCBA4C0098511A /* Consolas.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Consolas.ttf; sourceTree = "<group>"; };
-		098740B617BCC16B0098511A /* TexFont.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = TexFont.fsh; sourceTree = "<group>"; };
-		098740B717BCC16B0098511A /* TexFont.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = TexFont.vsh; sourceTree = "<group>"; };
+		098740B617BCC16B0098511A /* TexFont.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; path = TexFont.fsh; sourceTree = "<group>"; };
+		098740B717BCC16B0098511A /* TexFont.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; path = TexFont.vsh; sourceTree = "<group>"; };
 		098740BC17BCD9810098511A /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		098740BE17BCE0130098511A /* Perfect DOS VGA 437.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Perfect DOS VGA 437.ttf"; sourceTree = "<group>"; };
-		098C0E1217C4278C00171366 /* Screen.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Screen.fsh; path = Shaders/Screen.fsh; sourceTree = "<group>"; };
-		098C0E1317C4278C00171366 /* Screen.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Screen.vsh; path = Shaders/Screen.vsh; sourceTree = "<group>"; };
+		098C0E1217C4278C00171366 /* Screen.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Screen.fsh; path = Shaders/Screen.fsh; sourceTree = "<group>"; };
+		098C0E1317C4278C00171366 /* Screen.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Screen.vsh; path = Shaders/Screen.vsh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
