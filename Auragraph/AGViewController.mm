@@ -406,32 +406,22 @@ enum TouchMode
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     CGPoint p = [[touches anyObject] locationInView:self.view];
-    
-    int viewport[] = { (int)self.view.bounds.origin.x, (int)self.view.bounds.origin.y,
-        (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
-    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, p.y, 0.01),
-                                      _modelView, _projection, viewport, NULL);
+    GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
     
     _firstPoint = GLvertex2f(p.x, p.y);
     _maxTouchTravel = 0;
     
     if(_mode == TOUCHMODE_SELECTNODETYPE)
     {
-        GLvertex3f pos(vec.x, -vec.y, vec.z);
-        
         _nodeSelector->touchDown(pos);
     }
     else if(_mode == TOUCHMODE_EDITNODE)
     {
-        GLvertex3f pos(vec.x, -vec.y, vec.z);
-        
         _nodeEditor->touchDown(pos, p);
-        
     }
     else
     {
         AGNode::HitTestResult hit;
-        GLvertex2f pos(vec.x, -vec.y);
         AGNode * hitNode = NULL;
         
         for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
@@ -463,8 +453,7 @@ enum TouchMode
         {
             _mode = TOUCHMODE_MOVENODE;
             
-            GLvertex3f pos2(vec.x, -vec.y, vec.z);
-            _anchorOffset = pos2 - hitNode->position();
+            _anchorOffset = pos - hitNode->position();
             
             _moveNode = hitNode;
         }
@@ -486,7 +475,7 @@ enum TouchMode
     
     if(_mode == TOUCHMODE_DRAWNODE || _mode == TOUCHMODE_CONNECT || (_mode == TOUCHMODE_EDITNODE && _nodeEditor->shouldRenderDrawline()))
     {
-        drawline[0].geo.vertex = GLvertex3f(vec.x, -vec.y, vec.z);
+        drawline[0].geo.vertex = pos;
         drawline[0].geo.color = GLcolor4f(1, 1, 1, 1);
         drawline[0].geo.normal = GLvertex3f(0, 0, 1);
         nDrawlineUsed = 1;
@@ -496,11 +485,7 @@ enum TouchMode
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
     CGPoint p = [[touches anyObject] locationInView:self.view];
-    
-    int viewport[] = { (int)self.view.bounds.origin.x, (int)self.view.bounds.origin.y,
-        (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
-    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, p.y, 0.01),
-                                      _modelView, _projection, viewport, NULL);
+    GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
     
     float travel = _firstPoint.distanceSquaredTo(GLvertex2f(p.x, p.y));
     if(travel > _maxTouchTravel)
@@ -509,7 +494,7 @@ enum TouchMode
     // continue drawline
     if(_mode == TOUCHMODE_CONNECT || _mode == TOUCHMODE_DRAWNODE || (_mode == TOUCHMODE_EDITNODE && _nodeEditor->shouldRenderDrawline()))
     {
-        drawline[nDrawlineUsed].geo.vertex = GLvertex3f(vec.x, -vec.y, vec.z);
+        drawline[nDrawlineUsed].geo.vertex = pos;
         drawline[nDrawlineUsed].geo.color = GLcolor4f(0.75, 0.75, 0.75, 1);
         drawline[nDrawlineUsed].geo.normal = GLvertex3f(0, 0, 1);
         
@@ -518,20 +503,15 @@ enum TouchMode
     
     if(_mode == TOUCHMODE_SELECTNODETYPE)
     {
-        GLvertex3f pos(vec.x, -vec.y, vec.z);
-        
         _nodeSelector->touchMove(pos);
     }
     else if(_mode == TOUCHMODE_EDITNODE)
     {
-        GLvertex3f pos(vec.x, -vec.y, vec.z);
-        
         _nodeEditor->touchMove(pos, p);
     }
     else if(_mode == TOUCHMODE_CONNECT)
     {
         AGNode::HitTestResult hit;
-        GLvertex2f pos(vec.x, -vec.y);
         AGNode * hitNode = NULL;
         
         for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
@@ -591,7 +571,6 @@ enum TouchMode
     {
         if(_maxTouchTravel >= 2*2)
         {
-            GLvertex3f pos(vec.x, -vec.y, vec.z);
             _moveNode->setPosition(pos - _anchorOffset);
         }
     }
@@ -609,18 +588,12 @@ enum TouchMode
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     CGPoint p = [[touches anyObject] locationInView:self.view];
+    GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
     
-    int viewport[] = { (int)self.view.bounds.origin.x, (int)self.view.bounds.origin.y,
-        (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
-    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, p.y, 0.01),
-                                      _modelView, _projection, viewport, NULL);
-
     TouchMode newMode = TOUCHMODE_NONE;
     
     if(_mode == TOUCHMODE_SELECTNODETYPE)
     {
-        GLvertex3f pos(vec.x, -vec.y, vec.z);
-        
         _nodeSelector->touchUp(pos);
         
         AGNode * newNode = _nodeSelector->createNode();
@@ -632,8 +605,6 @@ enum TouchMode
     }
     if(_mode == TOUCHMODE_EDITNODE)
     {
-        GLvertex3f pos(vec.x, -vec.y, vec.z);
-        
         _nodeEditor->touchUp(pos, p);
         
         if(_nodeEditor->doneEditing())
@@ -649,7 +620,6 @@ enum TouchMode
     else if(_mode == TOUCHMODE_CONNECT)
     {
         AGNode::HitTestResult hit;
-        GLvertex2f pos(vec.x, -vec.y);
         AGNode * hitNode = NULL;
         
         for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
@@ -700,33 +670,30 @@ enum TouchMode
 //        NSLog(@"figure: %i", figure);
         
         GLvertex3f centroid = _currentTraceSum/nDrawlineUsed;
-        GLKVector3 centroidMVP = GLKMathUnproject(GLKVector3Make(centroid.x, centroid.y, 0.01),
-                                                  _modelView, _projection, viewport, NULL);
+        GLvertex3f centroidMVP = [self worldCoordinateForScreenCoordinate:CGPointMake(centroid.x, centroid.y)];
         
         if(figure == AG_FIGURE_CIRCLE)
         {
-            GLvertex3f pos = GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z);
-            
-            _nodeSelector = new AGUINodeSelector(pos);
+            _nodeSelector = new AGUINodeSelector(centroidMVP);
             newMode = TOUCHMODE_SELECTNODETYPE;
             
             nDrawlineUsed = 0;
         }
         else if(figure == AG_FIGURE_SQUARE)
         {
-            AGControlNode * node = new AGControlNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
+            AGControlNode * node = new AGControlNode(centroidMVP);
             _nodes.push_back(node);
             nDrawlineUsed = 0;
         }
         else if(figure == AG_FIGURE_TRIANGLE_DOWN)
         {
-            AGInputNode * node = new AGInputNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
+            AGInputNode * node = new AGInputNode(centroidMVP);
             _nodes.push_back(node);
             nDrawlineUsed = 0;
         }
         else if(figure == AG_FIGURE_TRIANGLE_UP)
         {
-            AGOutputNode * node = new AGOutputNode(GLvertex3f(centroidMVP.x, -centroidMVP.y, centroidMVP.z));
+            AGOutputNode * node = new AGOutputNode(centroidMVP);
             _nodes.push_back(node);
             nDrawlineUsed = 0;
         }

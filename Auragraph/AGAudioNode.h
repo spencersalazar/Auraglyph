@@ -31,7 +31,7 @@ public:
     virtual void renderAudio(float *input, float *output, int nFrames);
     virtual void update(float t, float dt);
     virtual void render();
-    virtual HitTestResult hit(const GLvertex2f &hit);
+    virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();
     
     virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const;

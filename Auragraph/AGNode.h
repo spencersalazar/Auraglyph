@@ -134,7 +134,7 @@ public:
         HIT_MAIN_NODE,
     };
     
-    virtual HitTestResult hit(const GLvertex2f &hit) = 0;
+    virtual HitTestResult hit(const GLvertex3f &hit) = 0;
     virtual void unhit() = 0;
     
     void setPosition(const GLvertex3f &pos) { m_pos = pos; }
@@ -190,7 +190,7 @@ public:
     
     virtual void update(float t, float dt);
     virtual void render();
-    virtual HitTestResult hit(const GLvertex2f &hit);
+    virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();
 
 private:
@@ -216,7 +216,7 @@ public:
     
     virtual void update(float t, float dt);    
     virtual void render();
-    virtual HitTestResult hit(const GLvertex2f &hit);
+    virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();
 
 private:
@@ -241,7 +241,7 @@ public:
     
     virtual void update(float t, float dt);
     virtual void render();
-    virtual HitTestResult hit(const GLvertex2f &hit);
+    virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();
 
 private:

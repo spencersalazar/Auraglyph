@@ -203,7 +203,7 @@ void AGAudioNode::render()
 }
 
 
-AGNode::HitTestResult AGAudioNode::hit(const GLvertex2f &hit)
+AGNode::HitTestResult AGAudioNode::hit(const GLvertex3f &hit)
 {
     float x, y;
     

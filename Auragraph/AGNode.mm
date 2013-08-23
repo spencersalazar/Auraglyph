@@ -217,7 +217,7 @@ void AGControlNode::render()
     glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
 }
 
-AGNode::HitTestResult AGControlNode::hit(const GLvertex2f &hit)
+AGNode::HitTestResult AGControlNode::hit(const GLvertex3f &hit)
 {
     return HIT_NONE;
 }
@@ -300,7 +300,7 @@ void AGInputNode::render()
 }
 
 
-AGNode::HitTestResult AGInputNode::hit(const GLvertex2f &hit)
+AGNode::HitTestResult AGInputNode::hit(const GLvertex3f &hit)
 {
     return HIT_NONE;
 }
@@ -383,7 +383,7 @@ void AGOutputNode::render()
     glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
 }
 
-AGNode::HitTestResult AGOutputNode::hit(const GLvertex2f &hit)
+AGNode::HitTestResult AGOutputNode::hit(const GLvertex3f &hit)
 {
     return HIT_NONE;
 }
