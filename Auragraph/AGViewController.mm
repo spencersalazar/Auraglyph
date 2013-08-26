@@ -116,6 +116,8 @@ enum TouchMode
     AGUINodeEditor * _nodeEditor;
 }
 
+- (id)initWithViewController:(AGViewController *)viewController node:(AGNode *)node;
+
 @end
 
 @interface AGViewController ()
@@ -585,7 +587,11 @@ enum TouchMode
 @end
 
 
-
+//------------------------------------------------------------------------------
+// ### AGTouchHandler ###
+//------------------------------------------------------------------------------
+#pragma mark -
+#pragma mark AGTouchHandler
 
 @implementation AGTouchHandler : UIResponder
 
@@ -605,6 +611,13 @@ enum TouchMode
 - (void)render { }
 
 @end
+
+
+//------------------------------------------------------------------------------
+// ### AGDrawNodeTouchHandler ###
+//------------------------------------------------------------------------------
+#pragma mark -
+#pragma mark AGDrawNodeTouchHandler
 
 @implementation AGDrawNodeTouchHandler
 
@@ -675,6 +688,12 @@ enum TouchMode
 @end
 
 
+//------------------------------------------------------------------------------
+// ### AGMoveNodeTouchHandler ###
+//------------------------------------------------------------------------------
+#pragma mark -
+#pragma mark AGMoveNodeTouchHandler
+
 @implementation AGMoveNodeTouchHandler
 
 - (id)initWithViewController:(AGViewController *)viewController node:(AGNode *)node
@@ -714,14 +733,19 @@ enum TouchMode
 {
     if(_moveNode && _maxTouchTravel < 2*2)
     {
-//        _nodeEditor = new AGUINodeEditor(_moveNode);
-//        newMode = TOUCHMODE_EDITNODE;
+        _nextHandler = [[AGEditTouchHandler alloc] initWithViewController:_viewController node:_moveNode];
     }
 }
 
 
 @end
 
+
+//------------------------------------------------------------------------------
+// ### AGConnectTouchHandler ###
+//------------------------------------------------------------------------------
+#pragma mark -
+#pragma mark AGConnectTouchHandler
 
 @implementation AGConnectTouchHandler
 
@@ -846,6 +870,12 @@ enum TouchMode
 @end
 
 
+//------------------------------------------------------------------------------
+// ### AGSelectNodeTouchHandler ###
+//------------------------------------------------------------------------------
+#pragma mark -
+#pragma mark AGSelectNodeTouchHandler
+
 @implementation AGSelectNodeTouchHandler
 
 - (id)initWithViewController:(AGViewController *)viewController position:(GLvertex3f)pos
@@ -904,6 +934,83 @@ enum TouchMode
 @end
 
 
+//------------------------------------------------------------------------------
+// ### AGEditTouchHandler ###
+//------------------------------------------------------------------------------
+#pragma mark -
+#pragma mark AGEditTouchHandler
+
 @implementation AGEditTouchHandler
+
+
+- (id)initWithViewController:(AGViewController *)viewController node:(AGNode *)node
+{
+    if(self = [super initWithViewController:viewController])
+    {
+        _nodeEditor = new AGUINodeEditor(node);
+    }
+    
+    return self;
+}
+
+- (void)dealloc
+{
+    SAFE_DELETE(_nodeEditor);
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    CGPoint p = [[touches anyObject] locationInView:_viewController.view];
+    GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
+    
+    _nodeEditor->touchDown(pos, p);
+    
+    [_viewController clearLinePoints];
+    
+    if(_nodeEditor->shouldRenderDrawline())
+        [_viewController addLinePoint:pos];
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    CGPoint p = [[touches anyObject] locationInView:_viewController.view];
+    GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
+    
+    _nodeEditor->touchMove(pos, p);
+    
+    if(_nodeEditor->shouldRenderDrawline())
+        [_viewController addLinePoint:pos];
+    else
+        [_viewController clearLinePoints];
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    CGPoint p = [[touches anyObject] locationInView:_viewController.view];
+    GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
+    
+    _nodeEditor->touchUp(pos, p);
+    
+    if(_nodeEditor->shouldRenderDrawline())
+        [_viewController addLinePoint:pos];
+    else
+        [_viewController clearLinePoints];
+    
+    if(_nodeEditor->doneEditing())
+        _nextHandler = nil;
+    else
+        _nextHandler = self;
+}
+
+- (void)update:(float)t dt:(float)dt
+{
+    _nodeEditor->update(t, dt);
+}
+
+- (void)render
+{
+    _nodeEditor->render();
+}
+
 @end
 
