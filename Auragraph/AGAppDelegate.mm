@@ -10,7 +10,7 @@
 
 #import "AGViewController.h"
 
-int shaperecst(int argc, const char** argv);
+extern "C" int shaperecst(int argc, const char** argv);
 
 
 @implementation AGAppDelegate
