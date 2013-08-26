@@ -140,31 +140,9 @@ enum TouchMode
     GLuint _screenFBO;
     GLuint _screenProgram;
     
-    TouchMode _mode;
+    GLvertex3f _camera;
+    
     AGTouchHandler * _touchHandler;
-    
-    GLvertex2f _firstPoint;
-    float _maxTouchTravel;
-  
-    // DRAWNODE mode state
-    AGHandwritingRecognizer *_hwRecognizer;
-    LTKTrace _currentTrace;
-    GLvertex3f _currentTraceSum;
-    
-    // CONNECT mode state
-    AGNode * _connectInput;
-    AGNode * _connectOutput;
-    AGNode * _currentHit;
-    
-    // MOVENODE state
-    GLvertex3f _anchorOffset;
-    AGNode * _moveNode;
-    
-    // SELECTNODETYPE
-    AGUINodeSelector * _nodeSelector;
-    
-    // EDITNODE
-    AGUINodeEditor * _nodeEditor;
     
     std::list<AGNode *> _nodes;
     std::list<AGConnection *> _connections;
@@ -195,9 +173,6 @@ enum TouchMode
     _nodes = std::list<AGNode *>();
     _connections = std::list<AGConnection *>();
     _t = 0;
-    _mode = TOUCHMODE_NONE;
-    _touchHandler = [[AGDrawNodeTouchHandler alloc] initWithViewController:self];
-    _connectInput = _connectOutput = _currentHit = NULL;
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 
@@ -210,10 +185,8 @@ enum TouchMode
     view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
     
     [self setupGL];
-        
-    _hwRecognizer = [AGHandwritingRecognizer instance];
-    _hwRecognizer.view = self.view;
-    _currentTrace = LTKTrace();
+    
+    _camera = GLvertex3f(0, 0, 0);
     
     self.audioManager = [AGAudioManager new];
     [self updateMatrices];
@@ -341,7 +314,7 @@ enum TouchMode
     else
         projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f)/aspect, aspect, 0.1f, 100.0f);
     
-    GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
+    GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z-4.0f);
     
     // Compute the model view matrix for the object rendered with GLKit
     GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 0.0f);
@@ -369,9 +342,6 @@ enum TouchMode
         (*i)->update(_t, dt);
     for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
         (*i)->update(_t, dt);
-    
-    if(_nodeEditor) _nodeEditor->update(_t, dt);
-    if(_nodeSelector) _nodeSelector->update(_t, dt);
     
     [_touchHandler update:_t dt:dt];
 
@@ -431,10 +401,6 @@ enum TouchMode
         glDrawArrays(GL_POINTS, 0, nDrawlineUsed);
     else
         glDrawArrays(GL_LINE_STRIP, 0, nDrawlineUsed);
-    
-    if(_nodeEditor) _nodeEditor->render();
-    // render node selector
-    if(_nodeSelector) _nodeSelector->render();
     
     [_touchHandler render];
     
@@ -506,10 +472,12 @@ enum TouchMode
 {
     int viewport[] = { (int)self.view.bounds.origin.x, (int)self.view.bounds.origin.y,
         (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
-    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, p.y, 0.01),
+    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, 0.01),
                                       _modelView, _projection, viewport, NULL);
     
-    return GLvertex3f(vec.x, -vec.y, vec.z);
+//    vec = GLKMatrix4MultiplyVector3(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z), vec);
+    
+    return GLvertex3f(vec.x, vec.y, vec.z);
 }
 
 - (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)node
@@ -537,45 +505,67 @@ enum TouchMode
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    if(_touchHandler == nil)
+    if([touches count] == 1)
     {
-        CGPoint p = [[touches anyObject] locationInView:self.view];
-        GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
-        
-        AGNode * node = NULL;
-        AGNode::HitTestResult result = [self hitTest:pos node:&node];
-        
-        switch(result)
+        if(_touchHandler == nil)
         {
-            case AGNode::HIT_INPUT_NODE:
-            case AGNode::HIT_OUTPUT_NODE:
-                _touchHandler = [[AGConnectTouchHandler alloc] initWithViewController:self];
-                break;
-                
-            case AGNode::HIT_MAIN_NODE:
-                _touchHandler = [[AGMoveNodeTouchHandler alloc] initWithViewController:self node:node];
-                break;
-                
-            case AGNode::HIT_NONE:
-                _touchHandler = [[AGDrawNodeTouchHandler alloc] initWithViewController:self];
-                break;
+            CGPoint p = [[touches anyObject] locationInView:self.view];
+            GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
+            
+            AGNode * node = NULL;
+            AGNode::HitTestResult result = [self hitTest:pos node:&node];
+            
+            switch(result)
+            {
+                case AGNode::HIT_INPUT_NODE:
+                case AGNode::HIT_OUTPUT_NODE:
+                    _touchHandler = [[AGConnectTouchHandler alloc] initWithViewController:self];
+                    break;
+                    
+                case AGNode::HIT_MAIN_NODE:
+                    _touchHandler = [[AGMoveNodeTouchHandler alloc] initWithViewController:self node:node];
+                    break;
+                    
+                case AGNode::HIT_NONE:
+                    _touchHandler = [[AGDrawNodeTouchHandler alloc] initWithViewController:self];
+                    break;
+            }
         }
+        
+        [_touchHandler touchesBegan:touches withEvent:event];
     }
-    
-    [_touchHandler touchesBegan:touches withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    [_touchHandler touchesMoved:touches withEvent:event];
+    if([touches count] == 1)
+    {
+        [_touchHandler touchesMoved:touches withEvent:event];
+    }
+    else if([touches count] == 2)
+    {
+        UITouch *t = [touches anyObject];
+        CGPoint p = [t locationInView:self.view];
+        CGPoint p_1 = [t previousLocationInView:self.view];
+        
+        GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
+        GLvertex3f pos_1 = [self worldCoordinateForScreenCoordinate:p_1];
+        
+        GLvertex3f adj = pos - pos_1;
+        
+        _camera = _camera + adj;
+    }
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    [_touchHandler touchesEnded:touches withEvent:event];
-    
-    if(_touchHandler)
-        _touchHandler = [_touchHandler nextHandler];
+    if([touches count] == 1)
+    {
+        [_touchHandler touchesEnded:touches withEvent:event];
+        
+        if(_touchHandler)
+            _touchHandler = [_touchHandler nextHandler];
+    }
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
