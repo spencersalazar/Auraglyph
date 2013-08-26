@@ -12,6 +12,7 @@
 #import <math.h>
 #import <OpenGLES/ES1/gl.h>
 #import <OpenGLES/ES1/glext.h>
+#import <CoreGraphics/CoreGraphics.h>
 
 struct GLvertex2f;
 
@@ -108,6 +109,12 @@ struct GLvertex2f
     GLvertex2f()
     {
         x = y = 0;
+    }
+    
+    GLvertex2f(const CGPoint &p)
+    {
+        x = p.x;
+        y = p.y;
     }
     
     GLvertex2f(GLfloat x, GLfloat y)

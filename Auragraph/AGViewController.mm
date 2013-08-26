@@ -544,16 +544,24 @@ enum TouchMode
     }
     else if([touches count] == 2)
     {
-        UITouch *t = [touches anyObject];
-        CGPoint p = [t locationInView:self.view];
-        CGPoint p_1 = [t previousLocationInView:self.view];
+        UITouch *t1 = [[touches allObjects] objectAtIndex:0];
+        UITouch *t2 = [[touches allObjects] objectAtIndex:1];
+        CGPoint p1 = [t1 locationInView:self.view];
+        CGPoint p1_1 = [t1 previousLocationInView:self.view];
+        CGPoint p2 = [t2 locationInView:self.view];
+        CGPoint p2_1 = [t2 previousLocationInView:self.view];
         
-        GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
-        GLvertex3f pos_1 = [self worldCoordinateForScreenCoordinate:p_1];
+        CGPoint centroid = CGPointMake((p1.x+p2.x)/2, (p1.y+p2.y)/2);
+        CGPoint centroid_1 = CGPointMake((p1_1.x+p2_1.x)/2, (p1_1.y+p2_1.y)/2);
         
-        GLvertex3f adj = pos - pos_1;
+        float dist = GLvertex2f(p1).distanceTo(GLvertex2f(p2));
+        float dist_1 = GLvertex2f(p1_1).distanceTo(GLvertex2f(p2_1));
         
-        _camera = _camera + adj;
+        GLvertex3f pos = [self worldCoordinateForScreenCoordinate:centroid];
+        GLvertex3f pos_1 = [self worldCoordinateForScreenCoordinate:centroid_1];
+        
+        _camera = _camera + (pos - pos_1);
+        _camera.z += (dist - dist_1)*0.005;
     }
 }
 
