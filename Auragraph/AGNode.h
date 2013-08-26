@@ -153,6 +153,7 @@ public:
     // 1: positive activation; 0: deactivation; -1: negative activation
     virtual void activateInputPort(int type) { }
     virtual void activateOutputPort(int type) { }
+    virtual void activate(int type) { }
     
     virtual AGRate rate() { return RATE_CONTROL; }
     

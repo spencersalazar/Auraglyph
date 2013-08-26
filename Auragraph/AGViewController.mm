@@ -712,6 +712,7 @@ enum TouchMode
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
     _anchorOffset = pos - _moveNode->position();
+    _moveNode->activate(1);
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -726,6 +727,7 @@ enum TouchMode
     if(_maxTouchTravel >= 2*2) // TODO: #define constant for touch travel limit
     {
         _moveNode->setPosition(pos - _anchorOffset);
+        _moveNode->activate(0);
     }
 }
 
@@ -733,6 +735,7 @@ enum TouchMode
 {
     if(_moveNode && _maxTouchTravel < 2*2)
     {
+        _moveNode->activate(0);
         _nextHandler = [[AGEditTouchHandler alloc] initWithViewController:_viewController node:_moveNode];
     }
 }

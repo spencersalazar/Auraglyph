@@ -93,6 +93,7 @@ AGNode(pos)
     m_portRadius = 0.01 * 0.2;
     
     m_inputActivation = m_outputActivation = 0;
+    m_activation = 0;
     
     m_iconVertexArray = 0;
     m_iconGeoSize = 0;
@@ -146,11 +147,38 @@ void AGAudioNode::render()
     
     glUseProgram(s_program);
     
-    glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
     glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
-    
-    glLineWidth(4.0f);
-    glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
+
+    if(m_activation)
+    {
+        float scale = 0.975;
+        
+        GLKMatrix4 projection = projectionMatrix();
+        GLKMatrix4 modelView = globalModelViewMatrix();
+        
+        modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
+        GLKMatrix4 modelViewInner = GLKMatrix4Scale(modelView, scale, scale, scale);
+        GLKMatrix4 mvp = GLKMatrix4Multiply(projection, modelViewInner);
+        glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, mvp.m);
+        
+        glLineWidth(4.0f);
+        glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
+        
+        GLKMatrix4 modelViewOuter = GLKMatrix4Scale(modelView, 1.0/scale, 1.0/scale, 1.0/scale);
+        mvp = GLKMatrix4Multiply(projection, modelViewOuter);
+        glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, mvp.m);
+        
+        glLineWidth(4.0f);
+        glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
+    }
+    else
+    {
+        glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
+        glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
+        
+        glLineWidth(4.0f);
+        glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
+    }
     
     if(numOutputPorts())
     {

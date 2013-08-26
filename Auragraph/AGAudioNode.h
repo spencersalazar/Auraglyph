@@ -39,7 +39,8 @@ public:
     
     virtual void activateInputPort(int type) { m_inputActivation = type; }
     virtual void activateOutputPort(int type) { m_outputActivation = type; }
-    
+    virtual void activate(int type) { m_activation = type; }
+
     virtual AGRate rate() { return RATE_AUDIO; }
     
     static int sampleRate() { return s_sampleRate; }
@@ -59,6 +60,7 @@ private:
     
     int m_inputActivation;
     int m_outputActivation;
+    int m_activation;
     
 protected:
     GLuint m_iconVertexArray;
