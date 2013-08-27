@@ -101,6 +101,7 @@ private:
     std::list< std::vector<GLvertex3f> > m_drawline;
     LTKTrace m_currentTrace;
     float m_currentValue;
+    bool m_lastTraceWasRecognized;
     
     bool m_startedInAccept;
     bool m_hitAccept;

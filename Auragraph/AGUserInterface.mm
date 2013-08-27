@@ -303,7 +303,8 @@ m_doneEditing(false),
 m_hitAccept(false),
 m_startedInAccept(false),
 m_hitDiscard(false),
-m_startedInDiscard(false)
+m_startedInDiscard(false),
+m_lastTraceWasRecognized(true)
 {
     initializeNodeEditor();
 }
@@ -600,9 +601,6 @@ void AGUINodeEditor::touchDown(const GLvertex3f &t, const CGPoint &screen)
         bool inBBox = false;
         int hit = hitTest(t, &inBBox);
         
-        m_drawline.push_back(std::vector<GLvertex3f>());
-        m_currentTrace = LTKTrace();
-        
         if(hit == 0)
         {
             m_hitDiscard = true;
@@ -611,10 +609,15 @@ void AGUINodeEditor::touchDown(const GLvertex3f &t, const CGPoint &screen)
         else if(hit == 1)
         {
             m_hitAccept = true;
-            m_startedInDiscard = true;
+            m_startedInAccept = true;
         }
         else if(inBBox)
         {
+            if(!m_lastTraceWasRecognized && m_drawline.size())
+                m_drawline.remove(m_drawline.back());
+            m_drawline.push_back(std::vector<GLvertex3f>());
+            m_currentTrace = LTKTrace();
+            
             m_drawline.back().push_back(t);
             floatVector point;
             point.push_back(screen.x);
@@ -700,11 +703,11 @@ void AGUINodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                     case AG_FIGURE_8:
                     case AG_FIGURE_9:
                         m_currentValue = (figure-'0') + m_currentValue*10;
-                        //                    m_node->setInputPortValue(m_editingPort, m_currentValue);
+                        m_lastTraceWasRecognized = true;
                         break;
                         
                     default:
-                        ;
+                        m_lastTraceWasRecognized = false;
                 }
             }
         }
