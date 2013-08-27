@@ -73,7 +73,7 @@ public:
     void touchUp(const GLvertex3f &t, const CGPoint &screen);
     
     bool doneEditing() { return m_doneEditing; }
-    bool shouldRenderDrawline() { return m_editingPort >= 0; }
+    bool shouldRenderDrawline() { return false; }
     
 private:
     
@@ -84,7 +84,9 @@ private:
     static GLvertex3f * s_geo;
     static GLuint s_boundingOffset;
     static GLuint s_innerboxOffset;
-
+    static GLuint s_buttonBoxOffset;
+    static GLuint s_itemEditBoxOffset;
+    
     AGNode * const m_node;
     
     bool m_doneEditing;
@@ -95,9 +97,15 @@ private:
 
     int m_hit;
     int m_editingPort;
+    
+    std::list< std::vector<GLvertex3f> > m_drawline;
     LTKTrace m_currentTrace;
     float m_currentValue;
-    int m_currentDigit;
+    
+    bool m_startedInAccept;
+    bool m_hitAccept;
+    bool m_startedInDiscard;
+    bool m_hitDiscard;
     
     float m_t;
     

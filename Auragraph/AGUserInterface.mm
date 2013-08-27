@@ -241,6 +241,8 @@ GLuint AGUINodeEditor::s_geoSize = 0;
 GLvertex3f * AGUINodeEditor::s_geo = NULL;
 GLuint AGUINodeEditor::s_boundingOffset = 0;
 GLuint AGUINodeEditor::s_innerboxOffset = 0;
+GLuint AGUINodeEditor::s_buttonBoxOffset = 0;
+GLuint AGUINodeEditor::s_itemEditBoxOffset = 0;
 
 void AGUINodeEditor::initializeNodeEditor()
 {
@@ -251,7 +253,7 @@ void AGUINodeEditor::initializeNodeEditor()
         const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
         s_text = new TexFont(fontPath, 64);
         
-        s_geoSize = 8;
+        s_geoSize = 16;
         s_geo = new GLvertex3f[s_geoSize];
         
         s_radius = AGNODESELECTOR_RADIUS;
@@ -264,15 +266,31 @@ void AGUINodeEditor::initializeNodeEditor()
         s_geo[2] = GLvertex3f(radius, -radius, 0);
         s_geo[3] = GLvertex3f(radius, radius, 0);
         
-        // inner box(es)
+        // inner selection box
         // stroke GL_LINE_STRIP + fill GL_TRIANGLE_FAN
         s_geo[4] = GLvertex3f(-radius*0.95, radius/NODEEDITOR_ROWCOUNT, 0);
         s_geo[5] = GLvertex3f(-radius*0.95, -radius/NODEEDITOR_ROWCOUNT, 0);
         s_geo[6] = GLvertex3f(radius*0.95, -radius/NODEEDITOR_ROWCOUNT, 0);
         s_geo[7] = GLvertex3f(radius*0.95, radius/NODEEDITOR_ROWCOUNT, 0);
         
+        // button box
+        // stroke GL_LINE_STRIP + fill GL_TRIANGLE_FAN
+        s_geo[8] = GLvertex3f(-radius*0.9*0.60, radius/NODEEDITOR_ROWCOUNT * 0.95, 0);
+        s_geo[9] = GLvertex3f(-radius*0.9*0.60, -radius/NODEEDITOR_ROWCOUNT * 0.95, 0);
+        s_geo[10] = GLvertex3f(radius*0.9*0.60, -radius/NODEEDITOR_ROWCOUNT * 0.95, 0);
+        s_geo[11] = GLvertex3f(radius*0.9*0.60, radius/NODEEDITOR_ROWCOUNT * 0.95, 0);
+        
+        // item edit bounding box
+        // stroke GL_LINE_STRIP + fill GL_TRIANGLE_FAN
+        s_geo[12] = GLvertex3f(-radius*1.05, radius, 0);
+        s_geo[13] = GLvertex3f(-radius*1.05, -radius, 0);
+        s_geo[14] = GLvertex3f(radius*3.45, -radius, 0);
+        s_geo[15] = GLvertex3f(radius*3.45, radius, 0);
+        
         s_boundingOffset = 0;
         s_innerboxOffset = 4;
+        s_buttonBoxOffset = 8;
+        s_itemEditBoxOffset = 12;
     }
 }
 
@@ -281,7 +299,11 @@ m_node(node),
 m_hit(-1),
 m_editingPort(-1),
 m_t(0),
-m_doneEditing(false)
+m_doneEditing(false),
+m_hitAccept(false),
+m_startedInAccept(false),
+m_hitDiscard(false),
+m_startedInDiscard(false)
 {
     initializeNodeEditor();
 }
@@ -386,17 +408,119 @@ void AGUINodeEditor::render()
             valueColor = GLcolor4f(1-valueColor.r, 1-valueColor.g, 1-valueColor.b, 1);
         }
         
-        GLKMatrix4 nameMV = GLKMatrix4Translate(m_modelView, -s_radius*0.9, y, 0);
+        GLKMatrix4 nameMV = GLKMatrix4Translate(m_modelView, -s_radius*0.9, y + s_radius/rowCount*0.1, 0);
         nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
         s_text->render(m_node->inputPortInfo(i).name, nameColor, nameMV, proj);
         
-        GLKMatrix4 valueMV = GLKMatrix4Translate(m_modelView, s_radius*0.1, y, 0);
+        GLKMatrix4 valueMV = GLKMatrix4Translate(m_modelView, s_radius*0.1, y + s_radius/rowCount*0.1, 0);
         valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
         std::stringstream ss;
         float v = 0;
         m_node->getInputPortValue(i, v);
         ss << v;
         s_text->render(ss.str(), valueColor, valueMV, proj);
+    }
+    
+    
+    /* draw item editor */
+    
+    if(m_editingPort >= 0)
+    {
+        glBindVertexArrayOES(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_geo);
+        glEnableVertexAttribArray(GLKVertexAttribPosition);
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+        glDisableVertexAttribArray(GLKVertexAttribColor);
+        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+        glDisableVertexAttribArray(GLKVertexAttribNormal);
+        
+        float y = s_radius - s_radius*2.0*(m_editingPort+2)/rowCount;
+        
+        AGGenericShader::instance().useProgram();
+        AGGenericShader::instance().setNormalMatrix(m_normalMatrix);
+        
+        // bounding box
+        GLKMatrix4 bbMVP = GLKMatrix4Multiply(proj, GLKMatrix4Translate(m_modelView, 0, y - s_radius + s_radius*2/rowCount, 0));
+        AGGenericShader::instance().setMVPMatrix(bbMVP);
+        
+        // stroke
+        glDrawArrays(GL_LINE_LOOP, s_itemEditBoxOffset, 4);
+        
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &blackA);
+        
+        // fill
+        glDrawArrays(GL_TRIANGLE_FAN, s_itemEditBoxOffset, 4);
+        
+        
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+
+        // accept button
+        GLKMatrix4 buttonMVP = GLKMatrix4Multiply(proj, GLKMatrix4Translate(m_modelView, s_radius*1.65, y + s_radius/rowCount, 0));
+        AGGenericShader::instance().setMVPMatrix(buttonMVP);
+        if(m_hitAccept)
+            // stroke
+            glDrawArrays(GL_LINE_LOOP, s_buttonBoxOffset, 4);
+        else
+            // fill
+            glDrawArrays(GL_TRIANGLE_FAN, s_buttonBoxOffset, 4);
+        
+        // discard button
+        buttonMVP = GLKMatrix4Multiply(proj, GLKMatrix4Translate(m_modelView, s_radius*1.65 + s_radius*1.2, y + s_radius/rowCount, 0));
+        AGGenericShader::instance().setMVPMatrix(buttonMVP);
+        // fill
+        if(m_hitDiscard)
+            // stroke
+            glDrawArrays(GL_LINE_LOOP, s_buttonBoxOffset, 4);
+        else
+            // fill
+            glDrawArrays(GL_TRIANGLE_FAN, s_buttonBoxOffset, 4);
+        
+        // text
+        GLKMatrix4 textMV = GLKMatrix4Translate(m_modelView, s_radius*1.2, y + s_radius/rowCount*0.1, 0);
+        textMV = GLKMatrix4Scale(textMV, 0.5, 0.5, 0.5);
+        if(m_hitAccept)
+            s_text->render("Accept", GLcolor4f::white, textMV, proj);
+        else
+            s_text->render("Accept", GLcolor4f::black, textMV, proj);
+        
+        
+        textMV = GLKMatrix4Translate(m_modelView, s_radius*1.2 + s_radius*1.2, y + s_radius/rowCount*0.1, 0);
+        textMV = GLKMatrix4Scale(textMV, 0.5, 0.5, 0.5);
+        if(m_hitDiscard)
+            s_text->render("Discard", GLcolor4f::white, textMV, proj);
+        else
+            s_text->render("Discard", GLcolor4f::black, textMV, proj);
+        
+        // text name + value
+        GLKMatrix4 nameMV = GLKMatrix4Translate(m_modelView, -s_radius*0.9, y + s_radius/rowCount*0.1, 0);
+        nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
+        s_text->render(m_node->inputPortInfo(m_editingPort).name, GLcolor4f::white, nameMV, proj);
+        
+        GLKMatrix4 valueMV = GLKMatrix4Translate(m_modelView, s_radius*0.1, y + s_radius/rowCount*0.1, 0);
+        valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
+        std::stringstream ss;
+        ss << m_currentValue;
+        s_text->render(ss.str(), GLcolor4f::white, valueMV, proj);
+        
+        AGGenericShader::instance().useProgram();
+        AGGenericShader::instance().setNormalMatrix(m_normalMatrix);
+        AGGenericShader::instance().setMVPMatrix(GLKMatrix4Multiply(proj, AGNode::globalModelViewMatrix()));
+
+        // draw traces
+        for(std::list<std::vector<GLvertex3f> >::iterator i = m_drawline.begin(); i != m_drawline.end(); i++)
+        {
+            std::vector<GLvertex3f> geo = *i;
+            glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo.data());
+            glEnableVertexAttribArray(GLKVertexAttribPosition);
+            glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+            glDisableVertexAttribArray(GLKVertexAttribColor);
+            glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+            glDisableVertexAttribArray(GLKVertexAttribNormal);
+            
+            glDrawArrays(GL_LINE_STRIP, 0, geo.size());
+        }
     }
 }
 
@@ -405,10 +529,35 @@ int AGUINodeEditor::hitTest(const GLvertex3f &t, bool *inBbox)
 {
     float rowCount = NODEEDITOR_ROWCOUNT;
     
+    *inBbox = false;
+    
     GLvertex3f pos = m_node->position();
+    
+    if(m_editingPort >= 0)
+    {
+        float y = s_radius - s_radius*2.0*(m_editingPort+2)/rowCount;
+        
+        float bb_center = y - s_radius + s_radius*2/rowCount;
+        if(t.x > pos.x+s_geo[s_itemEditBoxOffset].x && t.x < pos.x+s_geo[s_itemEditBoxOffset+2].x &&
+           t.y > pos.y+bb_center+s_geo[s_itemEditBoxOffset+2].y && t.y < pos.y+bb_center+s_geo[s_itemEditBoxOffset].y)
+        {
+            *inBbox = true;
+            
+            GLvertex3f acceptCenter = pos + GLvertex3f(s_radius*1.65, y + s_radius/rowCount, pos.z);
+            GLvertex3f discardCenter = pos + GLvertex3f(s_radius*1.65 + s_radius*1.2, y + s_radius/rowCount, pos.z);
+            
+            if(t.x > acceptCenter.x+s_geo[s_buttonBoxOffset].x && t.x < acceptCenter.x+s_geo[s_buttonBoxOffset+2].x &&
+               t.y > acceptCenter.y+s_geo[s_buttonBoxOffset+2].y && t.y < acceptCenter.y+s_geo[s_buttonBoxOffset].y)
+                return 1;
+            if(t.x > discardCenter.x+s_geo[s_buttonBoxOffset].x && t.x < discardCenter.x+s_geo[s_buttonBoxOffset+2].x &&
+               t.y > discardCenter.y+s_geo[s_buttonBoxOffset+2].y && t.y < discardCenter.y+s_geo[s_buttonBoxOffset].y)
+                return 0;
+        }
+    }
+    
     // check if in entire bounds
-    if(t.x > pos.x-s_radius && t.x < pos.x+s_radius &&
-       t.y > pos.y-s_radius && t.y < pos.y+s_radius)
+    else if(t.x > pos.x-s_radius && t.x < pos.x+s_radius &&
+            t.y > pos.y-s_radius && t.y < pos.y+s_radius)
     {
         *inBbox = true;
         
@@ -423,10 +572,6 @@ int AGUINodeEditor::hitTest(const GLvertex3f &t, bool *inBbox)
                 return i;
             }
         }
-    }
-    else
-    {
-        *inBbox = false;
     }
     
     return -1;
@@ -447,7 +592,35 @@ void AGUINodeEditor::touchDown(const GLvertex3f &t, const CGPoint &screen)
     }
     else
     {
+        m_hitAccept = false;
+        m_startedInAccept = false;
+        m_hitDiscard = false;
+        m_startedInDiscard = false;
+        
+        bool inBBox = false;
+        int hit = hitTest(t, &inBBox);
+        
+        m_drawline.push_back(std::vector<GLvertex3f>());
         m_currentTrace = LTKTrace();
+        
+        if(hit == 0)
+        {
+            m_hitDiscard = true;
+            m_startedInDiscard = true;
+        }
+        else if(hit == 1)
+        {
+            m_hitAccept = true;
+            m_startedInDiscard = true;
+        }
+        else if(inBBox)
+        {
+            m_drawline.back().push_back(t);
+            floatVector point;
+            point.push_back(screen.x);
+            point.push_back(screen.y);
+            m_currentTrace.addPoint(point);
+        }
     }
 }
 
@@ -457,10 +630,28 @@ void AGUINodeEditor::touchMove(const GLvertex3f &t, const CGPoint &screen)
     {
         if(m_editingPort >= 0)
         {
-            floatVector point;
-            point.push_back(screen.x);
-            point.push_back(screen.y);
-            m_currentTrace.addPoint(point);
+            bool inBBox = false;
+            int hit = hitTest(t, &inBBox);
+            
+            m_hitAccept = false;
+            m_hitDiscard = false;
+            
+            if(hit == 0 && m_startedInDiscard)
+            {
+                m_hitDiscard = true;
+            }
+            else if(hit == 1 && m_startedInAccept)
+            {
+                m_hitAccept = true;
+            }
+            else if(inBBox && !m_startedInDiscard && !m_startedInAccept)
+            {
+                m_drawline.back().push_back(t);
+                floatVector point;
+                point.push_back(screen.x);
+                point.push_back(screen.y);
+                m_currentTrace.addPoint(point);
+            }
         }
         else
         {
@@ -476,35 +667,45 @@ void AGUINodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
     {
         if(m_editingPort >= 0)
         {
-//            floatVector point;
-//            point.push_back(screen.x);
-//            point.push_back(screen.y);
-//            m_currentTrace.addPoint(point);
-
-            // attempt recognition
-            AGHandwritingRecognizerFigure figure = [[AGHandwritingRecognizer instance] recognizeNumeral:m_currentTrace];
-            
-            switch(figure)
+            if(m_hitAccept)
             {
-                case AG_FIGURE_0:
-                case AG_FIGURE_1:
-                case AG_FIGURE_2:
-                case AG_FIGURE_3:
-                case AG_FIGURE_4:
-                case AG_FIGURE_5:
-                case AG_FIGURE_6:
-                case AG_FIGURE_7:
-                case AG_FIGURE_8:
-                case AG_FIGURE_9:
-                    
-                    m_currentValue = (figure-'0') + m_currentValue*10;
-                    m_node->setInputPortValue(m_editingPort, m_currentValue);
-                    
-                    break;
-                    
-                default:
-                    m_doneEditing = true;
-                    m_editingPort = -1;
+//                m_doneEditing = true;
+                m_node->setInputPortValue(m_editingPort, m_currentValue);
+                m_editingPort = -1;
+                m_hitAccept = false;
+                m_drawline.clear();
+            }
+            else if(m_hitDiscard)
+            {
+//                m_doneEditing = true;
+                m_editingPort = -1;
+                m_hitDiscard = false;
+                m_drawline.clear();
+            }
+            else if(m_currentTrace.getNumberOfPoints() > 0 && !m_startedInDiscard && !m_startedInAccept)
+            {
+                // attempt recognition
+                AGHandwritingRecognizerFigure figure = [[AGHandwritingRecognizer instance] recognizeNumeral:m_currentTrace];
+                
+                switch(figure)
+                {
+                    case AG_FIGURE_0:
+                    case AG_FIGURE_1:
+                    case AG_FIGURE_2:
+                    case AG_FIGURE_3:
+                    case AG_FIGURE_4:
+                    case AG_FIGURE_5:
+                    case AG_FIGURE_6:
+                    case AG_FIGURE_7:
+                    case AG_FIGURE_8:
+                    case AG_FIGURE_9:
+                        m_currentValue = (figure-'0') + m_currentValue*10;
+                        //                    m_node->setInputPortValue(m_editingPort, m_currentValue);
+                        break;
+                        
+                    default:
+                        ;
+                }
             }
         }
         else
@@ -517,7 +718,7 @@ void AGUINodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                 m_editingPort = m_hit;
                 m_hit = -1;
                 m_currentValue = 0;
-                m_currentDigit = 0;
+                //m_node->getInputPortValue(m_editingPort, m_currentValue);
             }
         }
     }
