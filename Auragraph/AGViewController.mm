@@ -148,6 +148,8 @@ enum TouchMode
     std::list<AGConnection *> _connections;
     
     TexFont * _font;
+    
+    AGUIButton * _testButton;
 }
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) GLKBaseEffect *effect;
@@ -202,6 +204,8 @@ enum TouchMode
     
     // ensure the hw recognizer is preloaded
     (void) [AGHandwritingRecognizer instance];
+    
+    _testButton = new AGUIButton("Trainer", [self worldCoordinateForScreenCoordinate:CGPointMake(10, self.view.bounds.size.height-10)], GLvertex2f(0.028, 0.007));
 }
 
 - (void)dealloc
@@ -347,6 +351,8 @@ enum TouchMode
         (*i)->update(_t, dt);
     
     [_touchHandler update:_t dt:dt];
+    
+    _testButton->update(_t, dt);
 
     glBindVertexArrayOES(_vertexArray);
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
@@ -406,6 +412,8 @@ enum TouchMode
         glDrawArrays(GL_LINE_STRIP, 0, nDrawlineUsed);
     
     [_touchHandler render];
+    
+    _testButton->render();
     
     if(AG_ENABLE_FBO)
     {
@@ -560,11 +568,16 @@ enum TouchMode
         float dist = GLvertex2f(p1).distanceTo(GLvertex2f(p2));
         float dist_1 = GLvertex2f(p1_1).distanceTo(GLvertex2f(p2_1));
         
-        GLvertex3f pos = [self worldCoordinateForScreenCoordinate:centroid];
-        GLvertex3f pos_1 = [self worldCoordinateForScreenCoordinate:centroid_1];
+//        GLvertex3f pos = [self worldCoordinateForScreenCoordinate:centroid];
+//        GLvertex3f pos_1 = [self worldCoordinateForScreenCoordinate:centroid_1];
+        GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p1];
+        GLvertex3f pos_1 = [self worldCoordinateForScreenCoordinate:p1_1];
         
         _camera = _camera + (pos - pos_1);
-        _camera.z += (dist - dist_1)*0.005;
+        
+        [self clearLinePoints];
+        _touchHandler = nil;
+//        _camera.z += (dist - dist_1)*0.005;
     }
 }
 

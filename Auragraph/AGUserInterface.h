@@ -17,6 +17,20 @@
 #include "LTKTrace.h"
 
 
+class AGUIObject
+{
+public:
+    void update(float t, float dt) { }
+    void render() { }
+    
+    void touchDown(const GLvertex3f &t) { }
+    void touchMove(const GLvertex3f &t) { }
+    void touchUp(const GLvertex3f &t) { }
+
+    bool hitTest(const GLvertex3f &t) { return false; }
+};
+
+
 class AGUINodeSelector
 {
 public:
@@ -111,6 +125,56 @@ private:
     float m_t;
     
     int hitTest(const GLvertex3f &t, bool *inBbox);
+};
+
+
+
+class AGUIFrame : public AGUIObject
+{
+public:
+    AGUIFrame(const GLvertex2f &bottomLeft, const GLvertex2f &topRight);
+    AGUIFrame(const GLvertex2f &bottomLeft, const GLvertex2f &bottomRight, const GLvertex2f &topRight, const GLvertex2f &topLeft);
+    
+    void update(float t, float dt);
+    void render();
+    
+    void touchDown(const GLvertex3f &t);
+    void touchMove(const GLvertex3f &t);
+    void touchUp(const GLvertex3f &t);
+    
+    bool hitTest(const GLvertex3f &t);
+    
+private:
+    
+    GLvertex2f m_geo[4];
+};
+
+
+class AGUIButton : public AGUIObject
+{
+public:
+    AGUIButton(const std::string &title, const GLvertex3f &pos, const GLvertex3f &size);
+    
+    void update(float t, float dt);
+    void render();
+    
+    void touchDown(const GLvertex3f &t);
+    void touchMove(const GLvertex3f &t);
+    void touchUp(const GLvertex3f &t);
+    
+    bool hitTest(const GLvertex3f &t);
+    
+private:
+    
+    static TexFont *s_text;
+    
+    std::string m_title;
+    
+    GLvertex3f m_pos, m_size;
+    GLvertex3f m_geo[8];
+    
+    bool m_hit;
+    bool m_hitOnTouchDown;
 };
 
 

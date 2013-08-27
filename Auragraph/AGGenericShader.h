@@ -15,12 +15,15 @@ class AGGenericShader
 {
 public:
     
-    static const AGGenericShader &instance();
+    static AGGenericShader &instance();
     
-    void useProgram() const;
+    void useProgram();
     
-    void setMVPMatrix(const GLKMatrix4 &m) const;
-    void setNormalMatrix(const GLKMatrix3 &m) const;
+    void setProjectionMatrix(const GLKMatrix4 &p);
+    void setModelViewMatrix(const GLKMatrix4 &mv);
+    
+    void setMVPMatrix(const GLKMatrix4 &m);
+    void setNormalMatrix(const GLKMatrix3 &m);
     
 private:
     AGGenericShader();
@@ -28,6 +31,9 @@ private:
     GLuint m_program;
     GLint m_uniformMVPMatrix;
     GLint m_uniformNormalMatrix;
+    
+    GLKMatrix4 m_proj;
+    GLKMatrix4 m_mv;
 };
 
 #endif /* defined(__Auragraph__AGGenericShader__) */

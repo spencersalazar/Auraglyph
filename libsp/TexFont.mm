@@ -209,3 +209,15 @@ void TexFont::render(const std::string &text, const GLcolor4f &color,
 }
 
 
+float TexFont::width()
+{
+    return s_radius;
+}
+
+
+float TexFont::height()
+{
+    return s_radius * m_height/m_width;
+}
+
+

@@ -12,26 +12,11 @@
 
 static AGGenericShader *g_shader = NULL;
 
-const AGGenericShader &AGGenericShader::instance()
+AGGenericShader &AGGenericShader::instance()
 {
     if(g_shader ==  NULL) g_shader = new AGGenericShader();
     
     return *g_shader;
-}
-
-void AGGenericShader::useProgram() const
-{
-    glUseProgram(m_program);
-}
-
-void AGGenericShader::setMVPMatrix(const GLKMatrix4 &mvpm) const
-{
-    glUniformMatrix4fv(m_uniformMVPMatrix, 1, 0, mvpm.m);
-}
-
-void AGGenericShader::setNormalMatrix(const GLKMatrix3 &nm) const
-{
-    glUniformMatrix3fv(m_uniformNormalMatrix, 1, 0, nm.m);
 }
 
 AGGenericShader::AGGenericShader()
@@ -40,5 +25,35 @@ AGGenericShader::AGGenericShader()
                              withAttributes:SHADERHELPER_ATTR_POSITION | SHADERHELPER_ATTR_NORMAL | SHADERHELPER_ATTR_COLOR];
     m_uniformMVPMatrix = glGetUniformLocation(m_program, "modelViewProjectionMatrix");
     m_uniformNormalMatrix = glGetUniformLocation(m_program, "normalMatrix");
+    
+    m_proj = GLKMatrix4Identity;
+    m_mv = GLKMatrix4Identity;
+}
+
+void AGGenericShader::useProgram()
+{
+    glUseProgram(m_program);
+}
+
+void AGGenericShader::setProjectionMatrix(const GLKMatrix4 &p)
+{
+    m_proj = p;
+    glUniformMatrix4fv(m_uniformMVPMatrix, 1, 0, GLKMatrix4Multiply(m_proj, m_mv).m);
+}
+
+void AGGenericShader::setModelViewMatrix(const GLKMatrix4 &mv)
+{
+    m_mv = mv;
+    glUniformMatrix4fv(m_uniformMVPMatrix, 1, 0, GLKMatrix4Multiply(m_proj, m_mv).m);
+}
+
+void AGGenericShader::setMVPMatrix(const GLKMatrix4 &mvpm)
+{
+    glUniformMatrix4fv(m_uniformMVPMatrix, 1, 0, mvpm.m);
+}
+
+void AGGenericShader::setNormalMatrix(const GLKMatrix3 &nm)
+{
+    glUniformMatrix3fv(m_uniformNormalMatrix, 1, 0, nm.m);
 }
 

@@ -248,7 +248,7 @@ void AGUINodeEditor::initializeNodeEditor()
 {
     if(!s_init)
     {
-        s_init = false;
+        s_init = true;
         
         const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
         s_text = new TexFont(fontPath, 64);
@@ -726,6 +726,119 @@ void AGUINodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
         }
     }
 }
+
+
+//------------------------------------------------------------------------------
+// ### AGUIButton ###
+//------------------------------------------------------------------------------
+#pragma mark -
+#pragma mark AGUIButton
+
+TexFont *AGUIButton::s_text = NULL;
+
+AGUIButton::AGUIButton(const std::string &title, const GLvertex3f &pos, const GLvertex3f &size)
+{
+    if(s_text == NULL)
+    {
+        const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
+        s_text = new TexFont(fontPath, 64);
+    }
+    
+    m_hit = m_hitOnTouchDown = false;
+    
+    m_title = title;
+    
+    m_pos = pos;
+    m_size = size;
+    m_geo[0] = GLvertex3f(0, 0, 0);
+    m_geo[1] = GLvertex3f(size.x, 0, 0);
+    m_geo[2] = GLvertex3f(size.x, size.y, 0);
+    m_geo[3] = GLvertex3f(0, size.y, 0);
+    
+    float stripeInset = 0.0002;
+    
+    m_geo[4] = GLvertex3f(stripeInset, stripeInset, 0);
+    m_geo[5] = GLvertex3f(size.x-stripeInset, stripeInset, 0);
+    m_geo[6] = GLvertex3f(size.x-stripeInset, size.y-stripeInset, 0);
+    m_geo[7] = GLvertex3f(stripeInset, size.y-stripeInset, 0);
+}
+
+void AGUIButton::update(float t, float dt)
+{
+}
+
+void AGUIButton::render()
+{
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    float textScale = 0.5;
+    
+    GLKMatrix4 proj = AGNode::projectionMatrix();
+    GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::globalModelViewMatrix(), m_pos.x, m_pos.y, m_pos.z);
+    GLKMatrix4 textMV = GLKMatrix4Translate(modelView, m_size.x/2-s_text->width()*m_title.length()*textScale/2, m_size.y/2-s_text->height()*textScale/2*1.25, 0);
+//    GLKMatrix4 textMV = modelView;
+    textMV = GLKMatrix4Scale(textMV, textScale, textScale, textScale);
+    
+    AGGenericShader &shader = AGGenericShader::instance();
+    
+    shader.useProgram();
+    
+    shader.setProjectionMatrix(proj);
+    shader.setModelViewMatrix(modelView);
+    shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));
+    
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+    glDisableVertexAttribArray(GLKVertexAttribColor);
+    
+    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    glDisableVertexAttribArray(GLKVertexAttribNormal);
+    
+    if(m_hit)
+    {
+        glLineWidth(4.0);
+        glDrawArrays(GL_LINE_LOOP, 0, 4);
+        
+        s_text->render(m_title, GLcolor4f::white, textMV, proj);
+    }
+    else
+    {
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::black);
+        glLineWidth(2.0);
+        glDrawArrays(GL_LINE_LOOP, 4, 4);
+
+        s_text->render(m_title, GLcolor4f::black, textMV, proj);
+    }
+}
+
+
+void AGUIButton::touchDown(const GLvertex3f &t)
+{
+    
+}
+
+void AGUIButton::touchMove(const GLvertex3f &t)
+{
+    
+}
+
+void AGUIButton::touchUp(const GLvertex3f &t)
+{
+    
+}
+
+
+bool AGUIButton::hitTest(const GLvertex3f &t)
+{
+    return false;
+}
+
+
 
 
 
