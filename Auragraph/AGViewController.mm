@@ -199,6 +199,9 @@ enum TouchMode
     const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
 //    const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"SourceCodePro-Regular.ttf" ofType:@""] UTF8String];
     _font = new TexFont(fontPath, 96);
+    
+    // ensure the hw recognizer is preloaded
+    (void) [AGHandwritingRecognizer instance];
 }
 
 - (void)dealloc
