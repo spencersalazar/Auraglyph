@@ -47,17 +47,6 @@ int nDrawlineUsed = 0;
 DrawPoint drawline[nDrawline];
 
 
-enum TouchMode
-{
-    TOUCHMODE_NONE = 0,
-    TOUCHMODE_DRAWNODE,
-    TOUCHMODE_MOVENODE,
-    TOUCHMODE_CONNECT,
-    TOUCHMODE_SELECTNODETYPE,
-    TOUCHMODE_EDITNODE,
-};
-
-
 @interface AGTouchHandler : UIResponder
 {
     AGViewController *_viewController;
@@ -150,6 +139,8 @@ enum TouchMode
     TexFont * _font;
     
     AGUIButton * _testButton;
+    
+    AGUIObject * _touchCapture;
 }
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) GLKBaseEffect *effect;
@@ -523,23 +514,33 @@ enum TouchMode
             CGPoint p = [[touches anyObject] locationInView:self.view];
             GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
             
-            AGNode * node = NULL;
-            AGNode::HitTestResult result = [self hitTest:pos node:&node];
+            AGUIObject *hit = _testButton->hitTest(pos);
             
-            switch(result)
+            if(hit)
             {
-                case AGNode::HIT_INPUT_NODE:
-                case AGNode::HIT_OUTPUT_NODE:
-                    _touchHandler = [[AGConnectTouchHandler alloc] initWithViewController:self];
-                    break;
-                    
-                case AGNode::HIT_MAIN_NODE:
-                    _touchHandler = [[AGMoveNodeTouchHandler alloc] initWithViewController:self node:node];
-                    break;
-                    
-                case AGNode::HIT_NONE:
-                    _touchHandler = [[AGDrawNodeTouchHandler alloc] initWithViewController:self];
-                    break;
+                _touchCapture = hit;
+                _touchCapture->touchDown(pos);
+            }
+            else
+            {
+                AGNode * node = NULL;
+                AGNode::HitTestResult result = [self hitTest:pos node:&node];
+                
+                switch(result)
+                {
+                    case AGNode::HIT_INPUT_NODE:
+                    case AGNode::HIT_OUTPUT_NODE:
+                        _touchHandler = [[AGConnectTouchHandler alloc] initWithViewController:self];
+                        break;
+                        
+                    case AGNode::HIT_MAIN_NODE:
+                        _touchHandler = [[AGMoveNodeTouchHandler alloc] initWithViewController:self node:node];
+                        break;
+                        
+                    case AGNode::HIT_NONE:
+                        _touchHandler = [[AGDrawNodeTouchHandler alloc] initWithViewController:self];
+                        break;
+                }
             }
         }
         
@@ -551,7 +552,10 @@ enum TouchMode
 {
     if([touches count] == 1)
     {
-        [_touchHandler touchesMoved:touches withEvent:event];
+        if(_touchCapture)
+            _touchCapture->touchMove([self worldCoordinateForScreenCoordinate:[[touches anyObject] locationInView:self.view]]);
+        else
+            [_touchHandler touchesMoved:touches withEvent:event];
     }
     else if([touches count] == 2)
     {
@@ -585,10 +589,18 @@ enum TouchMode
 {
     if([touches count] == 1)
     {
-        [_touchHandler touchesEnded:touches withEvent:event];
-        
-        if(_touchHandler)
-            _touchHandler = [_touchHandler nextHandler];
+        if(_touchCapture)
+        {
+            _touchCapture->touchUp([self worldCoordinateForScreenCoordinate:[[touches anyObject] locationInView:self.view]]);
+            _touchCapture = NULL;
+        }
+        else
+        {
+            [_touchHandler touchesEnded:touches withEvent:event];
+            
+            if(_touchHandler)
+                _touchHandler = [_touchHandler nextHandler];
+        }
     }
 }
 

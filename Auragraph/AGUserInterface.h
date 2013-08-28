@@ -20,14 +20,16 @@
 class AGUIObject
 {
 public:
-    void update(float t, float dt) { }
-    void render() { }
+    virtual ~AGUIObject() { }
     
-    void touchDown(const GLvertex3f &t) { }
-    void touchMove(const GLvertex3f &t) { }
-    void touchUp(const GLvertex3f &t) { }
+    virtual void update(float t, float dt) { }
+    virtual void render() { }
+    
+    virtual void touchDown(const GLvertex3f &t) { }
+    virtual void touchMove(const GLvertex3f &t) { }
+    virtual void touchUp(const GLvertex3f &t) { }
 
-    bool hitTest(const GLvertex3f &t) { return false; }
+    virtual AGUIObject *hitTest(const GLvertex3f &t) { return false; }
 };
 
 
@@ -142,7 +144,7 @@ public:
     void touchMove(const GLvertex3f &t);
     void touchUp(const GLvertex3f &t);
     
-    bool hitTest(const GLvertex3f &t);
+    AGUIObject *hitTest(const GLvertex3f &t);
     
 private:
     
@@ -155,14 +157,14 @@ class AGUIButton : public AGUIObject
 public:
     AGUIButton(const std::string &title, const GLvertex3f &pos, const GLvertex3f &size);
     
-    void update(float t, float dt);
-    void render();
+    virtual void update(float t, float dt);
+    virtual void render();
     
-    void touchDown(const GLvertex3f &t);
-    void touchMove(const GLvertex3f &t);
-    void touchUp(const GLvertex3f &t);
+    virtual void touchDown(const GLvertex3f &t);
+    virtual void touchMove(const GLvertex3f &t);
+    virtual void touchUp(const GLvertex3f &t);
     
-    bool hitTest(const GLvertex3f &t);
+    virtual AGUIObject *hitTest(const GLvertex3f &t);
     
 private:
     

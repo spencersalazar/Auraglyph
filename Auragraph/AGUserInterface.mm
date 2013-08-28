@@ -819,23 +819,30 @@ void AGUIButton::render()
 
 void AGUIButton::touchDown(const GLvertex3f &t)
 {
-    
+    m_hit = true;
+    m_hitOnTouchDown = true;
 }
 
 void AGUIButton::touchMove(const GLvertex3f &t)
 {
-    
+    m_hit = (m_hitOnTouchDown && hitTest(t) == this);
 }
 
 void AGUIButton::touchUp(const GLvertex3f &t)
 {
-    
+    m_hit = false;
 }
 
 
-bool AGUIButton::hitTest(const GLvertex3f &t)
+AGUIObject *AGUIButton::hitTest(const GLvertex3f &t)
 {
-    return false;
+    if(t.x > m_pos.x && t.x < m_pos.x+m_size.x &&
+       t.y > m_pos.y && t.y < m_pos.y+m_size.y)
+    {
+        return this;
+    }
+    
+    return NULL;
 }
 
 
