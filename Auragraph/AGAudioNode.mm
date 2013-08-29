@@ -572,6 +572,9 @@ void AGAudioSquareWaveNode::renderAudio(float *input, float *output, int nFrames
         
         m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
         while(m_phase >= 1.0) m_phase -= 1.0;
+        
+        m_inputPortBuffer[0][i] = 0;
+        m_inputPortBuffer[1][i] = 0;
     }
 }
 
@@ -696,6 +699,9 @@ void AGAudioSawtoothWaveNode::renderAudio(float *input, float *output, int nFram
         
         m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
         while(m_phase >= 1.0) m_phase -= 1.0;
+        
+        m_inputPortBuffer[0][i] = 0;
+        m_inputPortBuffer[1][i] = 0;
     }
 }
 
@@ -823,6 +829,9 @@ void AGAudioTriangleWaveNode::renderAudio(float *input, float *output, int nFram
 
         m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
         while(m_phase >= 1.0) m_phase -= 1.0;
+        
+        m_inputPortBuffer[0][i] = 0;
+        m_inputPortBuffer[1][i] = 0;
     }
 }
 
