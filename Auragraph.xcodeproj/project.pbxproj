@@ -55,6 +55,7 @@
 		098740BF17BCE0130098511A /* Perfect DOS VGA 437.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 098740BE17BCE0130098511A /* Perfect DOS VGA 437.ttf */; };
 		098C0E1417C4278C00171366 /* Screen.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 098C0E1217C4278C00171366 /* Screen.fsh */; };
 		098C0E1517C4278C00171366 /* Screen.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 098C0E1317C4278C00171366 /* Screen.vsh */; };
+		099AF10F17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png in Resources */ = {isa = PBXBuildFile; fileRef = 099AF10E17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -181,6 +182,7 @@
 		098740BE17BCE0130098511A /* Perfect DOS VGA 437.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Perfect DOS VGA 437.ttf"; sourceTree = "<group>"; };
 		098C0E1217C4278C00171366 /* Screen.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Screen.fsh; path = Shaders/Screen.fsh; sourceTree = "<group>"; };
 		098C0E1317C4278C00171366 /* Screen.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Screen.vsh; path = Shaders/Screen.vsh; sourceTree = "<group>"; };
+		099AF10E17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AURAGRPH-AppIcon144.png"; path = "../AURAGRPH-AppIcon144.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -278,6 +280,7 @@
 		095D12CE17ACA36C0048A012 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				099AF10E17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png */,
 				0901C1C117BE3C4B0032904B /* eichante.ttf */,
 				0901C1BF17BE3C460032904B /* SourceCodePro-Regular.ttf */,
 				098740BE17BCE0130098511A /* Perfect DOS VGA 437.ttf */,
@@ -471,6 +474,7 @@
 				098740BF17BCE0130098511A /* Perfect DOS VGA 437.ttf in Resources */,
 				0901C1C017BE3C460032904B /* SourceCodePro-Regular.ttf in Resources */,
 				0901C1C217BE3C4B0032904B /* eichante.ttf in Resources */,
+				099AF10F17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
