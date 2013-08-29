@@ -130,6 +130,8 @@ struct GLvertex2f
     GLfloat distanceTo(const GLvertex2f &p) const { return sqrtf((x-p.x)*(x-p.x)+(y-p.y)*(y-p.y)); }
     GLfloat distanceSquaredTo(const GLvertex2f &p) const { return (x-p.x)*(x-p.x)+(y-p.y)*(y-p.y); }
     
+    GLfloat dot(const GLvertex2f &v) const { return x*v.x + y*v.y; }
+    
     GLvertex2f normalize() const
     {
         return GLvertex2f(x,y)/magnitude();

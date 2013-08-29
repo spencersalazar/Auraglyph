@@ -154,7 +154,14 @@ DrawPoint drawline[nDrawline];
 
 @end
 
+static AGViewController * g_instance = nil;
+
 @implementation AGViewController
+
++ (id)instance
+{
+    return g_instance;
+}
 
 - (GLKMatrix4)modelViewMatrix { return _modelView; }
 - (GLKMatrix4)projectionMatrix { return _projection; }
@@ -162,7 +169,7 @@ DrawPoint drawline[nDrawline];
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+        
     _nodes = std::list<AGNode *>();
     _connections = std::list<AGConnection *>();
     _t = 0;
@@ -197,6 +204,8 @@ DrawPoint drawline[nDrawline];
     (void) [AGHandwritingRecognizer instance];
     
     _testButton = new AGUIButton("Trainer", [self worldCoordinateForScreenCoordinate:CGPointMake(10, self.view.bounds.size.height-10)], GLvertex2f(0.028, 0.007));
+    
+    g_instance = self;
 }
 
 - (void)dealloc
@@ -287,6 +296,14 @@ DrawPoint drawline[nDrawline];
 - (void)addConnection:(AGConnection *)connection
 {
     _connections.push_back(connection);
+}
+
+- (void)removeConnection:(AGConnection *)connection
+{
+    _connections.remove(connection);
+    if(connection == _touchCapture)
+        _touchCapture = NULL;
+    delete connection;
 }
 
 - (void)addLinePoint:(GLvertex3f)point
@@ -515,6 +532,13 @@ DrawPoint drawline[nDrawline];
             GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
             
             AGUIObject *hit = _testButton->hitTest(pos);
+            if(!hit)
+            {
+                for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
+                {
+                    if((hit = (*i)->hitTest(pos))) break;
+                }
+            }
             
             if(hit)
             {

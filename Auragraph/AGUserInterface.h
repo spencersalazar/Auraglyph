@@ -11,10 +11,13 @@
 
 #import "Geometry.h"
 #import <GLKit/GLKit.h>
-#import "AGAudioNode.h"
 
 #include "LTKTypes.h"
 #include "LTKTrace.h"
+
+
+class AGNode;
+class AGAudioNode;
 
 
 class AGUIObject
@@ -64,7 +67,7 @@ private:
     GLKMatrix4 m_modelView;
     GLKMatrix3 m_normalMatrix;
     
-    AGAudioNode m_audioNode;
+    AGAudioNode *m_audioNode;
     
     int m_hit;
     

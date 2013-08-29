@@ -8,6 +8,7 @@
 
 #import "AGUserInterface.h"
 #import "AGNode.h"
+#import "AGAudioNode.h"
 #import "ES2Render.h"
 #import "ShaderHelper.h"
 #import "AGGenericShader.h"
@@ -59,7 +60,7 @@ void AGUINodeSelector::initializeNodeSelector()
 
 AGUINodeSelector::AGUINodeSelector(const GLvertex3f &pos) :
 m_pos(pos),
-m_audioNode(pos),
+m_audioNode(new AGAudioNode(pos)),
 m_hit(-1),
 m_t(0)
 {
@@ -86,7 +87,7 @@ void AGUINodeSelector::update(float t, float dt)
     
     m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, m_modelView);
     
-    m_audioNode.update(t, dt);
+    m_audioNode->update(t, dt);
     
     m_t += dt;
 }
@@ -94,7 +95,7 @@ void AGUINodeSelector::update(float t, float dt)
 void AGUINodeSelector::render()
 {
     /* draw blank audio node */
-    m_audioNode.render();
+    m_audioNode->render();
 
     
     /* draw bounding box */

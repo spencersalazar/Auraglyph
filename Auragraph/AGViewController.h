@@ -15,8 +15,12 @@ class AGConnection;
 
 @interface AGViewController : GLKViewController
 
++ (id)instance;
+
 - (void)addNode:(AGNode *)node;
+
 - (void)addConnection:(AGConnection *)connection;
+- (void)removeConnection:(AGConnection *)connection;
 
 - (void)addLinePoint:(GLvertex3f)point;
 - (void)clearLinePoints;

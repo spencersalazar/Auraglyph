@@ -15,6 +15,7 @@
 #import <GLKit/GLKit.h>
 #import <Foundation/Foundation.h>
 #import "ShaderHelper.h"
+#import "AGUserInterface.h"
 #import <list>
 #import <string>
 #import <vector>
@@ -29,7 +30,7 @@ enum AGRate
 };
 
 
-class AGConnection
+class AGConnection : public AGUIObject
 {
 public:
     
@@ -38,6 +39,12 @@ public:
     
     virtual void update(float t, float dt);
     virtual void render();
+    
+    virtual void touchDown(const GLvertex3f &t);
+    virtual void touchMove(const GLvertex3f &t);
+    virtual void touchUp(const GLvertex3f &t);
+    
+    virtual AGUIObject *hitTest(const GLvertex3f &t);
     
     AGNode * src() const { return m_src; }
     AGNode * dst() const { return m_dst; }
@@ -52,7 +59,7 @@ private:
     static GLint s_uniformMVPMatrix;
     static GLint s_uniformNormalMatrix;
     
-    GLvertex3f *m_geo;
+    GLvertex3f m_geo[3];
     GLcolor4f m_color;
     GLuint m_geoSize;
     
@@ -62,6 +69,11 @@ private:
     
     GLvertex3f m_outTerminal;
     GLvertex3f m_inTerminal;
+    
+    bool m_hit;
+    bool m_stretch;
+    bool m_break;
+    GLvertex3f m_stretchPoint;
     
     const AGRate m_rate;
     
@@ -116,6 +128,12 @@ public:
     {
         connection->src()->m_outbound.push_back(connection);
         connection->dst()->m_inbound.push_back(connection);
+    }
+    
+    static void disconnect(AGConnection * connection)
+    {
+        connection->src()->m_outbound.remove(connection);
+        connection->dst()->m_inbound.remove(connection);
     }
     
     

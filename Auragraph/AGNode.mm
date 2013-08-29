@@ -7,6 +7,7 @@
 //
 
 #include "AGNode.h"
+#import "AGViewController.h"
 
 
 static const float G_RATIO = 1.61803398875;
@@ -70,35 +71,41 @@ m_src(src),
 m_dst(dst),
 m_dstPort(dstPort),
 m_rate((src->rate() == RATE_AUDIO && dst->rate() == RATE_AUDIO) ? RATE_AUDIO : RATE_CONTROL), 
-m_geo(NULL),
-m_geoSize(0)
+m_geoSize(0),
+m_hit(false),
+m_stretch(false)
 {
     initalize();
     
     AGNode::connect(this);
     
-    m_outTerminal = src->positionForOutboundConnection(this);
     m_inTerminal = dst->positionForOutboundConnection(this);
+    m_outTerminal = src->positionForOutboundConnection(this);
     
     // generate line
     updatePath();
     
     m_color = GLcolor4f(0.75, 0.75, 0.75, 1);
+    
+    m_break = false;
 }
 
 AGConnection::~AGConnection()
 {
-    if(m_geo != NULL) { delete[] m_geo; m_geo = NULL; }
+//    if(m_geo != NULL) { delete[] m_geo; m_geo = NULL; }
+    AGNode::disconnect(this);
 }
 
 void AGConnection::updatePath()
 {
-    if(m_geo != NULL) delete[] m_geo;
-    m_geoSize = 2;
-    m_geo = new GLvertex3f[m_geoSize];
+    m_geoSize = 3;
     
     m_geo[0] = m_inTerminal;
-    m_geo[1] = m_outTerminal;
+    if(m_stretch)
+        m_geo[1] = m_stretchPoint;
+    else
+        m_geo[1] = (m_inTerminal + m_outTerminal)/2;
+    m_geo[2] = m_outTerminal;
 }
 
 void AGConnection::update(float t, float dt)
@@ -114,6 +121,11 @@ void AGConnection::update(float t, float dt)
         
         updatePath();
     }
+    
+    if(m_break)
+        m_color = GLcolor4f::red;
+    else
+        m_color = GLcolor4f::white;
 }
 
 void AGConnection::render()
@@ -140,8 +152,67 @@ void AGConnection::render()
     glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, modelViewProjectionMatrix.m);
     glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, normalMatrix.m);
     
-    glLineWidth(2.0f);
+    if(m_hit)
+        glLineWidth(4.0f);
+    else
+        glLineWidth(2.0f);
     glDrawArrays(GL_LINE_STRIP, 0, m_geoSize);
+}
+
+void AGConnection::touchDown(const GLvertex3f &t)
+{
+    m_hit = true;
+}
+
+void AGConnection::touchMove(const GLvertex3f &_t)
+{
+    m_stretch = true;
+    m_stretchPoint = _t;
+    updatePath();
+    
+    // maths courtesy of: http://mathworld.wolfram.com/Point-LineDistance2-Dimensional.html
+    GLvertex2f r = GLvertex2f(m_outTerminal.x - _t.x, m_outTerminal.y - _t.y);
+    GLvertex2f normal = GLvertex2f(m_inTerminal.y - m_outTerminal.y, m_outTerminal.x - m_inTerminal.x);
+    
+    if(fabsf(normal.normalize().dot(r)) > 0.01)
+    {
+        m_break = true;
+    }
+    else
+    {
+        m_break = false;
+    }
+}
+
+void AGConnection::touchUp(const GLvertex3f &t)
+{
+    m_stretch = false;
+    m_hit = false;
+    
+    updatePath();
+    
+    if(m_break)
+        [[AGViewController instance] removeConnection:this];
+    
+    m_break = false;
+}
+
+AGUIObject *AGConnection::hitTest(const GLvertex3f &_t)
+{
+    GLvertex2f p0 = GLvertex2f(m_outTerminal.x, m_outTerminal.y);
+    GLvertex2f p1 = GLvertex2f(m_inTerminal.x, m_inTerminal.y);
+    GLvertex2f t = GLvertex2f(_t.x, _t.y);
+    
+    GLvertex2f normal = GLvertex2f(m_inTerminal.y - m_outTerminal.y, m_outTerminal.x - m_inTerminal.x);
+    GLvertex2f bound1 = p1 - p0;
+    GLvertex2f bound2 = p0 - p1;
+    
+    if(fabsf(normal.dot(t-p0)) < 0.0003 &&
+       bound1.dot(t-p0) > 0 &&
+       bound2.dot(t-p1) > 0)
+        return this;
+    
+    return NULL;
 }
 
 
