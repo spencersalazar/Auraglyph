@@ -37,7 +37,6 @@
 		095E852917B354BE0065EF8E /* libshaperecommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851917B354BE0065EF8E /* libshaperecommon.a */; };
 		095E852B17B354BE0065EF8E /* libutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851B17B354BE0065EF8E /* libutil.a */; };
 		095E852C17B354BE0065EF8E /* libwordreccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851C17B354BE0065EF8E /* libwordreccommon.a */; };
-		095E852E17B358B00065EF8E /* projects in Resources */ = {isa = PBXBuildFile; fileRef = 095E852D17B358B00065EF8E /* projects */; };
 		095E853117B358FC0065EF8E /* shaperectst.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E852F17B358FC0065EF8E /* shaperectst.mm */; };
 		095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */; };
 		0987409C17B98D7C0098511A /* AGNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0987409A17B98D7C0098511A /* AGNode.mm */; };
@@ -60,6 +59,13 @@
 		099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */; };
 		099AF11617D13365000BAB7B /* AGTrainerViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11517D13365000BAB7B /* AGTrainerViewCell.xib */; };
 		099AF11817D157C5000BAB7B /* AGTrainerHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11717D157C5000BAB7B /* AGTrainerHeaderView.xib */; };
+		099AF12617D1A6DA000BAB7B /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 099AF11C17D1A6DA000BAB7B /* ioapi.c */; };
+		099AF12717D1A6DA000BAB7B /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 099AF11E17D1A6DA000BAB7B /* mztools.c */; };
+		099AF12817D1A6DA000BAB7B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 099AF12017D1A6DA000BAB7B /* unzip.c */; };
+		099AF12917D1A6DA000BAB7B /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 099AF12217D1A6DA000BAB7B /* zip.c */; };
+		099AF12A17D1A6DA000BAB7B /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 099AF12517D1A6DA000BAB7B /* SSZipArchive.m */; };
+		099AF12C17D1A6EE000BAB7B /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 099AF12B17D1A6EE000BAB7B /* libz.dylib */; };
+		099AF12E17D1A892000BAB7B /* projects.zip in Resources */ = {isa = PBXBuildFile; fileRef = 099AF12D17D1A892000BAB7B /* projects.zip */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -144,7 +150,6 @@
 		095E851A17B354BE0065EF8E /* libsubstroke.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsubstroke.a; sourceTree = "<group>"; };
 		095E851B17B354BE0065EF8E /* libutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libutil.a; sourceTree = "<group>"; };
 		095E851C17B354BE0065EF8E /* libwordreccommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwordreccommon.a; sourceTree = "<group>"; };
-		095E852D17B358B00065EF8E /* projects */ = {isa = PBXFileReference; lastKnownFileType = folder; path = projects; sourceTree = "<group>"; };
 		095E852F17B358FC0065EF8E /* shaperectst.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = shaperectst.mm; sourceTree = "<group>"; };
 		095E853017B358FC0065EF8E /* shaperectst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shaperectst.h; sourceTree = "<group>"; };
 		095E853217B35A330065EF8E /* LTKCheckSumGenerate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKCheckSumGenerate.h; sourceTree = "<group>"; };
@@ -192,6 +197,19 @@
 		099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AGTrainerViewController.xib; sourceTree = "<group>"; };
 		099AF11517D13365000BAB7B /* AGTrainerViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AGTrainerViewCell.xib; sourceTree = "<group>"; };
 		099AF11717D157C5000BAB7B /* AGTrainerHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AGTrainerHeaderView.xib; sourceTree = "<group>"; };
+		099AF11B17D1A6DA000BAB7B /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		099AF11C17D1A6DA000BAB7B /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		099AF11D17D1A6DA000BAB7B /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
+		099AF11E17D1A6DA000BAB7B /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
+		099AF11F17D1A6DA000BAB7B /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
+		099AF12017D1A6DA000BAB7B /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		099AF12117D1A6DA000BAB7B /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		099AF12217D1A6DA000BAB7B /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		099AF12317D1A6DA000BAB7B /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		099AF12417D1A6DA000BAB7B /* SSZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSZipArchive.h; sourceTree = "<group>"; };
+		099AF12517D1A6DA000BAB7B /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
+		099AF12B17D1A6EE000BAB7B /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		099AF12D17D1A892000BAB7B /* projects.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = projects.zip; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -199,6 +217,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				099AF12C17D1A6EE000BAB7B /* libz.dylib in Frameworks */,
 				098740BD17BCD9820098511A /* CoreText.framework in Frameworks */,
 				098740A617BA317E0098511A /* AudioToolbox.framework in Frameworks */,
 				095D12C417ACA36C0048A012 /* UIKit.framework in Frameworks */,
@@ -242,6 +261,8 @@
 		095D12C217ACA36C0048A012 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				099AF12B17D1A6EE000BAB7B /* libz.dylib */,
+				099AF11917D1A6DA000BAB7B /* zip */,
 				098740BC17BCD9810098511A /* CoreText.framework */,
 				098740A417BA317E0098511A /* AudioToolbox.framework */,
 				095E84EA17B354BE0065EF8E /* LipiTk */,
@@ -337,7 +358,7 @@
 		095E84EA17B354BE0065EF8E /* LipiTk */ = {
 			isa = PBXGroup;
 			children = (
-				095E852D17B358B00065EF8E /* projects */,
+				099AF12D17D1A892000BAB7B /* projects.zip */,
 				095E84EB17B354BE0065EF8E /* include */,
 				095E850C17B354BE0065EF8E /* lib */,
 			);
@@ -420,6 +441,32 @@
 			path = lib;
 			sourceTree = "<group>";
 		};
+		099AF11917D1A6DA000BAB7B /* zip */ = {
+			isa = PBXGroup;
+			children = (
+				099AF11A17D1A6DA000BAB7B /* minizip */,
+				099AF12417D1A6DA000BAB7B /* SSZipArchive.h */,
+				099AF12517D1A6DA000BAB7B /* SSZipArchive.m */,
+			);
+			path = zip;
+			sourceTree = "<group>";
+		};
+		099AF11A17D1A6DA000BAB7B /* minizip */ = {
+			isa = PBXGroup;
+			children = (
+				099AF11B17D1A6DA000BAB7B /* crypt.h */,
+				099AF11C17D1A6DA000BAB7B /* ioapi.c */,
+				099AF11D17D1A6DA000BAB7B /* ioapi.h */,
+				099AF11E17D1A6DA000BAB7B /* mztools.c */,
+				099AF11F17D1A6DA000BAB7B /* mztools.h */,
+				099AF12017D1A6DA000BAB7B /* unzip.c */,
+				099AF12117D1A6DA000BAB7B /* unzip.h */,
+				099AF12217D1A6DA000BAB7B /* zip.c */,
+				099AF12317D1A6DA000BAB7B /* zip.h */,
+			);
+			path = minizip;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -483,7 +530,6 @@
 				098740BA17BCC2EA0098511A /* TexFont.fsh in Resources */,
 				098740BB17BCC2EC0098511A /* TexFont.vsh in Resources */,
 				095D12E817ACA36C0048A012 /* AGViewController.xib in Resources */,
-				095E852E17B358B00065EF8E /* projects in Resources */,
 				098740B517BCBA4C0098511A /* Consolas.ttf in Resources */,
 				098740BF17BCE0130098511A /* Perfect DOS VGA 437.ttf in Resources */,
 				0901C1C017BE3C460032904B /* SourceCodePro-Regular.ttf in Resources */,
@@ -492,6 +538,7 @@
 				099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */,
 				099AF11617D13365000BAB7B /* AGTrainerViewCell.xib in Resources */,
 				099AF11817D157C5000BAB7B /* AGTrainerHeaderView.xib in Resources */,
+				099AF12E17D1A892000BAB7B /* projects.zip in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -519,6 +566,11 @@
 				098740B317BC61410098511A /* AGUserInterface.mm in Sources */,
 				0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */,
 				099AF11317D12DD9000BAB7B /* AGTrainerViewController.mm in Sources */,
+				099AF12617D1A6DA000BAB7B /* ioapi.c in Sources */,
+				099AF12717D1A6DA000BAB7B /* mztools.c in Sources */,
+				099AF12817D1A6DA000BAB7B /* unzip.c in Sources */,
+				099AF12917D1A6DA000BAB7B /* zip.c in Sources */,
+				099AF12A17D1A6DA000BAB7B /* SSZipArchive.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -18,6 +18,8 @@
 #include "LTKOSUtilFactory.h"
 #include "LTKOSUtil.h"
 
+#import "SSZipArchive.h"
+
 
 extern "C" LTKLipiEngineInterface* createLTKLipiEngine();
 
@@ -53,6 +55,8 @@ static AGHandwritingRecognizerFigure g_figureForShape[] =
     LTKShapeRecognizer * _shapeReco;
 }
 
+- (void)loadData;
+
 @end
 
 
@@ -69,10 +73,19 @@ static AGHandwritingRecognizer * g_instance = NULL;
     return g_instance;
 }
 
++ (NSString *)projectPath
+{
+    return [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)
+             objectAtIndex:0] stringByAppendingPathComponent:@"projects"];
+}
+
 - (id)init
 {
     if(self = [super init])
     {
+        if(![[NSFileManager defaultManager] fileExistsAtPath:[AGHandwritingRecognizer projectPath]])
+            [self loadData];
+        
         int iResult;
         
         // get util object
@@ -82,7 +95,7 @@ static AGHandwritingRecognizer * g_instance = NULL;
         _engine = createLTKLipiEngine();
         
         // set root path for projects
-        _engine->setLipiRootPath([[[NSBundle mainBundle] resourcePath] UTF8String]);
+        _engine->setLipiRootPath([[[AGHandwritingRecognizer projectPath] stringByDeletingLastPathComponent] UTF8String]);
         
         // initialize
         iResult = _engine->initializeLipiEngine();
@@ -185,6 +198,18 @@ static AGHandwritingRecognizer * g_instance = NULL;
     }
     
 }
+
+
+- (void)loadData
+{
+    NSLog(@"unzipping LipiTk model data");
+    
+    [[NSFileManager defaultManager] removeItemAtPath:[AGHandwritingRecognizer projectPath] error:NULL];
+    
+    [SSZipArchive unzipFileAtPath:[[NSBundle mainBundle] pathForResource:@"projects.zip" ofType:@""]
+                    toDestination:[[AGHandwritingRecognizer projectPath] stringByDeletingLastPathComponent]];
+}
+
 
 - (AGHandwritingRecognizerFigure)recognizeNumeral:(const LTKTrace &)trace
 {

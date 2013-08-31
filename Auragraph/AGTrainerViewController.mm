@@ -44,6 +44,8 @@
     [self.figureCollectionView registerNib:[UINib nibWithNibName:@"AGTrainerHeaderView" bundle:nil]
                 forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
                        withReuseIdentifier:@"FigureHeader"];
+    
+    self.selectedFigureLabel.text = @"";
 }
 
 - (void)didReceiveMemoryWarning
