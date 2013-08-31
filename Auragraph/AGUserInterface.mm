@@ -737,7 +737,8 @@ void AGUINodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
 
 TexFont *AGUIButton::s_text = NULL;
 
-AGUIButton::AGUIButton(const std::string &title, const GLvertex3f &pos, const GLvertex3f &size)
+AGUIButton::AGUIButton(const std::string &title, const GLvertex3f &pos, const GLvertex3f &size) :
+m_action(nil)
 {
     if(s_text == NULL)
     {
@@ -762,6 +763,11 @@ AGUIButton::AGUIButton(const std::string &title, const GLvertex3f &pos, const GL
     m_geo[5] = GLvertex3f(size.x-stripeInset, stripeInset, 0);
     m_geo[6] = GLvertex3f(size.x-stripeInset, size.y-stripeInset, 0);
     m_geo[7] = GLvertex3f(stripeInset, size.y-stripeInset, 0);
+}
+
+AGUIButton::~AGUIButton()
+{
+    m_action = nil;
 }
 
 void AGUIButton::update(float t, float dt)
@@ -831,6 +837,9 @@ void AGUIButton::touchMove(const GLvertex3f &t)
 
 void AGUIButton::touchUp(const GLvertex3f &t)
 {
+    if(m_hit && m_action)
+        m_action();
+    
     m_hit = false;
 }
 
@@ -846,7 +855,10 @@ AGUIObject *AGUIButton::hitTest(const GLvertex3f &t)
     return NULL;
 }
 
-
+void AGUIButton::setAction(void (^action)())
+{
+    m_action = [action copy];
+}
 
 
 

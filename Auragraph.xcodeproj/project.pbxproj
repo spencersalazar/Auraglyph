@@ -56,6 +56,10 @@
 		098C0E1417C4278C00171366 /* Screen.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 098C0E1217C4278C00171366 /* Screen.fsh */; };
 		098C0E1517C4278C00171366 /* Screen.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 098C0E1317C4278C00171366 /* Screen.vsh */; };
 		099AF10F17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png in Resources */ = {isa = PBXBuildFile; fileRef = 099AF10E17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png */; };
+		099AF11317D12DD9000BAB7B /* AGTrainerViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 099AF11117D12DD9000BAB7B /* AGTrainerViewController.mm */; };
+		099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */; };
+		099AF11617D13365000BAB7B /* AGTrainerViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11517D13365000BAB7B /* AGTrainerViewCell.xib */; };
+		099AF11817D157C5000BAB7B /* AGTrainerHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11717D157C5000BAB7B /* AGTrainerHeaderView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -183,6 +187,11 @@
 		098C0E1217C4278C00171366 /* Screen.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Screen.fsh; path = Shaders/Screen.fsh; sourceTree = "<group>"; };
 		098C0E1317C4278C00171366 /* Screen.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Screen.vsh; path = Shaders/Screen.vsh; sourceTree = "<group>"; };
 		099AF10E17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AURAGRPH-AppIcon144.png"; path = "../AURAGRPH-AppIcon144.png"; sourceTree = "<group>"; };
+		099AF11017D12DD9000BAB7B /* AGTrainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGTrainerViewController.h; sourceTree = "<group>"; };
+		099AF11117D12DD9000BAB7B /* AGTrainerViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGTrainerViewController.mm; sourceTree = "<group>"; };
+		099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AGTrainerViewController.xib; sourceTree = "<group>"; };
+		099AF11517D13365000BAB7B /* AGTrainerViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AGTrainerViewCell.xib; sourceTree = "<group>"; };
+		099AF11717D157C5000BAB7B /* AGTrainerHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AGTrainerHeaderView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -272,6 +281,11 @@
 				0901C1BB17BE2F970032904B /* AGGenericShader.h */,
 				0901C1BA17BE2F970032904B /* AGGenericShader.mm */,
 				09077FD117C0BFFA00DFE42F /* AGDef.h */,
+				099AF11017D12DD9000BAB7B /* AGTrainerViewController.h */,
+				099AF11117D12DD9000BAB7B /* AGTrainerViewController.mm */,
+				099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */,
+				099AF11517D13365000BAB7B /* AGTrainerViewCell.xib */,
+				099AF11717D157C5000BAB7B /* AGTrainerHeaderView.xib */,
 				095D12CE17ACA36C0048A012 /* Supporting Files */,
 			);
 			path = Auragraph;
@@ -475,6 +489,9 @@
 				0901C1C017BE3C460032904B /* SourceCodePro-Regular.ttf in Resources */,
 				0901C1C217BE3C4B0032904B /* eichante.ttf in Resources */,
 				099AF10F17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png in Resources */,
+				099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */,
+				099AF11617D13365000BAB7B /* AGTrainerViewCell.xib in Resources */,
+				099AF11817D157C5000BAB7B /* AGTrainerHeaderView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -501,6 +518,7 @@
 				098740B017BC527E0098511A /* ES2Render.mm in Sources */,
 				098740B317BC61410098511A /* AGUserInterface.mm in Sources */,
 				0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */,
+				099AF11317D12DD9000BAB7B /* AGTrainerViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -18,6 +18,7 @@
 #import "AGUserInterface.h"
 #import "TexFont.h"
 #import "AGDef.h"
+#import "AGTrainerViewController.h"
 
 #import <list>
 
@@ -146,6 +147,9 @@ DrawPoint drawline[nDrawline];
 @property (strong, nonatomic) GLKBaseEffect *effect;
 @property (strong, nonatomic) AGAudioManager *audioManager;
 
+@property (strong) IBOutlet AGTrainerViewController *trainer;
+
+
 - (void)setupGL;
 - (void)tearDownGL;
 - (void)updateMatrices;
@@ -204,6 +208,9 @@ static AGViewController * g_instance = nil;
     (void) [AGHandwritingRecognizer instance];
     
     _testButton = new AGUIButton("Trainer", [self worldCoordinateForScreenCoordinate:CGPointMake(10, self.view.bounds.size.height-10)], GLvertex2f(0.028, 0.007));
+    _testButton->setAction(^{
+        [self presentViewController:self.trainer animated:YES completion:nil];
+    });
     
     g_instance = self;
 }

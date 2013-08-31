@@ -159,6 +159,7 @@ class AGUIButton : public AGUIObject
 {
 public:
     AGUIButton(const std::string &title, const GLvertex3f &pos, const GLvertex3f &size);
+    ~AGUIButton();
     
     virtual void update(float t, float dt);
     virtual void render();
@@ -168,6 +169,8 @@ public:
     virtual void touchUp(const GLvertex3f &t);
     
     virtual AGUIObject *hitTest(const GLvertex3f &t);
+    
+    virtual void setAction(void (^action)());
     
 private:
     
@@ -180,6 +183,8 @@ private:
     
     bool m_hit;
     bool m_hitOnTouchDown;
+    
+    void (^m_action)();
 };
 
 
