@@ -58,6 +58,8 @@
 {
     _selectedFigure = (AGHandwritingRecognizerFigure) [sender tag];
     self.selectedFigureLabel.text = [sender currentTitle];
+    
+    [self.trainerView clear];
 }
 
 #pragma mark IBActions
