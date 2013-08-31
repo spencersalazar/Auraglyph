@@ -10,6 +10,7 @@
 
 #include "LTKTypes.h"
 #include "LTKTrace.h"
+#include "LTKTraceGroup.h"
 
 
 enum AGHandwritingRecognizerFigure
@@ -42,6 +43,8 @@ enum AGHandwritingRecognizerFigure
 + (id)instance;
 
 - (AGHandwritingRecognizerFigure)recognizeNumeral:(const LTKTrace &)trace;
+- (void)addSample:(const LTKTraceGroup &)tg forNumeral:(AGHandwritingRecognizerFigure)num;
+
 - (AGHandwritingRecognizerFigure)recognizeShape:(const LTKTrace &)trace;
 
 @end

@@ -69,7 +69,8 @@
 
 - (IBAction)accept
 {
-    
+    [[AGHandwritingRecognizer instance] addSample:[self.trainerView currentTraceGroup]
+                                       forNumeral:_selectedFigure];
 }
 
 - (IBAction)discard
@@ -94,7 +95,7 @@
     AGTrainerViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"FigureCell" forIndexPath:indexPath];
     [cell.title setTitle:[NSString stringWithFormat:@"%i", indexPath.row] forState:UIControlStateNormal];
     [cell.title addTarget:self action:@selector(figureSelected:) forControlEvents:UIControlEventTouchUpInside];
-    cell.title.tag = '0' + indexPath.row;
+    cell.title.tag = AG_FIGURE_0 + indexPath.row;
     
     return cell;
 }

@@ -36,6 +36,7 @@ static AGHandwritingRecognizerFigure g_figureForNumeralShape[] =
     AG_FIGURE_7,
     AG_FIGURE_8,
     AG_FIGURE_9,
+    AG_FIGURE_NONE,
 };
 
 static AGHandwritingRecognizerFigure g_figureForShape[] =
@@ -44,6 +45,7 @@ static AGHandwritingRecognizerFigure g_figureForShape[] =
     AG_FIGURE_SQUARE,
     AG_FIGURE_TRIANGLE_UP,
     AG_FIGURE_TRIANGLE_DOWN,
+    AG_FIGURE_NONE,
 };
 
 
@@ -242,6 +244,16 @@ static AGHandwritingRecognizer * g_instance = NULL;
     }
     
     return AG_FIGURE_NONE;
+}
+
+- (void)addSample:(const LTKTraceGroup &)tg forNumeral:(AGHandwritingRecognizerFigure)num
+{
+    int shapeID = 0;
+    while(g_figureForNumeralShape[shapeID] != num && g_figureForNumeralShape[shapeID] != AG_FIGURE_NONE)
+        shapeID++;
+    
+    if(g_figureForNumeralShape[shapeID] != AG_FIGURE_NONE)
+        _numeralReco->addSample(tg, shapeID);
 }
 
 
