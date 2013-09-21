@@ -38,6 +38,11 @@ GLvertex2f GLvertex3f::toLatLong()
     return ll;
 }
 
+GLvertex2f GLvertex3f::xy()
+{
+    return GLvertex2f(x, y);
+}
+
 GLvertex3f operator+(const GLvertex3f &v1, const GLvertex3f &v2)
 {
     GLvertex3f v3 = GLvertex3f(v1.x+v2.x, v1.y+v2.y, v1.z+v2.z);

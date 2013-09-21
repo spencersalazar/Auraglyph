@@ -66,6 +66,10 @@
 		099AF12A17D1A6DA000BAB7B /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 099AF12517D1A6DA000BAB7B /* SSZipArchive.m */; };
 		099AF12C17D1A6EE000BAB7B /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 099AF12B17D1A6EE000BAB7B /* libz.dylib */; };
 		099AF12E17D1A892000BAB7B /* projects.zip in Resources */ = {isa = PBXBuildFile; fileRef = 099AF12D17D1A892000BAB7B /* projects.zip */; };
+		09D9D2EA17ECF65D00938871 /* Clip.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 09D9D2E817ECF65D00938871 /* Clip.fsh */; };
+		09D9D2EB17ECF65D00938871 /* Clip.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 09D9D2E917ECF65D00938871 /* Clip.vsh */; };
+		09D9D2EC17ED1F6800938871 /* Clip.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 09D9D2E917ECF65D00938871 /* Clip.vsh */; };
+		09D9D2ED17ED1F6B00938871 /* Clip.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 09D9D2E817ECF65D00938871 /* Clip.fsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -210,6 +214,8 @@
 		099AF12517D1A6DA000BAB7B /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
 		099AF12B17D1A6EE000BAB7B /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		099AF12D17D1A892000BAB7B /* projects.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = projects.zip; sourceTree = "<group>"; };
+		09D9D2E817ECF65D00938871 /* Clip.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Clip.fsh; path = Shaders/Clip.fsh; sourceTree = "<group>"; };
+		09D9D2E917ECF65D00938871 /* Clip.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Clip.vsh; path = Shaders/Clip.vsh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -278,6 +284,8 @@
 		095D12CD17ACA36C0048A012 /* Auragraph */ = {
 			isa = PBXGroup;
 			children = (
+				09D9D2E917ECF65D00938871 /* Clip.vsh */,
+				09D9D2E817ECF65D00938871 /* Clip.fsh */,
 				098C0E1317C4278C00171366 /* Screen.vsh */,
 				098C0E1217C4278C00171366 /* Screen.fsh */,
 				095E853017B358FC0065EF8E /* shaperectst.h */,
@@ -521,6 +529,8 @@
 			files = (
 				098C0E1417C4278C00171366 /* Screen.fsh in Resources */,
 				098C0E1517C4278C00171366 /* Screen.vsh in Resources */,
+				09D9D2EC17ED1F6800938871 /* Clip.vsh in Resources */,
+				09D9D2ED17ED1F6B00938871 /* Clip.fsh in Resources */,
 				095D12D217ACA36C0048A012 /* InfoPlist.strings in Resources */,
 				095D12DA17ACA36C0048A012 /* Default.png in Resources */,
 				095D12DC17ACA36C0048A012 /* Default@2x.png in Resources */,
@@ -553,6 +563,7 @@
 				095D12D817ACA36C0048A012 /* AGAppDelegate.mm in Sources */,
 				095D12E517ACA36C0048A012 /* AGViewController.mm in Sources */,
 				095D12FB17ACAA100048A012 /* Geometry.cpp in Sources */,
+				09D9D2EB17ECF65D00938871 /* Clip.vsh in Sources */,
 				095D12FC17ACAA100048A012 /* Texture.mm in Sources */,
 				095D12FF17ACAB7B0048A012 /* ShaderHelper.m in Sources */,
 				095E853117B358FC0065EF8E /* shaperectst.mm in Sources */,
@@ -568,6 +579,7 @@
 				099AF11317D12DD9000BAB7B /* AGTrainerViewController.mm in Sources */,
 				099AF12617D1A6DA000BAB7B /* ioapi.c in Sources */,
 				099AF12717D1A6DA000BAB7B /* mztools.c in Sources */,
+				09D9D2EA17ECF65D00938871 /* Clip.fsh in Sources */,
 				099AF12817D1A6DA000BAB7B /* unzip.c in Sources */,
 				099AF12917D1A6DA000BAB7B /* zip.c in Sources */,
 				099AF12A17D1A6DA000BAB7B /* SSZipArchive.m in Sources */,

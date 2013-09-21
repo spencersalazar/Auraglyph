@@ -19,9 +19,9 @@ AGGenericShader &AGGenericShader::instance()
     return *g_shader;
 }
 
-AGGenericShader::AGGenericShader()
+AGGenericShader::AGGenericShader(NSString *name)
 {
-    m_program = [ShaderHelper createProgram:@"Shader"
+    m_program = [ShaderHelper createProgram:name
                              withAttributes:SHADERHELPER_ATTR_POSITION | SHADERHELPER_ATTR_NORMAL | SHADERHELPER_ATTR_COLOR];
     m_uniformMVPMatrix = glGetUniformLocation(m_program, "modelViewProjectionMatrix");
     m_uniformNormalMatrix = glGetUniformLocation(m_program, "normalMatrix");
@@ -56,4 +56,35 @@ void AGGenericShader::setNormalMatrix(const GLKMatrix3 &nm)
 {
     glUniformMatrix3fv(m_uniformNormalMatrix, 1, 0, nm.m);
 }
+
+
+static AGClipShader *g_clipShader = NULL;
+
+AGClipShader &AGClipShader::instance()
+{
+    if(g_clipShader ==  NULL) g_clipShader = new AGClipShader();
+    
+    return *g_clipShader;
+}
+
+AGClipShader::AGClipShader() : AGGenericShader(@"Clip")
+{
+    m_uniformLocalMatrix = glGetUniformLocation(m_program, "localMatrix");
+    m_uniformClipOrigin = glGetUniformLocation(m_program, "clipOrigin");
+    m_uniformClipSize = glGetUniformLocation(m_program, "clipSize");
+}
+
+void AGClipShader::setClip(const GLvertex2f &origin, const GLvertex2f &size)
+{
+    glUniform2f(m_uniformClipOrigin, origin.x, origin.y);
+    glUniform2f(m_uniformClipSize, size.x, size.y);
+}
+
+void AGClipShader::setLocalMatrix(const GLKMatrix4 &l)
+{
+    glUniformMatrix4fv(m_uniformLocalMatrix, 1, 0, l.m);
+}
+
+
+
 

@@ -39,6 +39,8 @@ struct GLvertex3f
     GLfloat magnitude() { return sqrtf(x*x+y*y+z*z); }
     GLfloat magnitudeSquared() { return x*x+y*y+z*z; }
     
+    GLvertex2f xy();
+    
     GLvertex2f toLatLong();
 } __attribute__((packed));
 
