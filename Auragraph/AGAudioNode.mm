@@ -283,6 +283,43 @@ GLvertex3f AGAudioNode::positionForOutboundConnection(AGConnection * connection)
     return GLvertex3f(m_pos.x + m_radius, m_pos.y, m_pos.z);
 }
 
+void AGAudioNode::allocatePortBuffers()
+{
+    if(numInputPorts() > 0)
+    {
+        m_inputPortBuffer = new float*[numInputPorts()];
+        for(int i = 0; i < numInputPorts(); i++)
+        {
+            if(m_inputPortInfo[i].canConnect)
+            {
+                m_inputPortBuffer[i] = new float[bufferSize()];
+                memset(m_inputPortBuffer[i], 0, sizeof(float)*bufferSize());
+            }
+            else
+            {
+                m_inputPortBuffer[i] = NULL;
+            }
+        }
+    }
+    else
+    {
+        m_inputPortBuffer = NULL;
+    }
+}
+
+void AGAudioNode::pullInputPorts(int nFrames)
+{
+    for(std::list<AGConnection *>::iterator c = m_inbound.begin(); c != m_inbound.end(); c++)
+    {
+        AGConnection * conn = *c;
+        if(conn->rate() == RATE_AUDIO)
+        {
+            assert(m_inputPortBuffer && m_inputPortBuffer[conn->dstPort()]);
+            ((AGAudioNode *) conn->src())->renderAudio(NULL, m_inputPortBuffer[conn->dstPort()], nFrames);
+        }
+        //else TODO
+    }
+}
 
 //------------------------------------------------------------------------------
 // ### AGAudioOutputNode ###
@@ -394,20 +431,7 @@ AGAudioSineWaveNode::AGAudioSineWaveNode(GLvertex3f pos) : AGAudioNode(pos)
     m_freq = 220;
     m_phase = 0;
     
-    if(numInputPorts() > 0)
-    {
-        m_inputPortBuffer = new float*[numInputPorts()];
-        for(int i = 0; i < numInputPorts(); i++)
-        {
-            // TODO: allocate on demand
-            m_inputPortBuffer[i] = new float[bufferSize()];
-            memset(m_inputPortBuffer[i], 0, sizeof(float)*bufferSize());
-        }
-    }
-    else
-    {
-        m_inputPortBuffer = NULL;
-    }
+    allocatePortBuffers();
 }
 
 void AGAudioSineWaveNode::setInputPortValue(int port, float value)
@@ -430,15 +454,7 @@ void AGAudioSineWaveNode::getInputPortValue(int port, float &value) const
 
 void AGAudioSineWaveNode::renderAudio(float *input, float *output, int nFrames)
 {
-    for(std::list<AGConnection *>::iterator c = m_inbound.begin(); c != m_inbound.end(); c++)
-    {
-        AGConnection * conn = *c;
-        if(conn->rate() == RATE_AUDIO)
-        {
-            ((AGAudioNode *) conn->src())->renderAudio(input, m_inputPortBuffer[conn->dstPort()], nFrames);
-        }
-        //else TODO
-    }
+    pullInputPorts(nFrames);
     
     for(int i = 0; i < nFrames; i++)
     {
@@ -519,20 +535,7 @@ AGAudioSquareWaveNode::AGAudioSquareWaveNode(GLvertex3f pos) : AGAudioNode(pos)
     m_freq = 220;
     m_phase = 0;
     
-    if(numInputPorts() > 0)
-    {
-        m_inputPortBuffer = new float*[numInputPorts()];
-        for(int i = 0; i < numInputPorts(); i++)
-        {
-            // TODO: allocate on demand
-            m_inputPortBuffer[i] = new float[bufferSize()];
-            memset(m_inputPortBuffer[i], 0, sizeof(float)*bufferSize());
-        }
-    }
-    else
-    {
-        m_inputPortBuffer = NULL;
-    }
+    allocatePortBuffers();
 }
 
 
@@ -556,15 +559,7 @@ void AGAudioSquareWaveNode::getInputPortValue(int port, float &value) const
 
 void AGAudioSquareWaveNode::renderAudio(float *input, float *output, int nFrames)
 {
-    for(std::list<AGConnection *>::iterator c = m_inbound.begin(); c != m_inbound.end(); c++)
-    {
-        AGConnection * conn = *c;
-        if(conn->rate() == RATE_AUDIO)
-        {
-            ((AGAudioNode *) conn->src())->renderAudio(input, m_inputPortBuffer[conn->dstPort()], nFrames);
-        }
-        //else TODO
-    }
+    pullInputPorts(nFrames);
     
     for(int i = 0; i < nFrames; i++)
     {
@@ -646,20 +641,7 @@ AGAudioSawtoothWaveNode::AGAudioSawtoothWaveNode(GLvertex3f pos) : AGAudioNode(p
     m_freq = 220;
     m_phase = 0;
     
-    if(numInputPorts() > 0)
-    {
-        m_inputPortBuffer = new float*[numInputPorts()];
-        for(int i = 0; i < numInputPorts(); i++)
-        {
-            // TODO: allocate on demand
-            m_inputPortBuffer[i] = new float[bufferSize()];
-            memset(m_inputPortBuffer[i], 0, sizeof(float)*bufferSize());
-        }
-    }
-    else
-    {
-        m_inputPortBuffer = NULL;
-    }
+    allocatePortBuffers();
 }
 
 
@@ -683,15 +665,7 @@ void AGAudioSawtoothWaveNode::getInputPortValue(int port, float &value) const
 
 void AGAudioSawtoothWaveNode::renderAudio(float *input, float *output, int nFrames)
 {
-    for(std::list<AGConnection *>::iterator c = m_inbound.begin(); c != m_inbound.end(); c++)
-    {
-        AGConnection * conn = *c;
-        if(conn->rate() == RATE_AUDIO)
-        {
-            ((AGAudioNode *) conn->src())->renderAudio(input, m_inputPortBuffer[conn->dstPort()], nFrames);
-        }
-        //else TODO
-    }
+    pullInputPorts(nFrames);
     
     for(int i = 0; i < nFrames; i++)
     {
@@ -773,20 +747,7 @@ AGAudioTriangleWaveNode::AGAudioTriangleWaveNode(GLvertex3f pos) : AGAudioNode(p
     m_freq = 220;
     m_phase = 0;
     
-    if(numInputPorts() > 0)
-    {
-        m_inputPortBuffer = new float*[numInputPorts()];
-        for(int i = 0; i < numInputPorts(); i++)
-        {
-            // TODO: allocate on demand
-            m_inputPortBuffer[i] = new float[bufferSize()];
-            memset(m_inputPortBuffer[i], 0, sizeof(float)*bufferSize());
-        }
-    }
-    else
-    {
-        m_inputPortBuffer = NULL;
-    }
+    allocatePortBuffers();
 }
 
 
@@ -810,15 +771,7 @@ void AGAudioTriangleWaveNode::getInputPortValue(int port, float &value) const
 
 void AGAudioTriangleWaveNode::renderAudio(float *input, float *output, int nFrames)
 {
-    for(std::list<AGConnection *>::iterator c = m_inbound.begin(); c != m_inbound.end(); c++)
-    {
-        AGConnection * conn = *c;
-        if(conn->rate() == RATE_AUDIO)
-        {
-            ((AGAudioNode *) conn->src())->renderAudio(input, m_inputPortBuffer[conn->dstPort()], nFrames);
-        }
-        //else TODO
-    }
+    pullInputPorts(nFrames);
     
     for(int i = 0; i < nFrames; i++)
     {

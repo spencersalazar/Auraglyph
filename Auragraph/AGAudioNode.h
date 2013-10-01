@@ -70,6 +70,9 @@ protected:
     float ** m_inputPortBuffer;
     
     float m_gain;
+    
+    void allocatePortBuffers();
+    void pullInputPorts(int nFrames);
 };
 
 

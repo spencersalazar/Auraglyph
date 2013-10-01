@@ -132,8 +132,8 @@ public:
     
     static void disconnect(AGConnection * connection)
     {
-        connection->src()->m_outbound.remove(connection);
-        connection->dst()->m_inbound.remove(connection);
+        connection->src()->removeOutbound(connection);
+        connection->dst()->removeInbound(connection);
     }
     
     
@@ -199,6 +199,8 @@ protected:
     
     virtual void addInbound(AGConnection *connection);
     virtual void addOutbound(AGConnection *connection);
+    virtual void removeInbound(AGConnection *connection);
+    virtual void removeOutbound(AGConnection *connection);
 };
 
 

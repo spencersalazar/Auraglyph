@@ -229,6 +229,16 @@ void AGNode::addOutbound(AGConnection *connection)
     m_outbound.push_back(connection);
 }
 
+void AGNode::removeInbound(AGConnection *connection)
+{
+    m_inbound.remove(connection);
+}
+
+void AGNode::removeOutbound(AGConnection *connection)
+{
+    m_outbound.remove(connection);
+}
+
 
 //------------------------------------------------------------------------------
 // ### AGControlNode ###
