@@ -309,6 +309,15 @@ void AGAudioNode::allocatePortBuffers()
 
 void AGAudioNode::pullInputPorts(int nFrames)
 {
+    if(m_inputPortBuffer != NULL)
+    {
+        for(int i = 0; i < numInputPorts(); i++)
+        {
+            if(m_inputPortBuffer[i] != NULL)
+                memset(m_inputPortBuffer, 0, nFrames*sizeof(float));
+        }
+    }
+    
     for(std::list<AGConnection *>::iterator c = m_inbound.begin(); c != m_inbound.end(); c++)
     {
         AGConnection * conn = *c;
@@ -461,9 +470,6 @@ void AGAudioSineWaveNode::renderAudio(float *input, float *output, int nFrames)
         output[i] += sinf(m_phase*2.0*M_PI) * (m_gain + m_inputPortBuffer[1][i]);
         m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
         while(m_phase >= 1.0) m_phase -= 1.0;
-        
-        m_inputPortBuffer[0][i] = 0;
-        m_inputPortBuffer[1][i] = 0;
     }
 }
 
@@ -567,9 +573,6 @@ void AGAudioSquareWaveNode::renderAudio(float *input, float *output, int nFrames
         
         m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
         while(m_phase >= 1.0) m_phase -= 1.0;
-        
-        m_inputPortBuffer[0][i] = 0;
-        m_inputPortBuffer[1][i] = 0;
     }
 }
 
@@ -673,9 +676,6 @@ void AGAudioSawtoothWaveNode::renderAudio(float *input, float *output, int nFram
         
         m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
         while(m_phase >= 1.0) m_phase -= 1.0;
-        
-        m_inputPortBuffer[0][i] = 0;
-        m_inputPortBuffer[1][i] = 0;
     }
 }
 
@@ -782,9 +782,6 @@ void AGAudioTriangleWaveNode::renderAudio(float *input, float *output, int nFram
 
         m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
         while(m_phase >= 1.0) m_phase -= 1.0;
-        
-        m_inputPortBuffer[0][i] = 0;
-        m_inputPortBuffer[1][i] = 0;
     }
 }
 
