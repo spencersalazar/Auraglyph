@@ -16,41 +16,12 @@ GLuint AGAudioNode::s_vertexBuffer = 0;
 GLuint AGAudioNode::s_geoSize = 0;
 int AGAudioNode::s_sampleRate = 44100;
 
-bool AGAudioOutputNode::s_initAudioOutputNode = false;
-GLuint AGAudioOutputNode::s_iconVertexArray = 0;
-GLuint AGAudioOutputNode::s_iconVertexBuffer = 0;
-GLuint AGAudioOutputNode::s_iconGeoSize = 0;
-GLuint AGAudioOutputNode::s_iconGeoType = 0; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
-AGPortInfo * AGAudioOutputNode::s_portInfo = NULL;
-
-bool AGAudioSineWaveNode::s_initAudioSineWaveNode = false;
-GLuint AGAudioSineWaveNode::s_iconVertexArray = 0;
-GLuint AGAudioSineWaveNode::s_iconVertexBuffer = 0;
-GLuint AGAudioSineWaveNode::s_iconGeoSize = 0;
-GLuint AGAudioSineWaveNode::s_iconGeoType = 0; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
-AGPortInfo * AGAudioSineWaveNode::s_portInfo = NULL;
-
-bool AGAudioSquareWaveNode::s_initAudioSquareWaveNode = false;
-GLuint AGAudioSquareWaveNode::s_iconVertexArray = 0;
-GLuint AGAudioSquareWaveNode::s_iconVertexBuffer = 0;
-GLuint AGAudioSquareWaveNode::s_iconGeoSize = 0;
-GLuint AGAudioSquareWaveNode::s_iconGeoType = 0; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
-AGPortInfo * AGAudioSquareWaveNode::s_portInfo = NULL;
-
-bool AGAudioSawtoothWaveNode::s_initAudioSawtoothWaveNode = false;
-GLuint AGAudioSawtoothWaveNode::s_iconVertexArray = 0;
-GLuint AGAudioSawtoothWaveNode::s_iconVertexBuffer = 0;
-GLuint AGAudioSawtoothWaveNode::s_iconGeoSize = 0;
-GLuint AGAudioSawtoothWaveNode::s_iconGeoType = 0; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
-AGPortInfo * AGAudioSawtoothWaveNode::s_portInfo = NULL;
-
-bool AGAudioTriangleWaveNode::s_initAudioTriangleWaveNode = false;
-GLuint AGAudioTriangleWaveNode::s_iconVertexArray = 0;
-GLuint AGAudioTriangleWaveNode::s_iconVertexBuffer = 0;
-GLuint AGAudioTriangleWaveNode::s_iconGeoSize = 0;
-GLuint AGAudioTriangleWaveNode::s_iconGeoType = 0; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
-AGPortInfo * AGAudioTriangleWaveNode::s_portInfo = NULL;
-
+AGAudioNodeInfo *AGAudioOutputNode::s_audioNodeInfo = NULL;
+AGAudioNodeInfo *AGAudioSineWaveNode::s_audioNodeInfo = NULL;
+AGAudioNodeInfo *AGAudioSquareWaveNode::s_audioNodeInfo = NULL;
+AGAudioNodeInfo *AGAudioSawtoothWaveNode::s_audioNodeInfo = NULL;
+AGAudioNodeInfo *AGAudioTriangleWaveNode::s_audioNodeInfo = NULL;
+AGAudioNodeInfo *AGAudioADSRNode::s_audioNodeInfo = NULL;
 
 //------------------------------------------------------------------------------
 // ### AGAudioNode ###
@@ -314,7 +285,7 @@ void AGAudioNode::pullInputPorts(int nFrames)
         for(int i = 0; i < numInputPorts(); i++)
         {
             if(m_inputPortBuffer[i] != NULL)
-                memset(m_inputPortBuffer, 0, nFrames*sizeof(float));
+                memset(m_inputPortBuffer[i], 0, nFrames*sizeof(float));
         }
     }
     
@@ -339,24 +310,24 @@ AGAudioOutputNode::AGAudioOutputNode(GLvertex3f pos) : AGAudioNode(pos)
 {
     initializeAudioOutputNode();
     
-    m_inputPortInfo = s_portInfo;
-    
-    m_iconVertexArray = s_iconVertexArray;
-    m_iconGeoSize = s_iconGeoSize;
-    m_iconGeoType = s_iconGeoType;
+    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
+    m_iconVertexArray = s_audioNodeInfo->iconVertexArray;
+    m_iconGeoSize = s_audioNodeInfo->iconGeoSize;
+    m_iconGeoType = s_audioNodeInfo->iconGeoType;
 }
 
 void AGAudioOutputNode::initializeAudioOutputNode()
 {
     initializeAudioNode();
     
-    if(!s_initAudioOutputNode)
+    if(s_audioNodeInfo == NULL)
     {
-        s_initAudioOutputNode = true;
+        s_audioNodeInfo = new AGAudioNodeInfo;
+        // s_initAudioOutputNode = true;
         
-        s_iconGeoSize = 8;
-        GLvertex3f *iconGeo = new GLvertex3f[s_iconGeoSize];
-        s_iconGeoType = GL_LINE_STRIP;
+        s_audioNodeInfo->iconGeoSize = 8;
+        GLvertex3f *iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
+        s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
         float radius = 0.005;
         
         // speaker icon
@@ -369,13 +340,14 @@ void AGAudioOutputNode::initializeAudioOutputNode()
         iconGeo[6] = GLvertex3f(-radius*0.5*0.16, radius*0.5, 0);
         iconGeo[7] = GLvertex3f(-radius*0.5*0.16, -radius*0.5, 0);
         
-        genVertexArrayAndBuffer(s_iconGeoSize, iconGeo, s_iconVertexArray, s_iconVertexBuffer);
+        genVertexArrayAndBuffer(s_audioNodeInfo->iconGeoSize, iconGeo,
+                                s_audioNodeInfo->iconVertexArray,
+                                s_audioNodeInfo->iconVertexBuffer);
         
         delete[] iconGeo;
         iconGeo = NULL;
         
-        s_portInfo = new AGPortInfo[1];
-        s_portInfo[0] = { "input", true, false };
+        s_audioNodeInfo->portInfo.push_back({ "input", true, false });
     }
 }
 
@@ -398,32 +370,33 @@ void AGAudioSineWaveNode::initializeAudioSineWaveNode()
 {
     initializeAudioNode();
     
-    if(!s_initAudioSineWaveNode)
+    if(s_audioNodeInfo == NULL)
     {
-        s_initAudioSineWaveNode = true;
+        s_audioNodeInfo = new AGAudioNodeInfo;
         
         // generate geometry
-        s_iconGeoSize = 32;
-        GLvertex3f *iconGeo = new GLvertex3f[s_iconGeoSize];
-        s_iconGeoType = GL_LINE_STRIP;
+        s_audioNodeInfo->iconGeoSize = 32;
+        GLvertex3f *iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
+        s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
         float radius = 0.005;
-        for(int i = 0; i < s_iconGeoSize; i++)
+        for(int i = 0; i < s_audioNodeInfo->iconGeoSize; i++)
         {
-            float t = ((float)i)/((float)(s_iconGeoSize-1));
+            float t = ((float)i)/((float)(s_audioNodeInfo->iconGeoSize-1));
             float x = (t*2-1) * radius;
             float y = radius*0.66*sinf(t*M_PI*2);
             
             iconGeo[i] = GLvertex3f(x, y, 0);
         }
         
-        genVertexArrayAndBuffer(s_iconGeoSize, iconGeo, s_iconVertexArray, s_iconVertexBuffer);
+        genVertexArrayAndBuffer(s_audioNodeInfo->iconGeoSize, iconGeo,
+                                s_audioNodeInfo->iconVertexArray,
+                                s_audioNodeInfo->iconVertexBuffer);
         
         delete[] iconGeo;
         iconGeo = NULL;
 
-        s_portInfo = new AGPortInfo[2];
-        s_portInfo[0] = { "freq", true, true };
-        s_portInfo[1] = { "gain", true, true };
+        s_audioNodeInfo->portInfo.push_back({ "freq", true, true });
+        s_audioNodeInfo->portInfo.push_back({ "gain", true, true });
     }
 }
 
@@ -431,11 +404,11 @@ AGAudioSineWaveNode::AGAudioSineWaveNode(GLvertex3f pos) : AGAudioNode(pos)
 {
     initializeAudioSineWaveNode();
     
-    m_inputPortInfo = s_portInfo;
+    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
     
-    m_iconVertexArray = s_iconVertexArray;
-    m_iconGeoSize = s_iconGeoSize;
-    m_iconGeoType = s_iconGeoType;
+    m_iconVertexArray = s_audioNodeInfo->iconVertexArray;
+    m_iconGeoSize = s_audioNodeInfo->iconGeoSize;
+    m_iconGeoType = s_audioNodeInfo->iconGeoType;
     
     m_freq = 220;
     m_phase = 0;
@@ -478,10 +451,10 @@ void AGAudioSineWaveNode::renderIcon()
     initializeAudioSineWaveNode();
     
     // render icon
-    glBindVertexArrayOES(s_iconVertexArray);
+    glBindVertexArrayOES(s_audioNodeInfo->iconVertexArray);
     
     glLineWidth(2.0);
-    glDrawArrays(s_iconGeoType, 0, s_iconGeoSize);
+    glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
 }
 
 AGAudioNode *AGAudioSineWaveNode::create(const GLvertex3f &pos)
@@ -498,14 +471,14 @@ void AGAudioSquareWaveNode::initializeAudioSquareWaveNode()
 {
     initializeAudioNode();
     
-    if(!s_initAudioSquareWaveNode)
+    if(s_audioNodeInfo == NULL)
     {
-        s_initAudioSquareWaveNode = true;
+        s_audioNodeInfo = new AGAudioNodeInfo;
         
         // generate geometry
-        s_iconGeoSize = 6;
-        GLvertex3f * iconGeo = new GLvertex3f[s_iconGeoSize];
-        s_iconGeoType = GL_LINE_STRIP;
+        s_audioNodeInfo->iconGeoSize = 6;
+        GLvertex3f * iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
+        s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
         float radius_x = 0.005;
         float radius_y = radius_x * 0.66;
         
@@ -517,14 +490,15 @@ void AGAudioSquareWaveNode::initializeAudioSquareWaveNode()
         iconGeo[4] = GLvertex3f(radius_x, -radius_y, 0);
         iconGeo[5] = GLvertex3f(radius_x, 0, 0);
         
-        genVertexArrayAndBuffer(s_iconGeoSize, iconGeo, s_iconVertexArray, s_iconVertexBuffer);
+        genVertexArrayAndBuffer(s_audioNodeInfo->iconGeoSize, iconGeo,
+                                s_audioNodeInfo->iconVertexArray,
+                                s_audioNodeInfo->iconVertexBuffer);
         
         delete[] iconGeo;
         iconGeo = NULL;
         
-        s_portInfo = new AGPortInfo[2];
-        s_portInfo[0] = { "freq", true, true };
-        s_portInfo[1] = { "gain", true, true };
+        s_audioNodeInfo->portInfo.push_back({ "freq", true, true });
+        s_audioNodeInfo->portInfo.push_back({ "gain", true, true });
     }
 }
 
@@ -532,11 +506,11 @@ AGAudioSquareWaveNode::AGAudioSquareWaveNode(GLvertex3f pos) : AGAudioNode(pos)
 {
     initializeAudioSquareWaveNode();
     
-    m_inputPortInfo = s_portInfo;
+    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
     
-    m_iconVertexArray = s_iconVertexArray;
-    m_iconGeoSize = s_iconGeoSize;
-    m_iconGeoType = s_iconGeoType;
+    m_iconVertexArray = s_audioNodeInfo->iconVertexArray;
+    m_iconGeoSize = s_audioNodeInfo->iconGeoSize;
+    m_iconGeoType = s_audioNodeInfo->iconGeoType;
     
     m_freq = 220;
     m_phase = 0;
@@ -582,10 +556,10 @@ void AGAudioSquareWaveNode::renderIcon()
     initializeAudioSquareWaveNode();
     
     // render icon
-    glBindVertexArrayOES(s_iconVertexArray);
+    glBindVertexArrayOES(s_audioNodeInfo->iconVertexArray);
     
     glLineWidth(2.0);
-    glDrawArrays(s_iconGeoType, 0, s_iconGeoSize);
+    glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
 }
 
 AGAudioNode *AGAudioSquareWaveNode::create(const GLvertex3f &pos)
@@ -603,14 +577,14 @@ void AGAudioSawtoothWaveNode::initializeAudioSawtoothWaveNode()
 {
     initializeAudioNode();
     
-    if(!s_initAudioSawtoothWaveNode)
+    if(s_audioNodeInfo == NULL)
     {
-        s_initAudioSawtoothWaveNode = true;
+        s_audioNodeInfo = new AGAudioNodeInfo;
         
         // generate geometry
-        s_iconGeoSize = 4;
-        GLvertex3f * iconGeo = new GLvertex3f[s_iconGeoSize];
-        s_iconGeoType = GL_LINE_STRIP;
+        s_audioNodeInfo->iconGeoSize = 4;
+        GLvertex3f * iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
+        s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
         float radius_x = 0.005;
         float radius_y = radius_x * 0.66;
         
@@ -620,14 +594,14 @@ void AGAudioSawtoothWaveNode::initializeAudioSawtoothWaveNode()
         iconGeo[2] = GLvertex3f(radius_x, -radius_y, 0);
         iconGeo[3] = GLvertex3f(radius_x, 0, 0);
         
-        genVertexArrayAndBuffer(s_iconGeoSize, iconGeo, s_iconVertexArray, s_iconVertexBuffer);
+        genVertexArrayAndBuffer(s_audioNodeInfo->iconGeoSize, iconGeo,
+                                s_audioNodeInfo->iconVertexArray, s_audioNodeInfo->iconVertexBuffer);
         
         delete[] iconGeo;
         iconGeo = NULL;
         
-        s_portInfo = new AGPortInfo[2];
-        s_portInfo[0] = { "freq", true, true };
-        s_portInfo[1] = { "gain", true, true };
+        s_audioNodeInfo->portInfo.push_back({ "freq", true, true });
+        s_audioNodeInfo->portInfo.push_back({ "gain", true, true });
     }
 }
 
@@ -635,11 +609,11 @@ AGAudioSawtoothWaveNode::AGAudioSawtoothWaveNode(GLvertex3f pos) : AGAudioNode(p
 {
     initializeAudioSawtoothWaveNode();
     
-    m_inputPortInfo = s_portInfo;
+    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
     
-    m_iconVertexArray = s_iconVertexArray;
-    m_iconGeoSize = s_iconGeoSize;
-    m_iconGeoType = s_iconGeoType;
+    m_iconVertexArray = s_audioNodeInfo->iconVertexArray;
+    m_iconGeoSize = s_audioNodeInfo->iconGeoSize;
+    m_iconGeoType = s_audioNodeInfo->iconGeoType;
     
     m_freq = 220;
     m_phase = 0;
@@ -685,10 +659,10 @@ void AGAudioSawtoothWaveNode::renderIcon()
     initializeAudioSawtoothWaveNode();
     
     // render icon
-    glBindVertexArrayOES(s_iconVertexArray);
+    glBindVertexArrayOES(s_audioNodeInfo->iconVertexArray);
     
     glLineWidth(2.0);
-    glDrawArrays(s_iconGeoType, 0, s_iconGeoSize);
+    glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
 }
 
 AGAudioNode *AGAudioSawtoothWaveNode::create(const GLvertex3f &pos)
@@ -706,14 +680,14 @@ void AGAudioTriangleWaveNode::initializeAudioTriangleWaveNode()
 {
     initializeAudioNode();
     
-    if(!s_initAudioTriangleWaveNode)
+    if(s_audioNodeInfo == NULL)
     {
-        s_initAudioTriangleWaveNode = true;
+        s_audioNodeInfo = new AGAudioNodeInfo;
         
         // generate geometry
-        s_iconGeoSize = 4;
-        GLvertex3f * iconGeo = new GLvertex3f[s_iconGeoSize];
-        s_iconGeoType = GL_LINE_STRIP;
+        s_audioNodeInfo->iconGeoSize = 4;
+        GLvertex3f * iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
+        s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
         float radius_x = 0.005;
         float radius_y = radius_x * 0.66;
         
@@ -723,14 +697,15 @@ void AGAudioTriangleWaveNode::initializeAudioTriangleWaveNode()
         iconGeo[2] = GLvertex3f(radius_x*0.5, -radius_y, 0);
         iconGeo[3] = GLvertex3f(radius_x, 0, 0);
         
-        genVertexArrayAndBuffer(s_iconGeoSize, iconGeo, s_iconVertexArray, s_iconVertexBuffer);
+        genVertexArrayAndBuffer(s_audioNodeInfo->iconGeoSize, iconGeo,
+                                s_audioNodeInfo->iconVertexArray,
+                                s_audioNodeInfo->iconVertexBuffer);
         
         delete[] iconGeo;
         iconGeo = NULL;
         
-        s_portInfo = new AGPortInfo[2];
-        s_portInfo[0] = { "freq", true, true };
-        s_portInfo[1] = { "gain", true, true };
+        s_audioNodeInfo->portInfo.push_back({ "freq", true, true });
+        s_audioNodeInfo->portInfo.push_back({ "gain", true, true });
     }
 }
 
@@ -738,11 +713,11 @@ AGAudioTriangleWaveNode::AGAudioTriangleWaveNode(GLvertex3f pos) : AGAudioNode(p
 {
     initializeAudioTriangleWaveNode();
     
-    m_inputPortInfo = s_portInfo;
+    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
     
-    m_iconVertexArray = s_iconVertexArray;
-    m_iconGeoSize = s_iconGeoSize;
-    m_iconGeoType = s_iconGeoType;
+    m_iconVertexArray = s_audioNodeInfo->iconVertexArray;
+    m_iconGeoSize = s_audioNodeInfo->iconGeoSize;
+    m_iconGeoType = s_audioNodeInfo->iconGeoType;
     
     m_freq = 220;
     m_phase = 0;
@@ -791,10 +766,10 @@ void AGAudioTriangleWaveNode::renderIcon()
     initializeAudioTriangleWaveNode();
     
     // render icon
-    glBindVertexArrayOES(s_iconVertexArray);
+    glBindVertexArrayOES(s_audioNodeInfo->iconVertexArray);
     
     glLineWidth(2.0);
-    glDrawArrays(s_iconGeoType, 0, s_iconGeoSize);
+    glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
 }
 
 
@@ -809,25 +784,18 @@ AGAudioNode *AGAudioTriangleWaveNode::create(const GLvertex3f &pos)
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioADSRNode
 
-bool AGAudioADSRNode::s_initAudioADSRNode = false;
-GLuint AGAudioADSRNode::s_iconVertexArray = 0;
-GLuint AGAudioADSRNode::s_iconVertexBuffer = 0;
-GLuint AGAudioADSRNode::s_iconGeoSize = 0;
-GLuint AGAudioADSRNode::s_iconGeoType = 0; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
-vector<AGPortInfo> AGAudioADSRNode::s_portInfo;
-
 void AGAudioADSRNode::initializeAudioADSRNode()
 {
     initializeAudioNode();
     
-    if(!s_initAudioADSRNode)
+    if(s_audioNodeInfo == NULL)
     {
-        s_initAudioADSRNode = true;
+        s_audioNodeInfo = new AGAudioNodeInfo;
         
         // generate geometry
-        s_iconGeoSize = 5;
-        GLvertex3f * iconGeo = new GLvertex3f[s_iconGeoSize];
-        s_iconGeoType = GL_LINE_STRIP;
+        s_audioNodeInfo->iconGeoSize = 5;
+        GLvertex3f * iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
+        s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
         float radius_x = 0.005;
         float radius_y = radius_x * 0.66;
         
@@ -838,18 +806,20 @@ void AGAudioADSRNode::initializeAudioADSRNode()
         iconGeo[3] = GLvertex3f(radius_x*0.66, 0, 0);
         iconGeo[4] = GLvertex3f(radius_x, -radius_y, 0);
         
-        genVertexArrayAndBuffer(s_iconGeoSize, iconGeo, s_iconVertexArray, s_iconVertexBuffer);
+        genVertexArrayAndBuffer(s_audioNodeInfo->iconGeoSize, iconGeo,
+                                s_audioNodeInfo->iconVertexArray,
+                                s_audioNodeInfo->iconVertexBuffer);
         
         delete[] iconGeo;
         iconGeo = NULL;
         
-        s_portInfo.push_back({ "input", true, false });
-        s_portInfo.push_back({ "gain", true, true });
-        s_portInfo.push_back({ "trigger", true, false });
-        s_portInfo.push_back({ "attack", true, true });
-        s_portInfo.push_back({ "decay", true, true });
-        s_portInfo.push_back({ "sustain", true, true });
-        s_portInfo.push_back({ "release", true, true });
+        s_audioNodeInfo->portInfo.push_back({ "input", true, false });
+        s_audioNodeInfo->portInfo.push_back({ "gain", true, true });
+        s_audioNodeInfo->portInfo.push_back({ "trigger", true, false });
+        s_audioNodeInfo->portInfo.push_back({ "attack", true, true });
+        s_audioNodeInfo->portInfo.push_back({ "decay", true, true });
+        s_audioNodeInfo->portInfo.push_back({ "sustain", true, true });
+        s_audioNodeInfo->portInfo.push_back({ "release", true, true });
     }
 }
 
@@ -859,26 +829,13 @@ AGAudioADSRNode::AGAudioADSRNode(GLvertex3f pos) : AGAudioNode(pos)
 {
     initializeAudioADSRNode();
     
-    m_inputPortInfo = &s_portInfo[0];
+    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
     
-    m_iconVertexArray = s_iconVertexArray;
-    m_iconGeoSize = s_iconGeoSize;
-    m_iconGeoType = s_iconGeoType;
+    m_iconVertexArray = s_audioNodeInfo->iconVertexArray;
+    m_iconGeoSize = s_audioNodeInfo->iconGeoSize;
+    m_iconGeoType = s_audioNodeInfo->iconGeoType;
     
-    if(numInputPorts() > 0)
-    {
-        m_inputPortBuffer = new float*[numInputPorts()];
-        for(int i = 0; i < numInputPorts(); i++)
-        {
-            // TODO: allocate on demand
-            m_inputPortBuffer[i] = new float[bufferSize()];
-            memset(m_inputPortBuffer[i], 0, sizeof(float)*bufferSize());
-        }
-    }
-    else
-    {
-        m_inputPortBuffer = NULL;
-    }
+    allocatePortBuffers();
 }
 
 
@@ -912,15 +869,7 @@ void AGAudioADSRNode::getInputPortValue(int port, float &value) const
 
 void AGAudioADSRNode::renderAudio(float *input, float *output, int nFrames)
 {
-    for(std::list<AGConnection *>::iterator c = m_inbound.begin(); c != m_inbound.end(); c++)
-    {
-        AGConnection * conn = *c;
-        if(conn->rate() == RATE_AUDIO)
-        {
-            ((AGAudioNode *) conn->src())->renderAudio(input, m_inputPortBuffer[conn->dstPort()], nFrames);
-        }
-        //else TODO
-    }
+    pullInputPorts(nFrames);
     
     for(int i = 0; i < nFrames; i++)
     {
@@ -936,10 +885,10 @@ void AGAudioADSRNode::renderIcon()
     initializeAudioADSRNode();
     
     // render icon
-    glBindVertexArrayOES(s_iconVertexArray);
+    glBindVertexArrayOES(s_audioNodeInfo->iconVertexArray);
     
     glLineWidth(2.0);
-    glDrawArrays(s_iconGeoType, 0, s_iconGeoSize);
+    glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
 }
 
 

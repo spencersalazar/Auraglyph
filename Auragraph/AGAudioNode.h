@@ -18,6 +18,18 @@
 #import <string>
 #import "AGNode.h"
 
+using namespace std;
+
+struct AGAudioNodeInfo
+{
+    GLuint iconVertexArray;
+    GLuint iconVertexBuffer;
+    GLuint iconGeoSize;
+    GLuint iconGeoType;
+    
+    vector<AGPortInfo> portInfo;
+};
+
 
 class AGAudioNode : public AGNode
 {
@@ -88,13 +100,7 @@ public:
     virtual void renderAudio(float *input, float *output, int nFrames);
     
 private:
-    static bool s_initAudioOutputNode;
-    static GLuint s_iconVertexArray;
-    static GLuint s_iconVertexBuffer;
-    static GLuint s_iconGeoSize;
-    static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
-    static AGPortInfo * s_portInfo;
-    
+    static AGAudioNodeInfo *s_audioNodeInfo;
     static void initializeAudioOutputNode();
 };
 
@@ -120,13 +126,7 @@ private:
     float m_phase;
     
 private:
-    static bool s_initAudioSineWaveNode;
-    static GLuint s_iconVertexArray;
-    static GLuint s_iconVertexBuffer;
-    static GLuint s_iconGeoSize;
-    static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
-    static AGPortInfo * s_portInfo;
-
+    static AGAudioNodeInfo *s_audioNodeInfo;
     static void initializeAudioSineWaveNode();
 };
 
@@ -153,13 +153,7 @@ private:
     float m_phase;
     
 private:
-    static bool s_initAudioSquareWaveNode;
-    static GLuint s_iconVertexArray;
-    static GLuint s_iconVertexBuffer;
-    static GLuint s_iconGeoSize;
-    static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
-    static AGPortInfo * s_portInfo;
-
+    static AGAudioNodeInfo *s_audioNodeInfo;
     static void initializeAudioSquareWaveNode();
 };
 
@@ -186,13 +180,7 @@ private:
     float m_phase;
     
 private:
-    static bool s_initAudioSawtoothWaveNode;
-    static GLuint s_iconVertexArray;
-    static GLuint s_iconVertexBuffer;
-    static GLuint s_iconGeoSize;
-    static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
-    static AGPortInfo * s_portInfo;
-
+    static AGAudioNodeInfo *s_audioNodeInfo;
     static void initializeAudioSawtoothWaveNode();
 };
 
@@ -219,13 +207,7 @@ private:
     float m_phase;
     
 private:
-    static bool s_initAudioTriangleWaveNode;
-    static GLuint s_iconVertexArray;
-    static GLuint s_iconVertexBuffer;
-    static GLuint s_iconGeoSize;
-    static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
-    static AGPortInfo * s_portInfo;
-    
+    static AGAudioNodeInfo *s_audioNodeInfo;
     static void initializeAudioTriangleWaveNode();
 };
 
@@ -236,7 +218,7 @@ public:
     AGAudioADSRNode(GLvertex3f pos);
     
     virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { return s_portInfo.size(); }
+    virtual int numInputPorts() const { return s_audioNodeInfo->portInfo.size(); }
     
     virtual void setInputPortValue(int port, float value);
     virtual void getInputPortValue(int port, float &value) const;
@@ -254,13 +236,7 @@ private:
     float m_attack, m_decay, m_sustain, m_release;
     
 private:
-    static bool s_initAudioADSRNode;
-    static GLuint s_iconVertexArray;
-    static GLuint s_iconVertexBuffer;
-    static GLuint s_iconGeoSize;
-    static GLuint s_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
-    static vector<AGPortInfo> s_portInfo;
-    
+    static AGAudioNodeInfo *s_audioNodeInfo;
     static void initializeAudioADSRNode();
 };
 
