@@ -221,7 +221,7 @@ AGUIObject *AGConnection::hitTest(const GLvertex3f &_t)
 //------------------------------------------------------------------------------
 void AGNode::addInbound(AGConnection *connection)
 {
-    m_inbound.push_back(connection)
+    m_inbound.push_back(connection);
 }
 
 void AGNode::addOutbound(AGConnection *connection)
