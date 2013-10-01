@@ -104,14 +104,16 @@ void AGUINodeSelector::render()
     
     glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
     
-    AGClipShader::instance().useProgram();
+    AGClipShader &shader = AGClipShader::instance();
     
-    AGClipShader::instance().setMVPMatrix(m_modelViewProjectionMatrix);
-    AGClipShader::instance().setNormalMatrix(m_normalMatrix);
+    shader.useProgram();
+    
+    shader.setMVPMatrix(m_modelViewProjectionMatrix);
+    shader.setNormalMatrix(m_normalMatrix);
     
     float radius = AGNODESELECTOR_RADIUS;
-    AGClipShader::instance().setClip(GLvertex2f(-radius, -radius), GLvertex2f(radius*2, radius*2));
-    AGClipShader::instance().setLocalMatrix(GLKMatrix4Identity);
+    shader.setClip(GLvertex2f(-radius, -radius), GLvertex2f(radius*2, radius*2));
+    shader.setLocalMatrix(GLKMatrix4Identity);
     
     glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &GLcolor4f::white);
     
@@ -147,15 +149,15 @@ void AGUINodeSelector::render()
         {
             // draw highlight background
             GLKMatrix4 hitModelView = GLKMatrix4Scale(modelView, 0.5, 0.5, 0.5);
-            AGClipShader::instance().setLocalMatrix(GLKMatrix4Scale(GLKMatrix4MakeTranslation(iconPos.x, iconPos.y, iconPos.z), 0.5, 0.5, 0.5));
+            shader.setLocalMatrix(GLKMatrix4Scale(GLKMatrix4MakeTranslation(iconPos.x, iconPos.y, iconPos.z), 0.5, 0.5, 0.5));
             GLKMatrix3 hitNormal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
             GLKMatrix4 hitMvp = GLKMatrix4Multiply(projection, hitModelView);
             
             GLcolor4f whiteA = GLcolor4f::white;
             whiteA.a = 0.75;
             
-            AGClipShader::instance().setMVPMatrix(hitMvp);
-            AGClipShader::instance().setNormalMatrix(hitNormal);
+            shader.setMVPMatrix(hitMvp);
+            shader.setNormalMatrix(hitNormal);
             glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &whiteA);
             
             glBindVertexArrayOES(s_vertexArray);
@@ -169,9 +171,9 @@ void AGUINodeSelector::render()
             glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &GLcolor4f::white);
         }
         
-        AGClipShader::instance().setMVPMatrix(mvp);
-        AGClipShader::instance().setNormalMatrix(normal);
-        AGClipShader::instance().setLocalMatrix(GLKMatrix4MakeTranslation(iconPos.x, iconPos.y, iconPos.z));
+        shader.setMVPMatrix(mvp);
+        shader.setNormalMatrix(normal);
+        shader.setLocalMatrix(GLKMatrix4MakeTranslation(iconPos.x, iconPos.y, iconPos.z));
         
         glLineWidth(4.0f);
         AGAudioNodeManager::instance().renderNodeTypeIcon(nodeTypes[i]);

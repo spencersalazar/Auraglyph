@@ -126,8 +126,8 @@ public:
     
     static void connect(AGConnection * connection)
     {
-        connection->src()->m_outbound.push_back(connection);
-        connection->dst()->m_inbound.push_back(connection);
+        connection->src()->addOutbound(connection);
+        connection->dst()->addInbound(connection);
     }
     
     static void disconnect(AGConnection * connection)
@@ -196,6 +196,9 @@ protected:
     GLvertex3f m_pos;
     GLKMatrix4 m_modelViewProjectionMatrix;
     GLKMatrix3 m_normalMatrix;
+    
+    virtual void addInbound(AGConnection *connection);
+    virtual void addOutbound(AGConnection *connection);
 };
 
 

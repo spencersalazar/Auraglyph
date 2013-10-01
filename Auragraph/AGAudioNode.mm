@@ -55,7 +55,7 @@ AGPortInfo * AGAudioTriangleWaveNode::s_portInfo = NULL;
 //------------------------------------------------------------------------------
 // ### AGAudioNode ###
 //------------------------------------------------------------------------------
-#pragma mark AGAudioNode
+#pragma mark - AGAudioNode
 
 void AGAudioNode::initializeAudioNode()
 {
@@ -287,7 +287,7 @@ GLvertex3f AGAudioNode::positionForOutboundConnection(AGConnection * connection)
 //------------------------------------------------------------------------------
 // ### AGAudioOutputNode ###
 //------------------------------------------------------------------------------
-#pragma mark AGAudioOutputNode
+#pragma mark - AGAudioOutputNode
 
 AGAudioOutputNode::AGAudioOutputNode(GLvertex3f pos) : AGAudioNode(pos)
 {
@@ -346,7 +346,7 @@ void AGAudioOutputNode::renderAudio(float *input, float *output, int nFrames)
 //------------------------------------------------------------------------------
 // ### AGAudioSineWaveNode ###
 //------------------------------------------------------------------------------
-#pragma mark AGAudioSineWaveNode
+#pragma mark - AGAudioSineWaveNode
 
 void AGAudioSineWaveNode::initializeAudioSineWaveNode()
 {
@@ -470,7 +470,7 @@ AGAudioNode *AGAudioSineWaveNode::create(const GLvertex3f &pos)
 //------------------------------------------------------------------------------
 // ### AGAudioSquareWaveNode ###
 //------------------------------------------------------------------------------
-#pragma mark AGAudioSquareWaveNode
+#pragma mark - AGAudioSquareWaveNode
 
 void AGAudioSquareWaveNode::initializeAudioSquareWaveNode()
 {
@@ -599,7 +599,7 @@ AGAudioNode *AGAudioSquareWaveNode::create(const GLvertex3f &pos)
 //------------------------------------------------------------------------------
 // ### AGAudioSawtoothWaveNode ###
 //------------------------------------------------------------------------------
-#pragma mark AGAudioSawtoothWaveNode
+#pragma mark - AGAudioSawtoothWaveNode
 
 void AGAudioSawtoothWaveNode::initializeAudioSawtoothWaveNode()
 {
@@ -726,7 +726,7 @@ AGAudioNode *AGAudioSawtoothWaveNode::create(const GLvertex3f &pos)
 //------------------------------------------------------------------------------
 // ### AGAudioTriangleWaveNode ###
 //------------------------------------------------------------------------------
-#pragma mark AGAudioTriangleWaveNode
+#pragma mark - AGAudioTriangleWaveNode
 
 void AGAudioTriangleWaveNode::initializeAudioTriangleWaveNode()
 {
@@ -855,9 +855,155 @@ AGAudioNode *AGAudioTriangleWaveNode::create(const GLvertex3f &pos)
 
 
 //------------------------------------------------------------------------------
+// ### AGAudioADSRNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioADSRNode
+
+bool AGAudioADSRNode::s_initAudioADSRNode = false;
+GLuint AGAudioADSRNode::s_iconVertexArray = 0;
+GLuint AGAudioADSRNode::s_iconVertexBuffer = 0;
+GLuint AGAudioADSRNode::s_iconGeoSize = 0;
+GLuint AGAudioADSRNode::s_iconGeoType = 0; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
+vector<AGPortInfo> AGAudioADSRNode::s_portInfo;
+
+void AGAudioADSRNode::initializeAudioADSRNode()
+{
+    initializeAudioNode();
+    
+    if(!s_initAudioADSRNode)
+    {
+        s_initAudioADSRNode = true;
+        
+        // generate geometry
+        s_iconGeoSize = 5;
+        GLvertex3f * iconGeo = new GLvertex3f[s_iconGeoSize];
+        s_iconGeoType = GL_LINE_STRIP;
+        float radius_x = 0.005;
+        float radius_y = radius_x * 0.66;
+        
+        // ADSR shape
+        iconGeo[0] = GLvertex3f(-radius_x, -radius_y, 0);
+        iconGeo[1] = GLvertex3f(-radius_x*0.75, radius_y, 0);
+        iconGeo[2] = GLvertex3f(-radius_x*0.25, 0, 0);
+        iconGeo[3] = GLvertex3f(radius_x*0.66, 0, 0);
+        iconGeo[4] = GLvertex3f(radius_x, -radius_y, 0);
+        
+        genVertexArrayAndBuffer(s_iconGeoSize, iconGeo, s_iconVertexArray, s_iconVertexBuffer);
+        
+        delete[] iconGeo;
+        iconGeo = NULL;
+        
+        s_portInfo.push_back({ "input", true, false });
+        s_portInfo.push_back({ "gain", true, true });
+        s_portInfo.push_back({ "trigger", true, false });
+        s_portInfo.push_back({ "attack", true, true });
+        s_portInfo.push_back({ "decay", true, true });
+        s_portInfo.push_back({ "sustain", true, true });
+        s_portInfo.push_back({ "release", true, true });
+    }
+}
+
+
+
+AGAudioADSRNode::AGAudioADSRNode(GLvertex3f pos) : AGAudioNode(pos)
+{
+    initializeAudioADSRNode();
+    
+    m_inputPortInfo = &s_portInfo[0];
+    
+    m_iconVertexArray = s_iconVertexArray;
+    m_iconGeoSize = s_iconGeoSize;
+    m_iconGeoType = s_iconGeoType;
+    
+    if(numInputPorts() > 0)
+    {
+        m_inputPortBuffer = new float*[numInputPorts()];
+        for(int i = 0; i < numInputPorts(); i++)
+        {
+            // TODO: allocate on demand
+            m_inputPortBuffer[i] = new float[bufferSize()];
+            memset(m_inputPortBuffer[i], 0, sizeof(float)*bufferSize());
+        }
+    }
+    else
+    {
+        m_inputPortBuffer = NULL;
+    }
+}
+
+
+void AGAudioADSRNode::setInputPortValue(int port, float value)
+{
+    switch(port)
+    {
+        case 2:
+            break;
+        case 3:
+            m_attack = value/1000.0f;
+            break;
+        case 4:
+            m_decay = value/1000.0f;
+            break;
+        case 5:
+            m_sustain = value/1000.0f;
+            break;
+        case 6:
+            m_release = value/1000.0f;
+            break;
+    }
+}
+
+void AGAudioADSRNode::getInputPortValue(int port, float &value) const
+{
+    switch(port)
+    {
+    }
+}
+
+void AGAudioADSRNode::renderAudio(float *input, float *output, int nFrames)
+{
+    for(std::list<AGConnection *>::iterator c = m_inbound.begin(); c != m_inbound.end(); c++)
+    {
+        AGConnection * conn = *c;
+        if(conn->rate() == RATE_AUDIO)
+        {
+            ((AGAudioNode *) conn->src())->renderAudio(input, m_inputPortBuffer[conn->dstPort()], nFrames);
+        }
+        //else TODO
+    }
+    
+    for(int i = 0; i < nFrames; i++)
+    {
+        output[i] += m_inputPortBuffer[0][i];
+        
+        m_inputPortBuffer[0][i] = 0;
+    }
+}
+
+
+void AGAudioADSRNode::renderIcon()
+{
+    initializeAudioADSRNode();
+    
+    // render icon
+    glBindVertexArrayOES(s_iconVertexArray);
+    
+    glLineWidth(2.0);
+    glDrawArrays(s_iconGeoType, 0, s_iconGeoSize);
+}
+
+
+AGAudioNode *AGAudioADSRNode::create(const GLvertex3f &pos)
+{
+    return new AGAudioADSRNode(pos);
+}
+
+
+
+//------------------------------------------------------------------------------
 // ### AGAudioNodeManager ###
 //------------------------------------------------------------------------------
-#pragma mark AGAudioNodeManager
+#pragma mark - AGAudioNodeManager
 
 AGAudioNodeManager *AGAudioNodeManager::s_instance = NULL;
 
@@ -876,7 +1022,8 @@ AGAudioNodeManager::AGAudioNodeManager()
     m_audioNodeTypes.push_back(new AudioNodeType("SineWave", AGAudioSineWaveNode::renderIcon, AGAudioSineWaveNode::create));
     m_audioNodeTypes.push_back(new AudioNodeType("SquareWave", AGAudioSquareWaveNode::renderIcon, AGAudioSquareWaveNode::create));
     m_audioNodeTypes.push_back(new AudioNodeType("SawtoothWave", AGAudioSawtoothWaveNode::renderIcon, AGAudioSawtoothWaveNode::create));
-    m_audioNodeTypes.push_back(new AudioNodeType("SquareWave", AGAudioTriangleWaveNode::renderIcon, AGAudioTriangleWaveNode::create));
+//    m_audioNodeTypes.push_back(new AudioNodeType("TriangleWave", AGAudioTriangleWaveNode::renderIcon, AGAudioTriangleWaveNode::create));
+    m_audioNodeTypes.push_back(new AudioNodeType("ADSR", AGAudioADSRNode::renderIcon, AGAudioADSRNode::create));
 }
 
 const std::vector<AGAudioNodeManager::AudioNodeType *> &AGAudioNodeManager::audioNodeTypes() const
