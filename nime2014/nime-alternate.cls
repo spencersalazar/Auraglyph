@@ -721,6 +721,17 @@
 \fi
 \normalsize
 
+% teaser stuff from SIGGRAPH template
+\newcommand{\@ACMempty}{}
+
+\newcommand{\@ACMaffiliation}{}
+\newcommand{\affiliation}[1]{\gdef\@ACMaffiliation{#1}}
+
+\newcommand{\@ACMteaser}{}
+\newcommand{\teaser}[1]{\gdef\@ACMteaser{#1}}
+\newlength{\teaserspace}
+\setlength{\teaserspace}{0.25in}
+
 % make aubox hsize/number of authors up to 3, less gutter
 % then showbox gutter showbox gutter showbox -- GKMT Aug 99
 \newbox\@acmtitlebox
@@ -739,7 +750,18 @@
      \begin{tabular}[t]{c}\@author
      \end{tabular}\par}
     \vskip 1.5em               % Vertical space after author.
+   
+            \ifx\@ACMteaser\@ACMempty \else%
+                \begingroup%
+                    \def\@captype{figure}%
+                    \@ACMteaser%
+                \endgroup\par%
+                \vspace{\teaserspace}%
+            \fi%
+   
    \end{center}}
+   
+   
  \dimen0=\ht\@acmtitlebox
  \advance\dimen0 by -12.75pc\relax % Increased space for title box -- KBT
  \unvbox\@acmtitlebox
