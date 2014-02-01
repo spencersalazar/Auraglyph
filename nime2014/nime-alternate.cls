@@ -1220,7 +1220,7 @@
 }
 
 %%% Actually, 'abbrev' works just fine as the default
-%%% Bibliography style.
+%%% abbrvliography style.
 
 \typeout{Using 'Abbrev' bibliography style}
 \newcommand\bibyear[2]{%
