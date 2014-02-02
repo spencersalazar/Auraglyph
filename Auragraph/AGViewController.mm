@@ -19,6 +19,7 @@
 #import "TexFont.h"
 #import "AGDef.h"
 #import "AGTrainerViewController.h"
+#import "AGGenericShader.h"
 
 #import <list>
 
@@ -46,6 +47,98 @@ struct DrawPoint
 const int nDrawline = 1024;
 int nDrawlineUsed = 0;
 DrawPoint drawline[nDrawline];
+
+
+class AGFreeDraw : public AGUIObject
+{
+public:
+    AGFreeDraw(GLvncprimf *points, int nPoints);
+    ~AGFreeDraw();
+    
+    virtual void update(float t, float dt);
+    virtual void render();
+    
+    virtual void touchDown(const GLvertex3f &t);
+    virtual void touchMove(const GLvertex3f &t);
+    virtual void touchUp(const GLvertex3f &t);
+    
+    virtual AGUIObject *hitTest(const GLvertex3f &t);
+    
+private:
+    GLvncprimf *m_points;
+    int m_nPoints;
+};
+
+AGFreeDraw::AGFreeDraw(GLvncprimf *points, int nPoints)
+{
+    m_nPoints = nPoints;
+    m_points = new GLvncprimf[m_nPoints];
+    memcpy(m_points, points, m_nPoints * sizeof(GLvncprimf));
+}
+
+AGFreeDraw::~AGFreeDraw()
+{
+    delete[] m_points;
+    m_points = NULL;
+    m_nPoints = 0;
+}
+
+void AGFreeDraw::update(float t, float dt)
+{
+    
+}
+
+void AGFreeDraw::render()
+{
+    GLKMatrix4 proj = AGNode::projectionMatrix();
+    GLKMatrix4 modelView = AGNode::globalModelViewMatrix();
+    
+    AGGenericShader &shader = AGGenericShader::instance();
+    
+    shader.useProgram();
+    
+    shader.setProjectionMatrix(proj);
+    shader.setModelViewMatrix(modelView);
+    shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));
+    
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), m_points);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    
+    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::white);
+    
+    glDisableVertexAttribArray(GLKVertexAttribTexCoord0);
+    glDisableVertexAttribArray(GLKVertexAttribTexCoord1);
+    glDisable(GL_TEXTURE_2D);
+    
+    glPointSize(4.0f);
+    glLineWidth(4.0f);
+    if(m_nPoints == 1)
+        glDrawArrays(GL_POINTS, 0, m_nPoints);
+    else
+        glDrawArrays(GL_LINE_STRIP, 0, m_nPoints);
+}
+
+void AGFreeDraw::touchDown(const GLvertex3f &t)
+{
+    
+}
+
+void AGFreeDraw::touchMove(const GLvertex3f &t)
+{
+    
+}
+
+void AGFreeDraw::touchUp(const GLvertex3f &t)
+{
+    
+}
+
+AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &t)
+{
+    return NULL;
+}
+
 
 
 @interface AGTouchHandler : UIResponder
@@ -134,6 +227,7 @@ DrawPoint drawline[nDrawline];
     
     AGTouchHandler * _touchHandler;
     
+    std::list<AGFreeDraw *> _freeDraws;
     std::list<AGNode *> _nodes;
     std::list<AGConnection *> _connections;
     
@@ -155,6 +249,8 @@ DrawPoint drawline[nDrawline];
 - (void)updateMatrices;
 - (GLvertex3f)worldCoordinateForScreenCoordinate:(CGPoint)p;
 - (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)node;
+
+- (void)addFreeDraw:(AGFreeDraw *)freedraw;
 
 @end
 
@@ -305,6 +401,11 @@ static AGViewController * g_instance = nil;
     _connections.push_back(connection);
 }
 
+- (void)addFreeDraw:(AGFreeDraw *)freedraw
+{
+    _freeDraws.push_back(freedraw);
+}
+
 - (void)removeConnection:(AGConnection *)connection
 {
     _connections.remove(connection);
@@ -360,6 +461,8 @@ static AGViewController * g_instance = nil;
     float dt = self.timeSinceLastUpdate;
     _t += dt;
     
+    for(std::list<AGFreeDraw *>::iterator i = _freeDraws.begin(); i != _freeDraws.end(); i++)
+        (*i)->update(_t, dt);
     for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
         (*i)->update(_t, dt);
     for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
@@ -398,7 +501,11 @@ static AGViewController * g_instance = nil;
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     
     GLKMatrix4 textMV = GLKMatrix4Translate(_modelView, -0.02, -0.07, 3.89);
-    _font->render("AURAGRPH", GLcolor4f::white, textMV, _projection);
+    _font->render("AURAGLPH", GLcolor4f::white, textMV, _projection);
+    
+    // render freedraws
+    for(std::list<AGFreeDraw *>::iterator i = _freeDraws.begin(); i != _freeDraws.end(); i++)
+        (*i)->render();
     
     // render connections
     for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
@@ -735,6 +842,13 @@ static AGViewController * g_instance = nil;
     {
         AGOutputNode * node = new AGOutputNode(centroidMVP);
         [_viewController addNode:node];
+        [_viewController clearLinePoints];
+    }
+    else
+    {
+        AGFreeDraw *freeDraw = new AGFreeDraw((GLvncprimf *) drawline, nDrawlineUsed);
+        
+        [_viewController addFreeDraw:freeDraw];
         [_viewController clearLinePoints];
     }
 }
