@@ -206,13 +206,16 @@ AGUIObject *AGConnection::hitTest(const GLvertex3f &_t)
     GLvertex2f p1 = GLvertex2f(m_inTerminal.x, m_inTerminal.y);
     GLvertex2f t = GLvertex2f(_t.x, _t.y);
     
-    GLvertex2f normal = GLvertex2f(m_inTerminal.y - m_outTerminal.y, m_outTerminal.x - m_inTerminal.x);
-    GLvertex2f bound1 = p1 - p0;
-    GLvertex2f bound2 = p0 - p1;
+//    GLvertex2f normal = GLvertex2f(m_inTerminal.y - m_outTerminal.y, m_outTerminal.x - m_inTerminal.x);
+//    GLvertex2f bound1 = p1 - p0;
+//    GLvertex2f bound2 = p0 - p1;
+//    
+//    if(fabsf(normal.dot(t-p0)) < 0.0003 &&
+//       bound1.dot(t-p0) > 0 &&
+//       bound2.dot(t-p1) > 0)
+//        return this;
     
-    if(fabsf(normal.dot(t-p0)) < 0.0003 &&
-       bound1.dot(t-p0) > 0 &&
-       bound2.dot(t-p1) > 0)
+    if(pointOnLine(t, p0, p1, 0.0003))
         return this;
     
     return NULL;

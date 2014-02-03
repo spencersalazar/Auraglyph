@@ -185,5 +185,20 @@ struct GLtrif
 } __attribute__((packed));
 
 
+static bool pointOnLine(GLvertex2f point, GLvertex2f line0, GLvertex2f line1, float thres)
+{
+    GLvertex2f normal = GLvertex2f(line1.y - line0.y, line0.x - line1.x);
+    GLvertex2f bound1 = line1 - line0;
+    GLvertex2f bound2 = line0 - line1;
+    
+    if(fabsf(normal.dot(point-line0)) < thres &&
+       bound1.dot(point-line0) > 0 &&
+       bound2.dot(point-line1) > 0)
+        return true;
+    
+    return false;
+}
+
+
 
 #endif
