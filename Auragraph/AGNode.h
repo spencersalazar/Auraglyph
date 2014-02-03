@@ -279,5 +279,27 @@ private:
 };
 
 
+class AGFreeDraw : public AGUIObject
+{
+public:
+    AGFreeDraw(GLvncprimf *points, int nPoints);
+    ~AGFreeDraw();
+    
+    virtual void update(float t, float dt);
+    virtual void render();
+    
+    virtual void touchDown(const GLvertex3f &t);
+    virtual void touchMove(const GLvertex3f &t);
+    virtual void touchUp(const GLvertex3f &t);
+    
+    virtual AGUIObject *hitTest(const GLvertex3f &t);
+    
+private:
+    GLvncprimf *m_points;
+    int m_nPoints;
+};
+
+
+
 
 #endif /* defined(__Auragraph__AGNode__) */

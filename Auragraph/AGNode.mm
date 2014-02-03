@@ -52,6 +52,7 @@ GLuint AGOutputNode::s_geoSize = 0;
 //------------------------------------------------------------------------------
 // ### AGConnection ###
 //------------------------------------------------------------------------------
+#pragma mark - AGConnection
 
 void AGConnection::initalize()
 {
@@ -219,6 +220,8 @@ AGUIObject *AGConnection::hitTest(const GLvertex3f &_t)
 //------------------------------------------------------------------------------
 // ### AGNode ###
 //------------------------------------------------------------------------------
+#pragma mark - AGNode
+
 void AGNode::addInbound(AGConnection *connection)
 {
     m_inbound.push_back(connection);
@@ -243,6 +246,7 @@ void AGNode::removeOutbound(AGConnection *connection)
 //------------------------------------------------------------------------------
 // ### AGControlNode ###
 //------------------------------------------------------------------------------
+#pragma mark - AGControlNode
 
 void AGControlNode::initializeControlNode()
 {
@@ -326,6 +330,7 @@ void AGControlNode::unhit()
 //------------------------------------------------------------------------------
 // ### AGInputNode ###
 //------------------------------------------------------------------------------
+#pragma mark - AGInputNode
 
 void AGInputNode::initializeInputNode()
 {
@@ -410,6 +415,7 @@ void AGInputNode::unhit()
 //------------------------------------------------------------------------------
 // ### AGOutputNode ###
 //------------------------------------------------------------------------------
+#pragma mark - AGOutputNode
 
 void AGOutputNode::initializeOutputNode()
 {
@@ -487,5 +493,83 @@ void AGOutputNode::unhit()
 {
     
 }
+
+
+//------------------------------------------------------------------------------
+// ### AGFreeDraw ###
+//------------------------------------------------------------------------------
+#pragma mark - AGFreeDraw
+
+AGFreeDraw::AGFreeDraw(GLvncprimf *points, int nPoints)
+{
+    m_nPoints = nPoints;
+    m_points = new GLvncprimf[m_nPoints];
+    memcpy(m_points, points, m_nPoints * sizeof(GLvncprimf));
+}
+
+AGFreeDraw::~AGFreeDraw()
+{
+    delete[] m_points;
+    m_points = NULL;
+    m_nPoints = 0;
+}
+
+void AGFreeDraw::update(float t, float dt)
+{
+    
+}
+
+void AGFreeDraw::render()
+{
+    GLKMatrix4 proj = AGNode::projectionMatrix();
+    GLKMatrix4 modelView = AGNode::globalModelViewMatrix();
+    
+    AGGenericShader &shader = AGGenericShader::instance();
+    
+    shader.useProgram();
+    
+    shader.setProjectionMatrix(proj);
+    shader.setModelViewMatrix(modelView);
+    shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));
+    
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), m_points);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    
+    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::white);
+    
+    glDisableVertexAttribArray(GLKVertexAttribTexCoord0);
+    glDisableVertexAttribArray(GLKVertexAttribTexCoord1);
+    glDisable(GL_TEXTURE_2D);
+    
+    glPointSize(4.0f);
+    glLineWidth(4.0f);
+    if(m_nPoints == 1)
+        glDrawArrays(GL_POINTS, 0, m_nPoints);
+    else
+        glDrawArrays(GL_LINE_STRIP, 0, m_nPoints);
+}
+
+void AGFreeDraw::touchDown(const GLvertex3f &t)
+{
+    
+}
+
+void AGFreeDraw::touchMove(const GLvertex3f &t)
+{
+    
+}
+
+void AGFreeDraw::touchUp(const GLvertex3f &t)
+{
+    
+}
+
+AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &t)
+{
+    return NULL;
+}
+
+
 
 
