@@ -7,7 +7,9 @@
 //
 
 #include "AGNode.h"
+
 #import "AGViewController.h"
+#import "AGGenericShader.h"
 
 
 static const float G_RATIO = 1.61803398875;

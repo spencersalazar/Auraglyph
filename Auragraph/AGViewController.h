@@ -9,23 +9,25 @@
 #import <UIKit/UIKit.h>
 #import <GLKit/GLKit.h>
 #import "Geometry.h"
+#import "AGNode.h"
 
-class AGNode;
 class AGConnection;
+class AGFreeDraw;
 
 @interface AGViewController : GLKViewController
 
 + (id)instance;
 
 - (void)addNode:(AGNode *)node;
-
 - (void)addConnection:(AGConnection *)connection;
 - (void)removeConnection:(AGConnection *)connection;
-
+- (void)addFreeDraw:(AGFreeDraw *)freedraw;
 - (void)addLinePoint:(GLvertex3f)point;
 - (void)clearLinePoints;
 
 - (GLKMatrix4)modelViewMatrix;
 - (GLKMatrix4)projectionMatrix;
+- (GLvertex3f)worldCoordinateForScreenCoordinate:(CGPoint)p;
+- (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)node;
 
 @end

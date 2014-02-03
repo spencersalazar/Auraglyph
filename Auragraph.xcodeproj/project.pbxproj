@@ -53,6 +53,7 @@
 		098740BD17BCD9820098511A /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 098740BC17BCD9810098511A /* CoreText.framework */; };
 		098740BF17BCE0130098511A /* Perfect DOS VGA 437.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 098740BE17BCE0130098511A /* Perfect DOS VGA 437.ttf */; };
 		09891313189F6D3A00AB98AD /* trash.png in Resources */ = {isa = PBXBuildFile; fileRef = 09891311189F6D3A00AB98AD /* trash.png */; };
+		09891316189F70D200AB98AD /* AGTouchHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09891315189F70D200AB98AD /* AGTouchHandler.mm */; };
 		098C0E1417C4278C00171366 /* Screen.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 098C0E1217C4278C00171366 /* Screen.fsh */; };
 		098C0E1517C4278C00171366 /* Screen.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 098C0E1317C4278C00171366 /* Screen.vsh */; };
 		099AF10F17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png in Resources */ = {isa = PBXBuildFile; fileRef = 099AF10E17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png */; };
@@ -195,6 +196,8 @@
 		098740BC17BCD9810098511A /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		098740BE17BCE0130098511A /* Perfect DOS VGA 437.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Perfect DOS VGA 437.ttf"; sourceTree = "<group>"; };
 		09891311189F6D3A00AB98AD /* trash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trash.png; sourceTree = "<group>"; };
+		09891314189F70D200AB98AD /* AGTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGTouchHandler.h; sourceTree = "<group>"; };
+		09891315189F70D200AB98AD /* AGTouchHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGTouchHandler.mm; sourceTree = "<group>"; };
 		098C0E1217C4278C00171366 /* Screen.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Screen.fsh; path = Shaders/Screen.fsh; sourceTree = "<group>"; };
 		098C0E1317C4278C00171366 /* Screen.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Screen.vsh; path = Shaders/Screen.vsh; sourceTree = "<group>"; };
 		099AF10E17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AURAGRPH-AppIcon144.png"; path = "../AURAGRPH-AppIcon144.png"; sourceTree = "<group>"; };
@@ -298,6 +301,8 @@
 				095D12DF17ACA36C0048A012 /* Shader.fsh */,
 				095D12E317ACA36C0048A012 /* AGViewController.h */,
 				095D12E417ACA36C0048A012 /* AGViewController.mm */,
+				09891314189F70D200AB98AD /* AGTouchHandler.h */,
+				09891315189F70D200AB98AD /* AGTouchHandler.mm */,
 				095D12E617ACA36C0048A012 /* AGViewController.xib */,
 				095E854017B5E1D30065EF8E /* AGHandwritingRecognizer.h */,
 				095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */,
@@ -574,6 +579,7 @@
 				095D12D417ACA36C0048A012 /* main.m in Sources */,
 				095D12D817ACA36C0048A012 /* AGAppDelegate.mm in Sources */,
 				095D12E517ACA36C0048A012 /* AGViewController.mm in Sources */,
+				09891316189F70D200AB98AD /* AGTouchHandler.mm in Sources */,
 				095D12FB17ACAA100048A012 /* Geometry.cpp in Sources */,
 				09D9D2EB17ECF65D00938871 /* Clip.vsh in Sources */,
 				095D12FC17ACAA100048A012 /* Texture.mm in Sources */,
