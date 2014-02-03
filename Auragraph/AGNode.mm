@@ -512,6 +512,8 @@ AGFreeDraw::AGFreeDraw(GLvncprimf *points, int nPoints)
     memcpy(m_points, points, m_nPoints * sizeof(GLvncprimf));
     m_touchDown = false;
     m_position = GLvertex3f();
+    
+    m_touchPoint0 = -1;
 }
 
 AGFreeDraw::~AGFreeDraw()
@@ -564,22 +566,31 @@ void AGFreeDraw::render()
         glDrawArrays(GL_POINTS, 0, m_nPoints);
     else
         glDrawArrays(GL_LINE_STRIP, 0, m_nPoints);
+    
+    if(m_touchPoint0 >= 0)
+    {
+        glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::green);
+        glDrawArrays(GL_LINE_STRIP, m_touchPoint0, 2);
+    }
 }
 
 void AGFreeDraw::touchDown(const GLvertex3f &t)
 {
     m_touchDown = true;
-    m_touchStart = t;
+    m_touchLast = t;
 }
 
 void AGFreeDraw::touchMove(const GLvertex3f &t)
 {
-    m_position = t - m_touchStart;
+    m_position = m_position + (t - m_touchLast);
+    m_touchLast = t;
 }
 
 void AGFreeDraw::touchUp(const GLvertex3f &t)
 {
     m_touchDown = false;
+    
+    m_touchPoint0 = -1;
 }
 
 AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
@@ -593,6 +604,7 @@ AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
         
         if(pointOnLine(t, p0, p1, 0.0002))
         {
+            m_touchPoint0 = i;
             return this;
         }
     }

@@ -299,7 +299,10 @@ private:
     int m_nPoints;
     bool m_touchDown;
     GLvertex3f m_position;
-    GLvertex3f m_touchStart;
+    GLvertex3f m_touchLast;
+    
+    // debug
+    int m_touchPoint0;
 };
 
 
