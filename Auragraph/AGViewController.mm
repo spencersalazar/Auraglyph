@@ -496,6 +496,13 @@ static AGViewController * g_instance = nil;
                     if((hit = (*i)->hitTest(pos))) break;
                 }
             }
+            if(!hit)
+            {
+                for(std::list<AGFreeDraw *>::iterator i = _freeDraws.begin(); i != _freeDraws.end(); i++)
+                {
+                    if((hit = (*i)->hitTest(pos))) break;
+                }
+            }
             
             if(hit)
             {

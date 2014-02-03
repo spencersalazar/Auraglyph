@@ -36,12 +36,12 @@ struct GLvertex3f
         this->z = z;
     }
     
-    GLfloat magnitude() { return sqrtf(x*x+y*y+z*z); }
-    GLfloat magnitudeSquared() { return x*x+y*y+z*z; }
+    GLfloat magnitude() const { return sqrtf(x*x+y*y+z*z); }
+    GLfloat magnitudeSquared() const { return x*x+y*y+z*z; }
     
-    GLvertex2f xy();
+    GLvertex2f xy() const;
     
-    GLvertex2f toLatLong();
+    GLvertex2f toLatLong() const;
 } __attribute__((packed));
 
 GLvertex3f operator+(const GLvertex3f &v1, const GLvertex3f &v2);

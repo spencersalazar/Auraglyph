@@ -297,6 +297,9 @@ public:
 private:
     GLvncprimf *m_points;
     int m_nPoints;
+    bool m_touchDown;
+    GLvertex3f m_position;
+    GLvertex3f m_touchStart;
 };
 
 

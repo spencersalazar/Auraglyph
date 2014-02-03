@@ -510,6 +510,8 @@ AGFreeDraw::AGFreeDraw(GLvncprimf *points, int nPoints)
     m_nPoints = nPoints;
     m_points = new GLvncprimf[m_nPoints];
     memcpy(m_points, points, m_nPoints * sizeof(GLvncprimf));
+    m_touchDown = false;
+    m_position = GLvertex3f();
 }
 
 AGFreeDraw::~AGFreeDraw()
@@ -527,7 +529,7 @@ void AGFreeDraw::update(float t, float dt)
 void AGFreeDraw::render()
 {
     GLKMatrix4 proj = AGNode::projectionMatrix();
-    GLKMatrix4 modelView = AGNode::globalModelViewMatrix();
+    GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::globalModelViewMatrix(), m_position.x, m_position.y, m_position.z);
     
     AGGenericShader &shader = AGGenericShader::instance();
     
@@ -547,8 +549,17 @@ void AGFreeDraw::render()
     glDisableVertexAttribArray(GLKVertexAttribTexCoord1);
     glDisable(GL_TEXTURE_2D);
     
-    glPointSize(4.0f);
-    glLineWidth(4.0f);
+    if(m_touchDown)
+    {
+        glPointSize(8.0f);
+        glLineWidth(8.0f);
+    }
+    else
+    {
+        glPointSize(4.0f);
+        glLineWidth(4.0f);
+    }
+    
     if(m_nPoints == 1)
         glDrawArrays(GL_POINTS, 0, m_nPoints);
     else
@@ -557,21 +568,35 @@ void AGFreeDraw::render()
 
 void AGFreeDraw::touchDown(const GLvertex3f &t)
 {
-    
+    m_touchDown = true;
+    m_touchStart = t;
 }
 
 void AGFreeDraw::touchMove(const GLvertex3f &t)
 {
-    
+    m_position = t - m_touchStart;
 }
 
 void AGFreeDraw::touchUp(const GLvertex3f &t)
 {
-    
+    m_touchDown = false;
 }
 
-AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &t)
+AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
 {
+    GLvertex2f t = _t.xy();
+    
+    for(int i = 0; i < m_nPoints-1; i++)
+    {
+        GLvertex2f p0 = m_points[i].vertex.xy();
+        GLvertex2f p1 = m_points[i+1].vertex.xy();
+        
+        if(pointOnLine(t, p0, p1, 0.0002))
+        {
+            return this;
+        }
+    }
+    
     return NULL;
 }
 

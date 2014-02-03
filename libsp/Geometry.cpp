@@ -29,7 +29,7 @@ GLvertex3f::GLvertex3f(const GLvertex2f &v)
     z = 0;
 }
 
-GLvertex2f GLvertex3f::toLatLong()
+GLvertex2f GLvertex3f::toLatLong() const
 {
     GLvertex2f ll;
     ll.x = (atan2f(y,x) / M_PI + 1.0f) * 0.5f;
@@ -38,7 +38,7 @@ GLvertex2f GLvertex3f::toLatLong()
     return ll;
 }
 
-GLvertex2f GLvertex3f::xy()
+GLvertex2f GLvertex3f::xy() const
 {
     return GLvertex2f(x, y);
 }
