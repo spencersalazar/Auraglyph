@@ -566,12 +566,13 @@ void AGFreeDraw::render()
         glDrawArrays(GL_POINTS, 0, m_nPoints);
     else
         glDrawArrays(GL_LINE_STRIP, 0, m_nPoints);
-    
-    if(m_touchPoint0 >= 0)
-    {
-        glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::green);
-        glDrawArrays(GL_LINE_STRIP, m_touchPoint0, 2);
-    }
+
+    // debug
+//    if(m_touchPoint0 >= 0)
+//    {
+//        glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::green);
+//        glDrawArrays(GL_LINE_STRIP, m_touchPoint0, 2);
+//    }
 }
 
 void AGFreeDraw::touchDown(const GLvertex3f &t)
@@ -584,6 +585,12 @@ void AGFreeDraw::touchMove(const GLvertex3f &t)
 {
     m_position = m_position + (t - m_touchLast);
     m_touchLast = t;
+    
+    AGUITrash &trash = AGUITrash::instance();
+    if(trash.hitTest(t))
+        trash.activate();
+    else
+        trash.deactivate();
 }
 
 void AGFreeDraw::touchUp(const GLvertex3f &t)
@@ -591,6 +598,13 @@ void AGFreeDraw::touchUp(const GLvertex3f &t)
     m_touchDown = false;
     
     m_touchPoint0 = -1;
+    
+    AGUITrash &trash = AGUITrash::instance();
+    
+    if(trash.hitTest(t))
+        [[AGViewController instance] removeFreeDraw:this];
+    
+    trash.deactivate();
 }
 
 AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)

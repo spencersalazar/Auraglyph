@@ -884,16 +884,22 @@ AGUITrash::AGUITrash()
 {
     m_tex = loadOrRetrieveTexture(@"trash.png");
     
-    float radius = 0.005;
-    m_geo[0] = GLvertex3f(-radius, -radius, 0);
-    m_geo[1] = GLvertex3f( radius, -radius, 0);
-    m_geo[2] = GLvertex3f(-radius,  radius, 0);
-    m_geo[3] = GLvertex3f( radius,  radius, 0);
+    m_radius = 0.005;
+    m_geo[0] = GLvertex3f(-m_radius, -m_radius, 0);
+    m_geo[1] = GLvertex3f( m_radius, -m_radius, 0);
+    m_geo[2] = GLvertex3f(-m_radius,  m_radius, 0);
+    m_geo[3] = GLvertex3f( m_radius,  m_radius, 0);
     
     m_uv[0] = GLvertex2f(0, 0);
     m_uv[1] = GLvertex2f(1, 0);
     m_uv[2] = GLvertex2f(0, 1);
     m_uv[3] = GLvertex2f(1, 1);
+    
+    m_active = false;
+
+    m_scale.value = 0.5;
+    m_scale.target = 1;
+    m_scale.slew = 0.1;
 }
 
 AGUITrash::~AGUITrash()
@@ -903,13 +909,19 @@ AGUITrash::~AGUITrash()
 
 void AGUITrash::update(float t, float dt)
 {
+    if(m_active)
+        m_scale.target = 1.25;
+    else
+        m_scale.target = 1;
     
+    m_scale.interp();
 }
 
 void AGUITrash::render()
 {
     GLKMatrix4 proj = AGNode::projectionMatrix();
     GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::globalModelViewMatrix(), m_position.x, m_position.y, m_position.z);
+    modelView = GLKMatrix4Scale(modelView, m_scale, m_scale, m_scale);
     
     AGGenericShader &shader = AGTextureShader::instance();
     
@@ -923,7 +935,10 @@ void AGUITrash::render()
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     
     glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::white);
+    if(m_active)
+        glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::red);
+    else
+        glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::white);
     
     glEnable(GL_TEXTURE_2D);
     glActiveTexture(GL_TEXTURE0);
@@ -951,9 +966,20 @@ void AGUITrash::touchUp(const GLvertex3f &t)
 
 AGUIObject *AGUITrash::hitTest(const GLvertex3f &t)
 {
-    return false;
+    if((t-m_position).magnitudeSquared() < m_radius*m_radius)
+        return this;
+    return NULL;
 }
 
+void AGUITrash::activate()
+{
+    m_active = true;
+}
+
+void AGUITrash::deactivate()
+{
+    m_active = false;
+}
 
 
 

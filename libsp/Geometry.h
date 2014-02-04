@@ -200,5 +200,16 @@ static bool pointOnLine(GLvertex2f point, GLvertex2f line0, GLvertex2f line1, fl
 }
 
 
+struct slewf
+{
+    slewf() { value = 0; target = 0; slew = 0.1; }
+    
+    inline void interp() { value = (target-value)*slew + value; }
+    
+    operator const float &() const { return value; }
+    
+    float value, target, slew;
+};
+
 
 #endif

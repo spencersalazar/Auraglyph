@@ -199,6 +199,9 @@ public:
     virtual void touchMove(const GLvertex3f &t);
     virtual void touchUp(const GLvertex3f &t);
     
+    void activate();
+    void deactivate();
+    
     virtual AGUIObject *hitTest(const GLvertex3f &t);
     
     virtual void setPosition(const GLvertex3f &pos) { m_position = pos; }
@@ -207,6 +210,10 @@ private:
     AGUITrash();
     ~AGUITrash();
     
+    bool m_active;
+    slewf m_scale;
+    
+    float m_radius;
     GLvertex3f m_position;
     GLuint m_tex;
     GLvertex3f m_geo[4];

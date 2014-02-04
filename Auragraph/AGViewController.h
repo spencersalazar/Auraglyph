@@ -22,6 +22,7 @@ class AGFreeDraw;
 - (void)addConnection:(AGConnection *)connection;
 - (void)removeConnection:(AGConnection *)connection;
 - (void)addFreeDraw:(AGFreeDraw *)freedraw;
+- (void)removeFreeDraw:(AGFreeDraw *)freedraw;
 - (void)addLinePoint:(GLvertex3f)point;
 - (void)clearLinePoints;
 

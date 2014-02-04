@@ -78,6 +78,8 @@ static DrawPoint drawline[nDrawline];
     std::list<AGNode *> _nodes;
     std::list<AGConnection *> _connections;
     
+    std::list<AGUIObject *> _deleteList;
+    
     TexFont * _font;
     
     AGUIButton * _testButton;
@@ -152,7 +154,6 @@ static AGViewController * g_instance = nil;
     });
     
     AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
-//    AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)]);
     
     g_instance = self;
 }
@@ -252,6 +253,12 @@ static AGViewController * g_instance = nil;
     _freeDraws.push_back(freedraw);
 }
 
+- (void)removeFreeDraw:(AGFreeDraw *)freedraw
+{
+    _freeDraws.remove(freedraw);
+    _deleteList.push_back(freedraw);
+}
+
 - (void)removeConnection:(AGConnection *)connection
 {
     _connections.remove(connection);
@@ -301,6 +308,13 @@ static AGViewController * g_instance = nil;
 
 - (void)update
 {
+    if(_deleteList.size())
+    {
+        for(std::list<AGUIObject *>::iterator i = _deleteList.begin(); i != _deleteList.end(); i++)
+            delete *i;
+        _deleteList.clear();
+    }
+    
     [self updateMatrices];
     
     _osc += self.timeSinceLastUpdate * 1.0f;
