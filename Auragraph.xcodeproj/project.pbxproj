@@ -21,8 +21,6 @@
 		095D12DA17ACA36C0048A012 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 095D12D917ACA36C0048A012 /* Default.png */; };
 		095D12DC17ACA36C0048A012 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 095D12DB17ACA36C0048A012 /* Default@2x.png */; };
 		095D12DE17ACA36C0048A012 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 095D12DD17ACA36C0048A012 /* Default-568h@2x.png */; };
-		095D12E017ACA36C0048A012 /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 095D12DF17ACA36C0048A012 /* Shader.fsh */; };
-		095D12E217ACA36C0048A012 /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 095D12E117ACA36C0048A012 /* Shader.vsh */; };
 		095D12E517ACA36C0048A012 /* AGViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095D12E417ACA36C0048A012 /* AGViewController.mm */; };
 		095D12E817ACA36C0048A012 /* AGViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 095D12E617ACA36C0048A012 /* AGViewController.xib */; };
 		095D12FB17ACAA100048A012 /* Geometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 095D12F617ACAA100048A012 /* Geometry.cpp */; };
@@ -48,14 +46,22 @@
 		098740B017BC527E0098511A /* ES2Render.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740AE17BC527E0098511A /* ES2Render.mm */; };
 		098740B317BC61410098511A /* AGUserInterface.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740B117BC61410098511A /* AGUserInterface.mm */; };
 		098740B517BCBA4C0098511A /* Consolas.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 098740B417BCBA4C0098511A /* Consolas.ttf */; };
-		098740BA17BCC2EA0098511A /* TexFont.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 098740B617BCC16B0098511A /* TexFont.fsh */; };
-		098740BB17BCC2EC0098511A /* TexFont.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 098740B717BCC16B0098511A /* TexFont.vsh */; };
 		098740BD17BCD9820098511A /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 098740BC17BCD9810098511A /* CoreText.framework */; };
 		098740BF17BCE0130098511A /* Perfect DOS VGA 437.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 098740BE17BCE0130098511A /* Perfect DOS VGA 437.ttf */; };
 		09891313189F6D3A00AB98AD /* trash.png in Resources */ = {isa = PBXBuildFile; fileRef = 09891311189F6D3A00AB98AD /* trash.png */; };
 		09891316189F70D200AB98AD /* AGTouchHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09891315189F70D200AB98AD /* AGTouchHandler.mm */; };
-		098C0E1417C4278C00171366 /* Screen.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 098C0E1217C4278C00171366 /* Screen.fsh */; };
-		098C0E1517C4278C00171366 /* Screen.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 098C0E1317C4278C00171366 /* Screen.vsh */; };
+		0989131918A07E1200AB98AD /* Texture.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 0989131718A07E1200AB98AD /* Texture.fsh */; };
+		0989131A18A07E1200AB98AD /* Texture.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 0989131818A07E1200AB98AD /* Texture.vsh */; };
+		0989131C18A086E800AB98AD /* TexFont.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 098740B717BCC16B0098511A /* TexFont.vsh */; };
+		0989131D18A086E800AB98AD /* Screen.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 098C0E1317C4278C00171366 /* Screen.vsh */; };
+		0989131E18A086E800AB98AD /* Clip.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 09D9D2E917ECF65D00938871 /* Clip.vsh */; };
+		0989131F18A086E800AB98AD /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 095D12E117ACA36C0048A012 /* Shader.vsh */; };
+		0989132018A086E800AB98AD /* Texture.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 0989131818A07E1200AB98AD /* Texture.vsh */; };
+		0989132118A0870000AB98AD /* TexFont.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 098740B617BCC16B0098511A /* TexFont.fsh */; };
+		0989132218A0870000AB98AD /* Screen.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 098C0E1217C4278C00171366 /* Screen.fsh */; };
+		0989132318A0870000AB98AD /* Clip.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 09D9D2E817ECF65D00938871 /* Clip.fsh */; };
+		0989132418A0870000AB98AD /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 095D12DF17ACA36C0048A012 /* Shader.fsh */; };
+		0989132518A0870000AB98AD /* Texture.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 0989131718A07E1200AB98AD /* Texture.fsh */; };
 		099AF10F17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png in Resources */ = {isa = PBXBuildFile; fileRef = 099AF10E17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png */; };
 		099AF11317D12DD9000BAB7B /* AGTrainerViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 099AF11117D12DD9000BAB7B /* AGTrainerViewController.mm */; };
 		099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */; };
@@ -70,8 +76,6 @@
 		099AF12E17D1A892000BAB7B /* projects.zip in Resources */ = {isa = PBXBuildFile; fileRef = 099AF12D17D1A892000BAB7B /* projects.zip */; };
 		09D9D2EA17ECF65D00938871 /* Clip.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 09D9D2E817ECF65D00938871 /* Clip.fsh */; };
 		09D9D2EB17ECF65D00938871 /* Clip.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 09D9D2E917ECF65D00938871 /* Clip.vsh */; };
-		09D9D2EC17ED1F6800938871 /* Clip.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 09D9D2E917ECF65D00938871 /* Clip.vsh */; };
-		09D9D2ED17ED1F6B00938871 /* Clip.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 09D9D2E817ECF65D00938871 /* Clip.fsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -198,6 +202,8 @@
 		09891311189F6D3A00AB98AD /* trash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trash.png; sourceTree = "<group>"; };
 		09891314189F70D200AB98AD /* AGTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGTouchHandler.h; sourceTree = "<group>"; };
 		09891315189F70D200AB98AD /* AGTouchHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGTouchHandler.mm; sourceTree = "<group>"; };
+		0989131718A07E1200AB98AD /* Texture.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Texture.fsh; path = Shaders/Texture.fsh; sourceTree = "<group>"; };
+		0989131818A07E1200AB98AD /* Texture.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Texture.vsh; path = Shaders/Texture.vsh; sourceTree = "<group>"; };
 		098C0E1217C4278C00171366 /* Screen.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Screen.fsh; path = Shaders/Screen.fsh; sourceTree = "<group>"; };
 		098C0E1317C4278C00171366 /* Screen.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Screen.vsh; path = Shaders/Screen.vsh; sourceTree = "<group>"; };
 		099AF10E17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AURAGRPH-AppIcon144.png"; path = "../AURAGRPH-AppIcon144.png"; sourceTree = "<group>"; };
@@ -289,16 +295,12 @@
 		095D12CD17ACA36C0048A012 /* Auragraph */ = {
 			isa = PBXGroup;
 			children = (
-				09D9D2E917ECF65D00938871 /* Clip.vsh */,
-				09D9D2E817ECF65D00938871 /* Clip.fsh */,
 				098C0E1317C4278C00171366 /* Screen.vsh */,
 				098C0E1217C4278C00171366 /* Screen.fsh */,
 				095E853017B358FC0065EF8E /* shaperectst.h */,
 				095E852F17B358FC0065EF8E /* shaperectst.mm */,
 				095D12D617ACA36C0048A012 /* AGAppDelegate.h */,
 				095D12D717ACA36C0048A012 /* AGAppDelegate.mm */,
-				095D12E117ACA36C0048A012 /* Shader.vsh */,
-				095D12DF17ACA36C0048A012 /* Shader.fsh */,
 				095D12E317ACA36C0048A012 /* AGViewController.h */,
 				095D12E417ACA36C0048A012 /* AGViewController.mm */,
 				095D12E617ACA36C0048A012 /* AGViewController.xib */,
@@ -314,6 +316,12 @@
 				098740AB17BC377E0098511A /* AGAudioNode.mm */,
 				098740B217BC61410098511A /* AGUserInterface.h */,
 				098740B117BC61410098511A /* AGUserInterface.mm */,
+				09D9D2E917ECF65D00938871 /* Clip.vsh */,
+				09D9D2E817ECF65D00938871 /* Clip.fsh */,
+				095D12E117ACA36C0048A012 /* Shader.vsh */,
+				095D12DF17ACA36C0048A012 /* Shader.fsh */,
+				0989131818A07E1200AB98AD /* Texture.vsh */,
+				0989131718A07E1200AB98AD /* Texture.fsh */,
 				0901C1BB17BE2F970032904B /* AGGenericShader.h */,
 				0901C1BA17BE2F970032904B /* AGGenericShader.mm */,
 				09077FD117C0BFFA00DFE42F /* AGDef.h */,
@@ -543,18 +551,20 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				098C0E1417C4278C00171366 /* Screen.fsh in Resources */,
-				098C0E1517C4278C00171366 /* Screen.vsh in Resources */,
-				09D9D2EC17ED1F6800938871 /* Clip.vsh in Resources */,
-				09D9D2ED17ED1F6B00938871 /* Clip.fsh in Resources */,
+				0989132118A0870000AB98AD /* TexFont.fsh in Resources */,
+				0989132218A0870000AB98AD /* Screen.fsh in Resources */,
+				0989132318A0870000AB98AD /* Clip.fsh in Resources */,
+				0989132418A0870000AB98AD /* Shader.fsh in Resources */,
+				0989132518A0870000AB98AD /* Texture.fsh in Resources */,
+				0989131C18A086E800AB98AD /* TexFont.vsh in Resources */,
+				0989131D18A086E800AB98AD /* Screen.vsh in Resources */,
+				0989131E18A086E800AB98AD /* Clip.vsh in Resources */,
+				0989131F18A086E800AB98AD /* Shader.vsh in Resources */,
+				0989132018A086E800AB98AD /* Texture.vsh in Resources */,
 				095D12D217ACA36C0048A012 /* InfoPlist.strings in Resources */,
 				095D12DA17ACA36C0048A012 /* Default.png in Resources */,
 				095D12DC17ACA36C0048A012 /* Default@2x.png in Resources */,
 				095D12DE17ACA36C0048A012 /* Default-568h@2x.png in Resources */,
-				095D12E017ACA36C0048A012 /* Shader.fsh in Resources */,
-				095D12E217ACA36C0048A012 /* Shader.vsh in Resources */,
-				098740BA17BCC2EA0098511A /* TexFont.fsh in Resources */,
-				098740BB17BCC2EC0098511A /* TexFont.vsh in Resources */,
 				095D12E817ACA36C0048A012 /* AGViewController.xib in Resources */,
 				09891313189F6D3A00AB98AD /* trash.png in Resources */,
 				098740B517BCBA4C0098511A /* Consolas.ttf in Resources */,
@@ -582,7 +592,9 @@
 				09891316189F70D200AB98AD /* AGTouchHandler.mm in Sources */,
 				095D12FB17ACAA100048A012 /* Geometry.cpp in Sources */,
 				09D9D2EB17ECF65D00938871 /* Clip.vsh in Sources */,
+				0989131A18A07E1200AB98AD /* Texture.vsh in Sources */,
 				095D12FC17ACAA100048A012 /* Texture.mm in Sources */,
+				0989131918A07E1200AB98AD /* Texture.fsh in Sources */,
 				095D12FF17ACAB7B0048A012 /* ShaderHelper.m in Sources */,
 				095E853117B358FC0065EF8E /* shaperectst.mm in Sources */,
 				095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */,

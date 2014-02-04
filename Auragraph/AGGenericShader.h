@@ -11,6 +11,7 @@
 
 #import <GLKit/GLKit.h>
 #import "Geometry.h"
+#import "ShaderHelper.h"
 
 class AGGenericShader
 {
@@ -18,7 +19,7 @@ public:
     
     static AGGenericShader &instance();
     
-    void useProgram();
+    virtual void useProgram();
     
     void setProjectionMatrix(const GLKMatrix4 &p);
     void setModelViewMatrix(const GLKMatrix4 &mv);
@@ -27,7 +28,7 @@ public:
     void setNormalMatrix(const GLKMatrix3 &m);
     
 protected:
-    AGGenericShader(NSString *name = @"Shader");
+    AGGenericShader(NSString *name = @"Shader", EnableAttributes attributes = SHADERHELPER_PNC);
     
     GLuint m_program;
     GLint m_uniformMVPMatrix;
@@ -52,6 +53,20 @@ private:
     GLint m_uniformClipOrigin;
     GLint m_uniformClipSize;
     GLint m_uniformLocalMatrix;
+};
+
+class AGTextureShader : public AGGenericShader
+{
+public:
+    
+    static AGTextureShader &instance();
+    
+    virtual void useProgram();
+
+protected:
+    AGTextureShader();
+    
+    GLint m_uniformTex;
 };
 
 #endif /* defined(__Auragraph__AGGenericShader__) */

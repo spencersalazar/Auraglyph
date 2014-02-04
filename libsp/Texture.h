@@ -14,10 +14,15 @@
 #import <OpenGLES/ES1/glext.h>
 
 #if __OBJC__
+
 #import <Foundation/Foundation.h>
 
 GLuint loadTexture(NSString *name);
+GLuint loadOrRetrieveTexture(NSString *name);
+
 #endif // __OBJC
+
 GLuint loadTexture(const char *name);
+
 
 #endif // __TEXTURE_H__

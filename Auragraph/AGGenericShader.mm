@@ -19,10 +19,10 @@ AGGenericShader &AGGenericShader::instance()
     return *g_shader;
 }
 
-AGGenericShader::AGGenericShader(NSString *name)
+AGGenericShader::AGGenericShader(NSString *name, EnableAttributes attributes)
 {
     m_program = [ShaderHelper createProgram:name
-                             withAttributes:SHADERHELPER_ATTR_POSITION | SHADERHELPER_ATTR_NORMAL | SHADERHELPER_ATTR_COLOR];
+                             withAttributes:attributes];
     m_uniformMVPMatrix = glGetUniformLocation(m_program, "modelViewProjectionMatrix");
     m_uniformNormalMatrix = glGetUniformLocation(m_program, "normalMatrix");
     
@@ -86,5 +86,25 @@ void AGClipShader::setLocalMatrix(const GLKMatrix4 &l)
 }
 
 
+static AGTextureShader *g_textureShader = NULL;
 
+AGTextureShader &AGTextureShader::instance()
+{
+    if(g_textureShader ==  NULL) g_textureShader = new AGTextureShader();
+    
+    return *g_textureShader;
+}
+
+AGTextureShader::AGTextureShader() : AGGenericShader(@"Texture", SHADERHELPER_PNTC)
+{
+    m_uniformTex = glGetUniformLocation(m_program, "tex");
+}
+
+void AGTextureShader::useProgram()
+{
+    AGGenericShader::useProgram();
+    
+    // default: use texture 0
+    glUniform1i(m_uniformTex, 0);
+}
 

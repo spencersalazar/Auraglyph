@@ -14,6 +14,7 @@
 #import "AGGenericShader.h"
 #import "TexFont.h"
 #import "AGHandwritingRecognizer.h"
+#import "Texture.h"
 
 #import <sstream>
 
@@ -739,8 +740,7 @@ void AGUINodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
 //------------------------------------------------------------------------------
 // ### AGUIButton ###
 //------------------------------------------------------------------------------
-#pragma mark -
-#pragma mark AGUIButton
+#pragma mark - AGUIButton
 
 TexFont *AGUIButton::s_text = NULL;
 
@@ -866,6 +866,95 @@ void AGUIButton::setAction(void (^action)())
 {
     m_action = [action copy];
 }
+
+
+//------------------------------------------------------------------------------
+// ### AGUITrash ###
+//------------------------------------------------------------------------------
+#pragma mark - AGUITrash
+
+AGUITrash &AGUITrash::instance()
+{
+    static AGUITrash s_trash;
+    
+    return s_trash;
+}
+
+AGUITrash::AGUITrash()
+{
+    m_tex = loadOrRetrieveTexture(@"trash.png");
+    
+    float radius = 0.005;
+    m_geo[0] = GLvertex3f(-radius, -radius, 0);
+    m_geo[1] = GLvertex3f( radius, -radius, 0);
+    m_geo[2] = GLvertex3f(-radius,  radius, 0);
+    m_geo[3] = GLvertex3f( radius,  radius, 0);
+    
+    m_uv[0] = GLvertex2f(0, 0);
+    m_uv[1] = GLvertex2f(1, 0);
+    m_uv[2] = GLvertex2f(0, 1);
+    m_uv[3] = GLvertex2f(1, 1);
+}
+
+AGUITrash::~AGUITrash()
+{
+    
+}
+
+void AGUITrash::update(float t, float dt)
+{
+    
+}
+
+void AGUITrash::render()
+{
+    GLKMatrix4 proj = AGNode::projectionMatrix();
+    GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::globalModelViewMatrix(), m_position.x, m_position.y, m_position.z);
+    
+    AGGenericShader &shader = AGTextureShader::instance();
+    
+    shader.useProgram();
+    
+    shader.setProjectionMatrix(proj);
+    shader.setModelViewMatrix(modelView);
+    shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));
+    
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    
+    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::white);
+    
+    glEnable(GL_TEXTURE_2D);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_tex);
+    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLvertex2f), m_uv);
+    glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+    
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
+
+void AGUITrash::touchDown(const GLvertex3f &t)
+{
+    
+}
+
+void AGUITrash::touchMove(const GLvertex3f &t)
+{
+    
+}
+
+void AGUITrash::touchUp(const GLvertex3f &t)
+{
+    
+}
+
+AGUIObject *AGUITrash::hitTest(const GLvertex3f &t)
+{
+    return false;
+}
+
+
 
 
 

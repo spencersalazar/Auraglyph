@@ -187,5 +187,31 @@ private:
     void (^m_action)();
 };
 
+class AGUITrash : public AGUIObject
+{
+public:
+    static AGUITrash &instance();
+    
+    virtual void update(float t, float dt);
+    virtual void render();
+    
+    virtual void touchDown(const GLvertex3f &t);
+    virtual void touchMove(const GLvertex3f &t);
+    virtual void touchUp(const GLvertex3f &t);
+    
+    virtual AGUIObject *hitTest(const GLvertex3f &t);
+    
+    virtual void setPosition(const GLvertex3f &pos) { m_position = pos; }
+    
+private:
+    AGUITrash();
+    ~AGUITrash();
+    
+    GLvertex3f m_position;
+    GLuint m_tex;
+    GLvertex3f m_geo[4];
+    GLvertex2f m_uv[4];
+};
+
 
 #endif /* defined(__Auragraph__AGUserInterface__) */

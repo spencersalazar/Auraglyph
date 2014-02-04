@@ -7,7 +7,7 @@
  *
  */
 
-#include "Texture.h"
+#import "Texture.h"
 #import <QuartzCore/QuartzCore.h>
 
 GLuint loadTexture(const char *name)
@@ -59,3 +59,28 @@ GLuint loadTexture(NSString *name)
     
     return spriteTexture;
 }
+
+
+NSMutableDictionary *_textureDict = nil;
+
+GLuint loadOrRetrieveTexture(NSString *name)
+{
+    if(_textureDict == nil)
+        _textureDict = [NSMutableDictionary new];
+    
+    NSNumber *num = [_textureDict objectForKey:name];
+    
+    if(num != nil)
+    {
+        return (GLuint) [num unsignedIntegerValue];
+    }
+    else
+    {
+        GLuint tex = loadTexture(name);
+        [_textureDict setObject:[NSNumber numberWithUnsignedInteger:tex] forKey:name];
+        return tex;
+    }
+}
+
+
+

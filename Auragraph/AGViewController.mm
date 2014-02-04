@@ -151,6 +151,9 @@ static AGViewController * g_instance = nil;
         [self presentViewController:self.trainer animated:YES completion:nil];
     });
     
+    AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
+//    AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)]);
+    
     g_instance = self;
 }
 
@@ -304,6 +307,7 @@ static AGViewController * g_instance = nil;
     float dt = self.timeSinceLastUpdate;
     _t += dt;
     
+    AGUITrash::instance().update(_t, dt);
     for(std::list<AGFreeDraw *>::iterator i = _freeDraws.begin(); i != _freeDraws.end(); i++)
         (*i)->update(_t, dt);
     for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
@@ -345,6 +349,9 @@ static AGViewController * g_instance = nil;
     
     GLKMatrix4 textMV = GLKMatrix4Translate(_modelView, -0.02, -0.07, 3.89);
     _font->render("AURAGLPH", GLcolor4f::white, textMV, _projection);
+    
+    // render trash icon
+    AGUITrash::instance().render();
     
     // render freedraws
     for(std::list<AGFreeDraw *>::iterator i = _freeDraws.begin(); i != _freeDraws.end(); i++)
