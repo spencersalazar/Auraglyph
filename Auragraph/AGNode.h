@@ -93,7 +93,7 @@ struct AGPortInfo
 };
 
 
-class AGNode
+class AGNode : public AGUIObject
 {
 public:
     
@@ -141,6 +141,8 @@ public:
     m_pos(pos)
     { }
     
+    virtual ~AGNode();
+    
     virtual void update(float t, float dt) = 0;
     virtual void render() = 0;
     
@@ -159,6 +161,7 @@ public:
     const GLvertex3f &position() const { return m_pos; }
     
     // TODO: all of these should be virtual
+    /*** Subclassing note: the following public functions should be overridden ***/
     virtual int numOutputPorts() const { return 0; }
     virtual int numInputPorts() const { return 0; }
     virtual const AGPortInfo &inputPortInfo(int port) { return m_inputPortInfo[port]; }

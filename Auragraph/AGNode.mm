@@ -206,15 +206,6 @@ AGUIObject *AGConnection::hitTest(const GLvertex3f &_t)
     GLvertex2f p1 = GLvertex2f(m_inTerminal.x, m_inTerminal.y);
     GLvertex2f t = GLvertex2f(_t.x, _t.y);
     
-//    GLvertex2f normal = GLvertex2f(m_inTerminal.y - m_outTerminal.y, m_outTerminal.x - m_inTerminal.x);
-//    GLvertex2f bound1 = p1 - p0;
-//    GLvertex2f bound2 = p0 - p1;
-//    
-//    if(fabsf(normal.dot(t-p0)) < 0.0003 &&
-//       bound1.dot(t-p0) > 0 &&
-//       bound2.dot(t-p1) > 0)
-//        return this;
-    
     if(pointOnLine(t, p0, p1, 0.005))
         return this;
     
@@ -226,6 +217,23 @@ AGUIObject *AGConnection::hitTest(const GLvertex3f &_t)
 // ### AGNode ###
 //------------------------------------------------------------------------------
 #pragma mark - AGNode
+
+AGNode::~AGNode()
+{
+    // this part is kinda hairy
+    // this should remove the connections from the visuals
+    // which then deletes them
+    // which then breaks the connections between this node and any other node
+    // so we shouldnt need to delete connections or break them here
+    
+    // work on copy of lists
+    std::list<AGConnection *> _inbound = m_inbound;
+    std::list<AGConnection *> _outbound = m_outbound;
+    for(std::list<AGConnection *>::iterator i = _inbound.begin(); i != _inbound.end(); i++)
+        [[AGViewController instance] removeConnection:*i];
+    for(std::list<AGConnection *>::iterator i = _outbound.begin(); i != _outbound.end(); i++)
+        [[AGViewController instance] removeConnection:*i];
+}
 
 void AGNode::addInbound(AGConnection *connection)
 {

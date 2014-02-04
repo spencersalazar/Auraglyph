@@ -243,6 +243,12 @@ static AGViewController * g_instance = nil;
     _nodes.push_back(node);
 }
 
+- (void)removeNode:(AGNode *)node
+{
+    _nodes.remove(node);
+    _deleteList.push_back(node);
+}
+
 - (void)addConnection:(AGConnection *)connection
 {
     _connections.push_back(connection);

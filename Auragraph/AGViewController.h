@@ -19,6 +19,7 @@ class AGFreeDraw;
 + (id)instance;
 
 - (void)addNode:(AGNode *)node;
+- (void)removeNode:(AGNode *)node;
 - (void)addConnection:(AGConnection *)connection;
 - (void)removeConnection:(AGConnection *)connection;
 - (void)addFreeDraw:(AGFreeDraw *)freedraw;

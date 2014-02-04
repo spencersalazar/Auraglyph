@@ -93,14 +93,37 @@
         _moveNode->setPosition(pos - _anchorOffset);
         _moveNode->activate(0);
     }
+    
+    AGUITrash &trash = AGUITrash::instance();
+    if(trash.hitTest(pos))
+    {
+        trash.activate();
+    }
+    else
+    {
+        trash.deactivate();
+    }
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    CGPoint p = [[touches anyObject] locationInView:_viewController.view];
+    GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
+
+    AGUITrash &trash = AGUITrash::instance();
+    trash.deactivate();
+    
     if(_moveNode && _maxTouchTravel < 2*2)
     {
         _moveNode->activate(0);
         _nextHandler = [[AGEditTouchHandler alloc] initWithViewController:_viewController node:_moveNode];
+    }
+    else
+    {
+        if(trash.hitTest(pos))
+        {
+            [_viewController removeNode:_moveNode];
+        }
     }
 }
 
