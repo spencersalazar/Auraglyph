@@ -187,7 +187,7 @@ struct GLtrif
 
 static bool pointOnLine(GLvertex2f point, GLvertex2f line0, GLvertex2f line1, float thres)
 {
-    GLvertex2f normal = GLvertex2f(line1.y - line0.y, line0.x - line1.x);
+    GLvertex2f normal = GLvertex2f(line1.y - line0.y, line0.x - line1.x).normalize();
     GLvertex2f bound1 = line1 - line0;
     GLvertex2f bound2 = line0 - line1;
     

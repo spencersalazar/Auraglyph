@@ -215,7 +215,7 @@ AGUIObject *AGConnection::hitTest(const GLvertex3f &_t)
 //       bound2.dot(t-p1) > 0)
 //        return this;
     
-    if(pointOnLine(t, p0, p1, 0.0003))
+    if(pointOnLine(t, p0, p1, 0.005))
         return this;
     
     return NULL;
@@ -596,13 +596,14 @@ void AGFreeDraw::touchUp(const GLvertex3f &t)
 AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
 {
     GLvertex2f t = _t.xy();
+    GLvertex2f pos = m_position.xy();
     
     for(int i = 0; i < m_nPoints-1; i++)
     {
-        GLvertex2f p0 = m_points[i].vertex.xy();
-        GLvertex2f p1 = m_points[i+1].vertex.xy();
+        GLvertex2f p0 = m_points[i].vertex.xy() + pos;
+        GLvertex2f p1 = m_points[i+1].vertex.xy() + pos;
         
-        if(pointOnLine(t, p0, p1, 0.0002))
+        if(pointOnLine(t, p0, p1, 0.0025))
         {
             m_touchPoint0 = i;
             return this;
