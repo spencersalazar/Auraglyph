@@ -119,9 +119,10 @@ void AGUINodeSelector::render()
     
     /* draw node types */
     
-    GLvertex3f startPos(-m_radius/2, -m_radius/2, 0);
+//    GLvertex3f startPos(-m_radius/2, -m_radius/2, 0);
+    GLvertex3f startPos(-m_radius/2, m_radius/2, 0);
     GLvertex3f xInc(m_radius, 0, 0);
-    GLvertex3f yInc(0, m_radius, 0);
+    GLvertex3f yInc(0, -m_radius, 0);
     
     GLKMatrix4 projection = AGNode::projectionMatrix();
     
@@ -178,9 +179,9 @@ void AGUINodeSelector::touchDown(const GLvertex3f &t)
        t.y > m_pos.y-m_radius && t.y < m_pos.y+m_radius)
     {
         const std::vector<AGAudioNodeManager::AudioNodeType *> nodeTypes = AGAudioNodeManager::instance().audioNodeTypes();
-        GLvertex3f startPos = m_pos + GLvertex3f(-m_radius/2, -m_radius/2, 0);
+        GLvertex3f startPos = m_pos + GLvertex3f(-m_radius/2, m_radius/2, 0);
         GLvertex3f xInc(m_radius, 0, 0);
-        GLvertex3f yInc(0, m_radius, 0);
+        GLvertex3f yInc(0, -m_radius, 0);
         float iconRadius = m_radius/2;
         
         for(int i = 0; i < nodeTypes.size(); i++)
