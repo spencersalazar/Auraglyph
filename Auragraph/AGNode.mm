@@ -357,6 +357,9 @@ void AGControlNode::render()
 
     glLineWidth(4.0f);
     glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
+    
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 AGNode::HitTestResult AGControlNode::hit(const GLvertex3f &hit)
@@ -449,6 +452,9 @@ void AGInputNode::render()
 
     glLineWidth(4.0f);
     glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
+    
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 

@@ -199,6 +199,9 @@ void AGAudioNode::render()
         glLineWidth(2.0f);
         glDrawArrays(m_iconGeoType, 0, m_iconGeoSize);
     }
+    
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 
@@ -455,6 +458,9 @@ void AGAudioSineWaveNode::renderIcon()
     
     glLineWidth(2.0);
     glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
+    
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 AGAudioNode *AGAudioSineWaveNode::create(const GLvertex3f &pos)
@@ -560,6 +566,9 @@ void AGAudioSquareWaveNode::renderIcon()
     
     glLineWidth(2.0);
     glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
+    
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 AGAudioNode *AGAudioSquareWaveNode::create(const GLvertex3f &pos)
@@ -663,6 +672,9 @@ void AGAudioSawtoothWaveNode::renderIcon()
     
     glLineWidth(2.0);
     glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
+    
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 AGAudioNode *AGAudioSawtoothWaveNode::create(const GLvertex3f &pos)
@@ -770,6 +782,9 @@ void AGAudioTriangleWaveNode::renderIcon()
     
     glLineWidth(2.0);
     glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
+    
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 
@@ -889,6 +904,9 @@ void AGAudioADSRNode::renderIcon()
     
     glLineWidth(2.0);
     glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
+    
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 
@@ -921,7 +939,7 @@ AGAudioNodeManager::AGAudioNodeManager()
     m_audioNodeTypes.push_back(new AudioNodeType("SineWave", AGAudioSineWaveNode::renderIcon, AGAudioSineWaveNode::create));
     m_audioNodeTypes.push_back(new AudioNodeType("SquareWave", AGAudioSquareWaveNode::renderIcon, AGAudioSquareWaveNode::create));
     m_audioNodeTypes.push_back(new AudioNodeType("SawtoothWave", AGAudioSawtoothWaveNode::renderIcon, AGAudioSawtoothWaveNode::create));
-//    m_audioNodeTypes.push_back(new AudioNodeType("TriangleWave", AGAudioTriangleWaveNode::renderIcon, AGAudioTriangleWaveNode::create));
+    //    m_audioNodeTypes.push_back(new AudioNodeType("TriangleWave", AGAudioTriangleWaveNode::renderIcon, AGAudioTriangleWaveNode::create));
     m_audioNodeTypes.push_back(new AudioNodeType("ADSR", AGAudioADSRNode::renderIcon, AGAudioADSRNode::create));
 }
 

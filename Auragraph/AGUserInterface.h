@@ -40,6 +40,7 @@ class AGUINodeSelector
 {
 public:
     AGUINodeSelector(const GLvertex3f &pos);
+    ~AGUINodeSelector();
     
     void update(float t, float dt);
     void render();
@@ -51,13 +52,10 @@ public:
     AGAudioNode *createNode();
     
 private:
-    static bool s_initNodeSelector;
     
-    static GLuint s_vertexArray;
-    static GLuint s_vertexBuffer;
-    
-    static GLuint s_geoSize;
-    static GLvertex3f * s_geo;
+    GLvertex3f m_geo[4];
+    float m_radius;
+    GLuint m_geoSize;
     
     float m_t;
     
@@ -70,8 +68,6 @@ private:
     AGAudioNode *m_audioNode;
     
     int m_hit;
-    
-    static void initializeNodeSelector();
 };
 
 
@@ -186,6 +182,7 @@ private:
     
     void (^m_action)();
 };
+
 
 class AGUITrash : public AGUIObject
 {

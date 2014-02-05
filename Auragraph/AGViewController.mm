@@ -403,6 +403,8 @@ static AGViewController * g_instance = nil;
     else
         glDrawArrays(GL_LINE_STRIP, 0, nDrawlineUsed);
     
+    glBindVertexArrayOES(0);
+    
     [_touchHandler render];
     
     _testButton->render();

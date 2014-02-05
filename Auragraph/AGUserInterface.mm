@@ -15,6 +15,7 @@
 #import "TexFont.h"
 #import "AGHandwritingRecognizer.h"
 #import "Texture.h"
+#import "AGDef.h"
 
 #import <sstream>
 
@@ -22,42 +23,14 @@
 static const float AGNODESELECTOR_RADIUS = 0.02;
 
 static const float AGUIOpen_squeezeHeight = 0.00125;
-float AGUIOpen_animTimeX = 0.4;
-float AGUIOpen_animTimeY = 0.15;
+static const float AGUIOpen_animTimeX = 0.4;
+static const float AGUIOpen_animTimeY = 0.15;
 
-
-bool AGUINodeSelector::s_initNodeSelector = false;
-GLuint AGUINodeSelector::s_vertexArray = 0;
-GLuint AGUINodeSelector::s_vertexBuffer = 0;
-GLuint AGUINodeSelector::s_geoSize = 0;
-GLvertex3f * AGUINodeSelector::s_geo = NULL;
 
 //------------------------------------------------------------------------------
 // ### AGUINodeSelector ###
 //------------------------------------------------------------------------------
-#pragma mark -
-#pragma mark AGUINodeSelector
-
-void AGUINodeSelector::initializeNodeSelector()
-{
-    if(!s_initNodeSelector)
-    {
-        s_initNodeSelector = true;
-        
-        s_geoSize = 4;
-        s_geo = new GLvertex3f[s_geoSize];
-        
-        float radius = AGNODESELECTOR_RADIUS;
-        
-        // stroke GL_LINE_STRIP + fill GL_TRIANGLE_FAN
-        s_geo[0] = GLvertex3f(-radius, radius, 0);
-        s_geo[1] = GLvertex3f(-radius, -radius, 0);
-        s_geo[2] = GLvertex3f(radius, -radius, 0);
-        s_geo[3] = GLvertex3f(radius, radius, 0);
-        
-        genVertexArrayAndBuffer(s_geoSize, s_geo, s_vertexArray, s_vertexBuffer);
-    }
-}
+#pragma mark - AGUINodeSelector
 
 AGUINodeSelector::AGUINodeSelector(const GLvertex3f &pos) :
 m_pos(pos),
@@ -65,7 +38,20 @@ m_audioNode(new AGAudioNode(pos)),
 m_hit(-1),
 m_t(0)
 {
-    initializeNodeSelector();
+    m_geoSize = 4;
+    
+    m_radius = AGNODESELECTOR_RADIUS;
+    
+    // stroke GL_LINE_STRIP + fill GL_TRIANGLE_FAN
+    m_geo[0] = GLvertex3f(-m_radius, m_radius, 0);
+    m_geo[1] = GLvertex3f(-m_radius, -m_radius, 0);
+    m_geo[2] = GLvertex3f(m_radius, -m_radius, 0);
+    m_geo[3] = GLvertex3f(m_radius, m_radius, 0);
+}
+
+AGUINodeSelector::~AGUINodeSelector()
+{
+    SAFE_DELETE(m_audioNode);
 }
 
 void AGUINodeSelector::update(float t, float dt)
@@ -95,15 +81,14 @@ void AGUINodeSelector::update(float t, float dt)
 
 void AGUINodeSelector::render()
 {
+    glDisable(GL_TEXTURE_2D);
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
     /* draw blank audio node */
     m_audioNode->render();
-
     
     /* draw bounding box */
-    
-    glBindVertexArrayOES(s_vertexArray);
-    
-    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
     
     AGClipShader &shader = AGClipShader::instance();
     
@@ -111,29 +96,32 @@ void AGUINodeSelector::render()
     
     shader.setMVPMatrix(m_modelViewProjectionMatrix);
     shader.setNormalMatrix(m_normalMatrix);
-    
-    float radius = AGNODESELECTOR_RADIUS;
-    shader.setClip(GLvertex2f(-radius, -radius), GLvertex2f(radius*2, radius*2));
+    shader.setClip(GLvertex2f(-m_radius, -m_radius), GLvertex2f(m_radius*2, m_radius*2));
     shader.setLocalMatrix(GLKMatrix4Identity);
     
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &GLcolor4f::white);
+    glDisableVertexAttribArray(GLKVertexAttribColor);
+    glDisableVertexAttribArray(GLKVertexAttribNormal);
+    glDisableVertexAttribArray(GLKVertexAttribTexCoord0);
     
-    // stroke
-    glLineWidth(4.0f);
-    glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
-    
-    GLcolor4f blackA = GLcolor4f(0, 0, 0, 0.75);
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &blackA);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
 
-    // fill
-    glDrawArrays(GL_TRIANGLE_FAN, 0, s_geoSize);
+    // stroke
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+    glLineWidth(4.0f);
+    glDrawArrays(GL_LINE_LOOP, 0, m_geoSize);
     
+    // fill
+    GLcolor4f blackA = GLcolor4f(0, 0, 0, 0.75);
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &blackA);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, m_geoSize);
     
     /* draw node types */
     
-    GLvertex3f startPos(-radius/2, -radius/2, 0);
-    GLvertex3f xInc(radius, 0, 0);
-    GLvertex3f yInc(0, radius, 0);
+    GLvertex3f startPos(-m_radius/2, -m_radius/2, 0);
+    GLvertex3f xInc(m_radius, 0, 0);
+    GLvertex3f yInc(0, m_radius, 0);
     
     GLKMatrix4 projection = AGNode::projectionMatrix();
     
@@ -161,9 +149,9 @@ void AGUINodeSelector::render()
             shader.setNormalMatrix(hitNormal);
             glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &whiteA);
             
-            glBindVertexArrayOES(s_vertexArray);
+            glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, m_geo);
             
-            glDrawArrays(GL_TRIANGLE_FAN, 0, s_geoSize);
+            glDrawArrays(GL_TRIANGLE_FAN, 0, m_geoSize);
             
             glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &GLcolor4f::black);
         }
@@ -183,18 +171,17 @@ void AGUINodeSelector::render()
 
 void AGUINodeSelector::touchDown(const GLvertex3f &t)
 {
-    float radius = AGNODESELECTOR_RADIUS;
     m_hit = -1;
     
     // check if in entire bounds
-    if(t.x > m_pos.x-radius && t.x < m_pos.x+radius &&
-       t.y > m_pos.y-radius && t.y < m_pos.y+radius)
+    if(t.x > m_pos.x-m_radius && t.x < m_pos.x+m_radius &&
+       t.y > m_pos.y-m_radius && t.y < m_pos.y+m_radius)
     {
         const std::vector<AGAudioNodeManager::AudioNodeType *> nodeTypes = AGAudioNodeManager::instance().audioNodeTypes();
-        GLvertex3f startPos = m_pos + GLvertex3f(-radius/2, -radius/2, 0);
-        GLvertex3f xInc(radius, 0, 0);
-        GLvertex3f yInc(0, radius, 0);
-        float iconRadius = radius/2;
+        GLvertex3f startPos = m_pos + GLvertex3f(-m_radius/2, -m_radius/2, 0);
+        GLvertex3f xInc(m_radius, 0, 0);
+        GLvertex3f yInc(0, m_radius, 0);
+        float iconRadius = m_radius/2;
         
         for(int i = 0; i < nodeTypes.size(); i++)
         {

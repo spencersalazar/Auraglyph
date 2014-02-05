@@ -206,6 +206,9 @@ void TexFont::render(const std::string &text, const GLcolor4f &color,
             modelView = GLKMatrix4Translate(modelView, s_radius, 0, 0);
         }
     }
+    
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
 }
 
 
