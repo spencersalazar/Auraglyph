@@ -185,7 +185,7 @@ struct GLtrif
 } __attribute__((packed));
 
 
-static bool pointOnLine(GLvertex2f point, GLvertex2f line0, GLvertex2f line1, float thres)
+static bool pointOnLine(const GLvertex2f &point, const GLvertex2f &line0, const GLvertex2f &line1, float thres)
 {
     GLvertex2f normal = GLvertex2f(line1.y - line0.y, line0.x - line1.x).normalize();
     GLvertex2f bound1 = line1 - line0;
@@ -199,6 +199,30 @@ static bool pointOnLine(GLvertex2f point, GLvertex2f line0, GLvertex2f line1, fl
     return false;
 }
 
+static float distanceToLine(const GLvertex2f &point, const GLvertex2f &line0, const GLvertex2f &line1)
+{
+    GLvertex2f normal = GLvertex2f(line1.y - line0.y, line0.x - line1.x).normalize();
+    return normal.dot(point-line0);
+}
+
+static bool pointInTriangle(const GLvertex2f &point, const GLvertex2f &v0, const GLvertex2f &v1, const GLvertex2f &v2)
+{
+    /* points should be in clockwise order */
+    if(distanceToLine(point, v0, v1) >= 0 &&
+       distanceToLine(point, v1, v2) >= 0 &&
+       distanceToLine(point, v2, v0) >= 0)
+        return true;
+    return false;
+}
+
+static bool pointInRectangle(const GLvertex2f &point, const GLvertex2f &bottomLeft, const GLvertex2f &topRight)
+{
+    if(point.x >= bottomLeft.x && point.x <= topRight.x &&
+       point.y >= bottomLeft.y && point.y <= topRight.y)
+        return true;
+    return false;
+}
+
 
 struct slewf
 {
@@ -206,7 +230,10 @@ struct slewf
     
     inline void interp() { value = (target-value)*slew + value; }
     
+    // cast directly to float
     operator const float &() const { return value; }
+    
+    void operator=(const float &f) { target = f; }
     
     float value, target, slew;
 };

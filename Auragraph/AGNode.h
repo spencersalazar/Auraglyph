@@ -160,6 +160,10 @@ public:
     void setPosition(const GLvertex3f &pos) { m_pos = pos; }
     const GLvertex3f &position() const { return m_pos; }
     
+    virtual void touchDown(const GLvertex3f &t);
+    virtual void touchMove(const GLvertex3f &t);
+    virtual void touchUp(const GLvertex3f &t);
+    
     // TODO: all of these should be virtual
     /*** Subclassing note: the following public functions should be overridden ***/
     virtual int numOutputPorts() const { return 0; }
@@ -204,6 +208,9 @@ protected:
     virtual void addOutbound(AGConnection *connection);
     virtual void removeInbound(AGConnection *connection);
     virtual void removeOutbound(AGConnection *connection);
+    
+    // touch handling stuff
+    GLvertex3f m_lastTouch;
 };
 
 
@@ -217,6 +224,9 @@ public:
     
     virtual void update(float t, float dt);
     virtual void render();
+    
+    virtual AGUIObject *hitTest(const GLvertex3f &t);
+    
     virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();
 
@@ -225,6 +235,7 @@ private:
     static bool s_init;
     static GLuint s_vertexArray;
     static GLuint s_vertexBuffer;
+    static float s_radius;
     
     static GLvncprimf *s_geo;
     static GLuint s_geoSize;
@@ -243,6 +254,9 @@ public:
     
     virtual void update(float t, float dt);    
     virtual void render();
+    
+    virtual AGUIObject *hitTest(const GLvertex3f &t);
+
     virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();
 
@@ -251,7 +265,8 @@ private:
     static bool s_init;
     static GLuint s_vertexArray;
     static GLuint s_vertexBuffer;
-    
+    static float s_radius;
+
     static GLvncprimf *s_geo;
     static GLuint s_geoSize;
 };
@@ -268,6 +283,9 @@ public:
     
     virtual void update(float t, float dt);
     virtual void render();
+    
+    virtual AGUIObject *hitTest(const GLvertex3f &t);
+
     virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();
 
@@ -276,7 +294,8 @@ private:
     static bool s_init;
     static GLuint s_vertexArray;
     static GLuint s_vertexBuffer;
-    
+    static float s_radius;
+
     static GLvncprimf *s_geo;
     static GLuint s_geoSize;
 };

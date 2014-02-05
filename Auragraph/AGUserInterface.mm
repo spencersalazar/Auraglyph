@@ -910,9 +910,9 @@ AGUITrash::~AGUITrash()
 void AGUITrash::update(float t, float dt)
 {
     if(m_active)
-        m_scale.target = 1.25;
+        m_scale = 1.25;
     else
-        m_scale.target = 1;
+        m_scale = 1;
     
     m_scale.interp();
 }
@@ -966,6 +966,7 @@ void AGUITrash::touchUp(const GLvertex3f &t)
 
 AGUIObject *AGUITrash::hitTest(const GLvertex3f &t)
 {
+    // point in circle
     if((t-m_position).magnitudeSquared() < m_radius*m_radius)
         return this;
     return NULL;

@@ -35,6 +35,7 @@ GLuint AGControlNode::s_vertexArray = 0;
 GLuint AGControlNode::s_vertexBuffer = 0;
 GLvncprimf *AGControlNode::s_geo = NULL;
 GLuint AGControlNode::s_geoSize = 0;
+float AGControlNode::s_radius = 0;
 
 
 bool AGInputNode::s_init = false;
@@ -42,6 +43,7 @@ GLuint AGInputNode::s_vertexArray = 0;
 GLuint AGInputNode::s_vertexBuffer = 0;
 GLvncprimf *AGInputNode::s_geo = NULL;
 GLuint AGInputNode::s_geoSize = 0;
+float AGInputNode::s_radius = 0;
 
 
 bool AGOutputNode::s_init = false;
@@ -49,6 +51,7 @@ GLuint AGOutputNode::s_vertexArray = 0;
 GLuint AGOutputNode::s_vertexBuffer = 0;
 GLvncprimf *AGOutputNode::s_geo = NULL;
 GLuint AGOutputNode::s_geoSize = 0;
+float AGOutputNode::s_radius = 0;
 
 
 //------------------------------------------------------------------------------
@@ -255,6 +258,33 @@ void AGNode::removeOutbound(AGConnection *connection)
     m_outbound.remove(connection);
 }
 
+void AGNode::touchDown(const GLvertex3f &t)
+{
+    m_lastTouch = t;
+}
+
+void AGNode::touchMove(const GLvertex3f &t)
+{
+    m_pos = m_pos + (t - m_lastTouch);
+    m_lastTouch = t;
+    
+    AGUITrash &trash = AGUITrash::instance();
+    if(trash.hitTest(t))
+        trash.activate();
+    else
+        trash.deactivate();
+}
+
+void AGNode::touchUp(const GLvertex3f &t)
+{
+    AGUITrash &trash = AGUITrash::instance();
+    
+    if(trash.hitTest(t))
+        [[AGViewController instance] removeNode:this];
+    
+    trash.deactivate();
+}
+
 
 //------------------------------------------------------------------------------
 // ### AGControlNode ###
@@ -272,12 +302,12 @@ void AGControlNode::initializeControlNode()
         // generate circle
         s_geoSize = 4;
         s_geo = new GLvncprimf[s_geoSize];
-        float radius = AGNode::s_sizeFactor/(sqrt(sqrtf(2)));
+        s_radius = AGNode::s_sizeFactor/(sqrt(sqrtf(2)));
         
-        s_geo[0].vertex = GLvertex3f(radius, radius, 0);
-        s_geo[1].vertex = GLvertex3f(radius, -radius, 0);
-        s_geo[2].vertex = GLvertex3f(-radius, -radius, 0);
-        s_geo[3].vertex = GLvertex3f(-radius, radius, 0);
+        s_geo[0].vertex = GLvertex3f(s_radius, s_radius, 0);
+        s_geo[1].vertex = GLvertex3f(s_radius, -s_radius, 0);
+        s_geo[2].vertex = GLvertex3f(-s_radius, -s_radius, 0);
+        s_geo[3].vertex = GLvertex3f(-s_radius, s_radius, 0);
         
         glGenVertexArraysOES(1, &s_vertexArray);
         glBindVertexArrayOES(s_vertexArray);
@@ -337,6 +367,15 @@ AGNode::HitTestResult AGControlNode::hit(const GLvertex3f &hit)
 void AGControlNode::unhit()
 {
     
+}
+
+AGUIObject *AGControlNode::hitTest(const GLvertex3f &t)
+{
+    if(pointInRectangle(t.xy(),
+                        m_pos.xy() + GLvertex2f(-s_radius, -s_radius),
+                        m_pos.xy() + GLvertex2f(s_radius, s_radius)))
+       return this;
+    return NULL;
 }
 
 
@@ -423,6 +462,15 @@ void AGInputNode::unhit()
     
 }
 
+AGUIObject *AGInputNode::hitTest(const GLvertex3f &t)
+{
+    GLvertex2f posxy = m_pos.xy();
+    if(pointInTriangle(t.xy(), s_geo[0].vertex.xy()+posxy,
+                       s_geo[1].vertex.xy()+posxy,
+                       s_geo[2].vertex.xy()+posxy))
+        return this;
+    return NULL;
+}
 
 
 //------------------------------------------------------------------------------
@@ -441,11 +489,11 @@ void AGOutputNode::initializeOutputNode()
         // generate triangle
         s_geoSize = 3;
         s_geo = new GLvncprimf[s_geoSize];
-        float radius = AGNode::s_sizeFactor/G_RATIO;
+        s_radius = AGNode::s_sizeFactor/G_RATIO;
         
-        s_geo[0].vertex = GLvertex3f(-radius, -radius, 0);
-        s_geo[1].vertex = GLvertex3f(radius, -radius, 0);
-        s_geo[2].vertex = GLvertex3f(0, sqrtf(radius*radius*4 - radius*radius) - radius, 0);
+        s_geo[0].vertex = GLvertex3f(-s_radius, -s_radius, 0);
+        s_geo[1].vertex = GLvertex3f(s_radius, -s_radius, 0);
+        s_geo[2].vertex = GLvertex3f(0, sqrtf(s_radius*s_radius*4 - s_radius*s_radius) - s_radius, 0);
         
         glGenVertexArraysOES(1, &s_vertexArray);
         glBindVertexArrayOES(s_vertexArray);
@@ -505,6 +553,16 @@ AGNode::HitTestResult AGOutputNode::hit(const GLvertex3f &hit)
 void AGOutputNode::unhit()
 {
     
+}
+
+AGUIObject *AGOutputNode::hitTest(const GLvertex3f &t)
+{
+    GLvertex2f posxy = m_pos.xy();
+    if(pointInTriangle(t.xy(), s_geo[0].vertex.xy()+posxy,
+                       s_geo[2].vertex.xy()+posxy,
+                       s_geo[1].vertex.xy()+posxy))
+        return this;
+    return NULL;
 }
 
 

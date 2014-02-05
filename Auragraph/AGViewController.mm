@@ -518,6 +518,13 @@ static AGViewController * g_instance = nil;
             AGUIObject *hit = _testButton->hitTest(pos);
             if(!hit)
             {
+                for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
+                {
+                    if((hit = (*i)->hitTest(pos))) break;
+                }
+            }
+            if(!hit)
+            {
                 for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
                 {
                     if((hit = (*i)->hitTest(pos))) break;
