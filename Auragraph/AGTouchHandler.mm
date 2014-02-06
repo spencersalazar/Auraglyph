@@ -285,6 +285,8 @@
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    _nextHandler = nil;
+    
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
@@ -309,6 +311,9 @@
     AGNode * newNode = _nodeSelector->createNode();
     if(newNode)
         [_viewController addNode:newNode];
+    
+    if(!_nodeSelector->done())
+        _nextHandler = self;
 }
 
 - (void)update:(float)t dt:(float)dt

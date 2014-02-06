@@ -51,6 +51,8 @@ public:
     
     AGAudioNode *createNode();
     
+    bool done() { return m_done; }
+    
 private:
     
     GLvertex3f m_geo[4];
@@ -60,6 +62,7 @@ private:
     float m_t;
     
     GLvertex3f m_pos;
+    clampf m_verticalScrollPos;
     
     GLKMatrix4 m_modelViewProjectionMatrix;
     GLKMatrix4 m_modelView;
@@ -68,6 +71,9 @@ private:
     AGAudioNode *m_audioNode;
     
     int m_hit;
+    GLvertex3f m_touchStart;
+    GLvertex3f m_lastTouch;
+    bool m_done;
 };
 
 

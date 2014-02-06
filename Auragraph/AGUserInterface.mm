@@ -36,7 +36,8 @@ AGUINodeSelector::AGUINodeSelector(const GLvertex3f &pos) :
 m_pos(pos),
 m_audioNode(new AGAudioNode(pos)),
 m_hit(-1),
-m_t(0)
+m_t(0),
+m_done(false)
 {
     m_geoSize = 4;
     
@@ -47,6 +48,11 @@ m_t(0)
     m_geo[1] = GLvertex3f(-m_radius, -m_radius, 0);
     m_geo[2] = GLvertex3f(m_radius, -m_radius, 0);
     m_geo[3] = GLvertex3f(m_radius, m_radius, 0);
+    
+    int nTypes = AGAudioNodeManager::instance().audioNodeTypes().size();
+    m_verticalScrollPos.clamp(0, ceilf(nTypes/2.0f-2)*m_radius);
+    
+    NSLog(@"scrollMax: %f", m_verticalScrollPos.max);
 }
 
 AGUINodeSelector::~AGUINodeSelector()
@@ -120,7 +126,7 @@ void AGUINodeSelector::render()
     /* draw node types */
     
 //    GLvertex3f startPos(-m_radius/2, -m_radius/2, 0);
-    GLvertex3f startPos(-m_radius/2, m_radius/2, 0);
+    GLvertex3f startPos(-m_radius/2, m_radius/2 + m_verticalScrollPos, 0);
     GLvertex3f xInc(m_radius, 0, 0);
     GLvertex3f yInc(0, -m_radius, 0);
     
@@ -172,14 +178,14 @@ void AGUINodeSelector::render()
 
 void AGUINodeSelector::touchDown(const GLvertex3f &t)
 {
+    m_touchStart = t;
     m_hit = -1;
     
     // check if in entire bounds
-    if(t.x > m_pos.x-m_radius && t.x < m_pos.x+m_radius &&
-       t.y > m_pos.y-m_radius && t.y < m_pos.y+m_radius)
+    if(pointInRectangle(t.xy(), m_pos.xy()-GLvertex2f(m_radius, m_radius), m_pos.xy()+GLvertex2f(m_radius, m_radius)))
     {
         const std::vector<AGAudioNodeManager::AudioNodeType *> nodeTypes = AGAudioNodeManager::instance().audioNodeTypes();
-        GLvertex3f startPos = m_pos + GLvertex3f(-m_radius/2, m_radius/2, 0);
+        GLvertex3f startPos = m_pos + GLvertex3f(-m_radius/2, m_radius/2 + m_verticalScrollPos, 0);
         GLvertex3f xInc(m_radius, 0, 0);
         GLvertex3f yInc(0, -m_radius, 0);
         float iconRadius = m_radius/2;
@@ -192,20 +198,40 @@ void AGUINodeSelector::touchDown(const GLvertex3f &t)
                t.y > iconPos.y-iconRadius && t.y < iconPos.y+iconRadius)
             {
                 m_hit = i;
+                m_done = true;
                 break;
             }
         }
     }
+    
+    m_lastTouch = t;
 }
 
 void AGUINodeSelector::touchMove(const GLvertex3f &t)
 {
-    touchDown(t);
+    float maxTravel = m_radius*0.05;
+    
+    if((t - m_touchStart).magnitudeSquared() > maxTravel*maxTravel)
+    {
+        // start scrolling
+        m_verticalScrollPos += (t.y - m_lastTouch.y);
+        m_hit = -1;
+        m_done = false;
+    }
+    
+    m_lastTouch = t;
 }
 
 void AGUINodeSelector::touchUp(const GLvertex3f &t)
 {
-    touchDown(t);
+    if(pointInRectangle(t.xy(), m_pos.xy()-GLvertex2f(m_radius, m_radius), m_pos.xy()+GLvertex2f(m_radius, m_radius)))
+    {
+        // 
+    }
+    else if(!pointInRectangle(m_touchStart.xy(), m_pos.xy()-GLvertex2f(m_radius, m_radius), m_pos.xy()+GLvertex2f(m_radius, m_radius)))
+    {
+        m_done = true;
+    }
 }
 
 AGAudioNode *AGUINodeSelector::createNode()

@@ -234,8 +234,35 @@ struct slewf
     operator const float &() const { return value; }
     
     void operator=(const float &f) { target = f; }
-    
+    void operator+=(const float &f) { *this = value+f; }
+    void operator-=(const float &f) { *this = value-f; }
+    void operator*=(const float &f) { *this = value*f; }
+    void operator/=(const float &f) { *this = value/f; }
+
     float value, target, slew;
+};
+
+struct clampf
+{
+    clampf(float _min = 0, float _max = 1) { value = 0; clamp(_min, _max); }
+    
+    void clamp(float _min, float _max) { min = _min; max = _max; }
+    
+    operator const float &() const { return value; }
+    
+    void operator=(const float &f)
+    {
+        if(f > max) value = max;
+        else if(f < min) value = min;
+        else value = f;
+    }
+    
+    void operator+=(const float &f) { *this = value+f; }
+    void operator-=(const float &f) { *this = value-f; }
+    void operator*=(const float &f) { *this = value*f; }
+    void operator/=(const float &f) { *this = value/f; }
+    
+    float value, min, max;
 };
 
 
