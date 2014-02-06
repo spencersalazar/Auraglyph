@@ -91,7 +91,8 @@ protected:
 class AGAudioOutputNode : public AGAudioNode
 {
 public:
-    
+    static void initialize();
+
     AGAudioOutputNode(GLvertex3f pos);
     
     virtual int numOutputPorts() const { return 0; }
@@ -101,13 +102,14 @@ public:
     
 private:
     static AGAudioNodeInfo *s_audioNodeInfo;
-    static void initializeAudioOutputNode();
 };
 
 
 class AGAudioSineWaveNode : public AGAudioNode
 {
 public:
+    static void initialize();
+    
     AGAudioSineWaveNode(GLvertex3f pos);
     
     virtual int numOutputPorts() const { return 1; }
@@ -127,7 +129,6 @@ private:
     
 private:
     static AGAudioNodeInfo *s_audioNodeInfo;
-    static void initializeAudioSineWaveNode();
 };
 
 
@@ -135,6 +136,8 @@ private:
 class AGAudioSquareWaveNode : public AGAudioNode
 {
 public:
+    static void initialize();
+
     AGAudioSquareWaveNode(GLvertex3f pos);
     
     virtual int numOutputPorts() const { return 1; }
@@ -154,7 +157,6 @@ private:
     
 private:
     static AGAudioNodeInfo *s_audioNodeInfo;
-    static void initializeAudioSquareWaveNode();
 };
 
 
@@ -162,6 +164,8 @@ private:
 class AGAudioSawtoothWaveNode : public AGAudioNode
 {
 public:
+    static void initialize();
+
     AGAudioSawtoothWaveNode(GLvertex3f pos);
     
     virtual int numOutputPorts() const { return 1; }
@@ -181,7 +185,6 @@ private:
     
 private:
     static AGAudioNodeInfo *s_audioNodeInfo;
-    static void initializeAudioSawtoothWaveNode();
 };
 
 
@@ -189,6 +192,8 @@ private:
 class AGAudioTriangleWaveNode : public AGAudioNode
 {
 public:
+    static void initialize();
+
     AGAudioTriangleWaveNode(GLvertex3f pos);
     
     virtual int numOutputPorts() const { return 1; }
@@ -208,13 +213,14 @@ private:
     
 private:
     static AGAudioNodeInfo *s_audioNodeInfo;
-    static void initializeAudioTriangleWaveNode();
 };
 
 
 class AGAudioADSRNode : public AGAudioNode
 {
 public:
+    static void initialize();
+
     AGAudioADSRNode(GLvertex3f pos);
     
     virtual int numOutputPorts() const { return 1; }
@@ -237,7 +243,6 @@ private:
     
 private:
     static AGAudioNodeInfo *s_audioNodeInfo;
-    static void initializeAudioADSRNode();
 };
 
 

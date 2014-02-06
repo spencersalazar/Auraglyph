@@ -76,6 +76,7 @@
 		099AF12E17D1A892000BAB7B /* projects.zip in Resources */ = {isa = PBXBuildFile; fileRef = 099AF12D17D1A892000BAB7B /* projects.zip */; };
 		09D9D2EA17ECF65D00938871 /* Clip.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 09D9D2E817ECF65D00938871 /* Clip.fsh */; };
 		09D9D2EB17ECF65D00938871 /* Clip.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 09D9D2E917ECF65D00938871 /* Clip.vsh */; };
+		09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7A18A3484F00B21D97 /* Mutex.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -227,6 +228,8 @@
 		099AF12D17D1A892000BAB7B /* projects.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = projects.zip; sourceTree = "<group>"; };
 		09D9D2E817ECF65D00938871 /* Clip.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Clip.fsh; path = Shaders/Clip.fsh; sourceTree = "<group>"; };
 		09D9D2E917ECF65D00938871 /* Clip.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Clip.vsh; path = Shaders/Clip.vsh; sourceTree = "<group>"; };
+		09E5EC7A18A3484F00B21D97 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mutex.cpp; sourceTree = "<group>"; };
+		09E5EC7B18A3484F00B21D97 /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -375,6 +378,8 @@
 				098740B617BCC16B0098511A /* TexFont.fsh */,
 				098740AF17BC527E0098511A /* ES2Render.h */,
 				098740AE17BC527E0098511A /* ES2Render.mm */,
+				09E5EC7B18A3484F00B21D97 /* Mutex.h */,
+				09E5EC7A18A3484F00B21D97 /* Mutex.cpp */,
 			);
 			path = libsp;
 			sourceTree = "<group>";
@@ -595,6 +600,7 @@
 				0989131A18A07E1200AB98AD /* Texture.vsh in Sources */,
 				095D12FC17ACAA100048A012 /* Texture.mm in Sources */,
 				0989131918A07E1200AB98AD /* Texture.fsh in Sources */,
+				09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */,
 				095D12FF17ACAB7B0048A012 /* ShaderHelper.m in Sources */,
 				095E853117B358FC0065EF8E /* shaperectst.mm in Sources */,
 				095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */,

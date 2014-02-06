@@ -16,6 +16,8 @@
 #import <Foundation/Foundation.h>
 #import "ShaderHelper.h"
 #import "AGUserInterface.h"
+#import "Mutex.h"
+
 #import <list>
 #import <string>
 #import <vector>
@@ -97,50 +99,17 @@ class AGNode : public AGUIObject
 {
 public:
     
-    static void initalizeNode()
-    {
-        if(!s_initNode)
-        {
-            s_initNode = true;
-            
-            s_program = [ShaderHelper createProgram:@"Shader"
-                                     withAttributes:SHADERHELPER_ATTR_POSITION | SHADERHELPER_ATTR_NORMAL | SHADERHELPER_ATTR_COLOR];
-            s_uniformMVPMatrix = glGetUniformLocation(s_program, "modelViewProjectionMatrix");
-            s_uniformNormalMatrix = glGetUniformLocation(s_program, "normalMatrix");
-        }
-    }
+    static void initalizeNode();
     
-    static void setProjectionMatrix(const GLKMatrix4 &proj)
-    {
-        s_projectionMatrix = proj;
-    }
-    
+    static void setProjectionMatrix(const GLKMatrix4 &proj) { s_projectionMatrix = proj; }
     static GLKMatrix4 projectionMatrix() { return s_projectionMatrix; }
-    
-    static void setGlobalModelViewMatrix(const GLKMatrix4 &modelview)
-    {
-        s_modelViewMatrix = modelview;
-    }
-    
+    static void setGlobalModelViewMatrix(const GLKMatrix4 &modelview) { s_modelViewMatrix = modelview; }
     static GLKMatrix4 globalModelViewMatrix() { return s_modelViewMatrix; }
     
-    static void connect(AGConnection * connection)
-    {
-        connection->src()->addOutbound(connection);
-        connection->dst()->addInbound(connection);
-    }
+    static void connect(AGConnection * connection);
+    static void disconnect(AGConnection * connection);
     
-    static void disconnect(AGConnection * connection)
-    {
-        connection->src()->removeOutbound(connection);
-        connection->dst()->removeInbound(connection);
-    }
-    
-    
-    AGNode(GLvertex3f pos = GLvertex3f()) :
-    m_pos(pos)
-    { }
-    
+    AGNode(GLvertex3f pos = GLvertex3f()) : m_pos(pos) { }
     virtual ~AGNode();
     
     virtual void update(float t, float dt) = 0;
@@ -163,6 +132,9 @@ public:
     virtual void touchDown(const GLvertex3f &t);
     virtual void touchMove(const GLvertex3f &t);
     virtual void touchUp(const GLvertex3f &t);
+    
+    void lock() { m_mutex.lock(); }
+    void unlock() { m_mutex.unlock(); }
     
     // TODO: all of these should be virtual
     /*** Subclassing note: the following public functions should be overridden ***/
@@ -188,6 +160,8 @@ private:
     
     static GLKMatrix4 s_projectionMatrix;
     static GLKMatrix4 s_modelViewMatrix;
+    
+    Mutex m_mutex;
     
 protected:
     static GLuint s_program;

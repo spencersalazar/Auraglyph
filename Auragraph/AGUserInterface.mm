@@ -52,7 +52,7 @@ m_done(false)
     int nTypes = AGAudioNodeManager::instance().audioNodeTypes().size();
     m_verticalScrollPos.clamp(0, ceilf(nTypes/2.0f-2)*m_radius);
     
-    NSLog(@"scrollMax: %f", m_verticalScrollPos.max);
+//    NSLog(@"scrollMax: %f", m_verticalScrollPos.max);
 }
 
 AGUINodeSelector::~AGUINodeSelector()

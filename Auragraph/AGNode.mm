@@ -221,6 +221,41 @@ AGUIObject *AGConnection::hitTest(const GLvertex3f &_t)
 //------------------------------------------------------------------------------
 #pragma mark - AGNode
 
+void AGNode::connect(AGConnection * connection)
+{
+    connection->src()->lock();
+    connection->src()->addOutbound(connection);
+    connection->src()->unlock();
+    
+    connection->dst()->lock();
+    connection->dst()->addInbound(connection);
+    connection->dst()->unlock();
+}
+
+void AGNode::disconnect(AGConnection * connection)
+{
+    connection->src()->lock();
+    connection->src()->removeOutbound(connection);
+    connection->src()->unlock();
+    
+    connection->dst()->lock();
+    connection->dst()->removeInbound(connection);
+    connection->dst()->unlock();
+}
+
+void AGNode::initalizeNode()
+{
+    if(!s_initNode)
+    {
+        s_initNode = true;
+        
+        s_program = [ShaderHelper createProgram:@"Shader"
+                                 withAttributes:SHADERHELPER_ATTR_POSITION | SHADERHELPER_ATTR_NORMAL | SHADERHELPER_ATTR_COLOR];
+        s_uniformMVPMatrix = glGetUniformLocation(s_program, "modelViewProjectionMatrix");
+        s_uniformNormalMatrix = glGetUniformLocation(s_program, "normalMatrix");
+    }
+}
+
 AGNode::~AGNode()
 {
     // this part is kinda hairy

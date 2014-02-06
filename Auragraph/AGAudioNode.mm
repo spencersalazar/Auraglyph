@@ -50,6 +50,8 @@ void AGAudioNode::initializeAudioNode()
         
         delete[] geo;
         geo = NULL;
+        
+        AGAudioSineWaveNode::initialize();
     }
 }
 
@@ -283,6 +285,8 @@ void AGAudioNode::allocatePortBuffers()
 
 void AGAudioNode::pullInputPorts(int nFrames)
 {
+    this->lock();
+    
     if(m_inputPortBuffer != NULL)
     {
         for(int i = 0; i < numInputPorts(); i++)
@@ -302,6 +306,8 @@ void AGAudioNode::pullInputPorts(int nFrames)
         }
         //else TODO
     }
+    
+    this->unlock();
 }
 
 //------------------------------------------------------------------------------
@@ -311,7 +317,7 @@ void AGAudioNode::pullInputPorts(int nFrames)
 
 AGAudioOutputNode::AGAudioOutputNode(GLvertex3f pos) : AGAudioNode(pos)
 {
-    initializeAudioOutputNode();
+    initialize();
     
     m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
     m_iconVertexArray = s_audioNodeInfo->iconVertexArray;
@@ -319,7 +325,7 @@ AGAudioOutputNode::AGAudioOutputNode(GLvertex3f pos) : AGAudioNode(pos)
     m_iconGeoType = s_audioNodeInfo->iconGeoType;
 }
 
-void AGAudioOutputNode::initializeAudioOutputNode()
+void AGAudioOutputNode::initialize()
 {
     initializeAudioNode();
     
@@ -369,7 +375,7 @@ void AGAudioOutputNode::renderAudio(float *input, float *output, int nFrames)
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioSineWaveNode
 
-void AGAudioSineWaveNode::initializeAudioSineWaveNode()
+void AGAudioSineWaveNode::initialize()
 {
     initializeAudioNode();
     
@@ -405,7 +411,7 @@ void AGAudioSineWaveNode::initializeAudioSineWaveNode()
 
 AGAudioSineWaveNode::AGAudioSineWaveNode(GLvertex3f pos) : AGAudioNode(pos)
 {
-    initializeAudioSineWaveNode();
+    initialize();
     
     m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
     
@@ -451,7 +457,7 @@ void AGAudioSineWaveNode::renderAudio(float *input, float *output, int nFrames)
 
 void AGAudioSineWaveNode::renderIcon()
 {
-    initializeAudioSineWaveNode();
+    initialize();
     
     // render icon
     glBindVertexArrayOES(s_audioNodeInfo->iconVertexArray);
@@ -473,7 +479,7 @@ AGAudioNode *AGAudioSineWaveNode::create(const GLvertex3f &pos)
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioSquareWaveNode
 
-void AGAudioSquareWaveNode::initializeAudioSquareWaveNode()
+void AGAudioSquareWaveNode::initialize()
 {
     initializeAudioNode();
     
@@ -510,7 +516,7 @@ void AGAudioSquareWaveNode::initializeAudioSquareWaveNode()
 
 AGAudioSquareWaveNode::AGAudioSquareWaveNode(GLvertex3f pos) : AGAudioNode(pos)
 {
-    initializeAudioSquareWaveNode();
+    initialize();
     
     m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
     
@@ -559,7 +565,7 @@ void AGAudioSquareWaveNode::renderAudio(float *input, float *output, int nFrames
 
 void AGAudioSquareWaveNode::renderIcon()
 {
-    initializeAudioSquareWaveNode();
+    initialize();
     
     // render icon
     glBindVertexArrayOES(s_audioNodeInfo->iconVertexArray);
@@ -582,7 +588,7 @@ AGAudioNode *AGAudioSquareWaveNode::create(const GLvertex3f &pos)
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioSawtoothWaveNode
 
-void AGAudioSawtoothWaveNode::initializeAudioSawtoothWaveNode()
+void AGAudioSawtoothWaveNode::initialize()
 {
     initializeAudioNode();
     
@@ -616,7 +622,7 @@ void AGAudioSawtoothWaveNode::initializeAudioSawtoothWaveNode()
 
 AGAudioSawtoothWaveNode::AGAudioSawtoothWaveNode(GLvertex3f pos) : AGAudioNode(pos)
 {
-    initializeAudioSawtoothWaveNode();
+    initialize();
     
     m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
     
@@ -665,7 +671,7 @@ void AGAudioSawtoothWaveNode::renderAudio(float *input, float *output, int nFram
 
 void AGAudioSawtoothWaveNode::renderIcon()
 {
-    initializeAudioSawtoothWaveNode();
+    initialize();
     
     // render icon
     glBindVertexArrayOES(s_audioNodeInfo->iconVertexArray);
@@ -688,7 +694,7 @@ AGAudioNode *AGAudioSawtoothWaveNode::create(const GLvertex3f &pos)
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioTriangleWaveNode
 
-void AGAudioTriangleWaveNode::initializeAudioTriangleWaveNode()
+void AGAudioTriangleWaveNode::initialize()
 {
     initializeAudioNode();
     
@@ -723,7 +729,7 @@ void AGAudioTriangleWaveNode::initializeAudioTriangleWaveNode()
 
 AGAudioTriangleWaveNode::AGAudioTriangleWaveNode(GLvertex3f pos) : AGAudioNode(pos)
 {
-    initializeAudioTriangleWaveNode();
+    initialize();
     
     m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
     
@@ -775,7 +781,7 @@ void AGAudioTriangleWaveNode::renderAudio(float *input, float *output, int nFram
 
 void AGAudioTriangleWaveNode::renderIcon()
 {
-    initializeAudioTriangleWaveNode();
+    initialize();
     
     // render icon
     glBindVertexArrayOES(s_audioNodeInfo->iconVertexArray);
@@ -799,7 +805,7 @@ AGAudioNode *AGAudioTriangleWaveNode::create(const GLvertex3f &pos)
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioADSRNode
 
-void AGAudioADSRNode::initializeAudioADSRNode()
+void AGAudioADSRNode::initialize()
 {
     initializeAudioNode();
     
@@ -842,7 +848,7 @@ void AGAudioADSRNode::initializeAudioADSRNode()
 
 AGAudioADSRNode::AGAudioADSRNode(GLvertex3f pos) : AGAudioNode(pos)
 {
-    initializeAudioADSRNode();
+    initialize();
     
     m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
     
@@ -897,7 +903,7 @@ void AGAudioADSRNode::renderAudio(float *input, float *output, int nFrames)
 
 void AGAudioADSRNode::renderIcon()
 {
-    initializeAudioADSRNode();
+    initialize();
     
     // render icon
     glBindVertexArrayOES(s_audioNodeInfo->iconVertexArray);
