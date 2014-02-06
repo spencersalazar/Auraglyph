@@ -314,3 +314,40 @@ struct Butterworth2Filter
     
 };
 
+class Butter2Filter
+{
+public:
+    Butter2Filter(float srate) { m_filter.set_sample_rate(srate); }
+    virtual ~Butter2Filter() { }
+    
+    virtual void set(float freq, float Q) = 0;
+    virtual float tick(float input) = 0;
+    
+protected:
+    Butterworth2Filter m_filter;
+};
+
+class Butter2RLPF : public Butter2Filter
+{
+public:
+    Butter2RLPF(float srate) : Butter2Filter(srate) { }
+    virtual void set(float freq, float Q) { m_filter.set_rlpf(freq, Q); }
+    virtual float tick(float input) { return m_filter.tick_rlpf(input); }
+};
+
+class Butter2RHPF : public Butter2Filter
+{
+public:
+    Butter2RHPF(float srate) : Butter2Filter(srate) { }
+    virtual void set(float freq, float Q) { m_filter.set_rhpf(freq, Q); }
+    virtual float tick(float input) { return m_filter.tick_rhpf(input); }
+};
+
+class Butter2BPF : public Butter2Filter
+{
+public:
+    Butter2BPF(float srate) : Butter2Filter(srate) { }
+    virtual void set(float freq, float Q) { m_filter.set_bpf(freq, Q); }
+    virtual float tick(float input) { return m_filter.tick_bpf(input); }
+};
+
