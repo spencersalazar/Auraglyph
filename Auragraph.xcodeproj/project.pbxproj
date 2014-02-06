@@ -77,6 +77,7 @@
 		09D9D2EA17ECF65D00938871 /* Clip.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 09D9D2E817ECF65D00938871 /* Clip.fsh */; };
 		09D9D2EB17ECF65D00938871 /* Clip.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 09D9D2E917ECF65D00938871 /* Clip.vsh */; };
 		09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7A18A3484F00B21D97 /* Mutex.cpp */; };
+		09E5EC7F18A36A9D00B21D97 /* SPFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -230,6 +231,8 @@
 		09D9D2E917ECF65D00938871 /* Clip.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Clip.vsh; path = Shaders/Clip.vsh; sourceTree = "<group>"; };
 		09E5EC7A18A3484F00B21D97 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mutex.cpp; sourceTree = "<group>"; };
 		09E5EC7B18A3484F00B21D97 /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = "<group>"; };
+		09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SPFilter.cpp; sourceTree = "<group>"; };
+		09E5EC7E18A36A9D00B21D97 /* SPFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPFilter.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -361,6 +364,8 @@
 		095D12EE17ACA9CA0048A012 /* libsp */ = {
 			isa = PBXGroup;
 			children = (
+				09E5EC7E18A36A9D00B21D97 /* SPFilter.h */,
+				09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */,
 				0987409D17BA2AB90098511A /* mo_audio.h */,
 				0987409E17BA2AB90098511A /* mo_audio.mm */,
 				0987409F17BA2AB90098511A /* mo_def.h */,
@@ -599,6 +604,7 @@
 				09D9D2EB17ECF65D00938871 /* Clip.vsh in Sources */,
 				0989131A18A07E1200AB98AD /* Texture.vsh in Sources */,
 				095D12FC17ACAA100048A012 /* Texture.mm in Sources */,
+				09E5EC7F18A36A9D00B21D97 /* SPFilter.cpp in Sources */,
 				0989131918A07E1200AB98AD /* Texture.fsh in Sources */,
 				09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */,
 				095D12FF17ACAB7B0048A012 /* ShaderHelper.m in Sources */,
