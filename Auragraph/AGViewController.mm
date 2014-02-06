@@ -35,6 +35,9 @@ enum
     UNIFORM_NORMAL_MATRIX,
     UNIFORM_SCREEN_MVPMATRIX,
     UNIFORM_SCREEN_TEX,
+    UNIFORM_SCREEN_ORDERH,
+    UNIFORM_SCREEN_ORDERV,
+    UNIFORM_SCREEN_OFFSET,
     NUM_UNIFORMS,
 };
 GLint uniforms[NUM_UNIFORMS];
@@ -199,6 +202,9 @@ static AGViewController * g_instance = nil;
     _screenProgram = [ShaderHelper createProgram:@"Screen" withAttributes:SHADERHELPER_PTC];
     uniforms[UNIFORM_SCREEN_MVPMATRIX] = glGetUniformLocation(_screenProgram, "modelViewProjectionMatrix");
     uniforms[UNIFORM_SCREEN_TEX] = glGetUniformLocation(_screenProgram, "tex");
+    uniforms[UNIFORM_SCREEN_ORDERH] = glGetUniformLocation(_screenProgram, "orderH");
+    uniforms[UNIFORM_SCREEN_ORDERV] = glGetUniformLocation(_screenProgram, "orderV");
+    uniforms[UNIFORM_SCREEN_OFFSET] = glGetUniformLocation(_screenProgram, "offset");
     
     glEnable(GL_DEPTH_TEST);
     
@@ -465,6 +471,14 @@ static AGViewController * g_instance = nil;
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
         glDisableVertexAttribArray(GLKVertexAttribColor);
         
+        glUniform1i(uniforms[UNIFORM_SCREEN_ORDERH], 8);
+        glUniform1i(uniforms[UNIFORM_SCREEN_ORDERV], 0);
+        glUniform2f(uniforms[UNIFORM_SCREEN_OFFSET], 1.0/768.0, 0);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        
+        glUniform1i(uniforms[UNIFORM_SCREEN_ORDERH], 0);
+        glUniform1i(uniforms[UNIFORM_SCREEN_ORDERV], 8);
+        glUniform2f(uniforms[UNIFORM_SCREEN_OFFSET], 0, 1.0/1024.0);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
         
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
