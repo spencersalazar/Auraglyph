@@ -139,8 +139,8 @@ public:
         HIT_MAIN_NODE,
     };
     
-    virtual HitTestResult hit(const GLvertex3f &hit);
-    virtual void unhit();
+    HitTestResult hit(const GLvertex3f &hit, int *port);
+    void unhit();
     
     void setPosition(const GLvertex3f &pos) { m_pos = pos; }
     const GLvertex3f &position() const { return m_pos; }

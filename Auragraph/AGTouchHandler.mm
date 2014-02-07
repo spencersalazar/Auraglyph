@@ -148,17 +148,20 @@
     [_viewController addLinePoint:pos];
     
     AGNode *hitNode;
-    AGNode::HitTestResult hit = [_viewController hitTest:pos node:&hitNode];
+    int port;
+    AGNode::HitTestResult hit = [_viewController hitTest:pos node:&hitNode port:&port];
     
     if(hit == AGNode::HIT_INPUT_NODE)
     {
+        dstPort = port;
         _connectInput = hitNode;
-        _connectInput->activateInputPort(1);
+        _connectInput->activateInputPort(1+dstPort);
     }
     else
     {
+        srcPort = port;
         _connectOutput = hitNode;
-        _connectOutput->activateOutputPort(1);
+        _connectOutput->activateOutputPort(1+srcPort);
     }
 }
 
@@ -170,7 +173,8 @@
     [_viewController addLinePoint:pos];
     
     AGNode *hitNode;
-    AGNode::HitTestResult hit = [_viewController hitTest:pos node:&hitNode];
+    int port;
+    AGNode::HitTestResult hit = [_viewController hitTest:pos node:&hitNode port:&port];
     
     if(hit == AGNode::HIT_INPUT_NODE)
     {
@@ -184,11 +188,16 @@
             }
             
             if(_connectInput)
+            {
                 // input node -> input node: invalid
-                hitNode->activateInputPort(-1);
+                hitNode->activateInputPort(-1-port);
+            }
             else
+            {
                 // output node -> input node: valid
-                hitNode->activateInputPort(1);
+                dstPort = port;
+                hitNode->activateInputPort(1+dstPort);
+            }
             
             _currentHit = hitNode;
         }
@@ -205,11 +214,16 @@
             }
             
             if(_connectOutput)
+            {
                 // output node -> output node: invalid
-                hitNode->activateOutputPort(-1);
+                hitNode->activateOutputPort(-1-port);
+            }
             else
+            {
                 // input node -> output node: valid
-                hitNode->activateOutputPort(1);
+                srcPort = port;
+                hitNode->activateOutputPort(1+srcPort);
+            }
             
             _currentHit = hitNode;
         }
@@ -223,13 +237,15 @@
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
     AGNode *hitNode;
-    AGNode::HitTestResult hit = [_viewController hitTest:pos node:&hitNode];
+    int port;
+    AGNode::HitTestResult hit = [_viewController hitTest:pos node:&hitNode port:&port];
     
     if(hit == AGNode::HIT_INPUT_NODE)
     {
         if(_connectOutput != NULL && hitNode != _connectOutput)
         {
-            AGConnection * connection = new AGConnection(_connectOutput, hitNode, 0);
+            dstPort = port;
+            AGConnection * connection = new AGConnection(_connectOutput, hitNode, dstPort);
             
             [_viewController addConnection:connection];
             [_viewController clearLinePoints];
@@ -239,7 +255,8 @@
     {
         if(_connectInput != NULL && hitNode != _connectInput)
         {
-            AGConnection * connection = new AGConnection(hitNode, _connectInput, 0);
+            srcPort = port;
+            AGConnection * connection = new AGConnection(hitNode, _connectInput, dstPort);
             
             [_viewController addConnection:connection];
             [_viewController clearLinePoints];

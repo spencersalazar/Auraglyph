@@ -30,6 +30,6 @@ class AGFreeDraw;
 - (GLKMatrix4)modelViewMatrix;
 - (GLKMatrix4)projectionMatrix;
 - (GLvertex3f)worldCoordinateForScreenCoordinate:(CGPoint)p;
-- (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)node;
+- (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)node port:(int *)port;
 
 @end

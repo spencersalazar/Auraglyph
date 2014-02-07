@@ -326,9 +326,9 @@ void AGNode::render()
         shader.setMVPMatrix(mvpOutputPort);
         
         GLcolor4f color;
-        if(m_outputActivation > 0)      color = GLcolor4f(0, 1, 0, 1);
-        else if(m_outputActivation < 0) color = GLcolor4f(1, 0, 0, 1);
-        else                            color = GLcolor4f(1, 1, 1, 1);
+        if(m_outputActivation == 1)       color = GLcolor4f(0, 1, 0, 1);
+        else if(m_outputActivation == -1) color = GLcolor4f(1, 0, 0, 1);
+        else                              color = GLcolor4f(1, 1, 1, 1);
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
         
         glLineWidth(2.0f);
@@ -346,9 +346,9 @@ void AGNode::render()
         shader.setMVPMatrix(mvpInputPort);
         
         GLcolor4f color;
-        if(m_inputActivation > 0)      color = GLcolor4f(0, 1, 0, 1);
-        else if(m_inputActivation < 0) color = GLcolor4f(1, 0, 0, 1);
-        else                           color = GLcolor4f(1, 1, 1, 1);
+        if(m_inputActivation == 1+i)       color = GLcolor4f(0, 1, 0, 1);
+        else if(m_inputActivation == -1-i) color = GLcolor4f(1, 0, 0, 1);
+        else                               color = GLcolor4f(1, 1, 1, 1);
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
         
         glLineWidth(2.0f);
@@ -371,14 +371,17 @@ void AGNode::render()
     }
 }
 
-AGNode::HitTestResult AGNode::hit(const GLvertex3f &hit)
+AGNode::HitTestResult AGNode::hit(const GLvertex3f &hit, int *port)
 {
     int numIn = numInputPorts();
     for(int i = 0; i < numIn; i++)
     {
         GLvertex3f portPos = relativePositionForInputPort(i);
         if(pointInCircle(hit.xy(), (m_pos+portPos).xy(), s_portRadius))
+        {
+            if(port) *port = i;
             return HIT_INPUT_NODE;
+        }
     }
     
     int numOut = numOutputPorts();
@@ -386,7 +389,10 @@ AGNode::HitTestResult AGNode::hit(const GLvertex3f &hit)
     {
         GLvertex3f portPos = relativePositionForOutputPort(i);
         if(pointInCircle(hit.xy(), (m_pos+portPos).xy(), s_portRadius))
+        {
+            if(port) *port = i;
             return HIT_OUTPUT_NODE;
+        }
     }
     
     // check whole node

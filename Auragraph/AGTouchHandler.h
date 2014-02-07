@@ -56,6 +56,9 @@
     AGNode * _connectInput;
     AGNode * _connectOutput;
     AGNode * _currentHit;
+    
+    int srcPort;
+    int dstPort;
 }
 
 @end

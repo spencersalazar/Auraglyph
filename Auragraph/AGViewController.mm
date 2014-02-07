@@ -499,13 +499,13 @@ static AGViewController * g_instance = nil;
     return GLvertex3f(vec.x, vec.y, vec.z);
 }
 
-- (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)node
+- (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)node port:(int *)port
 {
     AGNode::HitTestResult hit;
     
     for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
     {
-        hit = (*i)->hit(pos);
+        hit = (*i)->hit(pos, port);
         if(hit != AGNode::HIT_NONE)
         {
             if(node)
@@ -556,7 +556,8 @@ static AGViewController * g_instance = nil;
             else
             {
                 AGNode * node = NULL;
-                AGNode::HitTestResult result = [self hitTest:pos node:&node];
+                int port;
+                AGNode::HitTestResult result = [self hitTest:pos node:&node port:&port];
                 
                 switch(result)
                 {
