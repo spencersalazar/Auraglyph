@@ -92,154 +92,16 @@ class AGAudioOutputNode : public AGAudioNode
 {
 public:
     static void initialize();
-
+    
     AGAudioOutputNode(GLvertex3f pos);
     
     virtual int numOutputPorts() const { return 0; }
     virtual int numInputPorts() const { return 1; }
-
-    virtual void renderAudio(float *input, float *output, int nFrames);
-    
-private:
-    static AGAudioNodeInfo *s_audioNodeInfo;
-};
-
-
-class AGAudioSineWaveNode : public AGAudioNode
-{
-public:
-    static void initialize();
-    
-    AGAudioSineWaveNode(GLvertex3f pos);
-    
-    virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { return 2; }
-    
-    virtual void setInputPortValue(int port, float value);
-    virtual void getInputPortValue(int port, float &value) const;
     
     virtual void renderAudio(float *input, float *output, int nFrames);
     
     static void renderIcon();
     static AGAudioNode *create(const GLvertex3f &pos);
-    
-private:
-    float m_freq;
-    float m_phase;
-    
-private:
-    static AGAudioNodeInfo *s_audioNodeInfo;
-};
-
-
-
-class AGAudioSquareWaveNode : public AGAudioNode
-{
-public:
-    static void initialize();
-
-    AGAudioSquareWaveNode(GLvertex3f pos);
-    
-    virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { return 2; }
-    
-    virtual void setInputPortValue(int port, float value);
-    virtual void getInputPortValue(int port, float &value) const;
-
-    virtual void renderAudio(float *input, float *output, int nFrames);
-    
-    static void renderIcon();
-    static AGAudioNode *create(const GLvertex3f &pos);
-
-private:
-    float m_freq;
-    float m_phase;
-    
-private:
-    static AGAudioNodeInfo *s_audioNodeInfo;
-};
-
-
-
-class AGAudioSawtoothWaveNode : public AGAudioNode
-{
-public:
-    static void initialize();
-
-    AGAudioSawtoothWaveNode(GLvertex3f pos);
-    
-    virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { return 2; }
-    
-    virtual void setInputPortValue(int port, float value);
-    virtual void getInputPortValue(int port, float &value) const;
-
-    virtual void renderAudio(float *input, float *output, int nFrames);
-    
-    static void renderIcon();
-    static AGAudioNode *create(const GLvertex3f &pos);
-    
-private:
-    float m_freq;
-    float m_phase;
-    
-private:
-    static AGAudioNodeInfo *s_audioNodeInfo;
-};
-
-
-
-class AGAudioTriangleWaveNode : public AGAudioNode
-{
-public:
-    static void initialize();
-
-    AGAudioTriangleWaveNode(GLvertex3f pos);
-    
-    virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { return 2; }
-    
-    virtual void setInputPortValue(int port, float value);
-    virtual void getInputPortValue(int port, float &value) const;
-    
-    virtual void renderAudio(float *input, float *output, int nFrames);
-    
-    static void renderIcon();
-    static AGAudioNode *create(const GLvertex3f &pos);
-    
-private:
-    float m_freq;
-    float m_phase;
-    
-private:
-    static AGAudioNodeInfo *s_audioNodeInfo;
-};
-
-
-class AGAudioADSRNode : public AGAudioNode
-{
-public:
-    static void initialize();
-
-    AGAudioADSRNode(GLvertex3f pos);
-    
-    virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { return s_audioNodeInfo->portInfo.size(); }
-    
-    virtual void setInputPortValue(int port, float value);
-    virtual void getInputPortValue(int port, float &value) const;
-    
-    virtual void renderAudio(float *input, float *output, int nFrames);
-    
-    static void renderIcon();
-    static AGAudioNode *create(const GLvertex3f &pos);
-    
-private:
-    int m_state;
-    float m_value;
-    float m_increment;
-    
-    float m_attack, m_decay, m_sustain, m_release;
     
 private:
     static AGAudioNodeInfo *s_audioNodeInfo;
@@ -253,19 +115,19 @@ public:
     
     struct AudioNodeType
     {
-    private:
-        AudioNodeType(std::string _name, void (*_renderIcon)(),
+        // TODO: make class
+        AudioNodeType(std::string _name, void (*_initialize)(), void (*_renderIcon)(),
                       AGAudioNode *(*_createNode)(const GLvertex3f &pos)) :
         name(_name),
+        initialize(_initialize),
         renderIcon(_renderIcon),
         createNode(_createNode)
         { }
         
         std::string name;
+        void (*initialize)();
         void (*renderIcon)();
         AGAudioNode *(*createNode)(const GLvertex3f &pos);
-        
-        friend class AGAudioNodeManager;
     };
     
     const std::vector<AudioNodeType *> &audioNodeTypes() const;

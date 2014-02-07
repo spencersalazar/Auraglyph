@@ -11,6 +11,10 @@
 #import "SPFilter.h"
 #import "AGDef.h"
 
+//------------------------------------------------------------------------------
+// ### AGAudioNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioNode
 
 bool AGAudioNode::s_init = false;
 GLuint AGAudioNode::s_vertexArray = 0;
@@ -18,18 +22,47 @@ GLuint AGAudioNode::s_vertexBuffer = 0;
 GLuint AGAudioNode::s_geoSize = 0;
 int AGAudioNode::s_sampleRate = 44100;
 
-AGAudioNodeInfo *AGAudioOutputNode::s_audioNodeInfo = NULL;
-AGAudioNodeInfo *AGAudioSineWaveNode::s_audioNodeInfo = NULL;
-AGAudioNodeInfo *AGAudioSquareWaveNode::s_audioNodeInfo = NULL;
-AGAudioNodeInfo *AGAudioSawtoothWaveNode::s_audioNodeInfo = NULL;
-AGAudioNodeInfo *AGAudioTriangleWaveNode::s_audioNodeInfo = NULL;
-AGAudioNodeInfo *AGAudioADSRNode::s_audioNodeInfo = NULL;
+void AGAudioNode::initializeAudioNode()
+{
+    initalizeNode();
+    
+    if(!s_init)
+    {
+        s_init = true;
+        
+        // generate circle
+        s_geoSize = 64;
+        GLvertex3f *geo = new GLvertex3f[s_geoSize];
+        float radius = 0.01;
+        for(int i = 0; i < s_geoSize; i++)
+        {
+            float theta = 2*M_PI*((float)i)/((float)(s_geoSize));
+            geo[i] = GLvertex3f(radius*cosf(theta), radius*sinf(theta), 0);
+        }
+        
+        genVertexArrayAndBuffer(s_geoSize, geo, s_vertexArray, s_vertexBuffer);
+        
+        delete[] geo;
+        geo = NULL;
+        
+        const std::vector<AGAudioNodeManager::AudioNodeType *> &audioNodeTypes = AGAudioNodeManager::instance().audioNodeTypes();
+        
+        for(std::vector<AGAudioNodeManager::AudioNodeType *>::const_iterator type = audioNodeTypes.begin(); type != audioNodeTypes.end(); type++)
+        {
+            if((*type)->initialize)
+                (*type)->initialize();
+        }
+        
+//        AGAudioOutputNode::initialize();
+//        AGAudioSineWaveNode::initialize();
+//        AGAudioSquareWaveNode::initialize();
+//        AGAudioSawtoothWaveNode::initialize();
+//        AGAudioTriangleWaveNode::initialize();
+//        AGAudioADSRNode::initialize();
+//        AGAudioFilterNode::initialize();
+    }
+}
 
-
-//------------------------------------------------------------------------------
-// ### AGAudioNode ###
-//------------------------------------------------------------------------------
-#pragma mark - AGAudioNode
 
 AGAudioNode::AGAudioNode(GLvertex3f pos) :
 AGNode(pos)
@@ -291,6 +324,8 @@ void AGAudioNode::pullInputPorts(int nFrames)
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioOutputNode
 
+AGAudioNodeInfo *AGAudioOutputNode::s_audioNodeInfo = NULL;
+
 AGAudioOutputNode::AGAudioOutputNode(GLvertex3f pos) : AGAudioNode(pos)
 {
     m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
@@ -338,11 +373,56 @@ void AGAudioOutputNode::renderAudio(float *input, float *output, int nFrames)
     }
 }
 
+void AGAudioOutputNode::renderIcon()
+{
+    // render icon
+    glBindVertexArrayOES(s_audioNodeInfo->iconVertexArray);
+    
+    glLineWidth(2.0);
+    glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
+    
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+AGAudioNode *AGAudioOutputNode::create(const GLvertex3f &pos)
+{
+    return new AGAudioOutputNode(pos);
+}
+
 
 //------------------------------------------------------------------------------
 // ### AGAudioSineWaveNode ###
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioSineWaveNode
+
+class AGAudioSineWaveNode : public AGAudioNode
+{
+public:
+    static void initialize();
+    
+    AGAudioSineWaveNode(GLvertex3f pos);
+    
+    virtual int numOutputPorts() const { return 1; }
+    virtual int numInputPorts() const { return 2; }
+    
+    virtual void setInputPortValue(int port, float value);
+    virtual void getInputPortValue(int port, float &value) const;
+    
+    virtual void renderAudio(float *input, float *output, int nFrames);
+    
+    static void renderIcon();
+    static AGAudioNode *create(const GLvertex3f &pos);
+    
+private:
+    float m_freq;
+    float m_phase;
+    
+private:
+    static AGAudioNodeInfo *s_audioNodeInfo;
+};
+
+AGAudioNodeInfo *AGAudioSineWaveNode::s_audioNodeInfo = NULL;
 
 void AGAudioSineWaveNode::initialize()
 {
@@ -438,6 +518,34 @@ AGAudioNode *AGAudioSineWaveNode::create(const GLvertex3f &pos)
 // ### AGAudioSquareWaveNode ###
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioSquareWaveNode
+
+class AGAudioSquareWaveNode : public AGAudioNode
+{
+public:
+    static void initialize();
+    
+    AGAudioSquareWaveNode(GLvertex3f pos);
+    
+    virtual int numOutputPorts() const { return 1; }
+    virtual int numInputPorts() const { return 2; }
+    
+    virtual void setInputPortValue(int port, float value);
+    virtual void getInputPortValue(int port, float &value) const;
+    
+    virtual void renderAudio(float *input, float *output, int nFrames);
+    
+    static void renderIcon();
+    static AGAudioNode *create(const GLvertex3f &pos);
+    
+private:
+    float m_freq;
+    float m_phase;
+    
+private:
+    static AGAudioNodeInfo *s_audioNodeInfo;
+};
+
+AGAudioNodeInfo *AGAudioSquareWaveNode::s_audioNodeInfo = NULL;
 
 void AGAudioSquareWaveNode::initialize()
 {
@@ -539,6 +647,34 @@ AGAudioNode *AGAudioSquareWaveNode::create(const GLvertex3f &pos)
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioSawtoothWaveNode
 
+class AGAudioSawtoothWaveNode : public AGAudioNode
+{
+public:
+    static void initialize();
+    
+    AGAudioSawtoothWaveNode(GLvertex3f pos);
+    
+    virtual int numOutputPorts() const { return 1; }
+    virtual int numInputPorts() const { return 2; }
+    
+    virtual void setInputPortValue(int port, float value);
+    virtual void getInputPortValue(int port, float &value) const;
+    
+    virtual void renderAudio(float *input, float *output, int nFrames);
+    
+    static void renderIcon();
+    static AGAudioNode *create(const GLvertex3f &pos);
+    
+private:
+    float m_freq;
+    float m_phase;
+    
+private:
+    static AGAudioNodeInfo *s_audioNodeInfo;
+};
+
+AGAudioNodeInfo *AGAudioSawtoothWaveNode::s_audioNodeInfo = NULL;
+
 void AGAudioSawtoothWaveNode::initialize()
 {
     s_audioNodeInfo = new AGAudioNodeInfo;
@@ -635,6 +771,34 @@ AGAudioNode *AGAudioSawtoothWaveNode::create(const GLvertex3f &pos)
 // ### AGAudioTriangleWaveNode ###
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioTriangleWaveNode
+
+class AGAudioTriangleWaveNode : public AGAudioNode
+{
+public:
+    static void initialize();
+    
+    AGAudioTriangleWaveNode(GLvertex3f pos);
+    
+    virtual int numOutputPorts() const { return 1; }
+    virtual int numInputPorts() const { return 2; }
+    
+    virtual void setInputPortValue(int port, float value);
+    virtual void getInputPortValue(int port, float &value) const;
+    
+    virtual void renderAudio(float *input, float *output, int nFrames);
+    
+    static void renderIcon();
+    static AGAudioNode *create(const GLvertex3f &pos);
+    
+private:
+    float m_freq;
+    float m_phase;
+    
+private:
+    static AGAudioNodeInfo *s_audioNodeInfo;
+};
+
+AGAudioNodeInfo *AGAudioTriangleWaveNode::s_audioNodeInfo = NULL;
 
 void AGAudioTriangleWaveNode::initialize()
 {
@@ -737,6 +901,37 @@ AGAudioNode *AGAudioTriangleWaveNode::create(const GLvertex3f &pos)
 // ### AGAudioADSRNode ###
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioADSRNode
+
+class AGAudioADSRNode : public AGAudioNode
+{
+public:
+    static void initialize();
+    
+    AGAudioADSRNode(GLvertex3f pos);
+    
+    virtual int numOutputPorts() const { return 1; }
+    virtual int numInputPorts() const { return s_audioNodeInfo->portInfo.size(); }
+    
+    virtual void setInputPortValue(int port, float value);
+    virtual void getInputPortValue(int port, float &value) const;
+    
+    virtual void renderAudio(float *input, float *output, int nFrames);
+    
+    static void renderIcon();
+    static AGAudioNode *create(const GLvertex3f &pos);
+    
+private:
+    int m_state;
+    float m_value;
+    float m_increment;
+    
+    float m_attack, m_decay, m_sustain, m_release;
+    
+private:
+    static AGAudioNodeInfo *s_audioNodeInfo;
+};
+
+AGAudioNodeInfo *AGAudioADSRNode::s_audioNodeInfo = NULL;
 
 void AGAudioADSRNode::initialize()
 {
@@ -1120,14 +1315,15 @@ const AGAudioNodeManager &AGAudioNodeManager::instance()
 
 AGAudioNodeManager::AGAudioNodeManager()
 {
-    m_audioNodeTypes.push_back(new AudioNodeType("SineWave", AGAudioSineWaveNode::renderIcon, AGAudioSineWaveNode::create));
-    m_audioNodeTypes.push_back(new AudioNodeType("SquareWave", AGAudioSquareWaveNode::renderIcon, AGAudioSquareWaveNode::create));
-    m_audioNodeTypes.push_back(new AudioNodeType("SawtoothWave", AGAudioSawtoothWaveNode::renderIcon, AGAudioSawtoothWaveNode::create));
-    m_audioNodeTypes.push_back(new AudioNodeType("TriangleWave", AGAudioTriangleWaveNode::renderIcon, AGAudioTriangleWaveNode::create));
-    m_audioNodeTypes.push_back(new AudioNodeType("ADSR", AGAudioADSRNode::renderIcon, AGAudioADSRNode::create));
-    m_audioNodeTypes.push_back(new AudioNodeType("LowPass", AGAudioFilterNode::renderLowPassIcon, AGAudioFilterNode::createLowPass));
-    m_audioNodeTypes.push_back(new AudioNodeType("HiPass", AGAudioFilterNode::renderHiPassIcon, AGAudioFilterNode::createHiPass));
-    m_audioNodeTypes.push_back(new AudioNodeType("BandPass", AGAudioFilterNode::renderBandPassIcon, AGAudioFilterNode::createBandPass));
+    m_audioNodeTypes.push_back(new AudioNodeType("SineWave", AGAudioSineWaveNode::initialize, AGAudioSineWaveNode::renderIcon, AGAudioSineWaveNode::create));
+    m_audioNodeTypes.push_back(new AudioNodeType("SquareWave", AGAudioSquareWaveNode::initialize, AGAudioSquareWaveNode::renderIcon, AGAudioSquareWaveNode::create));
+    m_audioNodeTypes.push_back(new AudioNodeType("SawtoothWave", AGAudioSawtoothWaveNode::initialize, AGAudioSawtoothWaveNode::renderIcon, AGAudioSawtoothWaveNode::create));
+    m_audioNodeTypes.push_back(new AudioNodeType("TriangleWave", AGAudioTriangleWaveNode::initialize, AGAudioTriangleWaveNode::renderIcon, AGAudioTriangleWaveNode::create));
+    m_audioNodeTypes.push_back(new AudioNodeType("ADSR", AGAudioADSRNode::initialize, AGAudioADSRNode::renderIcon, AGAudioADSRNode::create));
+    m_audioNodeTypes.push_back(new AudioNodeType("LowPass", AGAudioFilterNode::initialize, AGAudioFilterNode::renderLowPassIcon, AGAudioFilterNode::createLowPass));
+    m_audioNodeTypes.push_back(new AudioNodeType("HiPass", NULL, AGAudioFilterNode::renderHiPassIcon, AGAudioFilterNode::createHiPass));
+    m_audioNodeTypes.push_back(new AudioNodeType("BandPass", NULL, AGAudioFilterNode::renderBandPassIcon, AGAudioFilterNode::createBandPass));
+    m_audioNodeTypes.push_back(new AudioNodeType("Output", AGAudioOutputNode::initialize, AGAudioOutputNode::renderIcon, AGAudioOutputNode::create));
 }
 
 const std::vector<AGAudioNodeManager::AudioNodeType *> &AGAudioNodeManager::audioNodeTypes() const
@@ -1143,40 +1339,6 @@ void AGAudioNodeManager::renderNodeTypeIcon(AudioNodeType *type) const
 AGAudioNode * AGAudioNodeManager::createNodeType(AudioNodeType *type, const GLvertex3f &pos) const
 {
     return type->createNode(pos);
-}
-
-
-void AGAudioNode::initializeAudioNode()
-{
-    initalizeNode();
-    
-    if(!s_init)
-    {
-        s_init = true;
-        
-        // generate circle
-        s_geoSize = 64;
-        GLvertex3f *geo = new GLvertex3f[s_geoSize];
-        float radius = 0.01;
-        for(int i = 0; i < s_geoSize; i++)
-        {
-            float theta = 2*M_PI*((float)i)/((float)(s_geoSize));
-            geo[i] = GLvertex3f(radius*cosf(theta), radius*sinf(theta), 0);
-        }
-        
-        genVertexArrayAndBuffer(s_geoSize, geo, s_vertexArray, s_vertexBuffer);
-        
-        delete[] geo;
-        geo = NULL;
-        
-        AGAudioOutputNode::initialize();
-        AGAudioSineWaveNode::initialize();
-        AGAudioSquareWaveNode::initialize();
-        AGAudioSawtoothWaveNode::initialize();
-        AGAudioTriangleWaveNode::initialize();
-        AGAudioADSRNode::initialize();
-        AGAudioFilterNode::initialize();
-    }
 }
 
 

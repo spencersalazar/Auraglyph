@@ -385,10 +385,15 @@ void AGControlNode::render()
     glBindVertexArrayOES(s_vertexArray);
     
     // TODO
-    glUseProgram(s_program);
+//    glUseProgram(s_program);
+//    
+//    glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
+//    glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
     
-    glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
-    glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
+    AGGenericShader &shader = AGGenericShader::instance();
+    shader.useProgram();
+    shader.setMVPMatrix(m_modelViewProjectionMatrix);
+    shader.setNormalMatrix(m_normalMatrix);
 
     glLineWidth(4.0f);
     glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
