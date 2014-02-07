@@ -67,9 +67,6 @@ AGNode(pos)
     m_radius = 0.01;
     m_portRadius = 0.01 * 0.2;
     
-    m_inputActivation = m_outputActivation = 0;
-    m_activation = 0;
-    
     m_inputPortBuffer = NULL;
 }
 

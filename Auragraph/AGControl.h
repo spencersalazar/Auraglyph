@@ -15,17 +15,19 @@ public:
     virtual void mapTo(float &value) = 0;
 };
 
-class AGIntControl
+class AGIntControl : public AGControl
 {
 public:
+    AGIntControl() : v(0) { }
     AGIntControl(int _v) : v(_v) { }
     virtual void mapTo(float &value) { value = v; }
     int v;
 };
 
-class AGFloatControl
+class AGFloatControl : public AGControl
 {
 public:
+    AGFloatControl() : v(0) { }
     AGFloatControl(float _v) : v(_v) { }
     virtual void mapTo(float &value) { value = v; }
     float v;

@@ -10,6 +10,7 @@
 
 #import "AGViewController.h"
 #import "AGGenericShader.h"
+#import "AGAudioNode.h"
 
 
 static const float G_RATIO = 1.61803398875;
@@ -19,13 +20,6 @@ bool AGConnection::s_init = false;
 GLuint AGConnection::s_program = 0;
 GLint AGConnection::s_uniformMVPMatrix = 0;
 GLint AGConnection::s_uniformNormalMatrix = 0;
-
-
-bool AGNode::s_initNode = false;
-GLKMatrix4 AGNode::s_projectionMatrix = GLKMatrix4Identity;
-GLKMatrix4 AGNode::s_modelViewMatrix = GLKMatrix4Identity;
-const float AGNode::s_sizeFactor = 0.01;
-
 
 bool AGControlNode::s_init = false;
 GLuint AGControlNode::s_vertexArray = 0;
@@ -218,6 +212,16 @@ AGUIObject *AGConnection::hitTest(const GLvertex3f &_t)
 //------------------------------------------------------------------------------
 #pragma mark - AGNode
 
+bool AGNode::s_initNode = false;
+GLKMatrix4 AGNode::s_projectionMatrix = GLKMatrix4Identity;
+GLKMatrix4 AGNode::s_modelViewMatrix = GLKMatrix4Identity;
+const float AGNode::s_sizeFactor = 0.01;
+
+float AGNode::s_portRadius = 0.01*0.2;
+GLvertex3f *AGNode::s_portGeo = NULL;
+GLuint AGNode::s_portGeoSize = 0;
+GLint AGNode::s_portGeoType = 0;
+
 void AGNode::connect(AGConnection * connection)
 {
     connection->src()->lock();
@@ -245,7 +249,24 @@ void AGNode::initalizeNode()
     if(!s_initNode)
     {
         s_initNode = true;
+        
+        // generate circle
+        s_portGeoSize = 32;
+        s_portGeoType = GL_LINE_LOOP;
+        s_portGeo = new GLvertex3f[s_portGeoSize];
+        for(int i = 0; i < s_portGeoSize; i++)
+        {
+            float theta = 2*M_PI*((float)i)/((float)(s_portGeoSize));
+            s_portGeo[i] = GLvertex3f(s_portRadius*cosf(theta), s_portRadius*sinf(theta), 0);
+        }
     }
+}
+
+
+AGNode::AGNode(GLvertex3f pos) : m_pos(pos), m_nodeInfo(NULL), m_inputPortInfo(NULL)
+{
+    m_inputActivation = m_outputActivation = 0;
+    m_activation = 0;
 }
 
 AGNode::~AGNode()
@@ -351,6 +372,8 @@ void AGControlNode::initializeControlNode()
         glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(2*sizeof(GLvertex3f)));
         
         glBindVertexArrayOES(0);
+        
+        AGControlTimerNode::initialize();
     }
 }
 
@@ -381,16 +404,126 @@ void AGControlNode::render()
     shader.useProgram();
     shader.setMVPMatrix(m_modelViewProjectionMatrix);
     shader.setNormalMatrix(m_normalMatrix);
-
-    glLineWidth(4.0f);
-    glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
+    
+    if(m_activation)
+    {
+        float scale = 0.975;
+        
+        GLKMatrix4 projection = projectionMatrix();
+        GLKMatrix4 modelView = globalModelViewMatrix();
+        
+        modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
+        GLKMatrix4 modelViewInner = GLKMatrix4Scale(modelView, scale, scale, scale);
+        GLKMatrix4 mvp = GLKMatrix4Multiply(projection, modelViewInner);
+        shader.setMVPMatrix(mvp);
+        
+        glLineWidth(4.0f);
+        glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
+        
+        GLKMatrix4 modelViewOuter = GLKMatrix4Scale(modelView, 1.0/scale, 1.0/scale, 1.0/scale);
+        mvp = GLKMatrix4Multiply(projection, modelViewOuter);
+        shader.setMVPMatrix(mvp);
+        
+        glLineWidth(4.0f);
+        glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
+    }
+    else
+    {
+        shader.setMVPMatrix(m_modelViewProjectionMatrix);
+        shader.setNormalMatrix(m_normalMatrix);
+        
+        glLineWidth(4.0f);
+        glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
+    }
     
     glBindVertexArrayOES(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    if(numOutputPorts())
+    {
+        // draw output port
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_portGeo);
+
+        GLKMatrix4 mvpOutputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, s_radius, 0, 0);
+        shader.setMVPMatrix(mvpOutputPort);
+        
+        GLcolor4f color;
+        if(m_outputActivation > 0)      color = GLcolor4f(0, 1, 0, 1);
+        else if(m_outputActivation < 0) color = GLcolor4f(1, 0, 0, 1);
+        else                            color = GLcolor4f(1, 1, 1, 1);
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
+        
+        glLineWidth(2.0f);
+        glDrawArrays(s_portGeoType, 0, s_portGeoSize);
+    }
+    
+    if(numInputPorts())
+    {
+        // draw input port
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_portGeo);
+
+        GLKMatrix4 mvpInputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, -s_radius, 0, 0);
+        shader.setMVPMatrix(mvpInputPort);
+        
+        GLcolor4f color;
+        if(m_inputActivation > 0)      color = GLcolor4f(0, 1, 0, 1);
+        else if(m_inputActivation < 0) color = GLcolor4f(1, 0, 0, 1);
+        else                           color = GLcolor4f(1, 1, 1, 1);
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
+        
+        glLineWidth(2.0f);
+        glDrawArrays(s_portGeoType, 0, s_portGeoSize);
+    }
+    
+    if(m_nodeInfo)
+    {
+        shader.setMVPMatrix(m_modelViewProjectionMatrix);
+        shader.setNormalMatrix(m_normalMatrix);
+        
+        glBindVertexArrayOES(0);
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_nodeInfo->iconGeo);
+        
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+        
+        glLineWidth(2.0f);
+        glDrawArrays(m_nodeInfo->iconGeoType, 0, m_nodeInfo->iconGeoSize);
+    }
 }
 
 AGNode::HitTestResult AGControlNode::hit(const GLvertex3f &hit)
 {
+    float x, y;
+    
+    if(numInputPorts())
+    {
+        // check input port
+        x = hit.x - (m_pos.x - s_radius);
+        y = hit.y - m_pos.y;
+        if(x*x + y*y <= s_portRadius*s_portRadius)
+        {
+            return HIT_INPUT_NODE;
+        }
+    }
+    
+    if(numOutputPorts())
+    {
+        // check output port
+        x = hit.x - (m_pos.x + s_radius);
+        y = hit.y - m_pos.y;
+        if(x*x + y*y <= s_portRadius*s_portRadius)
+        {
+            return HIT_OUTPUT_NODE;
+        }
+    }
+    
+    // check whole node
+    x = hit.x - m_pos.x;
+    y = hit.y - m_pos.y;
+    if(x*x + y*y <= s_radius*s_radius)
+    {
+        return HIT_MAIN_NODE;
+    }
+    
     return HIT_NONE;
 }
 
@@ -414,13 +547,49 @@ AGUIObject *AGControlNode::hitTest(const GLvertex3f &t)
 //------------------------------------------------------------------------------
 #pragma mark - AGControlTimerNode
 
+AGNodeInfo *AGControlTimerNode::s_nodeInfo = NULL;
+
 void AGControlTimerNode::initialize()
 {
+    s_nodeInfo = new AGNodeInfo;
     
+    float radius = 0.005;
+    int circleSize = 64;
+    s_nodeInfo->iconGeoSize = circleSize*2 + 4;
+    s_nodeInfo->iconGeoType = GL_LINES;
+    s_nodeInfo->iconGeo = new GLvertex3f[s_nodeInfo->iconGeoSize];
+    
+    // TODO: multiple geoTypes (GL_LINE_LOOP + GL_LINE_STRIP) instead of wasteful GL_LINES
+    
+    for(int i = 0; i < circleSize; i++)
+    {
+        float theta0 = 2*M_PI*((float)i)/((float)(circleSize));
+        float theta1 = 2*M_PI*((float)(i+1))/((float)(circleSize));
+        s_nodeInfo->iconGeo[i*2+0] = GLvertex3f(radius*cosf(theta0), radius*sinf(theta0), 0);
+        s_nodeInfo->iconGeo[i*2+1] = GLvertex3f(radius*cosf(theta1), radius*sinf(theta1), 0);
+    }
+    
+    float minute = 50;
+    float minuteAngle = M_PI/2.0 + (minute/60.0)*(-2.0*M_PI);
+    float hour = 2;
+    float hourAngle = M_PI/2.0 + (hour/12.0 + minute/60.0/12.0)*(-2.0*M_PI);
+    
+    s_nodeInfo->iconGeo[circleSize*2+0] = GLvertex3f(0, 0, 0);
+    s_nodeInfo->iconGeo[circleSize*2+1] = GLvertex3f(radius/G_RATIO*cosf(hourAngle), radius/G_RATIO*sinf(hourAngle), 0);
+    s_nodeInfo->iconGeo[circleSize*2+2] = GLvertex3f(0, 0, 0);
+    s_nodeInfo->iconGeo[circleSize*2+3] = GLvertex3f(radius*0.925*cosf(minuteAngle), radius*0.925*sinf(minuteAngle), 0);
+    
+    s_nodeInfo->portInfo.push_back({ "interval", true, true });
 }
 
-AGControlTimerNode::AGControlTimerNode(const GLvertex3f &pos) : AGControlNode(pos)
-{ }
+AGControlTimerNode::AGControlTimerNode(const GLvertex3f &pos) :
+AGControlNode(pos)
+{
+    m_nodeInfo = s_nodeInfo;
+    m_interval = 0.5;
+    m_lastFire = 0;
+    m_lastTime = 0;
+}
 
 void AGControlTimerNode::setInputPortValue(int port, float value)
 { }
@@ -430,7 +599,18 @@ void AGControlTimerNode::getInputPortValue(int port, float &value) const
 
 AGControl *AGControlTimerNode::renderControl(sampletime t)
 {
-    return m_control;
+    if(((float)(t - m_lastFire))/AGAudioNode::sampleRate() > m_interval)
+    {
+        m_control.v = 1;
+        m_lastFire = t;
+    }
+    else
+    {
+        m_control.v = 0;
+    }
+    
+    m_lastTime = t;
+    return &m_control;
 }
 
 

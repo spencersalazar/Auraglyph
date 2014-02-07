@@ -122,7 +122,7 @@ public:
     static void connect(AGConnection * connection);
     static void disconnect(AGConnection * connection);
     
-    AGNode(GLvertex3f pos = GLvertex3f()) : m_pos(pos), m_nodeInfo(NULL), m_inputPortInfo(NULL) { }
+    AGNode(GLvertex3f pos = GLvertex3f());
     virtual ~AGNode();
     
     virtual void update(float t, float dt) = 0;
@@ -146,11 +146,17 @@ public:
     virtual void touchMove(const GLvertex3f &t);
     virtual void touchUp(const GLvertex3f &t);
     
+    // lock when creating/destroying connections to/from this node
     void lock() { m_mutex.lock(); }
     void unlock() { m_mutex.unlock(); }
     
-    // TODO: all of these should be virtual
+    // 1: positive activation; 0: deactivation; -1: negative activation
+    void activateInputPort(int type) { m_inputActivation = type; }
+    void activateOutputPort(int type) { m_outputActivation = type; }
+    void activate(int type) { m_activation = type; }
+
     /*** Subclassing note: the following public functions should be overridden ***/
+    // TODO: all of these should be pure virtual
     virtual int numOutputPorts() const { return 0; }
     virtual int numInputPorts() const { return 0; }
     virtual const AGPortInfo &inputPortInfo(int port) { return m_inputPortInfo[port]; }
@@ -159,11 +165,6 @@ public:
     
     virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const { return GLvertex3f(); }
     virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const { return GLvertex3f(); }
-    
-    // 1: positive activation; 0: deactivation; -1: negative activation
-    virtual void activateInputPort(int type) { }
-    virtual void activateOutputPort(int type) { }
-    virtual void activate(int type) { }
     
     virtual AGRate rate() { return RATE_CONTROL; }
     
@@ -176,6 +177,11 @@ private:
     Mutex m_mutex;
     
 protected:
+    static float s_portRadius;
+    static GLvertex3f *s_portGeo;
+    static GLuint s_portGeoSize;
+    static GLint s_portGeoType;
+    
     const static float s_sizeFactor;
     
     virtual void addInbound(AGConnection *connection);
@@ -195,6 +201,10 @@ protected:
     
     // touch handling stuff
     GLvertex3f m_lastTouch;
+    
+    int m_inputActivation;
+    int m_outputActivation;
+    int m_activation;
 };
 
 
@@ -215,8 +225,8 @@ public:
     virtual void unhit();
     
     // TODO
-    virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const { return GLvertex3f(); }
-    virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const { return GLvertex3f(); }
+    virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const { return m_pos + GLvertex3f(-s_radius, 0, 0); }
+    virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const { return m_pos + GLvertex3f(s_radius, 0, 0); }
     
     // TODO
     // 1: positive activation; 0: deactivation; -1: negative activation
@@ -237,7 +247,6 @@ private:
     static GLuint s_geoSize;
     
 protected:
-    AGControl *m_control;
     GLvertex3f *m_iconGeo;
     GLuint m_geoSize;
     GLuint m_geoType;
@@ -263,6 +272,7 @@ public:
 private:
     static AGNodeInfo *s_nodeInfo;
     
+    AGIntControl m_control;
     sampletime m_lastTime;
     sampletime m_lastFire;
     float m_interval;

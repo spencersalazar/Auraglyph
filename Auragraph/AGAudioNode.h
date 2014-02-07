@@ -39,10 +39,6 @@ public:
     virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const;
     virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const;
     
-    virtual void activateInputPort(int type) { m_inputActivation = type; }
-    virtual void activateOutputPort(int type) { m_outputActivation = type; }
-    virtual void activate(int type) { m_activation = type; }
-
     virtual AGRate rate() { return RATE_AUDIO; }
     
     static int sampleRate() { return s_sampleRate; }
@@ -59,11 +55,7 @@ private:
     
     float m_radius;
     float m_portRadius;
-    
-    int m_inputActivation;
-    int m_outputActivation;
-    int m_activation;
-    
+        
 protected:
 //    GLuint m_iconVertexArray;
 //    GLuint m_iconGeoSize;
