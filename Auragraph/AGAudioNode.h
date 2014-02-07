@@ -30,9 +30,9 @@ public:
     AGAudioNode(GLvertex3f pos = GLvertex3f());
     virtual ~AGAudioNode();
     
-    virtual void renderAudio(float *input, float *output, int nFrames);
     virtual void update(float t, float dt);
     virtual void render();
+    
     virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();
     
@@ -66,7 +66,7 @@ protected:
     float m_gain;
     
     void allocatePortBuffers();
-    void pullInputPorts(int nFrames);
+    void pullInputPorts(sampletime t, int nFrames);
 };
 
 
@@ -80,7 +80,7 @@ public:
     virtual int numOutputPorts() const { return 0; }
     virtual int numInputPorts() const { return 1; }
     
-    virtual void renderAudio(float *input, float *output, int nFrames);
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
     static void renderIcon();
     static AGAudioNode *create(const GLvertex3f &pos);

@@ -127,7 +127,9 @@ public:
     
     virtual void update(float t, float dt) = 0;
     virtual void render() = 0;
-    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) { assert(0); }
+    virtual AGControl *renderControl(sampletime t) { assert(0); return NULL; }
+
     enum HitTestResult
     {
         HIT_NONE = 0,
@@ -154,12 +156,13 @@ public:
     void activateInputPort(int type) { m_inputActivation = type; }
     void activateOutputPort(int type) { m_outputActivation = type; }
     void activate(int type) { m_activation = type; }
-
+    
+    const AGPortInfo &inputPortInfo(int port) { return m_nodeInfo->portInfo[port]; }
+    
     /*** Subclassing note: the following public functions should be overridden ***/
     // TODO: all of these should be pure virtual
     virtual int numOutputPorts() const { return 0; }
     virtual int numInputPorts() const { return 0; }
-    virtual const AGPortInfo &inputPortInfo(int port) { return m_inputPortInfo[port]; }
     virtual void setInputPortValue(int port, float value) { }
     virtual void getInputPortValue(int port, float &value) const { }
     
@@ -193,7 +196,7 @@ protected:
     
     std::list<AGConnection *> m_inbound;
     std::list<AGConnection *> m_outbound;
-    AGPortInfo * m_inputPortInfo;
+//    AGPortInfo * m_inputPortInfo;
     
     GLvertex3f m_pos;
     GLKMatrix4 m_modelViewProjectionMatrix;
@@ -234,8 +237,6 @@ public:
     virtual void activateOutputPort(int type) { }
     virtual void activate(int type) { }
     
-    virtual AGControl *renderControl(sampletime t) = 0;
-    
 private:
     
     static bool s_init;
@@ -262,8 +263,7 @@ public:
     AGControlTimerNode(const GLvertex3f &pos);
     
     virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { return 0; }
-    virtual const AGPortInfo &inputPortInfo(int port) { return m_inputPortInfo[port]; }
+    virtual int numInputPorts() const { return s_nodeInfo->portInfo.size(); }
     virtual void setInputPortValue(int port, float value);
     virtual void getInputPortValue(int port, float &value) const;
 

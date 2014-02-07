@@ -88,9 +88,9 @@ AGAudioNode::~AGAudioNode()
     }
 }
 
-void AGAudioNode::renderAudio(float *input, float *output, int nFrames)
-{
-}
+//void AGAudioNode::renderAudio(float *input, float *output, int nFrames)
+//{
+//}
 
 void AGAudioNode::update(float t, float dt)
 {
@@ -260,7 +260,7 @@ void AGAudioNode::allocatePortBuffers()
         m_inputPortBuffer = new float*[numInputPorts()];
         for(int i = 0; i < numInputPorts(); i++)
         {
-            if(m_inputPortInfo[i].canConnect)
+            if(m_nodeInfo->portInfo[i].canConnect)
             {
                 m_inputPortBuffer[i] = new float[bufferSize()];
                 memset(m_inputPortBuffer[i], 0, sizeof(float)*bufferSize());
@@ -277,7 +277,7 @@ void AGAudioNode::allocatePortBuffers()
     }
 }
 
-void AGAudioNode::pullInputPorts(int nFrames)
+void AGAudioNode::pullInputPorts(sampletime t, int nFrames)
 {
     this->lock();
     
@@ -292,13 +292,22 @@ void AGAudioNode::pullInputPorts(int nFrames)
     
     for(std::list<AGConnection *>::iterator c = m_inbound.begin(); c != m_inbound.end(); c++)
     {
-        AGConnection * conn = *c;
+        AGConnection *conn = *c;
+        
+        assert(m_inputPortBuffer && m_inputPortBuffer[conn->dstPort()]);
+
         if(conn->rate() == RATE_AUDIO)
         {
-            assert(m_inputPortBuffer && m_inputPortBuffer[conn->dstPort()]);
-            ((AGAudioNode *) conn->src())->renderAudio(NULL, m_inputPortBuffer[conn->dstPort()], nFrames);
+            conn->src()->renderAudio(t, NULL, m_inputPortBuffer[conn->dstPort()], nFrames);
         }
-        //else TODO
+        else
+        {
+            AGControl *control = conn->src()->renderControl(t);
+            float v;
+            control->mapTo(v);
+            for(int i = 0; i < nFrames; i++)
+                m_inputPortBuffer[conn->dstPort()][i] += v;
+        }
     }
     
     this->unlock();
@@ -313,7 +322,7 @@ AGNodeInfo *AGAudioOutputNode::s_audioNodeInfo = NULL;
 
 AGAudioOutputNode::AGAudioOutputNode(GLvertex3f pos) : AGAudioNode(pos)
 {
-    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
+//    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
     m_nodeInfo = s_audioNodeInfo;
 }
 
@@ -343,11 +352,11 @@ void AGAudioOutputNode::initialize()
 }
 
 
-void AGAudioOutputNode::renderAudio(float *input, float *output, int nFrames)
+void AGAudioOutputNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
     for(std::list<AGConnection *>::iterator i = m_inbound.begin(); i != m_inbound.end(); i++)
     {
-        ((AGAudioNode *)(*i)->src())->renderAudio(input, output, nFrames);
+        ((AGAudioNode *)(*i)->src())->renderAudio(t, input, output, nFrames);
     }
 }
 
@@ -385,7 +394,7 @@ public:
     virtual void setInputPortValue(int port, float value);
     virtual void getInputPortValue(int port, float &value) const;
     
-    virtual void renderAudio(float *input, float *output, int nFrames);
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
     static void renderIcon();
     static AGAudioNode *create(const GLvertex3f &pos);
@@ -426,7 +435,7 @@ void AGAudioSineWaveNode::initialize()
 
 AGAudioSineWaveNode::AGAudioSineWaveNode(GLvertex3f pos) : AGAudioNode(pos)
 {
-    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
+//    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
     m_nodeInfo = s_audioNodeInfo;
     
     m_freq = 220;
@@ -453,9 +462,9 @@ void AGAudioSineWaveNode::getInputPortValue(int port, float &value) const
     }
 }
 
-void AGAudioSineWaveNode::renderAudio(float *input, float *output, int nFrames)
+void AGAudioSineWaveNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
-    pullInputPorts(nFrames);
+    pullInputPorts(t, nFrames);
     
     for(int i = 0; i < nFrames; i++)
     {
@@ -498,7 +507,7 @@ public:
     virtual void setInputPortValue(int port, float value);
     virtual void getInputPortValue(int port, float &value) const;
     
-    virtual void renderAudio(float *input, float *output, int nFrames);
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
     static void renderIcon();
     static AGAudioNode *create(const GLvertex3f &pos);
@@ -540,7 +549,7 @@ void AGAudioSquareWaveNode::initialize()
 
 AGAudioSquareWaveNode::AGAudioSquareWaveNode(GLvertex3f pos) : AGAudioNode(pos)
 {
-    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
+//    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
     m_nodeInfo = s_audioNodeInfo;
     
     m_freq = 220;
@@ -568,9 +577,9 @@ void AGAudioSquareWaveNode::getInputPortValue(int port, float &value) const
     }
 }
 
-void AGAudioSquareWaveNode::renderAudio(float *input, float *output, int nFrames)
+void AGAudioSquareWaveNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
-    pullInputPorts(nFrames);
+    pullInputPorts(t, nFrames);
     
     for(int i = 0; i < nFrames; i++)
     {
@@ -616,7 +625,7 @@ public:
     virtual void setInputPortValue(int port, float value);
     virtual void getInputPortValue(int port, float &value) const;
     
-    virtual void renderAudio(float *input, float *output, int nFrames);
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
     static void renderIcon();
     static AGAudioNode *create(const GLvertex3f &pos);
@@ -656,7 +665,7 @@ void AGAudioSawtoothWaveNode::initialize()
 
 AGAudioSawtoothWaveNode::AGAudioSawtoothWaveNode(GLvertex3f pos) : AGAudioNode(pos)
 {
-    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
+//    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
     m_nodeInfo = s_audioNodeInfo;
     
     m_freq = 220;
@@ -684,9 +693,9 @@ void AGAudioSawtoothWaveNode::getInputPortValue(int port, float &value) const
     }
 }
 
-void AGAudioSawtoothWaveNode::renderAudio(float *input, float *output, int nFrames)
+void AGAudioSawtoothWaveNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
-    pullInputPorts(nFrames);
+    pullInputPorts(t, nFrames);
     
     for(int i = 0; i < nFrames; i++)
     {
@@ -732,7 +741,7 @@ public:
     virtual void setInputPortValue(int port, float value);
     virtual void getInputPortValue(int port, float &value) const;
     
-    virtual void renderAudio(float *input, float *output, int nFrames);
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
     static void renderIcon();
     static AGAudioNode *create(const GLvertex3f &pos);
@@ -772,7 +781,7 @@ void AGAudioTriangleWaveNode::initialize()
 
 AGAudioTriangleWaveNode::AGAudioTriangleWaveNode(GLvertex3f pos) : AGAudioNode(pos)
 {
-    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
+//    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
     m_nodeInfo = s_audioNodeInfo;
     
     m_freq = 220;
@@ -800,9 +809,9 @@ void AGAudioTriangleWaveNode::getInputPortValue(int port, float &value) const
     }
 }
 
-void AGAudioTriangleWaveNode::renderAudio(float *input, float *output, int nFrames)
+void AGAudioTriangleWaveNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
-    pullInputPorts(nFrames);
+    pullInputPorts(t, nFrames);
     
     for(int i = 0; i < nFrames; i++)
     {
@@ -852,7 +861,7 @@ public:
     virtual void setInputPortValue(int port, float value);
     virtual void getInputPortValue(int port, float &value) const;
     
-    virtual void renderAudio(float *input, float *output, int nFrames);
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
     static void renderIcon();
     static AGAudioNode *create(const GLvertex3f &pos);
@@ -903,7 +912,7 @@ void AGAudioADSRNode::initialize()
 
 AGAudioADSRNode::AGAudioADSRNode(GLvertex3f pos) : AGAudioNode(pos)
 {
-    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
+//    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
     m_nodeInfo = s_audioNodeInfo;
     
     allocatePortBuffers();
@@ -914,20 +923,11 @@ void AGAudioADSRNode::setInputPortValue(int port, float value)
 {
     switch(port)
     {
-        case 2:
-            break;
-        case 3:
-            m_attack = value/1000.0f;
-            break;
-        case 4:
-            m_decay = value/1000.0f;
-            break;
-        case 5:
-            m_sustain = value/1000.0f;
-            break;
-        case 6:
-            m_release = value/1000.0f;
-            break;
+        case 2: break;
+        case 3: m_attack = value/1000.0f; break;
+        case 4: m_decay = value/1000.0f; break;
+        case 5: m_sustain = value/1000.0f; break;
+        case 6: m_release = value/1000.0f; break;
     }
 }
 
@@ -938,9 +938,9 @@ void AGAudioADSRNode::getInputPortValue(int port, float &value) const
     }
 }
 
-void AGAudioADSRNode::renderAudio(float *input, float *output, int nFrames)
+void AGAudioADSRNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
-    pullInputPorts(nFrames);
+    pullInputPorts(t, nFrames);
     
     for(int i = 0; i < nFrames; i++)
     {
@@ -987,7 +987,7 @@ public:
     virtual void setInputPortValue(int port, float value);
     virtual void getInputPortValue(int port, float &value) const;
     
-    virtual void renderAudio(float *input, float *output, int nFrames);
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
     static void renderLowPassIcon();
     static AGAudioNode *createLowPass(const GLvertex3f &pos);
@@ -1091,7 +1091,7 @@ AGAudioFilterNode::AGAudioFilterNode(GLvertex3f pos, Butter2Filter *filter, AGNo
 AGAudioNode(pos),
 m_filter(filter)
 {
-    m_inputPortInfo = &nodeInfo->portInfo[0];
+//    m_inputPortInfo = &nodeInfo->portInfo[0];
     m_nodeInfo = nodeInfo;
     
     allocatePortBuffers();
@@ -1133,9 +1133,9 @@ void AGAudioFilterNode::getInputPortValue(int port, float &value) const
     }
 }
 
-void AGAudioFilterNode::renderAudio(float *input, float *output, int nFrames)
+void AGAudioFilterNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
-    pullInputPorts(nFrames);
+    pullInputPorts(t, nFrames);
     
     for(int i = 0; i < nFrames; i++)
     {

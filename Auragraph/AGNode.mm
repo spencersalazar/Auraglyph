@@ -263,7 +263,7 @@ void AGNode::initalizeNode()
 }
 
 
-AGNode::AGNode(GLvertex3f pos) : m_pos(pos), m_nodeInfo(NULL), m_inputPortInfo(NULL)
+AGNode::AGNode(GLvertex3f pos) : m_pos(pos), m_nodeInfo(NULL)
 {
     m_inputActivation = m_outputActivation = 0;
     m_activation = 0;
@@ -554,7 +554,7 @@ void AGControlTimerNode::initialize()
     s_nodeInfo = new AGNodeInfo;
     
     float radius = 0.005;
-    int circleSize = 64;
+    int circleSize = 48;
     s_nodeInfo->iconGeoSize = circleSize*2 + 4;
     s_nodeInfo->iconGeoType = GL_LINES;
     s_nodeInfo->iconGeo = new GLvertex3f[s_nodeInfo->iconGeoSize];
@@ -569,9 +569,9 @@ void AGControlTimerNode::initialize()
         s_nodeInfo->iconGeo[i*2+1] = GLvertex3f(radius*cosf(theta1), radius*sinf(theta1), 0);
     }
     
-    float minute = 50;
+    float minute = 47;
     float minuteAngle = M_PI/2.0 + (minute/60.0)*(-2.0*M_PI);
-    float hour = 2;
+    float hour = 1;
     float hourAngle = M_PI/2.0 + (hour/12.0 + minute/60.0/12.0)*(-2.0*M_PI);
     
     s_nodeInfo->iconGeo[circleSize*2+0] = GLvertex3f(0, 0, 0);
@@ -579,7 +579,7 @@ void AGControlTimerNode::initialize()
     s_nodeInfo->iconGeo[circleSize*2+2] = GLvertex3f(0, 0, 0);
     s_nodeInfo->iconGeo[circleSize*2+3] = GLvertex3f(radius*0.925*cosf(minuteAngle), radius*0.925*sinf(minuteAngle), 0);
     
-    s_nodeInfo->portInfo.push_back({ "interval", true, true });
+    s_nodeInfo->portInfo.push_back({ "intrvl", true, true });
 }
 
 AGControlTimerNode::AGControlTimerNode(const GLvertex3f &pos) :
@@ -592,24 +592,38 @@ AGControlNode(pos)
 }
 
 void AGControlTimerNode::setInputPortValue(int port, float value)
-{ }
+{
+    switch(port)
+    {
+        case 0: m_interval = value; break;
+    }
+}
 
 void AGControlTimerNode::getInputPortValue(int port, float &value) const
-{ }
+{
+    switch(port)
+    {
+        case 0: value = m_interval; break;
+    }
+}
 
 AGControl *AGControlTimerNode::renderControl(sampletime t)
 {
-    if(((float)(t - m_lastFire))/AGAudioNode::sampleRate() > m_interval)
+    if(t > m_lastTime)
     {
-        m_control.v = 1;
-        m_lastFire = t;
-    }
-    else
-    {
-        m_control.v = 0;
+        if(((float)(t - m_lastFire))/AGAudioNode::sampleRate() > m_interval)
+        {
+            m_control.v = 1;
+            m_lastFire = t;
+        }
+        else
+        {
+            m_control.v = 0;
+        }
+        
+        m_lastTime = t;
     }
     
-    m_lastTime = t;
     return &m_control;
 }
 

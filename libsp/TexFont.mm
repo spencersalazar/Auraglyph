@@ -24,7 +24,7 @@ float TexFont::s_radius = 0;
 
 
 static UniChar *g_chars = NULL;
-static const char g_charStr[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+static const char g_charStr[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}:\";',./<>?|\\`~";
 static int g_asciiToIndex[127];
 static const int g_linebreak = 16;
 

@@ -15,6 +15,9 @@
 static float g_audio_buf[1024];
 
 @interface AGAudioManager ()
+{
+    sampletime t;
+}
 
 - (void)renderAudio:(Float32 *)buffer numFrames:(UInt32)numFrames;
 
@@ -33,6 +36,7 @@ void audio_cb( Float32 * buffer, UInt32 numFrames, void * userData )
 {
     if(self = [super init])
     {
+        t = 0;
         self.outputNode = NULL;
         
         memset(g_audio_buf, 0, sizeof(float)*1024);
@@ -51,7 +55,7 @@ void audio_cb( Float32 * buffer, UInt32 numFrames, void * userData )
 
     if(self.outputNode)
     {
-        self.outputNode->renderAudio(NULL, g_audio_buf, numFrames);
+        self.outputNode->renderAudio(t, NULL, g_audio_buf, numFrames);
     }
     
     for(int i = 0; i < numFrames; i++)
@@ -59,6 +63,8 @@ void audio_cb( Float32 * buffer, UInt32 numFrames, void * userData )
         buffer[i*2] = g_audio_buf[i];
         buffer[i*2+1] = g_audio_buf[i];
     }
+    
+    t += numFrames;
 }
 
 
