@@ -199,13 +199,13 @@ static bool pointOnLine(const GLvertex2f &point, const GLvertex2f &line0, const 
     return false;
 }
 
-static float distanceToLine(const GLvertex2f &point, const GLvertex2f &line0, const GLvertex2f &line1)
+static inline float distanceToLine(const GLvertex2f &point, const GLvertex2f &line0, const GLvertex2f &line1)
 {
     GLvertex2f normal = GLvertex2f(line1.y - line0.y, line0.x - line1.x).normalize();
     return normal.dot(point-line0);
 }
 
-static bool pointInTriangle(const GLvertex2f &point, const GLvertex2f &v0, const GLvertex2f &v1, const GLvertex2f &v2)
+static inline bool pointInTriangle(const GLvertex2f &point, const GLvertex2f &v0, const GLvertex2f &v1, const GLvertex2f &v2)
 {
     /* points should be in clockwise order */
     if(distanceToLine(point, v0, v1) >= 0 &&
@@ -215,10 +215,17 @@ static bool pointInTriangle(const GLvertex2f &point, const GLvertex2f &v0, const
     return false;
 }
 
-static bool pointInRectangle(const GLvertex2f &point, const GLvertex2f &bottomLeft, const GLvertex2f &topRight)
+static inline bool pointInRectangle(const GLvertex2f &point, const GLvertex2f &bottomLeft, const GLvertex2f &topRight)
 {
     if(point.x >= bottomLeft.x && point.x <= topRight.x &&
        point.y >= bottomLeft.y && point.y <= topRight.y)
+        return true;
+    return false;
+}
+
+static inline bool pointInCircle(const GLvertex2f &point, const GLvertex2f &center, float radius)
+{
+    if(GLvertex2f(point.x - center.x, point.y - center.y).magnitudeSquared() <= radius*radius)
         return true;
     return false;
 }

@@ -33,8 +33,7 @@ public:
     virtual void update(float t, float dt);
     virtual void render();
     
-    virtual HitTestResult hit(const GLvertex3f &hit);
-    virtual void unhit();
+    virtual AGUIObject *hitTest(const GLvertex3f &t);
 
     virtual GLvertex3f relativePositionForInputPort(int port) const;
     virtual GLvertex3f relativePositionForOutputPort(int port) const;

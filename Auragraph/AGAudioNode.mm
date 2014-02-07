@@ -153,52 +153,25 @@ void AGAudioNode::render()
     AGNode::render();
 }
 
-
-AGNode::HitTestResult AGAudioNode::hit(const GLvertex3f &hit)
+AGUIObject *AGAudioNode::hitTest(const GLvertex3f &t)
 {
-    float x, y;
-    
-    if(numInputPorts())
-    {
-        // check input port
-        x = hit.x - (m_pos.x - m_radius);
-        y = hit.y - m_pos.y;
-        if(x*x + y*y <= m_portRadius*m_portRadius)
-        {
-            return HIT_INPUT_NODE;
-        }
-    }
-    
-    if(numOutputPorts())
-    {
-        // check output port
-        x = hit.x - (m_pos.x + m_radius);
-        y = hit.y - m_pos.y;
-        if(x*x + y*y <= m_portRadius*m_portRadius)
-        {
-            return HIT_OUTPUT_NODE;
-        }
-    }
-    
-    // check whole node
-    x = hit.x - m_pos.x;
-    y = hit.y - m_pos.y;
-    if(x*x + y*y <= m_radius*m_radius)
-    {
-        return HIT_MAIN_NODE;
-    }
-    
-    return HIT_NONE;
-}
-
-void AGAudioNode::unhit()
-{
-    //m_hitInput = m_hitOutput = false;
+    if(pointInCircle(t.xy(), m_pos.xy(), m_radius))
+        return this;
+    return NULL;
 }
 
 GLvertex3f AGAudioNode::relativePositionForInputPort(int port) const
 {
-    return GLvertex3f(-m_radius, 0, 0);
+    int numIn = numInputPorts();
+    // compute placement to pack ports side by side on left side
+    // thetaI - inner angle of the big circle traversed by 1/2 of the port
+    float thetaI = acosf((2*m_radius*m_radius - s_portRadius*s_portRadius) / (2*m_radius*m_radius));
+    // thetaStart - position of first port
+    float thetaStart = (numIn-1)*thetaI;
+    // theta - position of this port
+    float theta = thetaStart - 2*thetaI*port;
+    // flip horizontally to place on left side
+    return GLvertex3f(-m_radius*cosf(theta), m_radius*sinf(theta), 0);
 }
 
 GLvertex3f AGAudioNode::relativePositionForOutputPort(int port) const

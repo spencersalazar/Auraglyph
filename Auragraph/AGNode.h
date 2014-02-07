@@ -139,8 +139,8 @@ public:
         HIT_MAIN_NODE,
     };
     
-    virtual HitTestResult hit(const GLvertex3f &hit) = 0;
-    virtual void unhit() = 0;
+    virtual HitTestResult hit(const GLvertex3f &hit);
+    virtual void unhit();
     
     void setPosition(const GLvertex3f &pos) { m_pos = pos; }
     const GLvertex3f &position() const { return m_pos; }
@@ -232,8 +232,8 @@ public:
     
     virtual AGUIObject *hitTest(const GLvertex3f &t);
     
-    virtual HitTestResult hit(const GLvertex3f &hit);
-    virtual void unhit();
+//    virtual HitTestResult hit(const GLvertex3f &hit);
+//    virtual void unhit();
     
     virtual GLvertex3f relativePositionForInputPort(int port) const { return GLvertex3f(-s_radius, 0, 0); }
     virtual GLvertex3f relativePositionForOutputPort(int port) const { return GLvertex3f(s_radius, 0, 0); }

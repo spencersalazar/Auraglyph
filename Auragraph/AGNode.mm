@@ -315,7 +315,8 @@ void AGNode::render()
     shader.setMVPMatrix(m_modelViewProjectionMatrix);
     shader.setNormalMatrix(m_normalMatrix);
     
-    if(numOutputPorts())
+    int numOut = numOutputPorts();
+    if(numOut)
     {
         // draw output port
         glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_portGeo);
@@ -334,12 +335,13 @@ void AGNode::render()
         glDrawArrays(s_portGeoType, 0, s_portGeoSize);
     }
     
-    if(numInputPorts())
+    int numIn = numInputPorts();
+    for(int i = 0; i < numIn; i++)
     {
         // draw input port
         glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_portGeo);
         
-        GLvertex3f portPos = relativePositionForInputPort(0);
+        GLvertex3f portPos = relativePositionForInputPort(i);
         GLKMatrix4 mvpInputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, portPos.x, portPos.y, portPos.z);
         shader.setMVPMatrix(mvpInputPort);
         
@@ -352,7 +354,7 @@ void AGNode::render()
         glLineWidth(2.0f);
         glDrawArrays(s_portGeoType, 0, s_portGeoSize);
     }
-    
+
     if(m_nodeInfo)
     {
         shader.setMVPMatrix(m_modelViewProjectionMatrix);
@@ -367,6 +369,36 @@ void AGNode::render()
         glLineWidth(2.0f);
         glDrawArrays(m_nodeInfo->iconGeoType, 0, m_nodeInfo->iconGeoSize);
     }
+}
+
+AGNode::HitTestResult AGNode::hit(const GLvertex3f &hit)
+{
+    int numIn = numInputPorts();
+    for(int i = 0; i < numIn; i++)
+    {
+        GLvertex3f portPos = relativePositionForInputPort(i);
+        if(pointInCircle(hit.xy(), (m_pos+portPos).xy(), s_portRadius))
+            return HIT_INPUT_NODE;
+    }
+    
+    int numOut = numOutputPorts();
+    for(int i = 0; i < numOut; i++)
+    {
+        GLvertex3f portPos = relativePositionForOutputPort(i);
+        if(pointInCircle(hit.xy(), (m_pos+portPos).xy(), s_portRadius))
+            return HIT_OUTPUT_NODE;
+    }
+    
+    // check whole node
+    if(hitTest(hit) == this)
+        return HIT_MAIN_NODE;
+    
+    return HIT_NONE;
+}
+
+void AGNode::unhit()
+{
+    
 }
 
 void AGNode::touchDown(const GLvertex3f &t)
@@ -501,47 +533,47 @@ void AGControlNode::render()
     AGNode::render();
 }
 
-AGNode::HitTestResult AGControlNode::hit(const GLvertex3f &hit)
-{
-    float x, y;
-    
-    if(numInputPorts())
-    {
-        // check input port
-        x = hit.x - (m_pos.x - s_radius);
-        y = hit.y - m_pos.y;
-        if(x*x + y*y <= s_portRadius*s_portRadius)
-        {
-            return HIT_INPUT_NODE;
-        }
-    }
-    
-    if(numOutputPorts())
-    {
-        // check output port
-        x = hit.x - (m_pos.x + s_radius);
-        y = hit.y - m_pos.y;
-        if(x*x + y*y <= s_portRadius*s_portRadius)
-        {
-            return HIT_OUTPUT_NODE;
-        }
-    }
-    
-    // check whole node
-    x = hit.x - m_pos.x;
-    y = hit.y - m_pos.y;
-    if(x*x + y*y <= s_radius*s_radius)
-    {
-        return HIT_MAIN_NODE;
-    }
-    
-    return HIT_NONE;
-}
-
-void AGControlNode::unhit()
-{
-    
-}
+//AGNode::HitTestResult AGControlNode::hit(const GLvertex3f &hit)
+//{
+//    float x, y;
+//    
+//    if(numInputPorts())
+//    {
+//        // check input port
+//        x = hit.x - (m_pos.x - s_radius);
+//        y = hit.y - m_pos.y;
+//        if(x*x + y*y <= s_portRadius*s_portRadius)
+//        {
+//            return HIT_INPUT_NODE;
+//        }
+//    }
+//    
+//    if(numOutputPorts())
+//    {
+//        // check output port
+//        x = hit.x - (m_pos.x + s_radius);
+//        y = hit.y - m_pos.y;
+//        if(x*x + y*y <= s_portRadius*s_portRadius)
+//        {
+//            return HIT_OUTPUT_NODE;
+//        }
+//    }
+//    
+//    // check whole node
+//    x = hit.x - m_pos.x;
+//    y = hit.y - m_pos.y;
+//    if(x*x + y*y <= s_radius*s_radius)
+//    {
+//        return HIT_MAIN_NODE;
+//    }
+//    
+//    return HIT_NONE;
+//}
+//
+//void AGControlNode::unhit()
+//{
+//    
+//}
 
 AGUIObject *AGControlNode::hitTest(const GLvertex3f &t)
 {
