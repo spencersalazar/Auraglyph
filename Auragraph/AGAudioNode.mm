@@ -1082,9 +1082,19 @@ void AGAudioFilterNode::renderAudio(sampletime t, float *input, float *output, i
     
     for(int i = 0; i < nFrames; i++)
     {
-        output[i] += m_filter->tick(m_inputPortBuffer[0][i]);
+        float gain = m_gain + m_inputPortBuffer[1][i];
+        float freq = m_freq + m_inputPortBuffer[2][i];
+        float Q = m_Q + m_inputPortBuffer[3][i];
         
-        m_inputPortBuffer[0][i] = 0;
+        if(freq != m_freq || m_Q != Q)
+            m_filter->set(freq, Q);
+        
+        output[i] += gain * m_filter->tick(m_inputPortBuffer[0][i]);
+        
+        m_inputPortBuffer[0][i] = 0; // input
+        m_inputPortBuffer[1][i] = 0; // gain
+        m_inputPortBuffer[2][i] = 0; // freq
+        m_inputPortBuffer[3][i] = 0; // Q
     }
 }
 
