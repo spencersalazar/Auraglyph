@@ -8,7 +8,6 @@
 
 #include "Mutex.h"
 
-
 Mutex::Mutex()
 {
     pthread_mutex_init(&m_mutex, NULL);
@@ -28,4 +27,3 @@ void Mutex::unlock()
 {
     pthread_mutex_unlock(&m_mutex);
 }
-

@@ -20,16 +20,6 @@
 
 using namespace std;
 
-struct AGAudioNodeInfo
-{
-    GLuint iconVertexArray;
-    GLuint iconVertexBuffer;
-    GLuint iconGeoSize;
-    GLuint iconGeoType;
-    
-    vector<AGPortInfo> portInfo;
-};
-
 
 class AGAudioNode : public AGNode
 {
@@ -75,9 +65,9 @@ private:
     int m_activation;
     
 protected:
-    GLuint m_iconVertexArray;
-    GLuint m_iconGeoSize;
-    GLuint m_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
+//    GLuint m_iconVertexArray;
+//    GLuint m_iconGeoSize;
+//    GLuint m_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
     
     float ** m_inputPortBuffer;
     
@@ -104,7 +94,7 @@ public:
     static AGAudioNode *create(const GLvertex3f &pos);
     
 private:
-    static AGAudioNodeInfo *s_audioNodeInfo;
+    static AGNodeInfo *s_audioNodeInfo;
 };
 
 

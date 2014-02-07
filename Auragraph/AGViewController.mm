@@ -702,7 +702,7 @@ static AGViewController * g_instance = nil;
     }
     else if(figure == AG_FIGURE_SQUARE)
     {
-        AGControlNode * node = new AGControlNode(centroidMVP);
+        AGControlNode * node = new AGControlTimerNode(centroidMVP);
         [_viewController addNode:node];
         [_viewController clearLinePoints];
     }

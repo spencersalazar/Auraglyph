@@ -17,6 +17,7 @@
 #import "ShaderHelper.h"
 #import "AGUserInterface.h"
 #import "Mutex.h"
+#import "AGControl.h"
 
 #import <list>
 #import <string>
@@ -30,6 +31,28 @@ enum AGRate
     RATE_CONTROL,
     RATE_AUDIO,
 };
+
+struct AGPortInfo
+{
+    std::string name;
+    bool canConnect; // can create connection btw this port and another port
+    bool canEdit; // should this port appear in the node's editor window
+    
+    // TODO: min, max, units label, etc.
+};
+
+struct AGNodeInfo
+{
+    AGNodeInfo() : iconGeo(NULL), iconGeoSize(0), iconGeoType(GL_LINE_STRIP) { }
+    
+    GLvertex3f *iconGeo;
+    GLuint iconGeoSize;
+    GLuint iconGeoType;
+    
+    vector<AGPortInfo> portInfo;
+};
+
+typedef unsigned long long sampletime;
 
 
 class AGConnection : public AGUIObject
@@ -85,16 +108,6 @@ private:
 };
 
 
-struct AGPortInfo
-{
-    std::string name;
-    bool canConnect; // can create connection btw this port and another port
-    bool canEdit; // should this port appear in the node's editor window
-    
-    // TODO: min, max, units label, etc.
-};
-
-
 class AGNode : public AGUIObject
 {
 public:
@@ -109,7 +122,7 @@ public:
     static void connect(AGConnection * connection);
     static void disconnect(AGConnection * connection);
     
-    AGNode(GLvertex3f pos = GLvertex3f()) : m_pos(pos) { }
+    AGNode(GLvertex3f pos = GLvertex3f()) : m_pos(pos), m_nodeInfo(NULL), m_inputPortInfo(NULL) { }
     virtual ~AGNode();
     
     virtual void update(float t, float dt) = 0;
@@ -155,7 +168,6 @@ public:
     virtual AGRate rate() { return RATE_CONTROL; }
     
 private:
-    
     static bool s_initNode;
     
     static GLKMatrix4 s_projectionMatrix;
@@ -170,6 +182,13 @@ protected:
     
     const static float s_sizeFactor;
     
+    virtual void addInbound(AGConnection *connection);
+    virtual void addOutbound(AGConnection *connection);
+    virtual void removeInbound(AGConnection *connection);
+    virtual void removeOutbound(AGConnection *connection);
+    
+    AGNodeInfo *m_nodeInfo;
+    
     std::list<AGConnection *> m_inbound;
     std::list<AGConnection *> m_outbound;
     AGPortInfo * m_inputPortInfo;
@@ -177,11 +196,6 @@ protected:
     GLvertex3f m_pos;
     GLKMatrix4 m_modelViewProjectionMatrix;
     GLKMatrix3 m_normalMatrix;
-    
-    virtual void addInbound(AGConnection *connection);
-    virtual void addOutbound(AGConnection *connection);
-    virtual void removeInbound(AGConnection *connection);
-    virtual void removeOutbound(AGConnection *connection);
     
     // touch handling stuff
     GLvertex3f m_lastTouch;
@@ -191,10 +205,10 @@ protected:
 class AGControlNode : public AGNode
 {
 public:
-    
     static void initializeControlNode();
     
     AGControlNode(GLvertex3f pos = GLvertex3f());
+    virtual ~AGControlNode() { }
     
     virtual void update(float t, float dt);
     virtual void render();
@@ -203,7 +217,19 @@ public:
     
     virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();
-
+    
+    // TODO
+    virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const { return GLvertex3f(); }
+    virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const { return GLvertex3f(); }
+    
+    // TODO
+    // 1: positive activation; 0: deactivation; -1: negative activation
+    virtual void activateInputPort(int type) { }
+    virtual void activateOutputPort(int type) { }
+    virtual void activate(int type) { }
+    
+    virtual AGControl *renderControl(sampletime t) = 0;
+    
 private:
     
     static bool s_init;
@@ -214,6 +240,34 @@ private:
     static GLvncprimf *s_geo;
     static GLuint s_geoSize;
     
+protected:
+    AGControl *m_control;
+    GLvertex3f *m_iconGeo;
+    GLuint m_geoSize;
+    GLuint m_geoType;
+};
+
+
+
+class AGControlTimerNode : public AGControlNode
+{
+public:
+    static void initialize();
+
+    AGControlTimerNode(const GLvertex3f &pos) : AGControlNode(pos) { }
+    
+    virtual int numOutputPorts() const { return 1; }
+    virtual int numInputPorts() const { return 0; }
+    virtual const AGPortInfo &inputPortInfo(int port) { return m_inputPortInfo[port]; }
+    virtual void setInputPortValue(int port, float value) { }
+    virtual void getInputPortValue(int port, float &value) const { }
+
+    virtual AGControl *renderControl(sampletime t) { return m_control; }
+    
+private:
+    sampletime m_lastTime;
+    sampletime m_lastFire;
+    float m_interval;
 };
 
 
