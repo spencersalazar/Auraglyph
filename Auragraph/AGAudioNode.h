@@ -35,9 +35,9 @@ public:
     
     virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();
-    
-    virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const;
-    virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const;
+
+    virtual GLvertex3f relativePositionForInputPort(int port) const;
+    virtual GLvertex3f relativePositionForOutputPort(int port) const;
     
     virtual AGRate rate() { return RATE_AUDIO; }
     
@@ -57,9 +57,6 @@ private:
     float m_portRadius;
         
 protected:
-//    GLuint m_iconVertexArray;
-//    GLuint m_iconGeoSize;
-//    GLuint m_iconGeoType; // e.g. GL_LINE_STRIP, GL_LINE_LOOP, etc.
     
     float ** m_inputPortBuffer;
     

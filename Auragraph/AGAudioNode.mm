@@ -148,56 +148,9 @@ void AGAudioNode::render()
         glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
     }
     
-    if(numOutputPorts())
-    {
-        // draw output port
-        GLKMatrix4 mvpOutputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, m_radius, 0, 0);
-        mvpOutputPort = GLKMatrix4Scale(mvpOutputPort, 0.2, 0.2, 1);
-        shader.setMVPMatrix(mvpOutputPort);
-        
-        if(m_outputActivation > 0)      color = GLcolor4f(0, 1, 0, 1);
-        else if(m_outputActivation < 0) color = GLcolor4f(1, 0, 0, 1);
-        else                            color = GLcolor4f(1, 1, 1, 1);
-        
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
-        
-        glLineWidth(2.0f);
-        glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
-    }
-    
-    if(numInputPorts())
-    {
-        // draw input port
-        GLKMatrix4 mvpInputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, -m_radius, 0, 0);
-        mvpInputPort = GLKMatrix4Scale(mvpInputPort, 0.2, 0.2, 1);
-        shader.setMVPMatrix(mvpInputPort);
-        
-        if(m_inputActivation > 0)      color = GLcolor4f(0, 1, 0, 1);
-        else if(m_inputActivation < 0) color = GLcolor4f(1, 0, 0, 1);
-        else                           color = GLcolor4f(1, 1, 1, 1);
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
-        
-        glLineWidth(2.0f);
-        glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
-    }
-    
-    if(m_nodeInfo)
-    {
-        shader.setMVPMatrix(m_modelViewProjectionMatrix);
-        shader.setNormalMatrix(m_normalMatrix);
-
-        glBindVertexArrayOES(0);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_nodeInfo->iconGeo);
-    
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
-        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-        
-        glLineWidth(2.0f);
-        glDrawArrays(m_nodeInfo->iconGeoType, 0, m_nodeInfo->iconGeoSize);
-    }
-    
     glBindVertexArrayOES(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    AGNode::render();
 }
 
 
@@ -243,14 +196,14 @@ void AGAudioNode::unhit()
     //m_hitInput = m_hitOutput = false;
 }
 
-GLvertex3f AGAudioNode::positionForInboundConnection(AGConnection * connection) const
+GLvertex3f AGAudioNode::relativePositionForInputPort(int port) const
 {
-    return GLvertex3f(m_pos.x - m_radius, m_pos.y, m_pos.z);
+    return GLvertex3f(-m_radius, 0, 0);
 }
 
-GLvertex3f AGAudioNode::positionForOutboundConnection(AGConnection * connection) const
+GLvertex3f AGAudioNode::relativePositionForOutputPort(int port) const
 {
-    return GLvertex3f(m_pos.x + m_radius, m_pos.y, m_pos.z);
+    return GLvertex3f(m_radius, 0, 0);
 }
 
 void AGAudioNode::allocatePortBuffers()
@@ -260,7 +213,7 @@ void AGAudioNode::allocatePortBuffers()
         m_inputPortBuffer = new float*[numInputPorts()];
         for(int i = 0; i < numInputPorts(); i++)
         {
-            if(m_nodeInfo->portInfo[i].canConnect)
+            if(m_nodeInfo->inputPortInfo[i].canConnect)
             {
                 m_inputPortBuffer[i] = new float[bufferSize()];
                 memset(m_inputPortBuffer[i], 0, sizeof(float)*bufferSize());
@@ -348,7 +301,7 @@ void AGAudioOutputNode::initialize()
     
     s_audioNodeInfo->iconGeo = iconGeo;
     
-    s_audioNodeInfo->portInfo.push_back({ "input", true, false });
+    s_audioNodeInfo->inputPortInfo.push_back({ "input", true, false });
 }
 
 
@@ -389,10 +342,9 @@ public:
     AGAudioSineWaveNode(GLvertex3f pos);
     
     virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { return 2; }
     
-    virtual void setInputPortValue(int port, float value);
-    virtual void getInputPortValue(int port, float &value) const;
+    virtual void setEditPortValue(int port, float value);
+    virtual void getEditPortValue(int port, float &value) const;
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
@@ -429,8 +381,10 @@ void AGAudioSineWaveNode::initialize()
     
     s_audioNodeInfo->iconGeo = iconGeo;
     
-    s_audioNodeInfo->portInfo.push_back({ "freq", true, true });
-    s_audioNodeInfo->portInfo.push_back({ "gain", true, true });
+    s_audioNodeInfo->inputPortInfo.push_back({ "freq", true, true });
+    s_audioNodeInfo->inputPortInfo.push_back({ "gain", true, true });
+    s_audioNodeInfo->editPortInfo.push_back({ "freq", true, true });
+    s_audioNodeInfo->editPortInfo.push_back({ "gain", true, true });
 }
 
 AGAudioSineWaveNode::AGAudioSineWaveNode(GLvertex3f pos) : AGAudioNode(pos)
@@ -444,7 +398,7 @@ AGAudioSineWaveNode::AGAudioSineWaveNode(GLvertex3f pos) : AGAudioNode(pos)
     allocatePortBuffers();
 }
 
-void AGAudioSineWaveNode::setInputPortValue(int port, float value)
+void AGAudioSineWaveNode::setEditPortValue(int port, float value)
 {
     switch(port)
     {
@@ -453,7 +407,7 @@ void AGAudioSineWaveNode::setInputPortValue(int port, float value)
     }
 }
 
-void AGAudioSineWaveNode::getInputPortValue(int port, float &value) const
+void AGAudioSineWaveNode::getEditPortValue(int port, float &value) const
 {
     switch(port)
     {
@@ -502,10 +456,9 @@ public:
     AGAudioSquareWaveNode(GLvertex3f pos);
     
     virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { return 2; }
     
-    virtual void setInputPortValue(int port, float value);
-    virtual void getInputPortValue(int port, float &value) const;
+    virtual void setEditPortValue(int port, float value);
+    virtual void getEditPortValue(int port, float &value) const;
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
@@ -543,8 +496,10 @@ void AGAudioSquareWaveNode::initialize()
     
     s_audioNodeInfo->iconGeo = iconGeo;
     
-    s_audioNodeInfo->portInfo.push_back({ "freq", true, true });
-    s_audioNodeInfo->portInfo.push_back({ "gain", true, true });
+    s_audioNodeInfo->inputPortInfo.push_back({ "freq", true, true });
+    s_audioNodeInfo->inputPortInfo.push_back({ "gain", true, true });
+    s_audioNodeInfo->editPortInfo.push_back({ "freq", true, true });
+    s_audioNodeInfo->editPortInfo.push_back({ "gain", true, true });
 }
 
 AGAudioSquareWaveNode::AGAudioSquareWaveNode(GLvertex3f pos) : AGAudioNode(pos)
@@ -559,7 +514,7 @@ AGAudioSquareWaveNode::AGAudioSquareWaveNode(GLvertex3f pos) : AGAudioNode(pos)
 }
 
 
-void AGAudioSquareWaveNode::setInputPortValue(int port, float value)
+void AGAudioSquareWaveNode::setEditPortValue(int port, float value)
 {
     switch(port)
     {
@@ -568,7 +523,7 @@ void AGAudioSquareWaveNode::setInputPortValue(int port, float value)
     }
 }
 
-void AGAudioSquareWaveNode::getInputPortValue(int port, float &value) const
+void AGAudioSquareWaveNode::getEditPortValue(int port, float &value) const
 {
     switch(port)
     {
@@ -620,10 +575,9 @@ public:
     AGAudioSawtoothWaveNode(GLvertex3f pos);
     
     virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { return 2; }
     
-    virtual void setInputPortValue(int port, float value);
-    virtual void getInputPortValue(int port, float &value) const;
+    virtual void setEditPortValue(int port, float value);
+    virtual void getEditPortValue(int port, float &value) const;
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
@@ -659,8 +613,10 @@ void AGAudioSawtoothWaveNode::initialize()
     
     s_audioNodeInfo->iconGeo = iconGeo;
     
-    s_audioNodeInfo->portInfo.push_back({ "freq", true, true });
-    s_audioNodeInfo->portInfo.push_back({ "gain", true, true });
+    s_audioNodeInfo->inputPortInfo.push_back({ "freq", true, true });
+    s_audioNodeInfo->inputPortInfo.push_back({ "gain", true, true });
+    s_audioNodeInfo->editPortInfo.push_back({ "freq", true, true });
+    s_audioNodeInfo->editPortInfo.push_back({ "gain", true, true });
 }
 
 AGAudioSawtoothWaveNode::AGAudioSawtoothWaveNode(GLvertex3f pos) : AGAudioNode(pos)
@@ -675,7 +631,7 @@ AGAudioSawtoothWaveNode::AGAudioSawtoothWaveNode(GLvertex3f pos) : AGAudioNode(p
 }
 
 
-void AGAudioSawtoothWaveNode::setInputPortValue(int port, float value)
+void AGAudioSawtoothWaveNode::setEditPortValue(int port, float value)
 {
     switch(port)
     {
@@ -684,7 +640,7 @@ void AGAudioSawtoothWaveNode::setInputPortValue(int port, float value)
     }
 }
 
-void AGAudioSawtoothWaveNode::getInputPortValue(int port, float &value) const
+void AGAudioSawtoothWaveNode::getEditPortValue(int port, float &value) const
 {
     switch(port)
     {
@@ -738,8 +694,8 @@ public:
     virtual int numOutputPorts() const { return 1; }
     virtual int numInputPorts() const { return 2; }
     
-    virtual void setInputPortValue(int port, float value);
-    virtual void getInputPortValue(int port, float &value) const;
+    virtual void setEditPortValue(int port, float value);
+    virtual void getEditPortValue(int port, float &value) const;
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
@@ -775,8 +731,10 @@ void AGAudioTriangleWaveNode::initialize()
     
     s_audioNodeInfo->iconGeo = iconGeo;
     
-    s_audioNodeInfo->portInfo.push_back({ "freq", true, true });
-    s_audioNodeInfo->portInfo.push_back({ "gain", true, true });
+    s_audioNodeInfo->inputPortInfo.push_back({ "freq", true, true });
+    s_audioNodeInfo->inputPortInfo.push_back({ "gain", true, true });
+    s_audioNodeInfo->editPortInfo.push_back({ "freq", true, true });
+    s_audioNodeInfo->editPortInfo.push_back({ "gain", true, true });
 }
 
 AGAudioTriangleWaveNode::AGAudioTriangleWaveNode(GLvertex3f pos) : AGAudioNode(pos)
@@ -791,7 +749,7 @@ AGAudioTriangleWaveNode::AGAudioTriangleWaveNode(GLvertex3f pos) : AGAudioNode(p
 }
 
 
-void AGAudioTriangleWaveNode::setInputPortValue(int port, float value)
+void AGAudioTriangleWaveNode::setEditPortValue(int port, float value)
 {
     switch(port)
     {
@@ -800,7 +758,7 @@ void AGAudioTriangleWaveNode::setInputPortValue(int port, float value)
     }
 }
 
-void AGAudioTriangleWaveNode::getInputPortValue(int port, float &value) const
+void AGAudioTriangleWaveNode::getEditPortValue(int port, float &value) const
 {
     switch(port)
     {
@@ -856,10 +814,9 @@ public:
     AGAudioADSRNode(GLvertex3f pos);
     
     virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { return s_audioNodeInfo->portInfo.size(); }
     
-    virtual void setInputPortValue(int port, float value);
-    virtual void getInputPortValue(int port, float &value) const;
+    virtual void setEditPortValue(int port, float value);
+    virtual void getEditPortValue(int port, float &value) const;
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
@@ -899,13 +856,15 @@ void AGAudioADSRNode::initialize()
     
     s_audioNodeInfo->iconGeo = iconGeo;
     
-    s_audioNodeInfo->portInfo.push_back({ "input", true, false });
-    s_audioNodeInfo->portInfo.push_back({ "gain", true, true });
-    s_audioNodeInfo->portInfo.push_back({ "trigger", true, false });
-    s_audioNodeInfo->portInfo.push_back({ "attack", true, true });
-    s_audioNodeInfo->portInfo.push_back({ "decay", true, true });
-    s_audioNodeInfo->portInfo.push_back({ "sustain", true, true });
-    s_audioNodeInfo->portInfo.push_back({ "release", true, true });
+    s_audioNodeInfo->inputPortInfo.push_back({ "input", true, false });
+    s_audioNodeInfo->inputPortInfo.push_back({ "gain", true, true });
+    s_audioNodeInfo->inputPortInfo.push_back({ "trigger", true, false });
+    
+    s_audioNodeInfo->editPortInfo.push_back({ "gain", true, true });
+    s_audioNodeInfo->editPortInfo.push_back({ "attack", true, true });
+    s_audioNodeInfo->editPortInfo.push_back({ "decay", true, true });
+    s_audioNodeInfo->editPortInfo.push_back({ "sustain", true, true });
+    s_audioNodeInfo->editPortInfo.push_back({ "release", true, true });
 }
 
 
@@ -919,19 +878,19 @@ AGAudioADSRNode::AGAudioADSRNode(GLvertex3f pos) : AGAudioNode(pos)
 }
 
 
-void AGAudioADSRNode::setInputPortValue(int port, float value)
+void AGAudioADSRNode::setEditPortValue(int port, float value)
 {
     switch(port)
     {
-        case 2: break;
-        case 3: m_attack = value/1000.0f; break;
-        case 4: m_decay = value/1000.0f; break;
-        case 5: m_sustain = value/1000.0f; break;
-        case 6: m_release = value/1000.0f; break;
+        case 0: m_gain = value; break;
+        case 1: m_attack = value/1000.0f; break;
+        case 2: m_decay = value/1000.0f; break;
+        case 3: m_sustain = value/1000.0f; break;
+        case 4: m_release = value/1000.0f; break;
     }
 }
 
-void AGAudioADSRNode::getInputPortValue(int port, float &value) const
+void AGAudioADSRNode::getEditPortValue(int port, float &value) const
 {
     switch(port)
     {
@@ -982,10 +941,9 @@ public:
     ~AGAudioFilterNode();
     
     virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { return m_nodeInfo->portInfo.size(); }
     
-    virtual void setInputPortValue(int port, float value);
-    virtual void getInputPortValue(int port, float &value) const;
+    virtual void setEditPortValue(int port, float value);
+    virtual void getEditPortValue(int port, float &value) const;
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
@@ -1032,10 +990,14 @@ void AGAudioFilterNode::initialize()
     
     s_lowPassNodeInfo->iconGeo = iconGeo;
     
-    s_lowPassNodeInfo->portInfo.push_back({ "input", true, false });
-    s_lowPassNodeInfo->portInfo.push_back({ "gain", true, true });
-    s_lowPassNodeInfo->portInfo.push_back({ "freq", true, true });
-    s_lowPassNodeInfo->portInfo.push_back({ "Q", true, true });
+    s_lowPassNodeInfo->inputPortInfo.push_back({ "input", true, false });
+    s_lowPassNodeInfo->inputPortInfo.push_back({ "gain", true, true });
+    s_lowPassNodeInfo->inputPortInfo.push_back({ "freq", true, true });
+    s_lowPassNodeInfo->inputPortInfo.push_back({ "Q", true, true });
+    
+    s_lowPassNodeInfo->editPortInfo.push_back({ "gain", true, true });
+    s_lowPassNodeInfo->editPortInfo.push_back({ "freq", true, true });
+    s_lowPassNodeInfo->editPortInfo.push_back({ "Q", true, true });
     
     /* hipass node info */
     s_hiPassNodeInfo = new AGNodeInfo;
@@ -1056,10 +1018,14 @@ void AGAudioFilterNode::initialize()
     
     s_hiPassNodeInfo->iconGeo = iconGeo;
     
-    s_hiPassNodeInfo->portInfo.push_back({ "input", true, false });
-    s_hiPassNodeInfo->portInfo.push_back({ "gain", true, true });
-    s_hiPassNodeInfo->portInfo.push_back({ "freq", true, true });
-    s_hiPassNodeInfo->portInfo.push_back({ "Q", true, true });
+    s_hiPassNodeInfo->inputPortInfo.push_back({ "input", true, false });
+    s_hiPassNodeInfo->inputPortInfo.push_back({ "gain", true, true });
+    s_hiPassNodeInfo->inputPortInfo.push_back({ "freq", true, true });
+    s_hiPassNodeInfo->inputPortInfo.push_back({ "Q", true, true });
+    
+    s_hiPassNodeInfo->editPortInfo.push_back({ "gain", true, true });
+    s_hiPassNodeInfo->editPortInfo.push_back({ "freq", true, true });
+    s_hiPassNodeInfo->editPortInfo.push_back({ "Q", true, true });
     
     /* bandpass node info */
     s_bandPassNodeInfo = new AGNodeInfo;
@@ -1080,10 +1046,14 @@ void AGAudioFilterNode::initialize()
     
     s_bandPassNodeInfo->iconGeo = iconGeo;
     
-    s_bandPassNodeInfo->portInfo.push_back({ "input", true, false });
-    s_bandPassNodeInfo->portInfo.push_back({ "gain", true, true });
-    s_bandPassNodeInfo->portInfo.push_back({ "freq", true, true });
-    s_bandPassNodeInfo->portInfo.push_back({ "Q", true, true });
+    s_bandPassNodeInfo->inputPortInfo.push_back({ "input", true, false });
+    s_bandPassNodeInfo->inputPortInfo.push_back({ "gain", true, true });
+    s_bandPassNodeInfo->inputPortInfo.push_back({ "freq", true, true });
+    s_bandPassNodeInfo->inputPortInfo.push_back({ "Q", true, true });
+    
+    s_bandPassNodeInfo->editPortInfo.push_back({ "gain", true, true });
+    s_bandPassNodeInfo->editPortInfo.push_back({ "freq", true, true });
+    s_bandPassNodeInfo->editPortInfo.push_back({ "Q", true, true });
 }
 
 
@@ -1109,27 +1079,27 @@ AGAudioFilterNode::~AGAudioFilterNode()
 }
 
 
-void AGAudioFilterNode::setInputPortValue(int port, float value)
+void AGAudioFilterNode::setEditPortValue(int port, float value)
 {
     bool set = false;
     
     switch(port)
     {
-        case 1: m_gain = value; break;
-        case 2: m_freq = value; set = true; break;
-        case 3: m_Q = value; set = true; break;
+        case 0: m_gain = value; break;
+        case 1: m_freq = value; set = true; break;
+        case 2: m_Q = value; set = true; break;
     }
     
     if(set) m_filter->set(m_freq, m_Q);
 }
 
-void AGAudioFilterNode::getInputPortValue(int port, float &value) const
+void AGAudioFilterNode::getEditPortValue(int port, float &value) const
 {
     switch(port)
     {
-        case 1: value = m_gain; break;
-        case 2: value = m_freq; break;
-        case 3: value = m_Q; break;
+        case 0: value = m_gain; break;
+        case 1: value = m_freq; break;
+        case 2: value = m_Q; break;
     }
 }
 

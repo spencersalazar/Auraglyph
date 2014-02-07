@@ -397,7 +397,7 @@ void AGUINodeEditor::render()
     
     /* draw items */
 
-    int numPorts = m_node->numInputPorts();
+    int numPorts = m_node->numEditPorts();
     
     for(int i = 0; i < numPorts; i++)
     {
@@ -434,13 +434,13 @@ void AGUINodeEditor::render()
         
         GLKMatrix4 nameMV = GLKMatrix4Translate(m_modelView, -s_radius*0.9, y + s_radius/rowCount*0.1, 0);
         nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
-        s_text->render(m_node->inputPortInfo(i).name, nameColor, nameMV, proj);
+        s_text->render(m_node->editPortInfo(i).name, nameColor, nameMV, proj);
         
         GLKMatrix4 valueMV = GLKMatrix4Translate(m_modelView, s_radius*0.1, y + s_radius/rowCount*0.1, 0);
         valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
         std::stringstream ss;
         float v = 0;
-        m_node->getInputPortValue(i, v);
+        m_node->getEditPortValue(i, v);
         ss << v;
         s_text->render(ss.str(), valueColor, valueMV, proj);
     }
@@ -696,7 +696,7 @@ void AGUINodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
             if(m_hitAccept)
             {
 //                m_doneEditing = true;
-                m_node->setInputPortValue(m_editingPort, m_currentValue);
+                m_node->setEditPortValue(m_editingPort, m_currentValue);
                 m_editingPort = -1;
                 m_hitAccept = false;
                 m_drawline.clear();
@@ -744,7 +744,7 @@ void AGUINodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                 m_editingPort = m_hit;
                 m_hit = -1;
                 m_currentValue = 0;
-                //m_node->getInputPortValue(m_editingPort, m_currentValue);
+                //m_node->getEditPortValue(m_editingPort, m_currentValue);
             }
         }
     }

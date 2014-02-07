@@ -49,7 +49,8 @@ struct AGNodeInfo
     GLuint iconGeoSize;
     GLuint iconGeoType;
     
-    vector<AGPortInfo> portInfo;
+    vector<AGPortInfo> inputPortInfo;
+    vector<AGPortInfo> editPortInfo;
 };
 
 typedef unsigned long long sampletime;
@@ -126,7 +127,7 @@ public:
     virtual ~AGNode();
     
     virtual void update(float t, float dt) = 0;
-    virtual void render() = 0;
+    virtual void render();
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) { assert(0); }
     virtual AGControl *renderControl(sampletime t) { assert(0); return NULL; }
 
@@ -157,17 +158,24 @@ public:
     void activateOutputPort(int type) { m_outputActivation = type; }
     void activate(int type) { m_activation = type; }
     
-    const AGPortInfo &inputPortInfo(int port) { return m_nodeInfo->portInfo[port]; }
+    virtual int numOutputPorts() const { return 1; }
+    virtual int numInputPorts() const { if(m_nodeInfo) return m_nodeInfo->inputPortInfo.size(); else return 0; }
+    virtual int numEditPorts() const { if(m_nodeInfo) return m_nodeInfo->editPortInfo.size(); else return 0; }
+    const AGPortInfo &inputPortInfo(int port) { return m_nodeInfo->inputPortInfo[port]; }
+    const AGPortInfo &editPortInfo(int port) { return m_nodeInfo->editPortInfo[port]; }
+    
+    virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const { return m_pos + relativePositionForInboundConnection(connection); }
+    virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const { return m_pos + relativePositionForOutboundConnection(connection); }
+    virtual GLvertex3f relativePositionForInboundConnection(AGConnection * connection) const { return relativePositionForInputPort(connection->dstPort()); }
+    virtual GLvertex3f relativePositionForOutboundConnection(AGConnection * connection) const { return relativePositionForOutputPort(0); }
     
     /*** Subclassing note: the following public functions should be overridden ***/
     // TODO: all of these should be pure virtual
-    virtual int numOutputPorts() const { return 0; }
-    virtual int numInputPorts() const { return 0; }
-    virtual void setInputPortValue(int port, float value) { }
-    virtual void getInputPortValue(int port, float &value) const { }
+    virtual void setEditPortValue(int port, float value) { }
+    virtual void getEditPortValue(int port, float &value) const { }
     
-    virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const { return GLvertex3f(); }
-    virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const { return GLvertex3f(); }
+    virtual GLvertex3f relativePositionForInputPort(int port) const { return GLvertex3f(); }
+    virtual GLvertex3f relativePositionForOutputPort(int port) const { return GLvertex3f(); }
     
     virtual AGRate rate() { return RATE_CONTROL; }
     
@@ -227,16 +235,9 @@ public:
     virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();
     
-    // TODO
-    virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const { return m_pos + GLvertex3f(-s_radius, 0, 0); }
-    virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const { return m_pos + GLvertex3f(s_radius, 0, 0); }
-    
-    // TODO
-    // 1: positive activation; 0: deactivation; -1: negative activation
-    virtual void activateInputPort(int type) { }
-    virtual void activateOutputPort(int type) { }
-    virtual void activate(int type) { }
-    
+    virtual GLvertex3f relativePositionForInputPort(int port) const { return GLvertex3f(-s_radius, 0, 0); }
+    virtual GLvertex3f relativePositionForOutputPort(int port) const { return GLvertex3f(s_radius, 0, 0); }
+        
 private:
     
     static bool s_init;
@@ -263,9 +264,8 @@ public:
     AGControlTimerNode(const GLvertex3f &pos);
     
     virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { return s_nodeInfo->portInfo.size(); }
-    virtual void setInputPortValue(int port, float value);
-    virtual void getInputPortValue(int port, float &value) const;
+    virtual void setEditPortValue(int port, float value);
+    virtual void getEditPortValue(int port, float &value) const;
 
     virtual AGControl *renderControl(sampletime t);
     

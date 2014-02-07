@@ -306,6 +306,69 @@ void AGNode::removeOutbound(AGConnection *connection)
     m_outbound.remove(connection);
 }
 
+void AGNode::render()
+{
+    glBindVertexArrayOES(0);
+    
+    AGGenericShader &shader = AGGenericShader::instance();
+    shader.useProgram();
+    shader.setMVPMatrix(m_modelViewProjectionMatrix);
+    shader.setNormalMatrix(m_normalMatrix);
+    
+    if(numOutputPorts())
+    {
+        // draw output port
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_portGeo);
+        
+        GLvertex3f portPos = relativePositionForOutputPort(0);
+        GLKMatrix4 mvpOutputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, portPos.x, portPos.y, portPos.z);
+        shader.setMVPMatrix(mvpOutputPort);
+        
+        GLcolor4f color;
+        if(m_outputActivation > 0)      color = GLcolor4f(0, 1, 0, 1);
+        else if(m_outputActivation < 0) color = GLcolor4f(1, 0, 0, 1);
+        else                            color = GLcolor4f(1, 1, 1, 1);
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
+        
+        glLineWidth(2.0f);
+        glDrawArrays(s_portGeoType, 0, s_portGeoSize);
+    }
+    
+    if(numInputPorts())
+    {
+        // draw input port
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_portGeo);
+        
+        GLvertex3f portPos = relativePositionForInputPort(0);
+        GLKMatrix4 mvpInputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, portPos.x, portPos.y, portPos.z);
+        shader.setMVPMatrix(mvpInputPort);
+        
+        GLcolor4f color;
+        if(m_inputActivation > 0)      color = GLcolor4f(0, 1, 0, 1);
+        else if(m_inputActivation < 0) color = GLcolor4f(1, 0, 0, 1);
+        else                           color = GLcolor4f(1, 1, 1, 1);
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
+        
+        glLineWidth(2.0f);
+        glDrawArrays(s_portGeoType, 0, s_portGeoSize);
+    }
+    
+    if(m_nodeInfo)
+    {
+        shader.setMVPMatrix(m_modelViewProjectionMatrix);
+        shader.setNormalMatrix(m_normalMatrix);
+        
+        glBindVertexArrayOES(0);
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_nodeInfo->iconGeo);
+        
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+        
+        glLineWidth(2.0f);
+        glDrawArrays(m_nodeInfo->iconGeoType, 0, m_nodeInfo->iconGeoSize);
+    }
+}
+
 void AGNode::touchDown(const GLvertex3f &t)
 {
     m_lastTouch = t;
@@ -399,7 +462,6 @@ void AGControlNode::render()
 {
     glBindVertexArrayOES(s_vertexArray);
     
-    // TODO
     AGGenericShader &shader = AGGenericShader::instance();
     shader.useProgram();
     shader.setMVPMatrix(m_modelViewProjectionMatrix);
@@ -436,58 +498,7 @@ void AGControlNode::render()
         glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
     }
     
-    glBindVertexArrayOES(0);
-    
-    if(numOutputPorts())
-    {
-        // draw output port
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_portGeo);
-
-        GLKMatrix4 mvpOutputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, s_radius, 0, 0);
-        shader.setMVPMatrix(mvpOutputPort);
-        
-        GLcolor4f color;
-        if(m_outputActivation > 0)      color = GLcolor4f(0, 1, 0, 1);
-        else if(m_outputActivation < 0) color = GLcolor4f(1, 0, 0, 1);
-        else                            color = GLcolor4f(1, 1, 1, 1);
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
-        
-        glLineWidth(2.0f);
-        glDrawArrays(s_portGeoType, 0, s_portGeoSize);
-    }
-    
-    if(numInputPorts())
-    {
-        // draw input port
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_portGeo);
-
-        GLKMatrix4 mvpInputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, -s_radius, 0, 0);
-        shader.setMVPMatrix(mvpInputPort);
-        
-        GLcolor4f color;
-        if(m_inputActivation > 0)      color = GLcolor4f(0, 1, 0, 1);
-        else if(m_inputActivation < 0) color = GLcolor4f(1, 0, 0, 1);
-        else                           color = GLcolor4f(1, 1, 1, 1);
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
-        
-        glLineWidth(2.0f);
-        glDrawArrays(s_portGeoType, 0, s_portGeoSize);
-    }
-    
-    if(m_nodeInfo)
-    {
-        shader.setMVPMatrix(m_modelViewProjectionMatrix);
-        shader.setNormalMatrix(m_normalMatrix);
-        
-        glBindVertexArrayOES(0);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_nodeInfo->iconGeo);
-        
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
-        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-        
-        glLineWidth(2.0f);
-        glDrawArrays(m_nodeInfo->iconGeoType, 0, m_nodeInfo->iconGeoSize);
-    }
+    AGNode::render();
 }
 
 AGNode::HitTestResult AGControlNode::hit(const GLvertex3f &hit)
@@ -579,7 +590,8 @@ void AGControlTimerNode::initialize()
     s_nodeInfo->iconGeo[circleSize*2+2] = GLvertex3f(0, 0, 0);
     s_nodeInfo->iconGeo[circleSize*2+3] = GLvertex3f(radius*0.925*cosf(minuteAngle), radius*0.925*sinf(minuteAngle), 0);
     
-    s_nodeInfo->portInfo.push_back({ "intrvl", true, true });
+    s_nodeInfo->editPortInfo.push_back({ "intrvl", true, true });
+    s_nodeInfo->inputPortInfo.push_back({ "intrvl", true, true });
 }
 
 AGControlTimerNode::AGControlTimerNode(const GLvertex3f &pos) :
@@ -591,7 +603,7 @@ AGControlNode(pos)
     m_lastTime = 0;
 }
 
-void AGControlTimerNode::setInputPortValue(int port, float value)
+void AGControlTimerNode::setEditPortValue(int port, float value)
 {
     switch(port)
     {
@@ -599,7 +611,7 @@ void AGControlTimerNode::setInputPortValue(int port, float value)
     }
 }
 
-void AGControlTimerNode::getInputPortValue(int port, float &value) const
+void AGControlTimerNode::getEditPortValue(int port, float &value) const
 {
     switch(port)
     {
