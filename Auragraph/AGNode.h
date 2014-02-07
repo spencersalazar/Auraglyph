@@ -176,10 +176,6 @@ private:
     Mutex m_mutex;
     
 protected:
-    static GLuint s_program;
-    static GLint s_uniformMVPMatrix;
-    static GLint s_uniformNormalMatrix;
-    
     const static float s_sizeFactor;
     
     virtual void addInbound(AGConnection *connection);
@@ -254,17 +250,19 @@ class AGControlTimerNode : public AGControlNode
 public:
     static void initialize();
 
-    AGControlTimerNode(const GLvertex3f &pos) : AGControlNode(pos) { }
+    AGControlTimerNode(const GLvertex3f &pos);
     
     virtual int numOutputPorts() const { return 1; }
     virtual int numInputPorts() const { return 0; }
     virtual const AGPortInfo &inputPortInfo(int port) { return m_inputPortInfo[port]; }
-    virtual void setInputPortValue(int port, float value) { }
-    virtual void getInputPortValue(int port, float &value) const { }
+    virtual void setInputPortValue(int port, float value);
+    virtual void getInputPortValue(int port, float &value) const;
 
-    virtual AGControl *renderControl(sampletime t) { return m_control; }
+    virtual AGControl *renderControl(sampletime t);
     
 private:
+    static AGNodeInfo *s_nodeInfo;
+    
     sampletime m_lastTime;
     sampletime m_lastFire;
     float m_interval;

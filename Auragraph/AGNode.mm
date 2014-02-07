@@ -22,9 +22,6 @@ GLint AGConnection::s_uniformNormalMatrix = 0;
 
 
 bool AGNode::s_initNode = false;
-GLuint AGNode::s_program = 0;
-GLint AGNode::s_uniformMVPMatrix = 0;
-GLint AGNode::s_uniformNormalMatrix = 0;
 GLKMatrix4 AGNode::s_projectionMatrix = GLKMatrix4Identity;
 GLKMatrix4 AGNode::s_modelViewMatrix = GLKMatrix4Identity;
 const float AGNode::s_sizeFactor = 0.01;
@@ -248,11 +245,6 @@ void AGNode::initalizeNode()
     if(!s_initNode)
     {
         s_initNode = true;
-        
-        s_program = [ShaderHelper createProgram:@"Shader"
-                                 withAttributes:SHADERHELPER_ATTR_POSITION | SHADERHELPER_ATTR_NORMAL | SHADERHELPER_ATTR_COLOR];
-        s_uniformMVPMatrix = glGetUniformLocation(s_program, "modelViewProjectionMatrix");
-        s_uniformNormalMatrix = glGetUniformLocation(s_program, "normalMatrix");
     }
 }
 
@@ -422,6 +414,27 @@ AGUIObject *AGControlNode::hitTest(const GLvertex3f &t)
 //------------------------------------------------------------------------------
 #pragma mark - AGControlTimerNode
 
+void AGControlTimerNode::initialize()
+{
+    
+}
+
+AGControlTimerNode::AGControlTimerNode(const GLvertex3f &pos) : AGControlNode(pos)
+{ }
+
+void AGControlTimerNode::setInputPortValue(int port, float value)
+{ }
+
+void AGControlTimerNode::getInputPortValue(int port, float &value) const
+{ }
+
+AGControl *AGControlTimerNode::renderControl(sampletime t)
+{
+    return m_control;
+}
+
+
+
 //------------------------------------------------------------------------------
 // ### AGInputNode ###
 //------------------------------------------------------------------------------
@@ -485,10 +498,10 @@ void AGInputNode::render()
     glBindVertexArrayOES(s_vertexArray);
     
     // TODO
-    glUseProgram(s_program);
-    
-    glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
-    glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
+    AGGenericShader &shader = AGGenericShader::instance();
+    shader.useProgram();
+    shader.setMVPMatrix(m_modelViewProjectionMatrix);
+    shader.setNormalMatrix(m_normalMatrix);
 
     glLineWidth(4.0f);
     glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
@@ -582,10 +595,10 @@ void AGOutputNode::render()
     glBindVertexArrayOES(s_vertexArray);
     
     // TODO
-    glUseProgram(s_program);
-    
-    glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
-    glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
+    AGGenericShader &shader = AGGenericShader::instance();
+    shader.useProgram();
+    shader.setMVPMatrix(m_modelViewProjectionMatrix);
+    shader.setNormalMatrix(m_normalMatrix);
 
     glLineWidth(4.0f);
     glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
@@ -645,10 +658,8 @@ void AGFreeDraw::render()
     GLKMatrix4 proj = AGNode::projectionMatrix();
     GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::globalModelViewMatrix(), m_position.x, m_position.y, m_position.z);
     
-    AGGenericShader &shader = AGGenericShader::instance();
-    
+    AGGenericShader &shader = AGGenericShader::instance();    
     shader.useProgram();
-    
     shader.setProjectionMatrix(proj);
     shader.setModelViewMatrix(modelView);
     shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));

@@ -10,6 +10,7 @@
 #import "AGNode.h"
 #import "SPFilter.h"
 #import "AGDef.h"
+#import "AGGenericShader.h"
 
 //------------------------------------------------------------------------------
 // ### AGAudioNode ###
@@ -115,9 +116,9 @@ void AGAudioNode::render()
     glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
     glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
     
-    glUseProgram(s_program);
-    
-    glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
+    AGGenericShader &shader = AGGenericShader::instance();
+    shader.useProgram();
+    shader.setNormalMatrix(m_normalMatrix);
 
     if(m_activation)
     {
@@ -129,23 +130,23 @@ void AGAudioNode::render()
         modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
         GLKMatrix4 modelViewInner = GLKMatrix4Scale(modelView, scale, scale, scale);
         GLKMatrix4 mvp = GLKMatrix4Multiply(projection, modelViewInner);
-        glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, mvp.m);
+        shader.setMVPMatrix(mvp);
         
         glLineWidth(4.0f);
         glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
         
         GLKMatrix4 modelViewOuter = GLKMatrix4Scale(modelView, 1.0/scale, 1.0/scale, 1.0/scale);
         mvp = GLKMatrix4Multiply(projection, modelViewOuter);
-        glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, mvp.m);
-        
+        shader.setMVPMatrix(mvp);
+
         glLineWidth(4.0f);
         glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
     }
     else
     {
-        glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
-        glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
-        
+        shader.setMVPMatrix(m_modelViewProjectionMatrix);
+        shader.setNormalMatrix(m_normalMatrix);
+
         glLineWidth(4.0f);
         glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
     }
@@ -155,8 +156,8 @@ void AGAudioNode::render()
         // draw output port
         GLKMatrix4 mvpOutputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, m_radius, 0, 0);
         mvpOutputPort = GLKMatrix4Scale(mvpOutputPort, 0.2, 0.2, 1);
+        shader.setMVPMatrix(mvpOutputPort);
         
-        glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, mvpOutputPort.m);
         if(m_outputActivation > 0)      color = GLcolor4f(0, 1, 0, 1);
         else if(m_outputActivation < 0) color = GLcolor4f(1, 0, 0, 1);
         else                            color = GLcolor4f(1, 1, 1, 1);
@@ -172,8 +173,8 @@ void AGAudioNode::render()
         // draw input port
         GLKMatrix4 mvpInputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, -m_radius, 0, 0);
         mvpInputPort = GLKMatrix4Scale(mvpInputPort, 0.2, 0.2, 1);
+        shader.setMVPMatrix(mvpInputPort);
         
-        glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, mvpInputPort.m);
         if(m_inputActivation > 0)      color = GLcolor4f(0, 1, 0, 1);
         else if(m_inputActivation < 0) color = GLcolor4f(1, 0, 0, 1);
         else                           color = GLcolor4f(1, 1, 1, 1);
@@ -185,14 +186,14 @@ void AGAudioNode::render()
     
     if(m_nodeInfo)
     {
+        shader.setMVPMatrix(m_modelViewProjectionMatrix);
+        shader.setNormalMatrix(m_normalMatrix);
+
         glBindVertexArrayOES(0);
         glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_nodeInfo->iconGeo);
     
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
         glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-        
-        glUniformMatrix4fv(s_uniformMVPMatrix, 1, 0, m_modelViewProjectionMatrix.m);
-        glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, m_normalMatrix.m);
         
         glLineWidth(2.0f);
         glDrawArrays(m_nodeInfo->iconGeoType, 0, m_nodeInfo->iconGeoSize);
