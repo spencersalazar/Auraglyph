@@ -91,7 +91,7 @@ Effective software interaction design must consider all of the capabilities and 
 To this end, we propose a new model for computer music system design on touchscreen devices, combining both pen/stylus input and multitouch gestures. 
 Such a model surpasses the barrier of touchscreen-based keyboard input, preserving the primary interaction of touch and direct manipulation throughout the development of a complex musical program. 
 We have implemented an iPad software application utilizing these principles, called ``Auraglyph.''
-Auraglyph offers a number of fundamental audio processing and control operators, as well as facilities for structured input and output, all which may be created, parameterized, and interconnected via stylus and touch input. 
+Auraglyph offers a number of fundamental audio processing and control operators, as well as facilities for structured input and output, all of which are created, parameterized, and interconnected via stylus and touch input. 
 Underlying this application is an advanced handwriting recognition framework, LipiTk, which can be trained to recognize both alphanumeric characters and arbitrary figures, shapes, and patterns. 
 
 \end{abstract}
@@ -102,8 +102,8 @@ Underlying this application is an advanced handwriting recognition framework, Li
 \label{sec:Introduction}
 
 Touch-based computing has profoundly altered the landscape of mainstream computing in the early 21st century. 
-Since the introduction of the iPhone in 2007, and later the iPad in 2010, scores of touchscreen devices have entered the popular consciousness, from mobile phones, tablet computers, watches, and desktop computer screens, to name a few. 
-New human-computer interaction paradigms have accompanied these hardware developments, addressing the complex shift from classical keyboard-and-pointer computing to multitouch interaction. 
+Since the introduction of the iPhone in 2007, and the iPad in 2010, scores of touchscreen devices have entered the popular consciousness, from mobile phones, tablet computers, watches, and desktop computer screens, to name a few. 
+New human-computer interaction paradigms have accompanied these hardware developments, addressing the complex shift from classical keyboard-and-mouse computing to multitouch interaction. 
 
 We propose a new model for touchscreen interaction with musical systems: the combined use of stylus-based handwriting input and direct touch manipulation. 
 This system provides a number of advantages over existing touchscreen paradigms for music. 
@@ -133,7 +133,7 @@ Direct, graphical manipulation of computational data via pen or stylus, augmente
 
 Object graph-based programming languages such as Puredata~\cite{puckette1996pure} and Max/MSP~\cite{zicarelli1998extensible} have tremendously influenced the space of visual computer music design and composition. 
 More recently, Kronos extended functional programming models to a visual space in the context of real-time music performance~\cite{norilo2012visualization}. 
-Mira dynamically replicates the interface of desktop-based Max/MSP programs on a tablet, joining conventional music software development with touch interaction~\cite{tarakajian2013anmira}. 
+Mira dynamically replicates the interface of desktop-based Max/MSP programs on a tablet computer, joining conventional music software development with touch interaction~\cite{tarakajian2013anmira}. 
 
 %Various iPad (Magic Fiddle)
 
@@ -155,13 +155,13 @@ A user might then draw entire object graphs and audio topologies, to be realized
 
 From here a natural metaphor for interaction arose, that of a handwritten block diagram.
 Block diagrams, both computer-generated and manually produced, are utilized extensively in digital audio and computer music development processes (Figure \ref{fig:blockDiagram}). 
-We would like users of our system to think that they are drawing a block diagram of their musical system on a whiteboard or sheet of paper, and then to have that design made manifest. 
+We would like users of our system to feel as if they are drawing a block diagram of their musical system on a whiteboard or sheet of paper, and then allowing the software to make manifest that design. 
 
 This metaphor provides several notable benefits. 
-Writing and drawing with a pen or pencil on a flat surface is a foundational interaction for an incredible number of individuals, as this activity is developed from early education around the world. 
-Moreoever, a common goal, perhaps the ultimate goal, of computer interfaces is to simplify the mapping between the user's conceptual abstraction of an idea and translating that idea to a digital representation. 
-The extent to which this goal is met determines the ease of a user successfully inputting their data and interpreting the output. 
-The block diagram is a pervasive conceptual abstraction, which is why they are produced for education (Figure \ref{fig:blockDiagram}, top-left, was taken from a text book), system design (e.g. Figure \ref{fig:blockDiagram}, right), and numerous other applications, even though creating these diagrams is rarely necessary for building the represented system. 
+Writing and drawing with a pen or pencil on a flat surface is a foundational interaction for an incredible number of individuals, as this activity is continuously developed from early education around the world. 
+Moreover, a common goal, perhaps the ultimate goal, of software interfaces is to simplify the mapping between the user's conceptual abstraction of an idea and translating that idea to a digital representation. 
+The extent to which this goal is met determines the ease of a user successfully inputting their parameters to the software and interpreting its output. 
+The block diagram is a pervasive conceptual abstraction, produced for education (Figure \ref{fig:blockDiagram}, top-left, was taken from a text book), system design (e.g. Figure \ref{fig:blockDiagram}, right), and numerous other applications, despite that creating these diagrams is rarely necessary for actually building the represented system. 
 Therefore, a block diagram oriented design system, with a pen-and-paper interaction metaphor, goes great lengths towards diminishing the distance between human thought process and digital construct. 
 
 %(Motivations e.g. UIs that are photographs of real HW synths, fully leverage power of touchscreen interaction)
@@ -172,12 +172,12 @@ Therefore, a block diagram oriented design system, with a pen-and-paper interact
 \label{sec:SystemDescription}
 
 As a framework to prototype and evaluate many of the concepts discussed above, as well as for   use in composition and sound design, we have developed a software application for iPad called Auraglyph. 
-A user interacts with Auraglyph using an iPad-compatible stylus, many models of which are widely available, as well as traditional touch interaction. 
+A user interacts with Auraglyph using an iPad-compatible stylus (many models of which are widely available) and traditional touch interaction. 
 
 \begin{figure}[h]
 	\centering
 		\includegraphics[width=0.45\textwidth]{figures/patch.png}
-	\caption{A full Auraglyph patch.}
+	\caption{A full Auraglyph patch, with handwritten annotations.}
 	\label{fig:patch}
 \end{figure}
 
@@ -190,7 +190,7 @@ Unmatched strokes remain on the canvas, allowing the user to embellish the canva
 
 Tapping and holding an object will open up a list of parameters for that object (Figure \ref{fig:editor}). 
 Selecting a parameter from this list opens a control into which writing a number will set the value. 
-This value can then be accepted or discarded, or the user can cancel setting the parameter. 
+This value can then be accepted or discarded, or the user can cancel setting the parameter entirely. 
 
 Every base object may have multiple input nodes, an output node, or both, visualized by small circles on the perimeter of the object. 
 Touching a node will highlight it, and by drawing a stroke from an input node to an output node, or vice-versa, the user forms a connection between those two objects. 
@@ -218,6 +218,13 @@ Control-rate processors include timers, counters, mathematical formulae, discret
 Inputs consist of on-screen keyboard controllers, graphical sliders, and buttons. 
 Outputs comprise of numeric displays and binary ``LED'' indicators.  
 
+\begin{figure}[h]
+	\centering
+		\includegraphics[width=0.45\textwidth]{figures/baseobjects.png}
+	\caption{Base objects (left to right): unit generator, output, input, control-rate processor.}
+	\label{fig:baseObjects}
+\end{figure}
+
 After creating a base object, a drawing area and menu open to allow the user to select an object sub-type. 
 In some cases, a glyph for the sub-type can be directly drawn by the user to select that object. 
 For example, basic oscillators and filter types lend themselves to simple glyph patterns. 
@@ -225,13 +232,6 @@ A user can create a sine wave oscillator by simply drawing a circle (to create a
 However some object sub-types do not have straightforward glyph mnemonics, for example a sequencer or a reverberator. 
 For such objects, a list of items to select from is provided in a menu. 
 For completeness objects that do have corresponding glyphs are also listed in this menu. 
-
-\begin{figure}[h]
-	\centering
-		\includegraphics[width=0.45\textwidth]{figures/baseobjects.png}
-	\caption{Base objects (left to right): unit generator, output, input, control-rate processor.}
-	\label{fig:baseObjects}
-\end{figure}
 
 Some objects have more advanced needs for modifying values beyond the standard parameter editor.  
 For example, the wavetable oscillator's ``table'' parameter brings up a larger space for precisely drawing the desired waveform, as does the ``xferFn'' (transfer function) parameter of the hand-drawn filter. 
@@ -241,29 +241,34 @@ The formula object eschews the standard parameter editor entirely, instead direc
 \label{sec:HandwritingRecognition}
 
 The concepts presented herein are generally invariant to the underlying algorithms and framework for handwriting recognition, but these topics merit discussion with regards to our own implementation in Auraglyph. 
-The underlying handwriting recognition engine of Auraglyph is LipiTk~\cite{madhvanath2007lipitk}, a comprehensive open-source project for handwriting recognition research. 
-The default configuration of LipiTk uses dynamic time warping (DTW)~\cite{niels2005using} and nearest-neighbor classification (k-NN) to match pen strokes to a pre-existing training set of possible figures. 
+The handwriting recognition engine used by Auraglyph is LipiTk~\cite{madhvanath2007lipitk}, a comprehensive open-source project for handwriting recognition research. 
+LipiTk is not natively designed to function with iPad applications, but we extended it to do so with straightforward code changes and additions. 
+
+LipiTk's default configuration uses dynamic time warping (DTW)~\cite{niels2005using} and nearest-neighbor classification (k-NN) to match pen strokes to a pre-existing training set of possible figures. 
 The result of this procedure is one or more ``most likely'' matches along with confidence ratings for each match. 
 We have found the speed and accuracy of LipiTk in this configuration to be satisfactory for real-time usage, though a slight, noticeable delay exists between finishing a stroke and the successful recognition of that stroke. 
 
-The recognition algorithms underlying LipiTk must be seeded with a set of ``training examples'' for each possible figure to be matched. 
-This training set is typically created in advance by having test users draw each figure into a specialized training program, which then serializes the salient features of the figures into a database. 
-In our experience, LipiTk's recognition accuracy is highly linked to the quality and diversity of the training set. 
-For instance, in one case, one version of our training set, seeded solely by right-handed users, suffered significantly reduced accuracy when being used by a left-handed user. 
-A comprehensive training set would need to encompass strokes from a variety of individuals of varying handedness and writing style. 
-Interestingly, though, LipiTk's algorithms are able to adapt dynamically to new training examples -- an advanced system might gradually adjust to a particular user's handwriting eccentricities over time, forming an organically personalized software interaction. 
-Auraglyph takes advantage of this feature to a small degree, allowing a user to add new training strokes via a complementary training interface. 
+Before they can be used to classify figures of unknown types, the recognition algorithms incorporated into LipiTk must be primed with a set of ``training examples'' for each possible figure to be matched. 
+This training set is typically created by test users before the software is released, who draw multiple renditions of each figure into a specialized training program. 
+This training program serializes the salient features of each figure into a database, which is distributed with the application itself. 
+
+In our experience, LipiTk's recognition accuracy is highly linked to the quality, size, and diversity of the training set. 
+For instance, a version of our handwriting database trained solely by right-handed users suffered significantly reduced accuracy when used by a left-handed user. 
+A comprehensive training set would need to encompass strokes from a range of individuals of varying handedness and writing style. 
+Interestingly, though, LipiTk's algorithms are able to adapt dynamically to new training examples. 
+An advanced system might gradually adjust to a particular user's handwriting eccentricities over time, forming an organically personalized software interaction. 
+Auraglyph takes advantage of this feature to a small degree, allowing a user to add new training strokes via a separate training interface. 
 
 %(iOS integration?)
 \section{Conclusions}
 \label{sec:Conclusions}
 
 While effective in replacing the keyboard as a textual/numeric input device, touchscreen stylus input also affords a broader set of interactions apt for computer music. 
-We have developed a software application for the iPad, Auraglyph, which leverages these principles into an interactive music environment. 
-We intend to release Auraglyph under an open source license when it sufficiently mature and bug-free, via the project website\footnote{\url{https://ccrma.stanford.edu/~spencer/auraglyph/}}.
+We have developed an iPad software application, Auraglyph, to leverage these principles into an interactive music environment. 
+We intend to release Auraglyph under an open source license when it reasonably mature and bug-free, via the project website\footnote{\url{https://ccrma.stanford.edu/~spencer/auraglyph/}}.
 
 This system has fulfilled our goals of expressivity and versatility, but we believe this conceptual framework provides many more opportunities for computer music. 
-Stylus input might be extended to traditional music notation, extended mathematical formulae, or even Turing-complete programming code, whose digital representations could then refined, augmented, and extended with direct manipulation and touch input. 
+Stylus input might be extended to traditional music notation, more complex mathematical formulae, or even Turing-complete programming code, whose digital representations can then be refined, augmented, and extended with direct manipulation and touch input. 
 We believe that this is only the beginning for handwritten computer music. 
 
 %\end{document}  % This is where a 'short' article might terminate
