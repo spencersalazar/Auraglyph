@@ -108,12 +108,12 @@ New human-computer interaction paradigms have accompanied these hardware develop
 
 We propose a new model for touchscreen interaction with musical systems: the combined use of stylus-based handwriting input and direct touch manipulation. 
 This system provides a number of advantages over existing touchscreen paradigms for music. 
-Stylus input, complemented by machine learning-based handwriting recognition, provides a number of advantages in this scheme. 
+Stylus input, complemented by modern digital handwriting recognition techniques, provides a number of advantages in this scheme. 
 Firstly, it replaces the traditional role of keyboard-based text/numeric entry with handwritten letters and numerals.
 It additionally allows for modal entry of generic shapes and glyphs, for example, canonical oscillator patterns (sine wave, sawtooth wave, square wave, etc.) or other abstract symbols.
 Finally, the stylus provides precise graphical free-form input for e.g. filter transfer functions, envelopes, and parameter automation curves. 
 Multitouch finger input continues to provide functionality that has become expected of touch-based software, such as direct movement of on-screen objects, interaction with conventional controls (sliders, buttons, etc.), and other manipulations. 
-Herein we discuss the design, prototyping, and evaluation of one implementation of such a system, which we have titled ``Auraglyph.''
+Herein we discuss the design, prototyping, and evaluation of such a system, which we have named ``Auraglyph.''
 
 \begin{figure*}[h!]
 	\centering
@@ -185,7 +185,7 @@ A user interacts with Auraglyph using an iPad-compatible stylus, many models of 
 The basic environment of Auraglyph is an open, scrollable canvas in which the user freely draws. 
 Using a variety of pen strokes, a user creates interactive objects (such as unit generators, control rate processors, and input/output controls), sets parameters of these objects, and forms connections between them, collectively comprising a \emph{patch}. 
 After a user completes a pen stroke (a single contour between touching the pen to the screen and lifting it off the screen), this stroke is matched against the set of base object glyphs available in the main canvas, via a machine learning-based handwriting recognizer (discussed in Section \ref{sec:HandwritingRecognition}). 
-The main canvas objects whose glyphs can be matched include an audio rate processor (unit generator), control rate processor, input, or output (see Section \ref{sec:BaseGlyphs}). 
+Main canvas objects whose glyphs can be matched include an audio rate processor (unit generator), control rate processor, input, or output (see Section \ref{sec:BaseGlyphs}). 
 If the stroke matches an available glyph, the user's stroke is replaced by the actual object. 
 Unmatched strokes remain on the canvas, allowing the user to embellish the canvas with freehand drawings. 
 
@@ -193,14 +193,15 @@ Tapping and holding an object will open up a list of parameters for that object 
 Selecting a parameter from this list opens a control into which writing a number will set the value. 
 This value can then be accepted or discarded, or the user can cancel setting the parameter. 
 
-Every base object may have an input node, an output node, or both, visualized by small circles on the perimeter of the object. 
-Tapping a node will highlight it, and by drawing a stroke from an input node to an output node, or vice-versa, the user forms a connection between those two objects. 
-Most objects only have one output source, but an object input node may have several destinations with that object (e.g. frequency, amplitude, or phase of a given oscillator). 
-In such cases, a pop-up menu appears from the input node to display the options a user may have for input destination. 
+Every base object may have multiple input nodes, an output node, or both, visualized by small circles on the perimeter of the object. 
+Touching a node will highlight it, and by drawing a stroke from an input node to an output node, or vice-versa, the user forms a connection between those two objects. 
+Most objects only have one output source, but an input node may have several destinations within that object (e.g. frequency, amplitude, or phase of a given oscillator). 
+In such cases, a pop-up menu appears from the node to display the options a user may have for the input destination. 
 
 Objects and drawings can be moved around on the canvas by touching and dragging them, a familiar gesture in the touchscreen software ecosystem. 
 While dragging an object, moving the pen over a delete icon in the corner of the screen will remove that object, along with destroying any connections between it and other objects. 
 Connections can be removed by grabbing them with a touch and then dragging them until they ``break."
+The entire canvas may be scrolled through using a two-finger touch, allowing for patches that extend well beyond the space of the tablet's screen. 
 
 \begin{figure}[h]
 	\centering
@@ -213,8 +214,8 @@ Connections can be removed by grabbing them with a touch and then dragging them 
 \label{sec:BaseGlyphs}
 
 Four base objects comprise the set of objects that can be drawn to the main canvas: audio-rate processors (unit generators; represented by a circle), control-rate processors (represented by a square), inputs (a downward-pointing triangle), and outputs (an upward triangle) (Figure \ref{fig:baseObjects}). 
-Unit generators currently available include basic oscillators (sine, sawtooth, square, and triangle waves, plus hand-drawn wavetables), envelopes (linear and ADSR), filters (resonant low-pass/high-pass/band-pass, parametric EQ, or hand-drawn transfer function), and a reverberator. 
-Control-rate processors include timers, discrete time-step sequencers, and hand-drawn parameter control curves. 
+Unit generators currently available include basic oscillators (sine, sawtooth, square, and triangle waves, plus hand-drawn wavetables), an audio file player, envelopes (linear and ADSR), filters (resonant low-pass/high-pass/band-pass/band-reject, parametric EQ, or hand-drawn transfer function), and a reverberator. 
+Control-rate processors include timers, counters, mathematical formulae, discrete time-step sequencers, a pitch-to-frequency converter, and hand-drawn parameter control curves. 
 Inputs consist of on-screen keyboard controllers, graphical sliders, and buttons. 
 Outputs comprise of numeric displays and binary ``LED'' indicators.  
 
@@ -222,7 +223,7 @@ After creating a base object, a drawing area and menu open to allow the user to 
 In some cases, a glyph for the sub-type can be directly drawn by the user to select that object. 
 For example, basic oscillators and filter types lend themselves to simple glyph patterns. 
 A user can create a sine wave oscillator by simply drawing a circle (to create a unit generator object) and then drawing a sine wave within it. 
-However some object sub-types do not have straightforward glyph mnemonics, for example a sequencer object or a reverberator. 
+However some object sub-types do not have straightforward glyph mnemonics, for example a sequencer or a reverberator. 
 For such objects, a list of items to select from is provided in a menu. 
 For completeness objects that do have corresponding glyphs are also listed in this menu. 
 
@@ -232,6 +233,10 @@ For completeness objects that do have corresponding glyphs are also listed in th
 	\caption{Base objects (left to right): unit generator, output, input, control-rate processor.}
 	\label{fig:baseObjects}
 \end{figure}
+
+Some objects have more advanced needs for modifying values beyond the standard parameter editor.  
+For example, the wavetable oscillator's ``table'' parameter brings up a larger space for precisely drawing the desired waveform, as does the ``xferFn'' (transfer function) parameter of the hand-drawn filter. 
+The formula object eschews the standard parameter editor entirely, instead directly soliciting handwriting input to realize a sequence of mathematical operations (currently addition, subtraction, multiplication, and division are supported, with one input and one output). 
 
 \subsection{Handwriting Recognition}
 \label{sec:HandwritingRecognition}
@@ -247,7 +252,7 @@ This training set is typically created in advance by having test users draw each
 In our experience, LipiTk's recognition accuracy is highly linked to the quality and diversity of the training set. 
 For instance, in one case, one version of our training set, seeded solely by right-handed users, suffered significantly reduced accuracy when being used by a left-handed user. 
 A comprehensive training set would need to encompass strokes from a variety of individuals of varying handedness and writing style. 
-Interestingly, though, LipiTk's algorithms are able to adapt dynamically to new training examples -- one might the recognizer gradually adjusting to a particular user's handwriting eccentricities over time, forming an organically personalized software interaction. 
+Interestingly, though, LipiTk's algorithms are able to adapt dynamically to new training examples -- an advanced system might gradually adjust to a particular user's handwriting eccentricities over time, forming an organically personalized software interaction. 
 Auraglyph takes advantage of this feature to a small degree, allowing a user to add new training strokes via a complementary training interface. 
 
 %(iOS integration?)
@@ -256,8 +261,10 @@ Auraglyph takes advantage of this feature to a small degree, allowing a user to 
 
 While effective in replacing the keyboard as a textual/numeric input device, touchscreen stylus input also affords a broader set of interactions apt for computer music. 
 We have developed a software application for the iPad, Auraglyph, which leverages these principles into an interactive music environment. 
+We intend to release Auraglyph under an open source license when it sufficiently mature and bug-free, via the project website\footnote{\url{https://ccrma.stanford.edu/~spencer/auraglyph/}}.
+
 This system has fulfilled our goals of expressivity and versatility, but we believe this conceptual framework provides many more opportunities for computer music. 
-Traditional music notation, extended mathematical formulae, and even Turing-complete programming code could conceivable be written out with a stylus. 
+Stylus input might be extended to traditional music notation, extended mathematical formulae, or even Turing-complete programming code, whose digital representations could then refined, augmented, and extended with direct manipulation and touch input. 
 We believe that this is only the beginning for handwritten computer music. 
 
 %\end{document}  % This is where a 'short' article might terminate
