@@ -11,6 +11,7 @@
 #import "SPFilter.h"
 #import "AGDef.h"
 #import "AGGenericShader.h"
+#import "ADSR.h"
 
 //------------------------------------------------------------------------------
 // ### AGAudioNode ###
@@ -802,6 +803,7 @@ private:
     float m_increment;
     
     float m_attack, m_decay, m_sustain, m_release;
+    stk::ADSR m_adsr;
     
 private:
     static AGNodeInfo *s_audioNodeInfo;
@@ -848,6 +850,11 @@ AGAudioADSRNode::AGAudioADSRNode(GLvertex3f pos) : AGAudioNode(pos)
     m_nodeInfo = s_audioNodeInfo;
     
     allocatePortBuffers();
+    
+    m_attack = 0.01;
+    m_decay = 0.01;
+    m_sustain = 0.5;
+    m_release = 0.1;
 }
 
 
@@ -867,6 +874,11 @@ void AGAudioADSRNode::getEditPortValue(int port, float &value) const
 {
     switch(port)
     {
+        case 0: value = m_gain; break;
+        case 1: value = m_attack; break;
+        case 2: value = m_decay; break;
+        case 3: value = m_sustain; break;
+        case 4: value = m_release; break;
     }
 }
 
