@@ -77,12 +77,13 @@ static DrawPoint drawline[nDrawline];
     
     AGTouchHandler * _touchHandler;
     
-    std::list<AGFreeDraw *> _freeDraws;
     std::list<AGNode *> _nodes;
-    std::list<AGConnection *> _connections;
+    std::list<AGNode *> _nodeRemoveList;
+//    std::list<AGFreeDraw *> _freeDraws;
+//    std::list<AGConnection *> _connections;
     
-    std::list<AGConnection *> _connectionRemoveList;
-    std::list<AGUIObject *> _deleteList;
+    std::list<AGUIObject *> _objects;
+    std::list<AGUIObject *> _removeList;
     
     TexFont * _font;
     
@@ -119,8 +120,6 @@ static AGViewController * g_instance = nil;
 {
     [super viewDidLoad];
         
-    _nodes = std::list<AGNode *>();
-    _connections = std::list<AGConnection *>();
     _t = 0;
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
@@ -252,24 +251,22 @@ static AGViewController * g_instance = nil;
 
 - (void)removeNode:(AGNode *)node
 {
-    _nodes.remove(node);
-    _deleteList.push_back(node);
+    _nodeRemoveList.push_back(node);
 }
 
 - (void)addConnection:(AGConnection *)connection
 {
-    _connections.push_back(connection);
+    _objects.push_back(connection);
 }
 
 - (void)addFreeDraw:(AGFreeDraw *)freedraw
 {
-    _freeDraws.push_back(freedraw);
+    _objects.push_back(freedraw);
 }
 
 - (void)removeFreeDraw:(AGFreeDraw *)freedraw
 {
-    _freeDraws.remove(freedraw);
-    _deleteList.push_back(freedraw);
+    _removeList.push_back(freedraw);
 }
 
 - (void)removeConnection:(AGConnection *)connection
@@ -277,7 +274,7 @@ static AGViewController * g_instance = nil;
     if(connection == _touchCapture)
         _touchCapture = NULL;
     
-    _connectionRemoveList.push_back(connection);
+    _removeList.push_back(connection);
 }
 
 - (void)addLinePoint:(GLvertex3f)point
@@ -321,22 +318,24 @@ static AGViewController * g_instance = nil;
 
 - (void)update
 {
-    if(_deleteList.size())
+    if(_nodeRemoveList.size())
     {
-        for(std::list<AGUIObject *>::iterator i = _deleteList.begin(); i != _deleteList.end(); i++)
-            delete *i;
-        _deleteList.clear();
-    }
-    
-    if(_connectionRemoveList.size() > 0)
-    {
-        for(std::list<AGConnection *>::iterator i = _connectionRemoveList.begin(); i != _connectionRemoveList.end(); i++)
+        for(std::list<AGNode *>::iterator i = _nodeRemoveList.begin(); i != _nodeRemoveList.end(); i++)
         {
-            _connections.remove(*i);
+            _nodes.remove(*i);
             delete *i;
         }
-        
-        _connectionRemoveList.clear();
+        _nodeRemoveList.clear();
+    }
+    
+    if(_removeList.size() > 0)
+    {
+        for(std::list<AGUIObject *>::iterator i = _removeList.begin(); i != _removeList.end(); i++)
+        {
+            _objects.remove(*i);
+            delete *i;
+        }
+        _removeList.clear();
     }
     
     [self updateMatrices];
@@ -346,12 +345,12 @@ static AGViewController * g_instance = nil;
     _t += dt;
     
     AGUITrash::instance().update(_t, dt);
-    for(std::list<AGFreeDraw *>::iterator i = _freeDraws.begin(); i != _freeDraws.end(); i++)
+    for(std::list<AGUIObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
         (*i)->update(_t, dt);
     for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
         (*i)->update(_t, dt);
-    for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
-        (*i)->update(_t, dt);
+//    for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
+//        (*i)->update(_t, dt);
     
     [_touchHandler update:_t dt:dt];
     
@@ -391,15 +390,15 @@ static AGViewController * g_instance = nil;
     // render trash icon
     AGUITrash::instance().render();
     
-    // render freedraws
-    for(std::list<AGFreeDraw *>::iterator i = _freeDraws.begin(); i != _freeDraws.end(); i++)
+    // render objects
+    for(std::list<AGUIObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
         (*i)->render();
     
     // render connections
-    for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
-        (*i)->render();
-    
-    // render nodes
+//    for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
+//        (*i)->render();
+//    
+//    // render nodes
     for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
         (*i)->render();
     
@@ -547,14 +546,7 @@ static AGViewController * g_instance = nil;
 
             if(!hit)
             {
-                for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
-                {
-                    if((hit = (*i)->hitTest(pos))) break;
-                }
-            }
-            if(!hit)
-            {
-                for(std::list<AGFreeDraw *>::iterator i = _freeDraws.begin(); i != _freeDraws.end(); i++)
+                for(std::list<AGUIObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
                 {
                     if((hit = (*i)->hitTest(pos))) break;
                 }
