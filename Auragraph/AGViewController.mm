@@ -81,6 +81,7 @@ static DrawPoint drawline[nDrawline];
     std::list<AGNode *> _nodes;
     std::list<AGConnection *> _connections;
     
+    std::list<AGConnection *> _connectionRemoveList;
     std::list<AGUIObject *> _deleteList;
     
     TexFont * _font;
@@ -273,10 +274,10 @@ static AGViewController * g_instance = nil;
 
 - (void)removeConnection:(AGConnection *)connection
 {
-    _connections.remove(connection);
     if(connection == _touchCapture)
         _touchCapture = NULL;
-    delete connection;
+    
+    _connectionRemoveList.push_back(connection);
 }
 
 - (void)addLinePoint:(GLvertex3f)point
@@ -325,6 +326,17 @@ static AGViewController * g_instance = nil;
         for(std::list<AGUIObject *>::iterator i = _deleteList.begin(); i != _deleteList.end(); i++)
             delete *i;
         _deleteList.clear();
+    }
+    
+    if(_connectionRemoveList.size() > 0)
+    {
+        for(std::list<AGConnection *>::iterator i = _connectionRemoveList.begin(); i != _connectionRemoveList.end(); i++)
+        {
+            _connections.remove(*i);
+            delete *i;
+        }
+        
+        _connectionRemoveList.clear();
     }
     
     [self updateMatrices];

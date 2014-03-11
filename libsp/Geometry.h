@@ -253,11 +253,11 @@ struct clampf
 {
     clampf(float _min = 0, float _max = 1) { value = 0; clamp(_min, _max); }
     
-    void clamp(float _min, float _max) { min = _min; max = _max; }
+    inline void clamp(float _min, float _max) { min = _min; max = _max; }
     
-    operator const float &() const { return value; }
+    inline operator const float &() const { return value; }
     
-    void operator=(const float &f)
+    inline void operator=(const float &f)
     {
         if(f > max) value = max;
         else if(f < min) value = min;
@@ -270,6 +270,33 @@ struct clampf
     void operator/=(const float &f) { *this = value/f; }
     
     float value, min, max;
+};
+
+class curvef
+{
+public:
+    curvef(float _start = 0, float _end = 1, float _rate = 1) :
+    start(_start), end(_end), rate(_rate), t(0)
+    { }
+    
+    virtual float evaluate(float t) const = 0;
+    
+    inline void update(float dt) { t += dt*rate; }
+    inline void reset() { t = 0; }
+    inline operator const float () const { return evaluate(t)*(end-start)+start; }
+    
+    float t, start, end, rate;
+};
+
+class expcurvef : public curvef
+{
+public:
+    expcurvef(float _k = 2, float _start = 0, float _end = 1, float _rate = 1) :
+    curvef(_start, _end, _rate), k(_k) { }
+    
+    virtual float evaluate(float t) const { return powf(t, k); }
+    
+    float k;
 };
 
 

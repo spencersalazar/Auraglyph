@@ -843,7 +843,6 @@ void AGAudioADSRNode::initialize()
 }
 
 
-
 AGAudioADSRNode::AGAudioADSRNode(GLvertex3f pos) : AGAudioNode(pos)
 {
 //    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
@@ -855,19 +854,23 @@ AGAudioADSRNode::AGAudioADSRNode(GLvertex3f pos) : AGAudioNode(pos)
     m_decay = 0.01;
     m_sustain = 0.5;
     m_release = 0.1;
+    m_adsr.setAllTimes(m_attack, m_decay, m_sustain, m_release);
 }
 
 
 void AGAudioADSRNode::setEditPortValue(int port, float value)
 {
+    bool set = false;
     switch(port)
     {
         case 0: m_gain = value; break;
-        case 1: m_attack = value/1000.0f; break;
-        case 2: m_decay = value/1000.0f; break;
-        case 3: m_sustain = value/1000.0f; break;
-        case 4: m_release = value/1000.0f; break;
+        case 1: m_attack = value/1000.0f; set = true; break;
+        case 2: m_decay = value/1000.0f; set = true; break;
+        case 3: m_sustain = value/1000.0f; set = true; break;
+        case 4: m_release = value/1000.0f; set = true; break;
     }
+    
+    if(set) m_adsr.setAllTimes(m_attack, m_decay, m_sustain, m_release);
 }
 
 void AGAudioADSRNode::getEditPortValue(int port, float &value) const

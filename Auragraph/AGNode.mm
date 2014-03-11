@@ -70,7 +70,9 @@ m_dstPort(dstPort),
 m_rate((src->rate() == RATE_AUDIO && dst->rate() == RATE_AUDIO) ? RATE_AUDIO : RATE_CONTROL), 
 m_geoSize(0),
 m_hit(false),
-m_stretch(false)
+m_stretch(false),
+m_active(true),
+m_alpha(0.5, 1, 0, 4)
 {
     initalize();
     
@@ -90,7 +92,7 @@ m_stretch(false)
 AGConnection::~AGConnection()
 {
 //    if(m_geo != NULL) { delete[] m_geo; m_geo = NULL; }
-    AGNode::disconnect(this);
+//    AGNode::disconnect(this);
 }
 
 void AGConnection::updatePath()
@@ -107,22 +109,34 @@ void AGConnection::updatePath()
 
 void AGConnection::update(float t, float dt)
 {
-    GLvertex3f newInPos = dst()->positionForInboundConnection(this);
-    GLvertex3f newOutPos = src()->positionForOutboundConnection(this);
-    
-    if(newInPos != m_inTerminal || newOutPos != m_outTerminal)
+    if(m_active)
     {
-        // recalculate path
-        m_inTerminal = newInPos;
-        m_outTerminal = newOutPos;
+        GLvertex3f newInPos = dst()->positionForInboundConnection(this);
+        GLvertex3f newOutPos = src()->positionForOutboundConnection(this);
         
-        updatePath();
+        if(newInPos != m_inTerminal || newOutPos != m_outTerminal)
+        {
+            // recalculate path
+            m_inTerminal = newInPos;
+            m_outTerminal = newOutPos;
+            
+            updatePath();
+        }
     }
     
     if(m_break)
         m_color = GLcolor4f::red;
     else
         m_color = GLcolor4f::white;
+    
+    if(!m_active)
+    {
+        m_alpha.update(dt);
+        m_color.a = m_alpha;
+        
+        if(m_alpha < 0.01)
+            [[AGViewController instance] removeConnection:this];
+    }
 }
 
 void AGConnection::render()
@@ -186,10 +200,16 @@ void AGConnection::touchUp(const GLvertex3f &t)
     m_stretch = false;
     m_hit = false;
     
-    updatePath();
-    
     if(m_break)
-        [[AGViewController instance] removeConnection:this];
+    {
+        AGNode::disconnect(this);
+        m_active = false;
+        m_alpha.reset();
+    }
+    else
+    {
+        updatePath();
+    }
     
     m_break = false;
 }

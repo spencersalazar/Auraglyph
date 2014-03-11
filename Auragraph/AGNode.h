@@ -101,6 +101,9 @@ private:
     bool m_break;
     GLvertex3f m_stretchPoint;
     
+    bool m_active;
+    expcurvef m_alpha;
+    
     const AGRate m_rate;
     
     static void initalize();
