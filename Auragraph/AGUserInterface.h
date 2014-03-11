@@ -9,8 +9,9 @@
 #ifndef __Auragraph__AGUserInterface__
 #define __Auragraph__AGUserInterface__
 
-#import "Geometry.h"
 #import <GLKit/GLKit.h>
+#import "Geometry.h"
+#import "Animation.h"
 
 #include "LTKTypes.h"
 #include "LTKTrace.h"

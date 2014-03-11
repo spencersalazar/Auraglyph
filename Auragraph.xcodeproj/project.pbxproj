@@ -89,6 +89,7 @@
 		0901C1BF17BE3C460032904B /* SourceCodePro-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SourceCodePro-Regular.ttf"; sourceTree = "<group>"; };
 		0901C1C117BE3C4B0032904B /* eichante.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = eichante.ttf; sourceTree = "<group>"; };
 		09077FD117C0BFFA00DFE42F /* AGDef.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGDef.h; sourceTree = "<group>"; };
+		093D631E18CECF0A0012C4B7 /* Animation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Animation.h; sourceTree = "<group>"; };
 		095D12C017ACA36C0048A012 /* AURAGRPH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AURAGRPH.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		095D12C317ACA36C0048A012 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		095D12C517ACA36C0048A012 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -384,6 +385,7 @@
 				0987409F17BA2AB90098511A /* mo_def.h */,
 				095D12F717ACAA100048A012 /* Geometry.h */,
 				095D12F617ACAA100048A012 /* Geometry.cpp */,
+				093D631E18CECF0A0012C4B7 /* Animation.h */,
 				095D12F817ACAA100048A012 /* hsv.h */,
 				095D12F917ACAA100048A012 /* Texture.h */,
 				095D12FA17ACAA100048A012 /* Texture.mm */,
