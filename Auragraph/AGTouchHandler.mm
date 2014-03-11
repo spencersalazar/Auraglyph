@@ -122,7 +122,8 @@
     {
         if(trash.hitTest(pos))
         {
-            [_viewController removeNode:_moveNode];
+            _moveNode->fadeOutAndRemove();
+//            [_viewController removeNode:_moveNode];
         }
     }
 }

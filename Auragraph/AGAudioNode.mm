@@ -95,6 +95,8 @@ AGAudioNode::~AGAudioNode()
 
 void AGAudioNode::update(float t, float dt)
 {
+    AGNode::update(t, dt);
+    
     GLKMatrix4 projection = projectionMatrix();
     GLKMatrix4 modelView = globalModelViewMatrix();
     
@@ -111,6 +113,7 @@ void AGAudioNode::render()
     // draw base outline
     glBindVertexArrayOES(s_vertexArray);
     
+    color.a = m_fadeOut;
     glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
     glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
     

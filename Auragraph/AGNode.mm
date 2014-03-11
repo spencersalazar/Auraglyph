@@ -95,6 +95,13 @@ AGConnection::~AGConnection()
 //    AGNode::disconnect(this);
 }
 
+void AGConnection::fadeOutAndRemove()
+{
+    AGNode::disconnect(this);
+    m_active = false;
+    m_alpha.reset();
+}
+
 void AGConnection::updatePath()
 {
     m_geoSize = 3;
@@ -109,6 +116,11 @@ void AGConnection::updatePath()
 
 void AGConnection::update(float t, float dt)
 {
+    if(m_break)
+        m_color = GLcolor4f::red;
+    else
+        m_color = GLcolor4f::white;
+
     if(m_active)
     {
         GLvertex3f newInPos = dst()->positionForInboundConnection(this);
@@ -123,13 +135,7 @@ void AGConnection::update(float t, float dt)
             updatePath();
         }
     }
-    
-    if(m_break)
-        m_color = GLcolor4f::red;
     else
-        m_color = GLcolor4f::white;
-    
-    if(!m_active)
     {
         m_alpha.update(dt);
         m_color.a = m_alpha;
@@ -202,9 +208,7 @@ void AGConnection::touchUp(const GLvertex3f &t)
     
     if(m_break)
     {
-        AGNode::disconnect(this);
-        m_active = false;
-        m_alpha.reset();
+        fadeOutAndRemove();
     }
     else
     {
@@ -216,6 +220,9 @@ void AGConnection::touchUp(const GLvertex3f &t)
 
 AGUIObject *AGConnection::hitTest(const GLvertex3f &_t)
 {
+    if(!m_active)
+        return NULL;
+
     GLvertex2f p0 = GLvertex2f(m_outTerminal.x, m_outTerminal.y);
     GLvertex2f p1 = GLvertex2f(m_inTerminal.x, m_inTerminal.y);
     GLvertex2f t = GLvertex2f(_t.x, _t.y);
@@ -283,7 +290,11 @@ void AGNode::initalizeNode()
 }
 
 
-AGNode::AGNode(GLvertex3f pos) : m_pos(pos), m_nodeInfo(NULL)
+AGNode::AGNode(GLvertex3f pos) :
+m_pos(pos),
+m_nodeInfo(NULL),
+m_active(true),
+m_fadeOut(0.5, 1, 0, 2)
 {
     m_inputActivation = m_outputActivation = 0;
     m_activation = 0;
@@ -291,6 +302,13 @@ AGNode::AGNode(GLvertex3f pos) : m_pos(pos), m_nodeInfo(NULL)
 
 AGNode::~AGNode()
 {
+}
+
+void AGNode::fadeOutAndRemove()
+{
+    m_active = false;
+    m_fadeOut.reset();
+    
     // this part is kinda hairy
     // this should remove the connections from the visuals
     // which then deletes them
@@ -301,9 +319,9 @@ AGNode::~AGNode()
     std::list<AGConnection *> _inbound = m_inbound;
     std::list<AGConnection *> _outbound = m_outbound;
     for(std::list<AGConnection *>::iterator i = _inbound.begin(); i != _inbound.end(); i++)
-        [[AGViewController instance] removeConnection:*i];
+        (*i)->fadeOutAndRemove();
     for(std::list<AGConnection *>::iterator i = _outbound.begin(); i != _outbound.end(); i++)
-        [[AGViewController instance] removeConnection:*i];
+        (*i)->fadeOutAndRemove();
 }
 
 void AGNode::addInbound(AGConnection *connection)
@@ -324,6 +342,16 @@ void AGNode::removeInbound(AGConnection *connection)
 void AGNode::removeOutbound(AGConnection *connection)
 {
     m_outbound.remove(connection);
+}
+
+void AGNode::update(float t, float dt)
+{
+    if(!m_active)
+    {
+        m_fadeOut.update(dt);
+        if(m_fadeOut < 0.01)
+            [[AGViewController instance] removeNode:this];
+    }
 }
 
 void AGNode::render()
@@ -349,6 +377,7 @@ void AGNode::render()
         if(m_outputActivation == 1)       color = GLcolor4f(0, 1, 0, 1);
         else if(m_outputActivation == -1) color = GLcolor4f(1, 0, 0, 1);
         else                              color = GLcolor4f(1, 1, 1, 1);
+        color.a = m_fadeOut;
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
         
         glLineWidth(2.0f);
@@ -369,6 +398,7 @@ void AGNode::render()
         if(m_inputActivation == 1+i)       color = GLcolor4f(0, 1, 0, 1);
         else if(m_inputActivation == -1-i) color = GLcolor4f(1, 0, 0, 1);
         else                               color = GLcolor4f(1, 1, 1, 1);
+        color.a = m_fadeOut;
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
         
         glLineWidth(2.0f);
@@ -383,7 +413,9 @@ void AGNode::render()
         glBindVertexArrayOES(0);
         glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_nodeInfo->iconGeo);
         
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+        GLcolor4f color = GLcolor4f::white;
+        color.a = m_fadeOut;
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
         glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
         
         glLineWidth(2.0f);
@@ -393,6 +425,9 @@ void AGNode::render()
 
 AGNode::HitTestResult AGNode::hit(const GLvertex3f &hit, int *port)
 {
+    if(!m_active)
+        return HIT_NONE;
+    
     int numIn = numInputPorts();
     for(int i = 0; i < numIn; i++)
     {
@@ -449,7 +484,10 @@ void AGNode::touchUp(const GLvertex3f &t)
     AGUITrash &trash = AGUITrash::instance();
     
     if(trash.hitTest(t))
-        [[AGViewController instance] removeNode:this];
+    {
+        m_active = false;
+        m_fadeOut.reset();
+    }
     
     trash.deactivate();
 }
@@ -506,6 +544,8 @@ AGNode(pos)
 
 void AGControlNode::update(float t, float dt)
 {
+    AGNode::update(t, dt);
+    
     GLKMatrix4 projection = projectionMatrix();
     GLKMatrix4 modelView = globalModelViewMatrix();
     
@@ -524,6 +564,11 @@ void AGControlNode::render()
     shader.useProgram();
     shader.setMVPMatrix(m_modelViewProjectionMatrix);
     shader.setNormalMatrix(m_normalMatrix);
+    
+    GLcolor4f color = GLcolor4f::white;
+    color.a = m_fadeOut;
+    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &color);
+    glDisableVertexAttribArray(GLKVertexAttribColor);
     
     if(m_activation)
     {
@@ -894,7 +939,9 @@ AGUIObject *AGOutputNode::hitTest(const GLvertex3f &t)
 //------------------------------------------------------------------------------
 #pragma mark - AGFreeDraw
 
-AGFreeDraw::AGFreeDraw(GLvncprimf *points, int nPoints)
+AGFreeDraw::AGFreeDraw(GLvncprimf *points, int nPoints) :
+m_active(true),
+m_alpha(0.5, 1, 0, 2)
 {
     m_nPoints = nPoints;
     m_points = new GLvncprimf[m_nPoints];
@@ -914,7 +961,12 @@ AGFreeDraw::~AGFreeDraw()
 
 void AGFreeDraw::update(float t, float dt)
 {
-    
+    if(!m_active)
+    {
+        m_alpha.update(dt);
+        if(m_alpha < 0.01)
+            [[AGViewController instance] removeFreeDraw:this];
+    }
 }
 
 void AGFreeDraw::render()
@@ -932,7 +984,9 @@ void AGFreeDraw::render()
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     
     glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::white);
+    GLcolor4f color = GLcolor4f::white;
+    color.a = m_alpha;
+    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &color);
     
     glDisableVertexAttribArray(GLKVertexAttribTexCoord0);
     glDisableVertexAttribArray(GLKVertexAttribTexCoord1);
@@ -989,13 +1043,19 @@ void AGFreeDraw::touchUp(const GLvertex3f &t)
     AGUITrash &trash = AGUITrash::instance();
     
     if(trash.hitTest(t))
-        [[AGViewController instance] removeFreeDraw:this];
+    {
+        m_active = false;
+        m_alpha.reset();
+    }
     
     trash.deactivate();
 }
 
 AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
 {
+    if(!m_active)
+        return NULL;
+    
     GLvertex2f t = _t.xy();
     GLvertex2f pos = m_position.xy();
     

@@ -79,6 +79,8 @@ public:
     
     AGRate rate() { return m_rate; }
     
+    void fadeOutAndRemove();
+    
 private:
     
     static bool s_init;
@@ -130,7 +132,7 @@ public:
     AGNode(GLvertex3f pos = GLvertex3f());
     virtual ~AGNode();
     
-    virtual void update(float t, float dt) = 0;
+    virtual void update(float t, float dt);
     virtual void render();
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) { assert(0); }
     virtual AGControl *renderControl(sampletime t) { assert(0); return NULL; }
@@ -183,6 +185,8 @@ public:
     
     virtual AGRate rate() { return RATE_CONTROL; }
     
+    virtual void fadeOutAndRemove();
+    
 private:
     static bool s_initNode;
     
@@ -220,6 +224,9 @@ protected:
     int m_inputActivation;
     int m_outputActivation;
     int m_activation;
+    
+    bool m_active;
+    expcurvef m_fadeOut;
 };
 
 
@@ -362,6 +369,9 @@ private:
     bool m_touchDown;
     GLvertex3f m_position;
     GLvertex3f m_touchLast;
+    
+    bool m_active;
+    expcurvef m_alpha;
     
     // debug
     int m_touchPoint0;

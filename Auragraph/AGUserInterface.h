@@ -26,6 +26,8 @@ class AGUIObject
 public:
     virtual ~AGUIObject() { }
     
+    virtual void fadeOutAndRemove() { }
+    
     virtual void update(float t, float dt) { }
     virtual void render() { }
     
