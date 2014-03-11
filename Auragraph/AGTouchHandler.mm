@@ -123,7 +123,6 @@
         if(trash.hitTest(pos))
         {
             _moveNode->fadeOutAndRemove();
-//            [_viewController removeNode:_moveNode];
         }
     }
 }
