@@ -19,10 +19,16 @@ uniform float positionZ;
 
 #define M_PI 3.1415926535897932384626433832795
 
+float softclip(float x)
+{
+    //    return x/(1.0+abs(x));
+    return sign(x)*log(abs(x)+1.0)/log(10.0);
+}
+
 void main()
 {
 //    vec4 position = vec4(positionX, sin(positionX*2.0*M_PI), positionZ, 1.0);
-    vec4 position = vec4(positionX, positionY, positionZ, 1.0);
+    vec4 position = vec4(positionX, softclip(positionY), positionZ, 1.0);
     vec3 eyeNormal = normalize(normalMatrix * normal);
     vec3 lightPosition = vec3(0.0, 0.0, 1.0);
     vec4 diffuseColor = vec4(1.0, 1.0, 1.0, 1.0);

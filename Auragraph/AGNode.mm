@@ -193,7 +193,8 @@ void AGConnection::render()
         modelView = GLKMatrix4Translate(modelView, m_outTerminal.x, m_outTerminal.y, m_outTerminal.z);
         modelView = GLKMatrix4Rotate(modelView, vec.xy().angle(), 0, 0, 1);
 //        modelView = GLKMatrix4Translate(modelView, 0, vec.xy().magnitude()/10.0, 0);
-        modelView = GLKMatrix4Scale(modelView, vec.xy().magnitude(), 0.0005, 1);
+        modelView = GLKMatrix4Translate(modelView, 0.002, 0, 0);
+        modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004), 0.0025, 1);
 //        modelView = GLKMatrix4Scale(modelView, 0.1, 0.1, 1);
         
         waveformShader.setProjectionMatrix(projection);
