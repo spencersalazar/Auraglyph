@@ -29,6 +29,7 @@ public:
     
 protected:
     AGGenericShader(NSString *name = @"Shader", EnableAttributes attributes = SHADERHELPER_PNC);
+    AGGenericShader(NSString *name, const map<int, string> &attributeMap);
     
     GLuint m_program;
     GLint m_uniformMVPMatrix;
@@ -68,5 +69,27 @@ protected:
     
     GLint m_uniformTex;
 };
+
+
+class AGWaveformShader : public AGGenericShader
+{
+public:
+    
+    static AGWaveformShader &instance();
+    
+    AGWaveformShader();
+    
+    virtual void useProgram();
+    
+    void setZ(const GLfloat z);
+
+    static const GLint s_attribPositionX;
+    static const GLint s_attribPositionY;
+    
+protected:
+    GLfloat *m_xBuffer;
+    GLint m_uniformPositionZ;
+};
+
 
 #endif /* defined(__Auragraph__AGGenericShader__) */

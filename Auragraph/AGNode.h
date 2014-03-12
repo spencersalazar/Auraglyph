@@ -249,6 +249,8 @@ public:
     
     virtual AGRate rate() { return RATE_AUDIO; }
     
+    const float *lastOutputBuffer() const { return m_outputBuffer; }
+    
     static int sampleRate() { return s_sampleRate; }
     static int bufferSize() { return 256; }
     
@@ -266,6 +268,7 @@ private:
     
 protected:
     
+    float * m_outputBuffer;
     float ** m_inputPortBuffer;
     
     float m_gain;

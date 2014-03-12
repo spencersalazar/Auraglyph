@@ -18,12 +18,39 @@
 {
     return [ShaderHelper createProgramForVertexShader:[[NSBundle mainBundle] pathForResource:name ofType:@"vsh"]
                                        fragmentShader:[[NSBundle mainBundle] pathForResource:name ofType:@"fsh"]
-            withAttributes:attributes];
+                                       withAttributes:attributes];
+}
+
++ (GLuint)createProgram:(NSString *)name
+       withAttributeMap:(map<int, string>)attributeMap
+{
+    return [ShaderHelper createProgramForVertexShader:[[NSBundle mainBundle] pathForResource:name ofType:@"vsh"]
+                                       fragmentShader:[[NSBundle mainBundle] pathForResource:name ofType:@"fsh"]
+                                     withAttributeMap:attributeMap];
 }
 
 + (GLuint)createProgramForVertexShader:(NSString *)vsh
                         fragmentShader:(NSString *)fsh
                         withAttributes:(int)attributes
+{
+    map<int, string> attributeMap;
+    if(attributes & SHADERHELPER_ATTR_POSITION)
+        attributeMap[GLKVertexAttribPosition] = "position";
+    if(attributes & SHADERHELPER_ATTR_NORMAL)
+        attributeMap[GLKVertexAttribNormal] = "normal";
+    if(attributes & SHADERHELPER_ATTR_COLOR)
+        attributeMap[GLKVertexAttribColor] = "color";
+    if(attributes & SHADERHELPER_ATTR_TEXCOORD0)
+        attributeMap[GLKVertexAttribTexCoord0] = "texcoord0";
+    
+    return [self createProgramForVertexShader:vsh
+                               fragmentShader:fsh
+                             withAttributeMap:attributeMap];
+}
+
++ (GLuint)createProgramForVertexShader:(NSString *)vsh
+                        fragmentShader:(NSString *)fsh
+                      withAttributeMap:(map<int, string>)attributeMap
 {
     GLuint vertShader, fragShader;
     NSString *vertShaderPathname, *fragShaderPathname;
@@ -56,14 +83,8 @@
     
     // Bind attribute locations.
     // This needs to be done prior to linking.
-    if(attributes & SHADERHELPER_ATTR_POSITION)
-        glBindAttribLocation(_program, GLKVertexAttribPosition, "position");
-    if(attributes & SHADERHELPER_ATTR_NORMAL)
-        glBindAttribLocation(_program, GLKVertexAttribNormal, "normal");
-    if(attributes & SHADERHELPER_ATTR_COLOR)
-        glBindAttribLocation(_program, GLKVertexAttribColor, "color");
-    if(attributes & SHADERHELPER_ATTR_TEXCOORD0)
-        glBindAttribLocation(_program, GLKVertexAttribTexCoord0, "texcoord0");
+    for(map<int, string>::iterator i = attributeMap.begin(); i != attributeMap.end(); i++)
+        glBindAttribLocation(_program, i->first, i->second.c_str());
     
     // Link program.
     if (![ShaderHelper linkProgram:_program]) {

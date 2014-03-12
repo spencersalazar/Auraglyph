@@ -7,6 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <map>
+#import <string>
+
+using namespace std;
 
 typedef enum
 {
@@ -26,7 +30,12 @@ typedef enum
 
 + (GLuint)createProgramForVertexShader:(NSString *)vsh
                         fragmentShader:(NSString *)fsh
+                      withAttributeMap:(map<int, string>)attributes;
++ (GLuint)createProgramForVertexShader:(NSString *)vsh
+                        fragmentShader:(NSString *)fsh
                         withAttributes:(int)attributes;
++ (GLuint)createProgram:(NSString *)name
+       withAttributeMap:(map<int, string>)attributes;
 + (GLuint)createProgram:(NSString *)name
          withAttributes:(int)attributes;
 + (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file;

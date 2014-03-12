@@ -8,6 +8,7 @@
 
 #import "AGGenericShader.h"
 #import "ShaderHelper.h"
+#import "AGAudioNode.h"
 
 
 static AGGenericShader *g_shader = NULL;
@@ -23,6 +24,17 @@ AGGenericShader::AGGenericShader(NSString *name, EnableAttributes attributes)
 {
     m_program = [ShaderHelper createProgram:name
                              withAttributes:attributes];
+    m_uniformMVPMatrix = glGetUniformLocation(m_program, "modelViewProjectionMatrix");
+    m_uniformNormalMatrix = glGetUniformLocation(m_program, "normalMatrix");
+    
+    m_proj = GLKMatrix4Identity;
+    m_mv = GLKMatrix4Identity;
+}
+
+AGGenericShader::AGGenericShader(NSString *name, const map<int, string> &attributeMap)
+{
+    m_program = [ShaderHelper createProgram:name
+                           withAttributeMap:attributeMap];
     m_uniformMVPMatrix = glGetUniformLocation(m_program, "modelViewProjectionMatrix");
     m_uniformNormalMatrix = glGetUniformLocation(m_program, "normalMatrix");
     
@@ -107,4 +119,55 @@ void AGTextureShader::useProgram()
     // default: use texture 0
     glUniform1i(m_uniformTex, 0);
 }
+
+
+const GLint AGWaveformShader::s_attribPositionX = GLKVertexAttribTexCoord1+1;
+const GLint AGWaveformShader::s_attribPositionY = GLKVertexAttribTexCoord1+2;
+
+static AGWaveformShader *g_waveformShader = NULL;
+static map<int, string> *g_waveformShaderAttrib = NULL;
+
+AGWaveformShader &AGWaveformShader::instance()
+{
+    if(g_waveformShader ==  NULL)
+    {
+        g_waveformShaderAttrib = new map<int, string>;
+        (*g_waveformShaderAttrib)[GLKVertexAttribNormal] = "normal";
+        (*g_waveformShaderAttrib)[GLKVertexAttribColor] = "color";
+        (*g_waveformShaderAttrib)[s_attribPositionX] = "positionX";
+        (*g_waveformShaderAttrib)[s_attribPositionY] = "positionY";
+
+        g_waveformShader = new AGWaveformShader();
+    }
+    
+    return *g_waveformShader;
+}
+
+AGWaveformShader::AGWaveformShader() :
+AGGenericShader(@"Waveform", *g_waveformShaderAttrib)
+{
+    m_uniformPositionZ = glGetUniformLocation(m_program, "positionZ");
+
+    int bufSize = AGAudioNode::bufferSize();
+    m_xBuffer = new GLfloat[bufSize];
+    for(int i = 0; i < bufSize; i++)
+    {
+        m_xBuffer[i] = ((float) i)/((float) (bufSize-1));
+    }
+}
+
+void AGWaveformShader::useProgram()
+{
+    AGGenericShader::useProgram();
+    
+    glVertexAttribPointer(s_attribPositionX, 1, GL_FLOAT, GL_FALSE, 0, m_xBuffer);
+    glEnableVertexAttribArray(s_attribPositionX);
+}
+
+void AGWaveformShader::setZ(const GLfloat z)
+{
+    glUniform1f(m_uniformPositionZ, z);
+}
+
+
 
