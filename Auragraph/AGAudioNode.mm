@@ -405,7 +405,8 @@ void AGAudioSawtoothWaveNode::renderAudio(sampletime t, float *input, float *out
     
     for(int i = 0; i < nFrames; i++)
     {
-        output[i] += ((1-m_phase)*2-1)  * (m_gain + m_inputPortBuffer[1][i]);
+        m_outputBuffer[i] = ((1-m_phase)*2-1)  * (m_gain + m_inputPortBuffer[1][i]);
+        output[i] += m_outputBuffer[i];
         
         m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
         while(m_phase >= 1.0) m_phase -= 1.0;
@@ -524,9 +525,10 @@ void AGAudioTriangleWaveNode::renderAudio(sampletime t, float *input, float *out
     for(int i = 0; i < nFrames; i++)
     {
         if(m_phase < 0.5)
-            output[i] += ((1-m_phase*2)*2-1) * (m_gain + m_inputPortBuffer[1][i]);
+            m_outputBuffer[i] = ((1-m_phase*2)*2-1) * (m_gain + m_inputPortBuffer[1][i]);
         else
-            output[i] += ((m_phase-0.5)*4-1) * (m_gain + m_inputPortBuffer[1][i]);
+            m_outputBuffer[i] = ((m_phase-0.5)*4-1) * (m_gain + m_inputPortBuffer[1][i]);
+        output[i] += m_outputBuffer[i];
 
         m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
         while(m_phase >= 1.0) m_phase -= 1.0;
@@ -667,8 +669,9 @@ void AGAudioADSRNode::renderAudio(sampletime t, float *input, float *output, int
     
     for(int i = 0; i < nFrames; i++)
     {
-        output[i] += m_inputPortBuffer[0][i];
-        
+        m_outputBuffer[i] = m_inputPortBuffer[0][i];
+        output[i] += m_outputBuffer[i];
+
         m_inputPortBuffer[0][i] = 0;
     }
 }
@@ -880,7 +883,8 @@ void AGAudioFilterNode::renderAudio(sampletime t, float *input, float *output, i
         if(freq != m_freq || m_Q != Q)
             m_filter->set(freq, Q);
         
-        output[i] += gain * m_filter->tick(m_inputPortBuffer[0][i]);
+        m_outputBuffer[i] = gain * m_filter->tick(m_inputPortBuffer[0][i]);
+        output[i] += m_outputBuffer[i];
         
         m_inputPortBuffer[0][i] = 0; // input
         m_inputPortBuffer[1][i] = 0; // gain

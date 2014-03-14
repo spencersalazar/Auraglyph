@@ -181,7 +181,10 @@ void AGConnection::render()
     if(src()->rate() == RATE_AUDIO)
     {
         AGAudioNode *audioSrc = (AGAudioNode *) src();
-        GLvertex3f vec = (m_inTerminal - m_outTerminal);
+//        GLvertex3f vec = (m_inTerminal - m_outTerminal);
+        GLvertex3f vec = (m_outTerminal - m_inTerminal);
+        float gain = audioSrc->gain();
+        gain = 1.0f/gain * (1+log10f(gain+0.1));
         
         AGWaveformShader &waveformShader = AGWaveformShader::instance();
         waveformShader.useProgram();
@@ -190,11 +193,14 @@ void AGConnection::render()
         GLKMatrix4 modelView = AGNode::globalModelViewMatrix();
 //        GLKMatrix4 modelView = GLKMatrix4Identity;
         
-        modelView = GLKMatrix4Translate(modelView, m_outTerminal.x, m_outTerminal.y, m_outTerminal.z);
+        // rendering the waveform in reverse seems to look better
+        // probably because of aliasing between graphic fps and audio rate
+//        modelView = GLKMatrix4Translate(modelView, m_outTerminal.x, m_outTerminal.y, m_outTerminal.z);
+        modelView = GLKMatrix4Translate(modelView, m_inTerminal.x, m_inTerminal.y, m_inTerminal.z);
         modelView = GLKMatrix4Rotate(modelView, vec.xy().angle(), 0, 0, 1);
 //        modelView = GLKMatrix4Translate(modelView, 0, vec.xy().magnitude()/10.0, 0);
         modelView = GLKMatrix4Translate(modelView, 0.002, 0, 0);
-        modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004), 0.0025, 1);
+        modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004), 0.001, 1);
 //        modelView = GLKMatrix4Scale(modelView, 0.1, 0.1, 1);
         
         waveformShader.setProjectionMatrix(projection);
@@ -202,6 +208,7 @@ void AGConnection::render()
         waveformShader.setNormalMatrix(normalMatrix);
         
         waveformShader.setZ(0);
+        waveformShader.setGain(gain);
         glVertexAttribPointer(AGWaveformShader::s_attribPositionY, 1, GL_FLOAT, GL_FALSE, 0, audioSrc->lastOutputBuffer());
         glEnableVertexAttribArray(AGWaveformShader::s_attribPositionY);
         

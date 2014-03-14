@@ -36,9 +36,6 @@
 \usepackage{float}
 \usepackage{url}
 
-%\newcommand{\spencerTitle}{SoundCraft}
-%\newcommand{\spencerSubtitle}{SoundCraft}
-
 
 \begin{document}
 
@@ -130,8 +127,26 @@ The extent to which this goal is met determines the ease of a user successfully 
 The block diagram is a pervasive conceptual abstraction, produced for education (Figure \ref{fig:blockDiagram}, top-left, was taken from a text book), system design (Figure \ref{fig:blockDiagram}, right), and numerous other applications, despite that creating these diagrams is rarely necessary for actually building the represented system. 
 Therefore, a block diagram-oriented design system, with a pen-and-paper interaction metaphor, goes great lengths towards diminishing the distance between human thought process and digital construct. 
 
-\section{Interactions}
-\label{sec:Interactions}
+\section{Auraglyph}
+\label{sec:Auraglyph}
+
+The primary tangible goal of this dissertation is to produce a complete software environment demonstrating the core principles of handwritten computer music. 
+The working prototype of this environment is called \emph{Auraglyph}. 
+A high-level model of interacting with Auraglyph is shown in Figure \ref{fig:auraglyphSystem}. 
+The user's viewpoint is represented by the iPad in the center, acting as a window into a larger system. 
+This viewpoint may be freely moved about the space using conventional gestures (swipe, pinch) to scroll and zoom throughout the space. 
+The lower plane, extending infinitely in two dimensions, contains control logic, programming code, and unit generators, comprising the bulk of an Auraglyph program's functionality.
+Some unit generators may contain an internal network of logic and ugens designed by the user, and the contents of these may be examined by further zooming in to the container ugen.  
+The upper plane contains user interface controls, which have been defined in the main programming area. 
+
+
+\begin{figure*}[h!]
+	\centering
+		\includegraphics[width=0.9\textwidth]{figures/HWCM-model.jpeg}
+	\caption{High-level model of Auraglyph interaction. }
+	\label{fig:auraglyphSystem}
+\end{figure*}
+
 
 In producing this dissertation I would like to design, implement, and evaluate a number of interactions that might comprise handwritten computer music, detailed below. 
 My intent is to build these interactions within Auraglyph, an iPad application created specifically to support this research. 
@@ -161,6 +176,13 @@ An instance of such code might simply be a small mathematical function, or a mul
 To this end, Auraglyph's programming language ought to be designed specifically for pen input. 
 For example, a user wouldn't be able to necessarily write as many characters of this programming language, due to the slowness of stylus writing, but these characters wouldn't be limited to a linear, sequential arrangment. 
 A handwritten programming language would need to address both of these issues, and others. 
+
+\begin{figure*}[h!]
+	\centering
+		\includegraphics[width=0.9\textwidth]{figures/HWCM-codeblock.jpeg}
+	\caption{Example of handwritten code integrated into a unit generator graph. This program chooses notes according to the Fibonacci sequence, selecting a new note every half second. }
+	\label{fig:auraglyphCode}
+\end{figure*}
 
 \paragraph{The system facilitates multi-user interactions with objects used to communicate data over the network.} 
 Objects might exist to transmit and receive arbitrary control data over OpenSoundControl~\cite{wright1997osc}. 
@@ -204,7 +226,7 @@ A primary goal of Auraglyph is to offer the depth of functionality that one migh
 %\section{Technical Challenges}
 %\label{Technical}
 
-\section{Auraglyph: First Draft}
+\section{First Draft}
 \label{sec:SystemDescription}
 
 I have already developed an initial draft of Auraglyph, thus far embodying a number of the principles stated above. 

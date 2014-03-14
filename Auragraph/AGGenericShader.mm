@@ -147,6 +147,7 @@ AGWaveformShader::AGWaveformShader() :
 AGGenericShader(@"Waveform", *g_waveformShaderAttrib)
 {
     m_uniformPositionZ = glGetUniformLocation(m_program, "positionZ");
+    m_uniformGain = glGetUniformLocation(m_program, "gain");
 
     int bufSize = AGAudioNode::bufferSize();
     m_xBuffer = new GLfloat[bufSize];
@@ -162,11 +163,18 @@ void AGWaveformShader::useProgram()
     
     glVertexAttribPointer(s_attribPositionX, 1, GL_FLOAT, GL_FALSE, 0, m_xBuffer);
     glEnableVertexAttribArray(s_attribPositionX);
+    setGain(1);
+    setZ(0);
 }
 
 void AGWaveformShader::setZ(const GLfloat z)
 {
     glUniform1f(m_uniformPositionZ, z);
+}
+
+void AGWaveformShader::setGain(const GLfloat gain)
+{
+    glUniform1f(m_uniformGain, gain);
 }
 
 

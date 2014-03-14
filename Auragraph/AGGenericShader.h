@@ -82,6 +82,7 @@ public:
     virtual void useProgram();
     
     void setZ(const GLfloat z);
+    void setGain(const GLfloat gain);
 
     static const GLint s_attribPositionX;
     static const GLint s_attribPositionY;
@@ -89,6 +90,7 @@ public:
 protected:
     GLfloat *m_xBuffer;
     GLint m_uniformPositionZ;
+    GLint m_uniformGain;
 };
 
 

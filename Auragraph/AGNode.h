@@ -248,11 +248,12 @@ public:
     virtual GLvertex3f relativePositionForOutputPort(int port) const;
     
     virtual AGRate rate() { return RATE_AUDIO; }
+    inline float gain() { return m_gain; }
     
     const float *lastOutputBuffer() const { return m_outputBuffer; }
     
     static int sampleRate() { return s_sampleRate; }
-    static int bufferSize() { return 256; }
+    static int bufferSize() { return 1024; }
     
 private:
     
