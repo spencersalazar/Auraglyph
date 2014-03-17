@@ -132,12 +132,14 @@ Therefore, a block diagram-oriented design system, with a pen-and-paper interact
 
 The primary tangible goal of this dissertation is to produce a complete software environment demonstrating the core principles of handwritten computer music. 
 The working prototype of this environment is called \emph{Auraglyph}. 
+
 A high-level model of interacting with Auraglyph is shown in Figure \ref{fig:auraglyphSystem}. 
 The user's viewpoint is represented by the iPad in the center, acting as a window into a larger system. 
 This viewpoint may be freely moved about the space using conventional gestures (swipe, pinch) to scroll and zoom throughout the space. 
 The lower plane, extending infinitely in two dimensions, contains control logic, programming code, and unit generators, comprising the bulk of an Auraglyph program's functionality.
 Some unit generators may contain an internal network of logic and ugens designed by the user, and the contents of these may be examined by further zooming in to the container ugen.  
 The upper plane contains user interface controls, which have been defined in the main programming area. 
+This plane exists primarily for interacting with these controls, allowing Auraglyph programs to present a clearly defined interface. 
 
 
 \begin{figure*}[h!]
@@ -147,9 +149,11 @@ The upper plane contains user interface controls, which have been defined in the
 	\label{fig:auraglyphSystem}
 \end{figure*}
 
-
-In producing this dissertation I would like to design, implement, and evaluate a number of interactions that might comprise handwritten computer music, detailed below. 
-My intent is to build these interactions within Auraglyph, an iPad application created specifically to support this research. 
+The functional elements of an Auraglyph program are divided into visual audio units and textual programming code. 
+Audio units include conventional unit generators and other related control units, such as timers, control curves, and sequencers. 
+These are created as they are drawn by the user, via stylus input. 
+First, the user draws the basic outline of a unit --- a circle --- indicating that he or she would like a unit at that location. 
+Then, the user draws the desired unit type (e.g. a sine wave constructs a sine oscillator
 
 \paragraph{The fundamental environment within the app is a large, on-screen canvas.} 
 Everything that exists in a program created with Auraglyph is fundamentally an object on this canvas. 

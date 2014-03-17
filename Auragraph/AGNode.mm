@@ -183,6 +183,8 @@ void AGConnection::render()
         AGAudioNode *audioSrc = (AGAudioNode *) src();
 //        GLvertex3f vec = (m_inTerminal - m_outTerminal);
         GLvertex3f vec = (m_outTerminal - m_inTerminal);
+        
+        // scale gain logarithmically 
         float gain = audioSrc->gain();
         gain = 1.0f/gain * (1+log10f(gain+0.1));
         
