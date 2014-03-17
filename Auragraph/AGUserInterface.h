@@ -35,7 +35,7 @@ public:
     virtual void touchMove(const GLvertex3f &t) { }
     virtual void touchUp(const GLvertex3f &t) { }
     
-    virtual AGUIObject *hitTest(const GLvertex3f &t) { return false; }
+    virtual AGUIObject *hitTest(const GLvertex3f &t) { return NULL; }
 };
 
 
