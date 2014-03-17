@@ -1,4 +1,3 @@
-
 \documentclass[10pt,letterpaper]{article}
 
 % Make everything look pretty
@@ -150,36 +149,20 @@ This plane exists primarily for interacting with these controls, allowing Auragl
 \end{figure*}
 
 The functional elements of an Auraglyph program are divided into visual audio units and textual programming code. 
-Audio units include conventional unit generators and other related control units, such as timers, control curves, and sequencers. 
+Audio units include conventional unit generators and other related control units, such as timers, control curves, data converters, and sequencers. 
 These are created as they are drawn by the user, via stylus input. 
-First, the user draws the basic outline of a unit --- a circle --- indicating that he or she would like a unit at that location. 
-Then, the user draws the desired unit type (e.g. a sine wave constructs a sine oscillator
+First, the user draws the basic outline of a unit --- a circle --- on the lower plane's canvas, indicating that he or she would like a unit at that location. 
+Then, the user draws the desired unit type within the circle (e.g. drawing a sine wave constructs a sine oscillator). 
+Not all unit types have suitable hand-drawn mnemonics, in which case a menu is also available to select the unit's type. 
+Once created, units can be interconnected by drawing connections between them. 
+By creating and interconnecting a variety of unit types in this way, complex musical audio networks can be realized. 
 
-\paragraph{The fundamental environment within the app is a large, on-screen canvas.} 
-Everything that exists in a program created with Auraglyph is fundamentally an object on this canvas. 
-
-\paragraph{The user draws various figures on this canvas. 
-Figures that match a designated vocabulary of \emph{glyphs} are recognized by the system, and converted into an \emph{object} that corresponds to that glyph.} 
-For example, drawing a circle glyph might cause the hand-drawn circle to be replaced by an audio unit generator object, and drawing a square glyph might create a control-rate processor object (See Figure \ref{fig:baseObjects}).
-
-\paragraph{Each object represents a functional block, performing some unit-sized task.
-Objects can be interconnected by drawing connections with a stylus.}
-A given object might represent a reverb unit generator, an audio oscillator, a timer, a control curve, or some sort of textual code. 
-Each object type has a defined set of inputs and outputs, determining the function of each connection between objects. 
-These concepts are common to many graphical, block-based music programming environments. 
-
-\paragraph{Modifying and altering the parameters of these objects leverages multitouch and stylus interaction.}
-Handwriting and multitouch input both offer distinct advantages for musical control and design. 
-For example, one might set a filter frequency or bandwidth parameter by writing the number by hand into the system. 
-A user might directly draw the desired waveform for a wavetable oscillator, envelopes, or the magnitude transfer function for a filter. 
-Parametric equalizers and resonant filters can be sweeped by hand, modifying cutoff, bandwidth, and gain parameters with touch gestures. 
-
-\paragraph{Code objects support direct input of written programming code.} 
-Short blocks of code can be written out within an object, and unbound variables are automatically turned into inputs to the object. 
-An instance of such code might simply be a small mathematical function, or a multi-case logical algorithm. 
-To this end, Auraglyph's programming language ought to be designed specifically for pen input. 
-For example, a user wouldn't be able to necessarily write as many characters of this programming language, due to the slowness of stylus writing, but these characters wouldn't be limited to a linear, sequential arrangment. 
-A handwritten programming language would need to address both of these issues, and others. 
+Programming code can also be written directly to the canvas (Figure \ref{fig:auraglyphCode}). 
+The syntax of the code is specific to Auraglyph, optimized for the unique capabilities and limitations of handwritten stylus input. 
+The links between code and audio units may be flexible, but they are well-defined. 
+For example, in Figure \ref{fig:auraglyphCode}, the box around the \textit{f1} character indicates that it is part of both programming code and the audio network. 
+As this work progresses, the specific requirements and features of the programming language itself will become more clear. 
+Presently, languages such as ChucK provide inspiration for the audio-based components of the programming language, and Python, Ruby, and other dynamic languages for general purpose programming. 
 
 \begin{figure*}[h!]
 	\centering
@@ -188,19 +171,14 @@ A handwritten programming language would need to address both of these issues, a
 	\label{fig:auraglyphCode}
 \end{figure*}
 
+In addition to the core system described above, I am interested in additional interactions that are not fundamental to the primary handwritten computer music experience. 
+
 \paragraph{The system facilitates multi-user interactions with objects used to communicate data over the network.} 
 Objects might exist to transmit and receive arbitrary control data over OpenSoundControl~\cite{wright1997osc}. 
 Additionally they could provide discovery mechanisms for finding other local-area or wide-area Auraglyph users to make music with. 
 
 \paragraph{Stylus input can also be used to hand-write musical notation on staves.}
 Snippets of notation data can then be passed around and modified both with traditional list transformations (add/remove, combine, reverse, etc.) and music-specific transformations (transposition, inversion, tuning, etc.). 
-
-\paragraph{Separation of logic and interface.}
-Input and output objects exist for interfacing with the outside world, both on-screen (GUI sliders, buttons, and indicators) and off-screen (MIDI, OSC). 
-For on-screen I/O objects, it is tempting to place them in-line with strictly functional structures, like ugens or code. 
-However, doing so can obscure the relationship between an Auraglyph program's interface and its logic. 
-Therefore, the actual controls represented by I/O objects might be placed into a separate interface space, that is distinct from the code/object/logic space. 
-A user might even use a pinch gesture to ``zoom out'' to the interface space, and then to ``zoom in'' back to the logic space. 
 
 \paragraph{Novel stylus designs can provide additional expressivity in this system.}
 For example, a stylus with touchscreen-compatible tips on both ends might designate a draw end and an erase end, mimicking the conventional pencil-and-eraser. 
