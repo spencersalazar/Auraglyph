@@ -93,11 +93,11 @@ Such a model surpasses the barrier of touchscreen-based keyboard input, preservi
 We have implemented an iPad software application utilizing these principles, called ``Auraglyph.''
 Auraglyph offers a number of fundamental audio processing and control operators, as well as facilities for structured input and output.
 All of these software objects are created, parameterized, and interconnected via stylus and touch input. 
-To enable these interactions, we have employed a pre-existing handwriting recognition framework, LipiTk, which can be trained to recognize both alphanumeric characters and arbitrary figures, shapes, and patterns. 
+To enable these interactions, we have employed a pre-existing handwriting recognition framework, LipiTk, which is capable of recognizing both alphanumeric characters and arbitrary figures, shapes, and patterns. 
 
 \end{abstract}
 
-\keywords{handwritten computer music, computer music systems, handwriting recognition, touchscreen, multitouch input}
+\keywords{handwriting input, computer music systems, handwriting recognition, touchscreen, tablet computing}
 
 \section{Introduction}
 \label{sec:Introduction}
@@ -115,19 +115,18 @@ Finally, the stylus provides precise graphical free-form input for data such as 
 Multitouch finger input continues to provide functionality that has become expected of touch-based software, such as direct movement of on-screen objects, interaction with conventional controls (sliders, buttons, etc.), and other manipulations. 
 Herein we discuss the design, prototyping, and evaluation of such a system, which we have named ``Auraglyph.''
 
-\begin{figure*}[h!]
-	\centering
-		\includegraphics[width=0.9\textwidth]{figures/block.png}
-	\caption{Example block diagrams. Top-left: a feedback delay network\protect~\cite{smith2010pasp}. Bottom-left: compiler-generated block diagram from the Faust programming language\protect~\cite{faustOnline}. Right: hand-drawn block diagram.}
-	\label{fig:blockDiagram}
-\end{figure*}
+%\begin{figure*}[h!]
+%	\centering
+%		\includegraphics[width=0.9\textwidth]{figures/block.png}
+%	\caption{Example block diagrams. Top-left: a feedback delay network\protect~\cite{smith2010pasp}. Bottom-left: compiler-generated block diagram from the Faust programming language\protect~\cite{faustOnline}. Right: hand-drawn block diagram.}
+%	\label{fig:blockDiagram}
+%\end{figure*}
 
 \section{Related Work}
 \label{sec:RelatedWork}
 
-In our research, handwriting recognition has previously found little use in interactive computer music. 
-Fujinaga et al. explored character recognition of traditional staved musical notation~\cite{fujinaga1989computer, fujinaga1996exemplar}, as have Miyao and Marayuma~\cite{miyao2007online}. 
-
+In our research, handwriting recognition has previously found limited use in interactive computer music. 
+Most notably, Garcia et al. studied the use of handwritten sketches and outlines as a preliminary exercise in electronic composition and used this study to inform the application of a digital stroke-sensing pen to real-time musical synthesis, as an aid to the compositional process~\cite{garcia2011inksplorer}. 
 Direct, graphical manipulation of computational data via pen or stylus, augmented by computer intelligence, goes back as far as Sutherland's Sketchpad~\cite{sutherland1964sketch} and GRAIL and the RAND Tablet by Ellis et al.~\cite{davis1964rand, ellis1969grail}. 
 The GRAIL language is the first system to our knowledge in which programs are created via stylus input. 
 Hand-drawn figures are automatically recognized and converted to meaningful symbols within the system, which may then be further modified with stylus gestures, such as drawing connections between nodes and scratching out symbols to erase them. 
@@ -140,7 +139,8 @@ The SILK system further employs stylus gestures to describe transitions between 
 Object graph-based programming languages such as Puredata~\cite{puckette1996pure} and Max/MSP~\cite{zicarelli1998extensible} have tremendously influenced the space of visual computer music design and composition. 
 More recently, the Kronos programming language extended functional programming models to a block diagram-based visual space in the context of real-time music composition and performance~\cite{norilo2012visualization}. 
 Mira, an iPad application, dynamically replicates the interface of desktop-based Max/MSP programs, joining conventional music software development with touch interaction~\cite{tarakajian2013anmira}. 
-Systems designed (or repurporsed) for live-coding such as SuperCollider~\cite{mccartney2002supercollider}, ChucK~\cite{wang2008chuck}, ixi lang~\cite{magnusson2011ixi}, and Overtone~\cite{aaron2013overtone} also suggest interesting possibilities for the use of natural input for music programming. 
+Systems designed (or repurporsed) for live-coding such as SuperCollider~\cite{mccartney2002supercollider}, ChucK~\cite{wang2008chuck}, and Overtone~\cite{aaron2013overtone} also suggest interesting possibilities for the expressive use of natural input for music programming. 
+Such systems also constitute the modern incarnation of unit generator-based sound design and synthesis, to which this work owes much of its technical underpinnings. 
 The Reactable~\cite{jorda2007reactable} and the work of Davidson and Han~\cite{davidson2006synthesis} have both provided significant foundational work in interacting with digital music via touch and direct manipulation. 
 
 Work from the commercial iPhone developer Smule have explored the space of possibilities for musically enabling mobile touchscreen devices~\cite{wang2009smule}. 
@@ -154,26 +154,35 @@ World Stage takes Ocarina's social model a step further, by congregating groups 
 %Interaction design: 
 %
 
-\section{Handwritten Computer Music}
+\section{A Case for Handwriting Input in Computer Music Design}
 \label{sec:HandwrittenComputerMusic}
 
 This work is motivated by the desire to better understand the distinguishing capabilities and limitations of touchscreen technology, and, using these as guiding principles, to enable expressive music interactions on such devices. 
 Complex software developed for a given interaction model -- such as keyboard-and-mouse -- may not successfully cross over to a different interaction model -- such as a touchscreen device. 
+This principle is made especially evident in the aforementioned Smule applications, Ocarina, Leaf Trombone, and others. 
 
 The initial insight leading to this work was that numeric and text input on a touchscreen might be more effectively handled by recognizing hand-drawn numerals and letters, rather than an on-screen keyboard. 
 We soon realized that we could use handwriting recognition to analyze a substantial number of handwritten figures and objects beyond just letters and numbers. 
 A user might then draw entire object graphs and audio topologies to be realized as an audio system or musical composition, in real-time, by the underlying software application. 
 
-From here a natural metaphor for interaction arose, that of a handwritten block diagram.
-Block diagrams, both computer-generated and manually produced, are utilized extensively in digital audio and computer music development processes (Figure \ref{fig:blockDiagram}). 
-We would like users of our system to feel as if they are drawing a block diagram of their musical system on a whiteboard or sheet of paper, and then allowing the software to make manifest that design. 
-
-This metaphor provides several notable benefits. 
-Writing and drawing with a pen or pencil on a flat surface is a foundational interaction for an incredible number of individuals, as this activity is continuously developed from early education around the world. 
-Moreover, a common goal, perhaps the ultimate goal, of software interfaces is to simplify the mapping between the user's conceptual abstraction of an idea and translating that idea to a digital representation. 
+Evidenced by both the direct experience of the authors and the previously mentioned work of Garcia et al., handwritten planning is a vital component of many compositional processes, whether the resulting musical product is electronic, acoustic, or both. 
+More generally, writing and drawing with a pen or pencil on a flat surface is a foundational expressive interaction for an incredible number of individuals; this activity is continuously developed from early education around the world. 
+A primary goal of software interfaces is to simplify the mapping between the user's conceptual abstraction of an idea and translating that idea to a digital representation. 
 The extent to which this goal is met determines the ease of a user successfully inputting their parameters to the software and interpreting its output. 
-The block diagram is a pervasive conceptual abstraction, produced for education (Figure \ref{fig:blockDiagram}, top-left, was taken from a text book), system design (Figure \ref{fig:blockDiagram}, right), and numerous other applications, despite that creating these diagrams is rarely necessary for actually building the represented system. 
-Therefore, a block diagram-oriented design system, with a pen-and-paper interaction metaphor, goes great lengths towards diminishing the distance between human thought process and digital construct. 
+Therefore sketching, as a natural interaction for expressing ideas in the real world, might be apt for realizing them in a virtual world. 
+The original work described herein seeks to apply this to the context of computer music and audio design. 
+By shortening the distance between a users' abstract musical thought and the audible realization of that thought, handwriting input might arm its users to more effectively express those thoughts. 
+
+%From here a natural metaphor for interaction arose, that of a handwritten block diagram.
+%Block diagrams, both computer-generated and manually produced, are utilized extensively in digital audio and computer music development processes (Figure \ref{fig:blockDiagram}). 
+%We would like users of our system to feel as if they are drawing a block diagram of their musical system on a whiteboard or sheet of paper, and then allowing the software to make manifest that design. 
+%
+%This metaphor provides several notable benefits. 
+%Writing and drawing with a pen or pencil on a flat surface is a foundational interaction for an incredible number of individuals, as this activity is continuously developed from early education around the world. 
+%Moreover, a common goal, perhaps the ultimate goal, of software interfaces is to simplify the mapping between the user's conceptual abstraction of an idea and translating that idea to a digital representation. 
+%The extent to which this goal is met determines the ease of a user successfully inputting their parameters to the software and interpreting its output. 
+%The block diagram is a pervasive conceptual abstraction, produced for education (Figure \ref{fig:blockDiagram}, top-left, was taken from a text book), system design (Figure \ref{fig:blockDiagram}, right), and numerous other applications, despite that creating these diagrams is rarely necessary for actually building the represented system. 
+%Therefore, a block diagram-oriented design system, with a pen-and-paper interaction metaphor, goes great lengths towards diminishing the distance between human thought process and digital construct. 
 
 %(Motivations e.g. UIs that are photographs of real HW synths, fully leverage power of touchscreen interaction)
 %(General discussion of possibilities of handwriting-based computer music)
@@ -187,7 +196,7 @@ A user interacts with Auraglyph using an iPad-compatible stylus (many models of 
 
 \begin{figure}[h]
 	\centering
-		\includegraphics[width=0.45\textwidth]{figures/patch.png}
+		\includegraphics[width=0.35\textwidth]{figures/patch.png}
 	\caption{A full Auraglyph patch, with annotations.}
 	\label{fig:patch}
 \end{figure}
@@ -217,7 +226,7 @@ The entire canvas may be scrolled through using a two-finger touch, allowing for
 
 \begin{figure}[h]
 	\centering
-		\includegraphics[width=0.45\textwidth]{figures/editor.png}
+		\includegraphics[width=0.25\textwidth]{figures/editor.png}
 	\caption{Modifying the ``freq'' parameter of a unit generator with handwritten numeric input.}
 	\label{fig:editor}
 \end{figure}
@@ -233,7 +242,7 @@ Outputs consist of numeric displays and binary ``LED'' indicators.
 
 \begin{figure}[h]
 	\centering
-		\includegraphics[width=0.45\textwidth]{figures/baseobjects.png}
+		\includegraphics[width=0.25\textwidth]{figures/baseobjects.png}
 	\caption{Base objects (left to right): unit generator, output, input, control-rate processor.}
 	\label{fig:baseObjects}
 \end{figure}
@@ -259,7 +268,7 @@ Some objects have more advanced needs for modifying values beyond the standard p
 For example, the wavetable oscillator's \texttt{table} parameter brings up a large input space for precisely drawing the desired waveform, as does the \texttt{xferFn} (transfer function) parameter of the hand-drawn filter. 
 The formula object eschews the standard parameter editor entirely, instead directly soliciting handwriting input of a sequence of mathematical operations (currently addition, subtraction, multiplication, and division are supported, with one input and one output). 
 
-\subsection{Handwriting Recognition}
+\subsection{Implementation of Handwriting Recognition}
 \label{sec:HandwritingRecognition}
 
 The concepts presented herein are generally invariant to the underlying algorithms and framework for handwriting recognition, but these topics merit discussion with regards to our own implementation in Auraglyph. 
@@ -287,7 +296,7 @@ Auraglyph takes advantage of this feature to a small degree, allowing a user to 
 
 While effective in replacing the keyboard as a textual/numeric input device, touchscreen stylus input also affords a broader set of interactions apt for computer music. 
 We have developed an iPad software application, Auraglyph, to leverage these principles into an interactive music environment. 
-We intend to release Auraglyph under an open source license when it reasonably mature and bug-free, via the project website.~\footnote{\url{https://ccrma.stanford.edu/~spencer/auraglyph/}}
+We intend to release Auraglyph under an open source license when it is reasonably mature and bug-free, via the project website.~\footnote{\url{https://ccrma.stanford.edu/~spencer/auraglyph/}}
 
 This system has fulfilled our goals of expressivity and versatility, but we believe this conceptual framework provides many more opportunities for computer music. 
 Stylus input might be extended to traditional music notation, more complex mathematical formulae, or even Turing-complete programming code, whose digital representations can then be refined, augmented, and extended with direct manipulation and touch input. 
