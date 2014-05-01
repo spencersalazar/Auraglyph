@@ -88,9 +88,9 @@ Ge Wang\\
 \begin{abstract}
 
 Effective software interaction design must consider all of the capabilities and limitations of the platform for which it is developed. 
-To this end, we propose a new model for computer music system design on touchscreen devices, combining both pen/stylus input and multitouch gestures. 
+To this end, we propose a new model for computer music design on touchscreen devices, combining both pen/stylus input and multitouch gestures. 
 Such a model surpasses the barrier of touchscreen-based keyboard input, preserving the primary interaction of touch and direct manipulation throughout the development of a complex musical program. 
-We have implemented an iPad software application utilizing these principles, called ``Auraglyph.''
+We have implemented an iPad software application applying these principles, called ``Auraglyph.''
 Auraglyph offers a number of fundamental audio processing and control operators, as well as facilities for structured input and output.
 All of these software objects are created, parameterized, and interconnected via stylus and touch input. 
 To enable these interactions, we have employed a pre-existing handwriting recognition framework, LipiTk, which is capable of recognizing both alphanumeric characters and arbitrary figures, shapes, and patterns. 
@@ -103,7 +103,7 @@ To enable these interactions, we have employed a pre-existing handwriting recogn
 \label{sec:Introduction}
 
 Touch interaction has profoundly altered the landscape of mainstream computing in the early 21st century. 
-Since the introduction of the iPhone in 2007 and the iPad in 2010, scores of touchscreen devices have entered the popular consciousness -- mobile phones, tablet computers, smart watches, and desktop computer screens, to name a few. 
+Since the introduction of the iPhone in 2007 and the iPad in 2010, numerous touchscreen devices have entered the popular consciousness -- mobile phones, tablet computers, smart watches, and desktop computer screens, to name a few. 
 New human-computer interaction paradigms have accompanied these hardware developments, addressing the complex shift from classical keyboard-and-mouse computing to multitouch interaction. 
 
 We propose a new model for touchscreen interaction with musical systems: the combined use of stylus-based handwriting input and direct touch manipulation. 
@@ -126,12 +126,13 @@ Herein we discuss the design, prototyping, and evaluation of such a system, whic
 \label{sec:RelatedWork}
 
 In our research, handwriting recognition has previously found limited use in interactive computer music. 
-Most notably, Garcia et al. studied the use of handwritten sketches and outlines as a preliminary exercise in electronic composition and used this study to inform the application of a digital stroke-sensing pen to real-time musical synthesis, as an aid to the compositional process~\cite{garcia2011inksplorer}. 
-Direct, graphical manipulation of computational data via pen or stylus, augmented by computer intelligence, goes back as far as Sutherland's Sketchpad~\cite{sutherland1964sketch} and GRAIL and the RAND Tablet by Ellis et al.~\cite{davis1964rand, ellis1969grail}. 
-The GRAIL language is the first system to our knowledge in which programs are created via stylus input. 
-Hand-drawn figures are automatically recognized and converted to meaningful symbols within the system, which may then be further modified with stylus gestures, such as drawing connections between nodes and scratching out symbols to erase them. 
+Most notably, Garcia et al. studied the use of handwritten sketches and outlines as a preliminary exercise in electronic composition~\cite{garcia2011inksplorer}.
+This study was then used as the basis for mapping the strokes of an camera-augmented pen to real-time musical synthesis, aiding the compositional process. 
+Graphical manipulation of computational data via pen or stylus, augmented by computer intelligence, goes back as far as Sutherland's Sketchpad~\cite{sutherland1964sketch} and the RAND Tablet by Davis et al.~\cite{davis1964rand}, which incorporated the Graphical Input Language (GRAIL) by Ellis et al. ~\cite{ellis1969grail}. 
+GRAIL is the first system to our knowledge in which computer programs are created via stylus input. 
+In GRAIL, hand-drawn figures are automatically recognized and converted to meaningful symbols within the system, which may then be further modified with stylus gestures, such as drawing connections between nodes and scratching out symbols to erase them. 
 
-Recent developments in this area include Landay's SILK, a software prototyping system in which user interfaces are hand-sketched with a digital tablet~\cite{landay1996interactive}. 
+Recent developments in sketch-oriented computing include Landay's SILK, a software prototyping system in which user interfaces are hand-sketched with a digital tablet~\cite{landay1996interactive}. 
 Where appropriate, sketched graphical widgets (buttons, sliders, etc.) are recognized as such, and converted into actual interactive widgets.
 Interestingly, recognized widgets are not transformed into any canonical visual representation; rather they retain the idiosyncrasies and hafnd-drawn characteristics of the original sketched figures. 
 The SILK system further employs stylus gestures to describe transitions between different parts of the interface, offering an extent of programmability for GUI interactions. 
@@ -139,14 +140,17 @@ The SILK system further employs stylus gestures to describe transitions between 
 Object graph-based programming languages such as Puredata~\cite{puckette1996pure} and Max/MSP~\cite{zicarelli1998extensible} have tremendously influenced the space of visual computer music design and composition. 
 More recently, the Kronos programming language extended functional programming models to a block diagram-based visual space in the context of real-time music composition and performance~\cite{norilo2012visualization}. 
 Mira, an iPad application, dynamically replicates the interface of desktop-based Max/MSP programs, joining conventional music software development with touch interaction~\cite{tarakajian2013anmira}. 
-Systems designed (or repurporsed) for live-coding such as SuperCollider~\cite{mccartney2002supercollider}, ChucK~\cite{wang2008chuck}, and Overtone~\cite{aaron2013overtone} also suggest interesting possibilities for the expressive use of natural input for music programming. 
-Such systems also constitute the modern incarnation of unit generator-based sound design and synthesis, to which this work owes much of its technical underpinnings. 
 The Reactable~\cite{jorda2007reactable} and the work of Davidson and Han~\cite{davidson2006synthesis} have both provided significant foundational work in interacting with digital music via touch and direct manipulation. 
 
-Work from the commercial iPhone developer Smule have explored the space of possibilities for musically enabling mobile touchscreen devices~\cite{wang2009smule}. 
-Ocarina is both a musical instrument, designed uniquely around the iPhone's interaction capabilities, and a musical/social experience, in which performers tune in to each others' musical renditions around the world~\cite{wang2014ocarina}. 
-While a conventional laptop computer has many of the same features as an iPhone (buttons, microphone, speakers, and in some cases multitouch screen), it is barely conceivable that Ocarina on a laptop would could provide a satisfactory user experience. 
-World Stage takes Ocarina's social model a step further, by congregating groups of users into a live ``American Idol''-like panel for critiquing and rating performances on a mobile phone instrument~\cite{wang2011world}. 
+Languages designed (or repurposed) for live-coding, such as SuperCollider~\cite{mccartney2002supercollider} and ChucK~\cite{wang2008chuck}, suggest interesting possibilities for the expressive use of natural input for music programming. 
+Such systems also constitute the modern incarnation of unit generator-based sound design and synthesis, to which this work owes much of its technical underpinnings. 
+Live-coding practice in general is discussed by Collins et al.~\cite{collins2003live} and Wang and Cook~\cite{wang2004onthefly}. 
+
+Work from the commercial iPhone developer Smule has explored the space of possibilities for musically enabling mobile touchscreen devices~\cite{wang2009smule}. 
+Smule's Ocarina is both an iPhone musical instrument and a musical/social experience, in which performers tune in to each others' musical renditions around the world~\cite{wang2014ocarina}. 
+Ocarina's feature set (four finger-sized tone-holes on the touchscreen, breath input for dynamic control, tilt-based vibrato, and location-based social networking) is tailored specifically to the technical capabilities, physical dimensions, and limitations of the iPhone. 
+This approach to design --- the deliberate consideration of what interactions leverage the characteristic features of a technological platform, and of what interactions are distinctly unsuitable --- has directly influenced the development of Auraglyph. 
+%Another Smule product, World Stage, takes Ocarina's social model a step further, by congregating groups of users into a live ``American Idol''-like panel for critiquing and rating performances on a mobile phone instrument~\cite{wang2011world}. 
 
 %Various iPad (Magic Fiddle)
 
@@ -154,39 +158,27 @@ World Stage takes Ocarina's social model a step further, by congregating groups 
 %Interaction design: 
 %
 
+\newpage
 \section{A Case for Handwriting Input in Computer Music Design}
 \label{sec:HandwrittenComputerMusic}
 
-This work is motivated by the desire to better understand the distinguishing capabilities and limitations of touchscreen technology, and, using these as guiding principles, to enable expressive music interactions on such devices. 
-Complex software developed for a given interaction model -- such as keyboard-and-mouse -- may not successfully cross over to a different interaction model -- such as a touchscreen device. 
-This principle is made especially evident in the aforementioned Smule applications, Ocarina, Leaf Trombone, and others. 
+This work is motivated by the desire to better understand the distinguishing capabilities and limitations of touchscreen technology, and, using these as guiding principles, to enable expressive musical interactions on such devices. 
+Complex software developed for a given interaction model --- such as keyboard-and-mouse --- may not successfully cross over to a different interaction model --- such as a touchscreen device. 
 
 The initial insight leading to this work was that numeric and text input on a touchscreen might be more effectively handled by recognizing hand-drawn numerals and letters, rather than an on-screen keyboard. 
 We soon realized that we could use handwriting recognition to analyze a substantial number of handwritten figures and objects beyond just letters and numbers. 
-A user might then draw entire object graphs and audio topologies to be realized as an audio system or musical composition, in real-time, by the underlying software application. 
+A user might then draw entire object graphs and audio topologies to be realized as an audio system or musical composition by the underlying software application in real-time. 
 
-Evidenced by both the direct experience of the authors and the previously mentioned work of Garcia et al., handwritten planning is a vital component of many compositional processes, whether the resulting musical product is electronic, acoustic, or both. 
-More generally, writing and drawing with a pen or pencil on a flat surface is a foundational expressive interaction for an incredible number of individuals; this activity is continuously developed from early education around the world. 
-A primary goal of software interfaces is to simplify the mapping between the user's conceptual abstraction of an idea and translating that idea to a digital representation. 
-The extent to which this goal is met determines the ease of a user successfully inputting their parameters to the software and interpreting its output. 
+Evidenced by the previously mentioned work of Garcia et al., handwritten planning is a vital component of many compositional processes, whether the resulting musical product is electronic, acoustic, or both. 
+More generally, writing and drawing with a pen or pencil on a flat surface is a foundational expressive interaction for an incredible number of individuals; this activity is continuously inculcated from early childhood around the world. 
 Therefore sketching, as a natural interaction for expressing ideas in the real world, might be apt for realizing them in a virtual world. 
 The original work described herein seeks to apply this to the context of computer music and audio design. 
 By shortening the distance between a users' abstract musical thought and the audible realization of that thought, handwriting input might arm its users to more effectively express those thoughts. 
 
-%From here a natural metaphor for interaction arose, that of a handwritten block diagram.
-%Block diagrams, both computer-generated and manually produced, are utilized extensively in digital audio and computer music development processes (Figure \ref{fig:blockDiagram}). 
-%We would like users of our system to feel as if they are drawing a block diagram of their musical system on a whiteboard or sheet of paper, and then allowing the software to make manifest that design. 
-%
-%This metaphor provides several notable benefits. 
-%Writing and drawing with a pen or pencil on a flat surface is a foundational interaction for an incredible number of individuals, as this activity is continuously developed from early education around the world. 
-%Moreover, a common goal, perhaps the ultimate goal, of software interfaces is to simplify the mapping between the user's conceptual abstraction of an idea and translating that idea to a digital representation. 
-%The extent to which this goal is met determines the ease of a user successfully inputting their parameters to the software and interpreting its output. 
-%The block diagram is a pervasive conceptual abstraction, produced for education (Figure \ref{fig:blockDiagram}, top-left, was taken from a text book), system design (Figure \ref{fig:blockDiagram}, right), and numerous other applications, despite that creating these diagrams is rarely necessary for actually building the represented system. 
-%Therefore, a block diagram-oriented design system, with a pen-and-paper interaction metaphor, goes great lengths towards diminishing the distance between human thought process and digital construct. 
-
-%(Motivations e.g. UIs that are photographs of real HW synths, fully leverage power of touchscreen interaction)
-%(General discussion of possibilities of handwriting-based computer music)
-% music notation recognition
+Another distinct advantage of handwriting input in this context is the ability to run and evaluate musical constructs in real-time. 
+As in Landay's SILK, sketches in Auraglyph are reified into entities specific to the system (e.g., a drawn object might be converted to a sine wave generator, or a timer). 
+These entities can then present controls and interfaces for direct touch manipulation or stylus gestures, customized to that object type or mode. 
+This level of real-time creation and manipulation affords a composer or programmer expressive control similar to live-coding. 
 
 \section{Interacting with Auraglyph}
 \label{sec:SystemDescription}
@@ -217,7 +209,7 @@ Every base object may have inputs, an output, or both. These appear visually as 
 Drawing a stroke from an input node to an output node, or vice-versa, forms a connection between those two objects. 
 For example, connecting a sawtooth object's output to the \texttt{freq} input of a sine object creates a simple FM (frequency modulation) patch, with the sine as the carrier wave and the sawtooth as the modulator. 
 Most objects only have one output source, but an input node may have several destinations within that object (e.g. frequency, amplitude, or phase of a given oscillator). 
-In such cases, a pop-up menu appears from the node to display the options a user may have for the input destination. 
+In such cases, a pop-up menu appears from the node to display the options a user has for the input destination. 
 
 Objects and freehand drawings can be moved around on the canvas by touching and dragging them, a familiar gesture in the touchscreen software ecosystem. 
 While dragging an object, moving the pen over a delete icon in the corner of the screen will remove that object, along with destroying any connections between it and other objects. 
@@ -231,6 +223,7 @@ The entire canvas may be scrolled through using a two-finger touch, allowing for
 	\label{fig:editor}
 \end{figure}
 
+%\newpage
 \subsection{Objects}
 \label{sec:BaseGlyphs}
 

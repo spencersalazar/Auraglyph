@@ -742,7 +742,7 @@
 \vskip 2em                   % Vertical space above title.
    \begin{center}
     {\ttlfnt \@title\par}       % Title set in 18pt Helvetica (Arial) bold size.
-    \vskip 1.5em                % Vertical space after title.
+    \vskip 0.5em                % Vertical space after title.
 %This should be the subtitle.
 {\subttlfnt \the\subtitletext\par}\vskip 1.25em%\fi
     {\baselineskip 16pt\aufnt   % each author set in \12 pt Arial, in a
