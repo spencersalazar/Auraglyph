@@ -82,8 +82,8 @@ static DrawPoint drawline[nDrawline];
 //    std::list<AGFreeDraw *> _freeDraws;
 //    std::list<AGConnection *> _connections;
     
-    std::list<AGUIObject *> _objects;
-    std::list<AGUIObject *> _removeList;
+    std::list<AGInteractiveObject *> _objects;
+    std::list<AGInteractiveObject *> _removeList;
     
     TexFont * _font;
     
@@ -155,6 +155,7 @@ static AGViewController * g_instance = nil;
     _testButton->setAction(^{
         [self presentViewController:self.trainer animated:YES completion:nil];
     });
+    _objects.push_back(_testButton);
     
     AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
     
@@ -330,7 +331,7 @@ static AGViewController * g_instance = nil;
     
     if(_removeList.size() > 0)
     {
-        for(std::list<AGUIObject *>::iterator i = _removeList.begin(); i != _removeList.end(); i++)
+        for(std::list<AGInteractiveObject *>::iterator i = _removeList.begin(); i != _removeList.end(); i++)
         {
             _objects.remove(*i);
             delete *i;
@@ -345,7 +346,7 @@ static AGViewController * g_instance = nil;
     _t += dt;
     
     AGUITrash::instance().update(_t, dt);
-    for(std::list<AGUIObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
+    for(std::list<AGInteractiveObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
         (*i)->update(_t, dt);
     for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
         (*i)->update(_t, dt);
@@ -353,8 +354,6 @@ static AGViewController * g_instance = nil;
 //        (*i)->update(_t, dt);
     
     [_touchHandler update:_t dt:dt];
-    
-    _testButton->update(_t, dt);
 
     glBindVertexArrayOES(_vertexArray);
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
@@ -391,7 +390,7 @@ static AGViewController * g_instance = nil;
     AGUITrash::instance().render();
     
     // render objects
-    for(std::list<AGUIObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
+    for(std::list<AGInteractiveObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
         (*i)->render();
     
     // render connections
@@ -542,14 +541,11 @@ static AGViewController * g_instance = nil;
             CGPoint p = [[touches anyObject] locationInView:self.view];
             GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
             
-            AGInteractiveObject *hit = _testButton->hitTest(pos);
-
-            if(!hit)
+            AGInteractiveObject *hit = NULL;
+            
+            for(std::list<AGInteractiveObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
             {
-                for(std::list<AGUIObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
-                {
-                    if((hit = (*i)->hitTest(pos))) break;
-                }
+                if((hit = (*i)->hitTest(pos))) break;
             }
             
             if(hit)
