@@ -89,7 +89,7 @@ static DrawPoint drawline[nDrawline];
     
     AGUIButton * _testButton;
     
-    AGUIObject * _touchCapture;
+    AGInteractiveObject * _touchCapture;
 }
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) GLKBaseEffect *effect;
@@ -542,7 +542,7 @@ static AGViewController * g_instance = nil;
             CGPoint p = [[touches anyObject] locationInView:self.view];
             GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
             
-            AGUIObject *hit = _testButton->hitTest(pos);
+            AGInteractiveObject *hit = _testButton->hitTest(pos);
 
             if(!hit)
             {

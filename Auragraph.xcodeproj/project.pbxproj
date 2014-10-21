@@ -62,6 +62,7 @@
 		0989132318A0870000AB98AD /* Clip.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 09D9D2E817ECF65D00938871 /* Clip.fsh */; };
 		0989132418A0870000AB98AD /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 095D12DF17ACA36C0048A012 /* Shader.fsh */; };
 		0989132518A0870000AB98AD /* Texture.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 0989131718A07E1200AB98AD /* Texture.fsh */; };
+		098F9B3A19EE49BA00CE2F24 /* AGRenderObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098F9B3819EE49BA00CE2F24 /* AGRenderObject.mm */; };
 		099AF10F17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png in Resources */ = {isa = PBXBuildFile; fileRef = 099AF10E17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png */; };
 		099AF11317D12DD9000BAB7B /* AGTrainerViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 099AF11117D12DD9000BAB7B /* AGTrainerViewController.mm */; };
 		099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */; };
@@ -216,6 +217,8 @@
 		0989131818A07E1200AB98AD /* Texture.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Texture.vsh; path = Shaders/Texture.vsh; sourceTree = "<group>"; };
 		098C0E1217C4278C00171366 /* Screen.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Screen.fsh; path = Shaders/Screen.fsh; sourceTree = "<group>"; };
 		098C0E1317C4278C00171366 /* Screen.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Screen.vsh; path = Shaders/Screen.vsh; sourceTree = "<group>"; };
+		098F9B3819EE49BA00CE2F24 /* AGRenderObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGRenderObject.mm; sourceTree = "<group>"; };
+		098F9B3919EE49BA00CE2F24 /* AGRenderObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGRenderObject.h; sourceTree = "<group>"; };
 		099AF10E17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AURAGRPH-AppIcon144.png"; path = "../AURAGRPH-AppIcon144.png"; sourceTree = "<group>"; };
 		099AF11017D12DD9000BAB7B /* AGTrainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGTrainerViewController.h; sourceTree = "<group>"; };
 		099AF11117D12DD9000BAB7B /* AGTrainerViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGTrainerViewController.mm; sourceTree = "<group>"; };
@@ -342,6 +345,8 @@
 				098740B117BC61410098511A /* AGUserInterface.mm */,
 				09E5EC8118A46F7300B21D97 /* AGControl.h */,
 				09E5EC8018A46F7300B21D97 /* AGControl.mm */,
+				098F9B3919EE49BA00CE2F24 /* AGRenderObject.h */,
+				098F9B3819EE49BA00CE2F24 /* AGRenderObject.mm */,
 				09D9D2E917ECF65D00938871 /* Clip.vsh */,
 				09D9D2E817ECF65D00938871 /* Clip.fsh */,
 				095D12E117ACA36C0048A012 /* Shader.vsh */,
@@ -663,6 +668,7 @@
 				0989131918A07E1200AB98AD /* Texture.fsh in Sources */,
 				09E5EC8718A5A88100B21D97 /* ADSR.cpp in Sources */,
 				09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */,
+				098F9B3A19EE49BA00CE2F24 /* AGRenderObject.mm in Sources */,
 				095D12FF17ACAB7B0048A012 /* ShaderHelper.mm in Sources */,
 				095E853117B358FC0065EF8E /* shaperectst.mm in Sources */,
 				095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */,

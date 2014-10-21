@@ -864,16 +864,9 @@ void AGUIButton::touchUp(const GLvertex3f &t)
     m_hit = false;
 }
 
-
-AGUIObject *AGUIButton::hitTest(const GLvertex3f &t)
+GLvrectf AGUIButton::effectiveBounds()
 {
-    if(t.x > m_pos.x && t.x < m_pos.x+m_size.x &&
-       t.y > m_pos.y && t.y < m_pos.y+m_size.y)
-    {
-        return this;
-    }
-    
-    return NULL;
+    return GLvrectf(m_pos, m_pos+m_size);
 }
 
 void AGUIButton::setAction(void (^action)())

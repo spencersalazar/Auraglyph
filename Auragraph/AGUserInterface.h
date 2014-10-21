@@ -12,6 +12,7 @@
 #import <GLKit/GLKit.h>
 #import "Geometry.h"
 #import "Animation.h"
+#import "AGRenderObject.h"
 
 #include "LTKTypes.h"
 #include "LTKTrace.h"
@@ -21,21 +22,12 @@ class AGNode;
 class AGAudioNode;
 
 
-class AGUIObject
+class AGUIObject : public AGInteractiveObject
 {
 public:
     virtual ~AGUIObject() { }
     
     virtual void fadeOutAndRemove() { }
-    
-    virtual void update(float t, float dt) { }
-    virtual void render() { }
-    
-    virtual void touchDown(const GLvertex3f &t) { }
-    virtual void touchMove(const GLvertex3f &t) { }
-    virtual void touchUp(const GLvertex3f &t) { }
-    
-    virtual AGUIObject *hitTest(const GLvertex3f &t) { return NULL; }
 };
 
 
@@ -160,7 +152,7 @@ private:
 };
 
 
-class AGUIButton : public AGUIObject
+class AGUIButton : public AGInteractiveObject
 {
 public:
     AGUIButton(const std::string &title, const GLvertex3f &pos, const GLvertex3f &size);
@@ -173,11 +165,11 @@ public:
     virtual void touchMove(const GLvertex3f &t);
     virtual void touchUp(const GLvertex3f &t);
     
-    virtual AGUIObject *hitTest(const GLvertex3f &t);
-    
     virtual void setAction(void (^action)());
     
 private:
+    
+    GLvrectf effectiveBounds();
     
     static TexFont *s_text;
     

@@ -184,6 +184,24 @@ struct GLtrif
     GLgeoprimf c;
 } __attribute__((packed));
 
+// rect primitive -- 4 vertex primitives
+// renderable directly as GL_TRIANGLE_STRIP
+struct GLvrectf
+{
+    GLvrectf() :
+    bl(GLvertex3f(0, 0, 0)), br(GLvertex3f(0, 0, 0)), ul(GLvertex3f(0, 0, 0)), ur(GLvertex3f(0, 0, 0))
+    { }
+    
+    GLvrectf(const GLvertex3f &_bl, const GLvertex3f &_ur) :
+    bl(_bl), ur(_ur), br(GLvertex3f(_ur.x, _bl.y, 0.5*(_ur.z+_bl.z))), ul(GLvertex3f(_bl.x, _ur.y, 0.5*(_ur.z+_bl.z)))
+    { }
+    
+    GLvertex3f bl; // bottom left
+    GLvertex3f br; // bottom right
+    GLvertex3f ul; // upper left
+    GLvertex3f ur; // upper right
+} __attribute__((packed));
+
 
 static bool pointOnLine(const GLvertex2f &point, const GLvertex2f &line0, const GLvertex2f &line1, float thres)
 {
