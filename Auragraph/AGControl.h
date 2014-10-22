@@ -12,6 +12,7 @@
 class AGControl
 {
 public:
+    virtual ~AGControl() { }
     virtual void mapTo(float &value) = 0;
 };
 
