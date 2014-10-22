@@ -13,6 +13,7 @@
 
 class AGConnection;
 class AGFreeDraw;
+class AGInteractiveObject;
 
 @interface AGViewController : GLKViewController
 
@@ -20,10 +21,16 @@ class AGFreeDraw;
 
 - (void)addNode:(AGNode *)node;
 - (void)removeNode:(AGNode *)node;
+
+- (void)addTopLevelObject:(AGInteractiveObject *)object;
+- (void)removeTopLevelObject:(AGInteractiveObject *)object;
+
 - (void)addConnection:(AGConnection *)connection;
 - (void)removeConnection:(AGConnection *)connection;
+
 - (void)addFreeDraw:(AGFreeDraw *)freedraw;
 - (void)removeFreeDraw:(AGFreeDraw *)freedraw;
+
 - (void)addLinePoint:(GLvertex3f)point;
 - (void)clearLinePoints;
 

@@ -137,6 +137,22 @@
 #pragma mark -
 #pragma mark AGConnectTouchHandler
 
+
+class AGProtoConnection : public AGInteractiveObject
+{
+public:
+    AGProtoConnection(const GLvertex3f &srcPt, const GLvertex3f *dstPt)
+    {
+        
+    }
+    
+    
+    
+private:
+    
+};
+
+
 @implementation AGConnectTouchHandler
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event

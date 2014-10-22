@@ -294,8 +294,6 @@ AGUIObject *AGConnection::hitTest(const GLvertex3f &_t)
 #pragma mark - AGNode
 
 bool AGNode::s_initNode = false;
-GLKMatrix4 AGNode::s_projectionMatrix = GLKMatrix4Identity;
-GLKMatrix4 AGNode::s_modelViewMatrix = GLKMatrix4Identity;
 const float AGNode::s_sizeFactor = 0.01;
 
 float AGNode::s_portRadius = 0.01*0.2;

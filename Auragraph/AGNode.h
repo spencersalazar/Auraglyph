@@ -120,12 +120,7 @@ class AGNode : public AGUIObject
 public:
     
     static void initalizeNode();
-    
-    static void setProjectionMatrix(const GLKMatrix4 &proj) { s_projectionMatrix = proj; }
-    static GLKMatrix4 projectionMatrix() { return s_projectionMatrix; }
-    static void setGlobalModelViewMatrix(const GLKMatrix4 &modelview) { s_modelViewMatrix = modelview; }
-    static GLKMatrix4 globalModelViewMatrix() { return s_modelViewMatrix; }
-    
+        
     static void connect(AGConnection * connection);
     static void disconnect(AGConnection * connection);
     
@@ -189,9 +184,6 @@ public:
     
 private:
     static bool s_initNode;
-    
-    static GLKMatrix4 s_projectionMatrix;
-    static GLKMatrix4 s_modelViewMatrix;
     
     Mutex m_mutex;
     

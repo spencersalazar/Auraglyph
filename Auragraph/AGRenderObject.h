@@ -53,13 +53,18 @@ struct AGRenderInfoVC : public AGRenderInfo
 
 struct AGRenderState
 {
-    GLKMatrix4 mvp;
+    GLKMatrix4 projection;
+    GLKMatrix4 modelview;
     GLKMatrix3 normal;
 };
 
 class AGRenderObject
 {
 public:
+    static void setProjectionMatrix(const GLKMatrix4 &proj) { s_projectionMatrix = proj; }
+    static GLKMatrix4 projectionMatrix() { return s_projectionMatrix; }
+    static void setGlobalModelViewMatrix(const GLKMatrix4 &modelview) { s_modelViewMatrix = modelview; }
+    static GLKMatrix4 globalModelViewMatrix() { return s_modelViewMatrix; }
     
     AGRenderObject();
     virtual ~AGRenderObject();
@@ -71,6 +76,9 @@ public:
     AGRenderState m_renderState;
     
 protected:
+    static GLKMatrix4 s_projectionMatrix;
+    static GLKMatrix4 s_modelViewMatrix;
+    
     void renderPrimitives();
 };
 

@@ -255,9 +255,30 @@ static AGViewController * g_instance = nil;
     _nodeRemoveList.push_back(node);
 }
 
+- (void)addTopLevelObject:(AGInteractiveObject *)object
+{
+    _objects.push_back(object);
+}
+
+- (void)removeTopLevelObject:(AGInteractiveObject *)object
+{
+    if(object == _touchCapture)
+        _touchCapture = NULL;
+    
+    _removeList.push_back(object);
+}
+
 - (void)addConnection:(AGConnection *)connection
 {
     _objects.push_back(connection);
+}
+
+- (void)removeConnection:(AGConnection *)connection
+{
+    if(connection == _touchCapture)
+        _touchCapture = NULL;
+    
+    _removeList.push_back(connection);
 }
 
 - (void)addFreeDraw:(AGFreeDraw *)freedraw
@@ -268,14 +289,6 @@ static AGViewController * g_instance = nil;
 - (void)removeFreeDraw:(AGFreeDraw *)freedraw
 {
     _removeList.push_back(freedraw);
-}
-
-- (void)removeConnection:(AGConnection *)connection
-{
-    if(connection == _touchCapture)
-        _touchCapture = NULL;
-    
-    _removeList.push_back(connection);
 }
 
 - (void)addLinePoint:(GLvertex3f)point
@@ -313,8 +326,8 @@ static AGViewController * g_instance = nil;
     _modelView = modelViewMatrix;
     _projection = projectionMatrix;
     
-    AGNode::setProjectionMatrix(projectionMatrix);
-    AGNode::setGlobalModelViewMatrix(modelViewMatrix);    
+    AGRenderObject::setProjectionMatrix(projectionMatrix);
+    AGRenderObject::setGlobalModelViewMatrix(modelViewMatrix);
 }
 
 - (void)update
