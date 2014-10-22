@@ -55,6 +55,7 @@
 {
     AGNode * _connectInput;
     AGNode * _connectOutput;
+    AGNode * _originalHit;
     AGNode * _currentHit;
     
     int srcPort;

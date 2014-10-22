@@ -141,16 +141,45 @@
 class AGProtoConnection : public AGInteractiveObject
 {
 public:
-    AGProtoConnection(const GLvertex3f &srcPt, const GLvertex3f *dstPt)
+    AGProtoConnection(const GLvertex3f &srcPt, const GLvertex3f &dstPt)
     {
+        m_renderInfo.shader = &AGGenericShader::instance();
+        m_renderInfo.numVertex = 2;
+        m_renderInfo.geoType = GL_LINES;
+        m_renderInfo.geo = m_points;
+        m_renderInfo.color = GLcolor4f::white;
         
+        sourcePoint() = srcPt;
+        destPoint() = dstPt;
+        
+        m_renderList.push_back(&m_renderInfo);
     }
     
+    void setActivation(int activation) // 0: neutral, 1: positive, -1: negative
+    {
+        if(activation > 0) m_renderInfo.color = GLcolor4f::green;
+        else if(activation < 0) m_renderInfo.color = GLcolor4f::red;
+        else m_renderInfo.color = GLcolor4f::white;
+    }
     
+    const GLvertex3f &sourcePoint() const { return m_points[0]; }
+    const GLvertex3f &destPoint() const { return m_points[1]; }
+    
+    GLvertex3f &sourcePoint() { return m_points[0]; }
+    GLvertex3f &destPoint() { return m_points[1]; }
     
 private:
-    
+    GLvertex3f m_points[2];
+    AGRenderInfoV m_renderInfo;
 };
+
+
+@interface AGConnectTouchHandler ()
+{
+    AGProtoConnection *_proto;
+}
+
+@end
 
 
 @implementation AGConnectTouchHandler
@@ -161,7 +190,10 @@ private:
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
     [_viewController clearLinePoints];
-    [_viewController addLinePoint:pos];
+    //[_viewController addLinePoint:pos];
+    
+    _proto = new AGProtoConnection(pos, pos);
+    [_viewController addTopLevelObject:_proto];
     
     AGNode *hitNode;
     int port;
@@ -179,6 +211,8 @@ private:
         _connectOutput = hitNode;
         _connectOutput->activateOutputPort(1+srcPort);
     }
+    
+    _originalHit = hitNode;
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -186,7 +220,8 @@ private:
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    [_viewController addLinePoint:pos];
+    //[_viewController addLinePoint:pos];
+    _proto->destPoint() = pos;
     
     AGNode *hitNode;
     int port;
@@ -194,7 +229,7 @@ private:
     
     if(hit == AGNode::HIT_INPUT_NODE)
     {
-        if(hitNode != _currentHit && hitNode != _connectInput)
+        if(hitNode != _originalHit && (hitNode != _currentHit || hitNode != _connectInput))
         {
             // deactivate previous hit if needed
             if(_currentHit)
@@ -207,12 +242,14 @@ private:
             {
                 // input node -> input node: invalid
                 hitNode->activateInputPort(-1-port);
+                _proto->setActivation(-1);
             }
             else
             {
                 // output node -> input node: valid
                 dstPort = port;
                 hitNode->activateInputPort(1+dstPort);
+                _proto->setActivation(1);
             }
             
             _currentHit = hitNode;
@@ -220,7 +257,7 @@ private:
     }
     else if(hit == AGNode::HIT_OUTPUT_NODE)
     {
-        if(hitNode != _currentHit && hitNode != _connectOutput)
+        if(hitNode != _originalHit && (hitNode != _currentHit || hitNode != _connectInput))
         {
             // deactivate previous hit if needed
             if(_currentHit)
@@ -233,16 +270,28 @@ private:
             {
                 // output node -> output node: invalid
                 hitNode->activateOutputPort(-1-port);
+                _proto->setActivation(-1);
             }
             else
             {
                 // input node -> output node: valid
                 srcPort = port;
                 hitNode->activateOutputPort(1+srcPort);
+                _proto->setActivation(1);
             }
             
             _currentHit = hitNode;
         }
+    }
+    else
+    {
+        if(_currentHit)
+        {
+            _currentHit->activateInputPort(0);
+            _currentHit->activateOutputPort(0);
+        }
+        
+        _proto->setActivation(0);
     }
     
 }
@@ -251,6 +300,9 @@ private:
 {
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
+    
+    [_viewController removeTopLevelObject:_proto];
+    _proto = NULL;
     
     AGNode *hitNode;
     int port;
