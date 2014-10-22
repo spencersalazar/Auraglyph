@@ -105,7 +105,7 @@ private:
     GLvertex3f m_stretchPoint;
     
     bool m_active;
-    expcurvef m_alpha;
+    powcurvef m_alpha;
     
     const AGRate m_rate;
     
@@ -218,7 +218,7 @@ protected:
     int m_activation;
     
     bool m_active;
-    expcurvef m_fadeOut;
+    powcurvef m_fadeOut;
 };
 
 
@@ -412,7 +412,7 @@ private:
     GLvertex3f m_touchLast;
     
     bool m_active;
-    expcurvef m_alpha;
+    powcurvef m_alpha;
     
     // debug
     int m_touchPoint0;

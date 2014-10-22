@@ -52,15 +52,6 @@
 @end
 
 @interface AGConnectTouchHandler : AGTouchHandler
-{
-    AGNode * _connectInput;
-    AGNode * _connectOutput;
-    AGNode * _originalHit;
-    AGNode * _currentHit;
-    
-    int srcPort;
-    int dstPort;
-}
 
 @end
 

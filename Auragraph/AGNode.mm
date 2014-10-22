@@ -72,7 +72,7 @@ m_geoSize(0),
 m_hit(false),
 m_stretch(false),
 m_active(true),
-m_alpha(0.5, 1, 0, 4)
+m_alpha(1, 0, 0.5, 4)
 {
     initalize();
     
@@ -346,7 +346,7 @@ AGNode::AGNode(GLvertex3f pos) :
 m_pos(pos),
 m_nodeInfo(NULL),
 m_active(true),
-m_fadeOut(0.5, 1, 0, 2)
+m_fadeOut(1, 0, 0.5, 2)
 {
     m_inputActivation = m_outputActivation = 0;
     m_activation = 0;
@@ -1229,7 +1229,7 @@ AGUIObject *AGOutputNode::hitTest(const GLvertex3f &t)
 
 AGFreeDraw::AGFreeDraw(GLvncprimf *points, int nPoints) :
 m_active(true),
-m_alpha(0.5, 1, 0, 2)
+m_alpha(1, 0, 0.5, 2)
 {
     m_nPoints = nPoints;
     m_points = new GLvncprimf[m_nPoints];

@@ -22,6 +22,7 @@
 #import "AGDef.h"
 #import "AGTrainerViewController.h"
 #import "AGGenericShader.h"
+#import "GeoGenerator.h"
 
 
 //------------------------------------------------------------------------------
@@ -173,9 +174,31 @@ private:
     AGRenderInfoV m_renderInfo;
 };
 
+class AGPortBrowser : public AGInteractiveObject
+{
+public:
+    AGPortBrowser(AGNode *node) : m_node(node), m_geoSize(64)
+    {
+        GeoGen::makeCircle(m_geo, m_geoSize, 0.01);
+    }
+    
+private:
+    AGNode * const m_node;
+    int m_geoSize;
+    GLvertex3f m_geo[64];
+};
+
 
 @interface AGConnectTouchHandler ()
 {
+    AGNode * _connectInput;
+    AGNode * _connectOutput;
+    AGNode * _originalHit;
+    AGNode * _currentHit;
+    
+    int srcPort;
+    int dstPort;
+    
     AGProtoConnection *_proto;
 }
 

@@ -67,13 +67,24 @@ public:
     float t, start, end, rate;
 };
 
-class expcurvef : public curvef
+class powcurvef : public curvef
 {
 public:
-    expcurvef(float _k = 2, float _start = 0, float _end = 1, float _rate = 1) :
+    powcurvef(float _start = 0, float _end = 1, float _k = 2, float _rate = 1) :
     curvef(_start, _end, _rate), k(_k) { }
     
     virtual float evaluate(float t) const { return powf(t, k); }
+    
+    float k;
+};
+
+class expcurvef : public curvef
+{
+public:
+    expcurvef(float _start = 0, float _end = 1, float _k = 10, float _rate = 1) :
+    curvef(_start, _end, _rate), k(_k) { }
+    
+    virtual float evaluate(float t) const { return start + (end-start)*(1-powf(k, -t)); }
     
     float k;
 };
