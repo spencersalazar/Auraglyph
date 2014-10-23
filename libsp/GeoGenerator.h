@@ -23,6 +23,12 @@ namespace GeoGen
      */
     void makeCircle(GLvertex3f *points, int numPoints, float radius);
     
+    /* circle64()
+     - Return 64 vertex circle, created a la makeCircle() above
+     - radius = 1
+     */
+    GLvertex3f *circle64();
+    
 }
 
 

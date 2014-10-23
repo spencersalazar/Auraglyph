@@ -12,7 +12,9 @@
 
 struct slewf
 {
-    slewf() { value = 0; target = 0; slew = 0.1; }
+    slewf() : value(0), target(0), slew(0) { }
+    slewf(float _slew) : value(0), target(0), slew(_slew) { }
+    slewf(float _slew, float _start) : value(_start), target(_start), slew(_slew) { }
     
     inline void interp() { value = (target-value)*slew + value; }
     

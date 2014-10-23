@@ -174,18 +174,146 @@ private:
     AGRenderInfoV m_renderInfo;
 };
 
+class AGPortBrowserPort : public AGInteractiveObject
+{
+public:
+    AGPortBrowserPort(AGNode *node, int portNum, const GLvertex3f &position) :
+    m_node(node), m_portNum(portNum), m_position(position), m_alpha(0.2, 0), m_posLerp(0.2, 0)
+    {
+        m_portInfo.shader = &AGGenericShader::instance();
+        m_portInfo.geo = &(GeoGen::circle64())[1];
+        m_portInfo.geoType = GL_LINE_LOOP;
+        m_portInfo.numVertex = 64-1;
+        m_portInfo.color = GLcolor4f::white;
+        m_renderList.push_back(&m_portInfo);
+        
+        m_alpha = 1;
+        m_posLerp = 1;
+    }
+    
+    virtual void update(float t, float dt)
+    {
+        AGRenderObject::update(t, dt);
+        
+        m_alpha.interp();
+        m_posLerp.interp();
+        
+        m_portInfo.color.a = m_alpha;
+        
+        GLvertex3f position = lerp(m_posLerp, m_node->position(), m_position);
+        m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeTranslation(position.x, position.y, position.z));
+        
+        float radius = 0.00275;
+        m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeScale(radius, radius, radius));
+    }
+    
+    virtual void render()
+    {
+        glLineWidth(2.0f);
+        
+        AGRenderObject::render();
+    }
+    
+    virtual void renderOut()
+    {
+        m_alpha = 0;
+        m_posLerp = 0;
+    }
+    
+    virtual bool finishedRenderingOut()
+    {
+        return m_alpha < 0.1;
+    }
+    
+private:
+    AGNode * const m_node;
+    const int m_portNum;
+    const GLvertex3f m_position;
+    AGRenderInfoV m_portInfo;
+    slewf m_alpha;
+    slewf m_posLerp;
+};
+
 class AGPortBrowser : public AGInteractiveObject
 {
 public:
-    AGPortBrowser(AGNode *node) : m_node(node), m_geoSize(64)
+    AGPortBrowser(AGNode *node) : m_node(node), m_geoSize(64), m_scale(0.2), m_alpha(0.1, 1)
     {
-        GeoGen::makeCircle(m_geo, m_geoSize, 0.01);
+        float radius = 0.0125f;
+        GeoGen::makeCircle(m_geo, m_geoSize, radius);
+        
+        m_strokeInfo.shader = &AGGenericShader::instance();
+        m_strokeInfo.geo = &m_geo[1];
+        m_strokeInfo.geoType = GL_LINE_LOOP;
+        m_strokeInfo.numVertex = m_geoSize-1;
+        m_strokeInfo.color = GLcolor4f::white;
+        
+        m_fillInfo.shader = &AGGenericShader::instance();
+        m_fillInfo.geo = m_geo;
+        m_fillInfo.geoType = GL_TRIANGLE_FAN;
+        m_fillInfo.numVertex = m_geoSize;
+        m_fillInfo.color = GLcolor4f::black;
+        
+        m_renderList.push_back(&m_fillInfo);
+        m_renderList.push_back(&m_strokeInfo);
+        
+        m_scale = 1;
+        m_alpha = 1;
+        
+        int numPorts = node->numInputPorts();
+        float angle = 3.0f*M_PI/4.0f;
+        float portRadius = radius * 0.62;
+        for(int i = 0; i < numPorts; i++)
+        {
+            GLvertex3f pos = m_node->position() + GLvertex3f(portRadius*cosf(angle), portRadius*sinf(angle), 0);
+            AGPortBrowserPort *port = new AGPortBrowserPort(m_node, i, pos);
+            addChild(port);
+            
+            angle -= M_PI*2.0f/((float)numPorts);
+        }
+    }
+    
+    virtual void update(float t, float dt)
+    {
+        AGRenderObject::update(t, dt);
+        
+        m_scale.interp();
+        m_alpha.interp();
+        
+        m_fillInfo.color.a = 0.62*m_alpha;
+        m_strokeInfo.color.a = m_alpha;
+        
+        m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeTranslation(m_node->position().x, m_node->position().y, m_node->position().z));
+        m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeScale(m_scale, m_scale, m_scale));
+    }
+    
+    virtual void render()
+    {
+        glLineWidth(2.0f);
+        
+        AGRenderObject::render();
+    }
+    
+    virtual void renderOut()
+    {
+        AGRenderObject::renderOut();
+        
+        m_scale = 0;
+        m_alpha = 0;
+    }
+    
+    virtual bool finishedRenderingOut()
+    {
+        return m_scale < 0.01;
     }
     
 private:
     AGNode * const m_node;
     int m_geoSize;
     GLvertex3f m_geo[64];
+    AGRenderInfoV m_strokeInfo, m_fillInfo;
+    slewf m_scale;
+    slewf m_alpha;
 };
 
 
@@ -200,6 +328,7 @@ private:
     int dstPort;
     
     AGProtoConnection *_proto;
+    AGPortBrowser *_browser;
 }
 
 @end
@@ -250,6 +379,27 @@ private:
     int port;
     AGNode::HitTestResult hit = [_viewController hitTest:pos node:&hitNode port:&port];
     
+    if(hitNode != _currentHit && hitNode != _originalHit)
+    {
+        if(_browser)
+            [_viewController removeTopLevelObject:_browser];
+        if(hitNode)
+        {
+            _browser = new AGPortBrowser(hitNode);
+            [_viewController addTopLevelObject:_browser];
+        }
+        else
+            _browser = NULL;
+    }
+    else if(hitNode == NULL)
+    {
+        if(_browser)
+        {
+            [_viewController removeTopLevelObject:_browser];
+            _browser = NULL;
+        }
+    }
+
     if(hit == AGNode::HIT_INPUT_NODE)
     {
         if(hitNode != _originalHit && (hitNode != _currentHit || hitNode != _connectInput))
@@ -314,9 +464,10 @@ private:
             _currentHit->activateOutputPort(0);
         }
         
+        _currentHit = hitNode;
+        
         _proto->setActivation(0);
     }
-    
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
@@ -363,6 +514,12 @@ private:
     if(_connectInput) _connectInput->activateInputPort(0);
     if(_connectOutput) _connectOutput->activateOutputPort(0);
     _connectInput = _connectOutput = _currentHit = NULL;
+    
+    if(_browser)
+    {
+        [_viewController removeTopLevelObject:_browser];
+        _browser = NULL;
+    }
 }
 
 @end

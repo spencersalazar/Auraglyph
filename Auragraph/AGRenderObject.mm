@@ -24,18 +24,32 @@ AGRenderObject::AGRenderObject()
     m_renderState.normal = GLKMatrix3Identity;
 }
 
-AGRenderObject::~AGRenderObject() { }
+AGRenderObject::~AGRenderObject()
+{
+    for(list<AGRenderObject *>::iterator i = m_children.begin(); i != m_children.end(); i++)
+        delete *i;
+}
 
 void AGRenderObject::update(float t, float dt)
 {
     m_renderState.projection = projectionMatrix();
     m_renderState.modelview = globalModelViewMatrix();
     m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
+    
+    for(list<AGRenderObject *>::iterator i = m_children.begin(); i != m_children.end(); i++)
+        (*i)->update(t, dt);
 }
+
+void AGRenderObject::addChild(AGRenderObject *child) { m_children.push_back(child); }
+
+void AGRenderObject::removeChild(AGRenderObject *child) { m_children.remove(child); }
 
 void AGRenderObject::render()
 {
     renderPrimitives();
+    
+    for(list<AGRenderObject *>::iterator i = m_children.begin(); i != m_children.end(); i++)
+        (*i)->render();
 }
 
 void AGRenderObject::renderPrimitives()
@@ -52,6 +66,12 @@ void AGRenderObject::renderPrimitives()
         
         glDrawArrays((*i)->geoType, 0, (*i)->numVertex);
     }
+}
+
+void AGRenderObject::renderOut()
+{
+    for(list<AGRenderObject *>::iterator i = m_children.begin(); i != m_children.end(); i++)
+        (*i)->renderOut();
 }
 
 

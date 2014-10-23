@@ -19,5 +19,18 @@ namespace GeoGen
             points[1+i] = GLvertex3f(radius*cosf(theta), radius*sinf(theta), 0);
         }
     }
+    
+    GLvertex3f *circle64()
+    {
+        static GLvertex3f *s_geo = NULL;
+        
+        if(s_geo == NULL)
+        {
+            s_geo = new GLvertex3f[64];
+            makeCircle(s_geo, 64, 1);
+        }
+        
+        return s_geo;
+    }
 }
 

@@ -37,6 +37,7 @@
 		095E852C17B354BE0065EF8E /* libwordreccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851C17B354BE0065EF8E /* libwordreccommon.a */; };
 		095E853117B358FC0065EF8E /* shaperectst.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E852F17B358FC0065EF8E /* shaperectst.mm */; };
 		095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */; };
+		09817F3919F87CC7000E9FB3 /* GeoGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09817F3819F87CC7000E9FB3 /* GeoGenerator.cpp */; };
 		0987409C17B98D7C0098511A /* AGNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0987409A17B98D7C0098511A /* AGNode.mm */; };
 		098740A017BA2AB90098511A /* mo_audio.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0987409E17BA2AB90098511A /* mo_audio.mm */; };
 		098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740A217BA2EA70098511A /* AGAudioManager.mm */; };
@@ -190,6 +191,7 @@
 		095E854017B5E1D30065EF8E /* AGHandwritingRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGHandwritingRecognizer.h; sourceTree = "<group>"; };
 		095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGHandwritingRecognizer.mm; sourceTree = "<group>"; };
 		09817F3719F78B3F000E9FB3 /* GeoGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeoGenerator.h; sourceTree = "<group>"; };
+		09817F3819F87CC7000E9FB3 /* GeoGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeoGenerator.cpp; sourceTree = "<group>"; };
 		0987409A17B98D7C0098511A /* AGNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGNode.mm; sourceTree = "<group>"; };
 		0987409B17B98D7C0098511A /* AGNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGNode.h; sourceTree = "<group>"; };
 		0987409D17BA2AB90098511A /* mo_audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mo_audio.h; sourceTree = "<group>"; };
@@ -415,6 +417,7 @@
 				09E5EC7B18A3484F00B21D97 /* Mutex.h */,
 				09E5EC7A18A3484F00B21D97 /* Mutex.cpp */,
 				09817F3719F78B3F000E9FB3 /* GeoGenerator.h */,
+				09817F3819F87CC7000E9FB3 /* GeoGenerator.cpp */,
 			);
 			path = libsp;
 			sourceTree = "<group>";
@@ -667,6 +670,7 @@
 				095D12FC17ACAA100048A012 /* Texture.mm in Sources */,
 				09E5EC7F18A36A9D00B21D97 /* SPFilter.cpp in Sources */,
 				09F3C50818A5A8C300E499AF /* Stk.cpp in Sources */,
+				09817F3919F87CC7000E9FB3 /* GeoGenerator.cpp in Sources */,
 				0989131918A07E1200AB98AD /* Texture.fsh in Sources */,
 				09E5EC8718A5A88100B21D97 /* ADSR.cpp in Sources */,
 				09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */,

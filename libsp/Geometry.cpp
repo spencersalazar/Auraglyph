@@ -77,6 +77,11 @@ bool operator!=(const GLvertex3f &v, const GLvertex3f &v2)
     return v.x != v2.x || v.y != v2.y || v.z != v2.z;
 }
 
+GLvertex3f lerp(float d, const GLvertex3f &a, const GLvertex3f &b)
+{
+    return GLvertex3f(a.x*(1-d)+b.x*d, a.y*(1-d)+b.y*d, a.z*(1-d)+b.z*d);
+}
+
 GLvertex2f operator+(const GLvertex2f &v1, const GLvertex2f &v2)
 {
     GLvertex2f v3 = GLvertex2f(v1.x+v2.x, v1.y+v2.y);

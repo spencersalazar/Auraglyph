@@ -72,8 +72,11 @@ public:
     virtual void update(float t, float dt);
     virtual void render();
     
-    virtual void renderOut() { }
+    virtual void renderOut();
     virtual bool finishedRenderingOut() { return true; }
+    
+    void addChild(AGRenderObject *child);
+    void removeChild(AGRenderObject *child);
     
     list<AGRenderInfo *> m_renderList;
     AGRenderState m_renderState;
@@ -83,6 +86,8 @@ protected:
     static GLKMatrix4 s_modelViewMatrix;
     
     void renderPrimitives();
+    
+    list<AGRenderObject *> m_children;
 };
 
 
@@ -111,13 +116,8 @@ public:
     
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
     
-    void addChild(AGInteractiveObject *child);
-    void removeChild(AGInteractiveObject *child);
-    
 protected:
     virtual GLvrectf effectiveBounds() { return GLvrectf(); }
-    
-    list<AGInteractiveObject *> m_children;
 };
 
 
