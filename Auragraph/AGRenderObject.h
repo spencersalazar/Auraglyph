@@ -72,6 +72,9 @@ public:
     virtual void update(float t, float dt);
     virtual void render();
     
+    virtual void renderOut() { }
+    virtual bool finishedRenderingOut() { return true; }
+    
     list<AGRenderInfo *> m_renderList;
     AGRenderState m_renderState;
     

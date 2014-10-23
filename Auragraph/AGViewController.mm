@@ -91,6 +91,7 @@ static DrawPoint drawline[nDrawline];
     
     AGInteractiveObject * _touchCapture;
 }
+
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) GLKBaseEffect *effect;
 @property (strong, nonatomic) AGAudioManager *audioManager;
@@ -265,6 +266,7 @@ static AGViewController * g_instance = nil;
     if(object == _touchCapture)
         _touchCapture = NULL;
     
+    object->renderOut();
     _removeList.push_back(object);
 }
 
@@ -344,12 +346,17 @@ static AGViewController * g_instance = nil;
     
     if(_removeList.size() > 0)
     {
-        for(std::list<AGInteractiveObject *>::iterator i = _removeList.begin(); i != _removeList.end(); i++)
+        for(std::list<AGInteractiveObject *>::iterator i = _removeList.begin(); i != _removeList.end(); )
         {
-            _objects.remove(*i);
-            delete *i;
+            std::list<AGInteractiveObject *>::iterator j = i++; // copy iterator to allow removal
+            
+            if((*j)->finishedRenderingOut())
+            {
+                _objects.remove(*j);
+                delete *j;
+                _removeList.erase(j);
+            }
         }
-        _removeList.clear();
     }
     
     [self updateMatrices];
@@ -402,6 +409,10 @@ static AGViewController * g_instance = nil;
     // render trash icon
     AGUITrash::instance().render();
     
+    // render nodes
+    for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
+        (*i)->render();
+    
     // render objects
     for(std::list<AGInteractiveObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
         (*i)->render();
@@ -409,12 +420,9 @@ static AGViewController * g_instance = nil;
     // render connections
 //    for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
 //        (*i)->render();
-//    
-//    // render nodes
-    for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
-        (*i)->render();
+//
     
-    // render drawing outline    
+    // render drawing outline
     glUseProgram(_program);
 
     glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
