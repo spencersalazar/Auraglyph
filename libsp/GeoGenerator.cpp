@@ -15,7 +15,7 @@ namespace GeoGen
         points[0] = GLvertex3f(0, 0, 0);
         for(int i = 0; i < numPoints-1; i++)
         {
-            float theta = 2*M_PI*((float)i)/((float)(numPoints-1));
+            float theta = 2*M_PI*((float)i)/((float)(numPoints-2));
             points[1+i] = GLvertex3f(radius*cosf(theta), radius*sinf(theta), 0);
         }
     }
