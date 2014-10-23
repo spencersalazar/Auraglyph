@@ -7,7 +7,7 @@
 //
 
 #ifndef Auragraph_GeoGenerator_h
-#define Auragraph_GeoGenerator_
+#define Auragraph_GeoGenerator_h
 
 #include "Geometry.h"
 #include <math.h>
@@ -21,14 +21,8 @@ namespace GeoGen
      - Draw as stroke with GL_LINE_LOOP (skip the first vertex)
      or fill with GL_TRIANGLE_FAN
      */
-    void makeCircle(GLvertex3f *points, int numPoints, float radius)
-    {
-        for(int i = 0; i < numPoints; i++)
-        {
-            float theta = 2*M_PI*((float)i)/((float)(numPoints));
-            points[i] = GLvertex3f(radius*cosf(theta), radius*sinf(theta), 0);
-        }
-    }
+    void makeCircle(GLvertex3f *points, int numPoints, float radius);
+    
 }
 
 
