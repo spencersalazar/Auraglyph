@@ -177,34 +177,87 @@ private:
 class AGPortBrowserPort : public AGInteractiveObject
 {
 public:
-    AGPortBrowserPort(AGNode *node, int portNum, const GLvertex3f &position) :
-    m_node(node), m_portNum(portNum), m_position(position), m_alpha(0.2, 0), m_posLerp(0.2, 0)
+    
+    enum TextPosition
     {
-        m_portInfo.shader = &AGGenericShader::instance();
-        m_portInfo.geo = &(GeoGen::circle64())[1];
-        m_portInfo.geoType = GL_LINE_LOOP;
-        m_portInfo.numVertex = 64-1;
-        m_portInfo.color = GLcolor4f::white;
-        m_renderList.push_back(&m_portInfo);
+        TEXTPOSITION_TOP,
+        TEXTPOSITION_BOTTOM,
+        TEXTPOSITION_LEFT,
+        TEXTPOSITION_RIGHT
+    };
+    
+    AGPortBrowserPort(AGNode *node, int portNum, const GLvertex3f &position, TextPosition textPosition) :
+    m_node(node), m_portNum(portNum), m_portInfo(m_node->inputPortInfo(portNum)),
+    m_position(position), m_textPosition(textPosition),
+    m_alpha(0.2, 0), m_posLerp(0.2, 0), m_textAlpha(0.4, -1), m_textPosLerp(0.4, 0)
+    {
+        if(s_texFont == NULL)
+        {
+            const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
+            s_texFont = new TexFont(fontPath, 32);
+        }
+        
+        m_portRenderInfo.shader = &AGGenericShader::instance();
+        m_portRenderInfo.geo = &(GeoGen::circle64())[1];
+        m_portRenderInfo.geoType = GL_LINE_LOOP;
+        m_portRenderInfo.numVertex = 64-1;
+        m_portRenderInfo.color = GLcolor4f::white;
+        m_renderList.push_back(&m_portRenderInfo);
+        
+        m_textColor = GLcolor4f::white;
+        
+        float textScale = 0.5;
+        float textWidth = m_portInfo.name.length()*s_texFont->width()*textScale;
+        float textHeight = s_texFont->height()*textScale;
+        m_textOriginOffset = GLvertex3f(-textWidth/2.0, -textHeight/2, 0);
+        
+        float radius = 0.00275;
+        float margin = 0.001;
+        switch(m_textPosition)
+        {
+            case TEXTPOSITION_LEFT:
+                m_textOffset = GLvertex3f(-radius-margin-textWidth, -textHeight/2, 0);
+                break;
+            case TEXTPOSITION_RIGHT:
+                m_textOffset = GLvertex3f(radius+margin, -textHeight/2, 0);
+                break;
+            case TEXTPOSITION_TOP:
+                m_textOffset = GLvertex3f(-textWidth/2, radius+margin, 0);
+                break;
+            case TEXTPOSITION_BOTTOM:
+                m_textOffset = GLvertex3f(-textWidth/2, -radius-margin-textHeight, 0);
+                break;
+        }
         
         m_alpha = 1;
         m_posLerp = 1;
+        m_textAlpha = 1;
+        m_textPosLerp = 1;
     }
     
     virtual void update(float t, float dt)
     {
         AGRenderObject::update(t, dt);
         
-        m_alpha.interp();
-        m_posLerp.interp();
+        GLKMatrix4 baseModelView = m_renderState.modelview;
         
-        m_portInfo.color.a = m_alpha;
+        m_alpha.interp();
+        m_textAlpha.interp();
+        m_posLerp.interp();
+        m_textPosLerp.interp();
+        
+        m_portRenderInfo.color.a = m_alpha;
+        m_textColor.a = m_textAlpha;
         
         GLvertex3f position = lerp(m_posLerp, m_node->position(), m_position);
-        m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeTranslation(position.x, position.y, position.z));
-        
+        m_renderState.modelview = GLKMatrix4Multiply(baseModelView, GLKMatrix4MakeTranslation(position.x, position.y, position.z));
         float radius = 0.00275;
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeScale(radius, radius, radius));
+        
+        GLvertex3f textPosition = lerp(m_textPosLerp, position+m_textOriginOffset, position+m_textOffset);
+        m_textMV = GLKMatrix4Multiply(baseModelView, GLKMatrix4MakeTranslation(textPosition.x, textPosition.y, textPosition.z));
+        float textScale = 0.5;
+        m_textMV = GLKMatrix4Multiply(m_textMV, GLKMatrix4MakeScale(textScale, textScale, textScale));
     }
     
     virtual void render()
@@ -212,12 +265,16 @@ public:
         glLineWidth(2.0f);
         
         AGRenderObject::render();
+        
+        s_texFont->render(m_portInfo.name, m_textColor, m_textMV, m_renderState.projection);
     }
     
     virtual void renderOut()
     {
         m_alpha = 0;
+        m_textAlpha = 0;
         m_posLerp = 0;
+        m_textPosLerp = 0;
     }
     
     virtual bool finishedRenderingOut()
@@ -226,32 +283,46 @@ public:
     }
     
 private:
+    static TexFont *s_texFont;
+    
     AGNode * const m_node;
+    const AGPortInfo &m_portInfo;
     const int m_portNum;
     const GLvertex3f m_position;
-    AGRenderInfoV m_portInfo;
+    
+    const TextPosition m_textPosition;
+    GLvertex3f m_textOffset;
+    GLvertex3f m_textOriginOffset;
+    GLKMatrix4 m_textMV;
+    GLcolor4f m_textColor;
+    
+    AGRenderInfoV m_portRenderInfo;
+    
     slewf m_alpha;
     slewf m_posLerp;
+    slewf m_textAlpha;
+    slewf m_textPosLerp;
 };
+
+TexFont *AGPortBrowserPort::s_texFont = NULL;
 
 class AGPortBrowser : public AGInteractiveObject
 {
 public:
-    AGPortBrowser(AGNode *node) : m_node(node), m_geoSize(64), m_scale(0.2), m_alpha(0.1, 1)
+    AGPortBrowser(AGNode *node) : m_node(node), m_scale(0.2), m_alpha(0.1, 1)
     {
         float radius = 0.0125f;
-        GeoGen::makeCircle(m_geo, m_geoSize, radius);
         
         m_strokeInfo.shader = &AGGenericShader::instance();
-        m_strokeInfo.geo = &m_geo[1];
+        m_strokeInfo.geo = &(GeoGen::circle64())[1];
         m_strokeInfo.geoType = GL_LINE_LOOP;
-        m_strokeInfo.numVertex = m_geoSize-1;
+        m_strokeInfo.numVertex = 64-1;
         m_strokeInfo.color = GLcolor4f::white;
         
         m_fillInfo.shader = &AGGenericShader::instance();
-        m_fillInfo.geo = m_geo;
+        m_fillInfo.geo = GeoGen::circle64();
         m_fillInfo.geoType = GL_TRIANGLE_FAN;
-        m_fillInfo.numVertex = m_geoSize;
+        m_fillInfo.numVertex = 64;
         m_fillInfo.color = GLcolor4f::black;
         
         m_renderList.push_back(&m_fillInfo);
@@ -265,8 +336,23 @@ public:
         float portRadius = radius * 0.62;
         for(int i = 0; i < numPorts; i++)
         {
-            GLvertex3f pos = m_node->position() + GLvertex3f(portRadius*cosf(angle), portRadius*sinf(angle), 0);
-            AGPortBrowserPort *port = new AGPortBrowserPort(m_node, i, pos);
+            float _cos = cosf(angle);
+            float _sin = sinf(angle);
+            
+            AGPortBrowserPort::TextPosition textPos;
+            if(fabsf(_cos) >= fabsf(_sin))
+            {
+                if(_cos < 0) textPos = AGPortBrowserPort::TEXTPOSITION_LEFT;
+                else textPos = AGPortBrowserPort::TEXTPOSITION_RIGHT;
+            }
+            else
+            {
+                if(_sin > 0) textPos = AGPortBrowserPort::TEXTPOSITION_TOP;
+                else textPos = AGPortBrowserPort::TEXTPOSITION_BOTTOM;
+            }
+            
+            GLvertex3f pos = m_node->position() + GLvertex3f(portRadius*_cos, portRadius*_sin, 0);
+            AGPortBrowserPort *port = new AGPortBrowserPort(m_node, i, pos, textPos);
             addChild(port);
             
             angle -= M_PI*2.0f/((float)numPorts);
@@ -281,10 +367,12 @@ public:
         m_alpha.interp();
         
         m_fillInfo.color.a = 0.62*m_alpha;
-        m_strokeInfo.color.a = m_alpha;
+        m_strokeInfo.color.a = 0.8*m_alpha;
         
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeTranslation(m_node->position().x, m_node->position().y, m_node->position().z));
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeScale(m_scale, m_scale, m_scale));
+        float radius = 0.0125f;
+        m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeScale(radius, radius, radius));
     }
     
     virtual void render()
@@ -309,8 +397,6 @@ public:
     
 private:
     AGNode * const m_node;
-    int m_geoSize;
-    GLvertex3f m_geo[64];
     AGRenderInfoV m_strokeInfo, m_fillInfo;
     slewf m_scale;
     slewf m_alpha;
