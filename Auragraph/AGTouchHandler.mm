@@ -23,6 +23,7 @@
 #import "AGTrainerViewController.h"
 #import "AGGenericShader.h"
 #import "GeoGenerator.h"
+#import "spMath.h"
 
 
 //------------------------------------------------------------------------------
@@ -188,7 +189,7 @@ public:
     
     AGPortBrowserPort(AGNode *node, int portNum, const GLvertex3f &position, TextPosition textPosition) :
     m_node(node), m_portNum(portNum), m_portInfo(m_node->inputPortInfo(portNum)),
-    m_position(position), m_textPosition(textPosition),
+    m_position(position), m_textPosition(textPosition), m_activate(false),
     m_alpha(0.2, 0), m_posLerp(0.2, 0), m_textAlpha(0.4, -1), m_textPosLerp(0.4, 0)
     {
         if(s_texFont == NULL)
@@ -246,6 +247,8 @@ public:
         m_posLerp.interp();
         m_textPosLerp.interp();
         
+        if(m_activate) m_portRenderInfo.color = m_textColor = GLcolor4f::green;
+        else m_portRenderInfo.color = m_textColor = GLcolor4f::white;
         m_portRenderInfo.color.a = m_alpha;
         m_textColor.a = m_textAlpha;
         
@@ -282,6 +285,11 @@ public:
         return m_alpha < 0.1;
     }
     
+    void activate(bool activate)
+    {
+        m_activate = activate;
+    }
+    
 private:
     static TexFont *s_texFont;
     
@@ -289,6 +297,8 @@ private:
     const AGPortInfo &m_portInfo;
     const int m_portNum;
     const GLvertex3f m_position;
+    
+    bool m_activate;
     
     const TextPosition m_textPosition;
     GLvertex3f m_textOffset;
@@ -309,7 +319,8 @@ TexFont *AGPortBrowserPort::s_texFont = NULL;
 class AGPortBrowser : public AGInteractiveObject
 {
 public:
-    AGPortBrowser(AGNode *node) : m_node(node), m_scale(0.2), m_alpha(0.1, 1)
+    AGPortBrowser(AGNode *node) : m_node(node), m_scale(0.2), m_alpha(0.1, 1),
+    m_selectedPort(-1)
     {
         float radius = 0.0125f;
         
@@ -332,6 +343,7 @@ public:
         m_alpha = 1;
         
         int numPorts = node->numInputPorts();
+        m_ports.reserve(numPorts);
         float angle = 3.0f*M_PI/4.0f;
         float portRadius = radius * 0.62;
         for(int i = 0; i < numPorts; i++)
@@ -354,6 +366,7 @@ public:
             GLvertex3f pos = m_node->position() + GLvertex3f(portRadius*_cos, portRadius*_sin, 0);
             AGPortBrowserPort *port = new AGPortBrowserPort(m_node, i, pos, textPos);
             addChild(port);
+            m_ports.push_back(port);
             
             angle -= M_PI*2.0f/((float)numPorts);
         }
@@ -367,7 +380,7 @@ public:
         m_alpha.interp();
         
         m_fillInfo.color.a = 0.62*m_alpha;
-        m_strokeInfo.color.a = 0.8*m_alpha;
+        m_strokeInfo.color.a = 0.9*m_alpha;
         
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeTranslation(m_node->position().x, m_node->position().y, m_node->position().z));
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeScale(m_scale, m_scale, m_scale));
@@ -395,11 +408,54 @@ public:
         return m_scale < 0.01;
     }
     
+    int selectedPort(const GLvertex3f &t)
+    {
+        // location relative to this object's center point
+        GLvertex3f relativeLocation = t - m_node->position();
+        
+        // squared-distance from center
+        float rho_sq = relativeLocation.magnitudeSquared();
+        // central dead-zone
+        float radius = 0.0125f * 0.1f;
+        // too close to dead-zone!
+        if(rho_sq < radius*radius) return -1;
+        
+        // angle around that center point
+        float theta = atan2f(relativeLocation.y, relativeLocation.x);
+        // angle-width of each port's hit area
+        float width = (M_PI*2)/m_node->numInputPorts();
+        // starting rotation (from 0) of first port
+        float rot = 3.0f*M_PI/4.0f;
+        // angle of touch, mapped to [0, 2pi) => [port0, ..., portN-1]
+        theta = normAngle(-(theta-rot-width/2.0f));
+        // calculate bin => port number
+        return (int) floorf(theta/(M_PI*2.0f)*m_node->numInputPorts());
+    }
+    
+    int selectedPort() { return m_selectedPort; }
+    
+    virtual void touchMove(const GLvertex3f &t)
+    {
+        int p = selectedPort(t);
+        
+        if(p != m_selectedPort && m_selectedPort >= 0)
+            m_ports[m_selectedPort]->activate(false);
+        
+        if(p >= 0)
+            m_ports[p]->activate(true);
+        
+        m_selectedPort = p;
+    }
+    
 private:
     AGNode * const m_node;
     AGRenderInfoV m_strokeInfo, m_fillInfo;
     slewf m_scale;
     slewf m_alpha;
+    
+    int m_selectedPort;
+    
+    vector<AGPortBrowserPort *> m_ports;
 };
 
 
@@ -552,6 +608,19 @@ private:
         
         _currentHit = hitNode;
         
+        _proto->setActivation(0);
+    }
+    
+    if(_browser)
+    {
+        _browser->touchMove(pos);
+        if(_browser->selectedPort() >= 0)
+            _proto->setActivation(1);
+        else
+            _proto->setActivation(0);
+    }
+    else
+    {
         _proto->setActivation(0);
     }
 }
