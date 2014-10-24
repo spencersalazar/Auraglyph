@@ -23,6 +23,8 @@ class AGInteractiveObject;
 - (void)removeNode:(AGNode *)node;
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object;
+- (void)addTopLevelObject:(AGInteractiveObject *)object over:(AGInteractiveObject *)over;
+- (void)addTopLevelObject:(AGInteractiveObject *)object under:(AGInteractiveObject *)under;
 - (void)removeTopLevelObject:(AGInteractiveObject *)object;
 
 - (void)addConnection:(AGConnection *)connection;

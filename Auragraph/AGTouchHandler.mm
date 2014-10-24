@@ -413,12 +413,18 @@ public:
         // location relative to this object's center point
         GLvertex3f relativeLocation = t - m_node->position();
         
-        // squared-distance from center
-        float rho_sq = relativeLocation.magnitudeSquared();
-        // central dead-zone
-        float radius = 0.0125f * 0.1f;
-        // too close to dead-zone!
-        if(rho_sq < radius*radius) return -1;
+        int numPorts = m_node->numInputPorts();
+        // no dead-zone for single-port objects
+        if(numPorts > 1)
+        {
+            // squared-distance from center
+            float rho_sq = relativeLocation.magnitudeSquared();
+            // central dead-zone
+            float radius = 0.0125f * 0.1f;
+            // too close to dead-zone!
+            if(rho_sq < radius*radius)
+                return -1;
+        }
         
         // angle around that center point
         float theta = atan2f(relativeLocation.y, relativeLocation.x);
@@ -528,10 +534,12 @@ private:
         if(hitNode)
         {
             _browser = new AGPortBrowser(hitNode);
-            [_viewController addTopLevelObject:_browser];
+            [_viewController addTopLevelObject:_browser under:_proto];
         }
         else
             _browser = NULL;
+        
+        _currentHit = hitNode;
     }
     else if(hitNode == NULL)
     {
@@ -540,75 +548,8 @@ private:
             [_viewController removeTopLevelObject:_browser];
             _browser = NULL;
         }
-    }
-
-    if(hit == AGNode::HIT_INPUT_NODE)
-    {
-        if(hitNode != _originalHit && (hitNode != _currentHit || hitNode != _connectInput))
-        {
-            // deactivate previous hit if needed
-            if(_currentHit)
-            {
-                _currentHit->activateInputPort(0);
-                _currentHit->activateOutputPort(0);
-            }
-            
-            if(_connectInput)
-            {
-                // input node -> input node: invalid
-                hitNode->activateInputPort(-1-port);
-                _proto->setActivation(-1);
-            }
-            else
-            {
-                // output node -> input node: valid
-                dstPort = port;
-                hitNode->activateInputPort(1+dstPort);
-                _proto->setActivation(1);
-            }
-            
-            _currentHit = hitNode;
-        }
-    }
-    else if(hit == AGNode::HIT_OUTPUT_NODE)
-    {
-        if(hitNode != _originalHit && (hitNode != _currentHit || hitNode != _connectInput))
-        {
-            // deactivate previous hit if needed
-            if(_currentHit)
-            {
-                _currentHit->activateInputPort(0);
-                _currentHit->activateOutputPort(0);
-            }
-            
-            if(_connectOutput)
-            {
-                // output node -> output node: invalid
-                hitNode->activateOutputPort(-1-port);
-                _proto->setActivation(-1);
-            }
-            else
-            {
-                // input node -> output node: valid
-                srcPort = port;
-                hitNode->activateOutputPort(1+srcPort);
-                _proto->setActivation(1);
-            }
-            
-            _currentHit = hitNode;
-        }
-    }
-    else
-    {
-        if(_currentHit)
-        {
-            _currentHit->activateInputPort(0);
-            _currentHit->activateOutputPort(0);
-        }
         
         _currentHit = hitNode;
-        
-        _proto->setActivation(0);
     }
     
     if(_browser)
@@ -633,37 +574,15 @@ private:
     [_viewController removeTopLevelObject:_proto];
     _proto = NULL;
     
-    AGNode *hitNode;
-    int port;
-    AGNode::HitTestResult hit = [_viewController hitTest:pos node:&hitNode port:&port];
-    
-    if(hit == AGNode::HIT_INPUT_NODE)
+    if(_browser)
     {
-        if(_connectOutput != NULL && hitNode != _connectOutput)
+        int port = _browser->selectedPort();
+        if(port != -1)
         {
-            dstPort = port;
-            AGConnection * connection = new AGConnection(_connectOutput, hitNode, dstPort);
+            AGConnection * connection = new AGConnection(_originalHit, _currentHit, port);
             
             [_viewController addConnection:connection];
-            [_viewController clearLinePoints];
         }
-    }
-    else if(hit == AGNode::HIT_OUTPUT_NODE)
-    {
-        if(_connectInput != NULL && hitNode != _connectInput)
-        {
-            srcPort = port;
-            AGConnection * connection = new AGConnection(hitNode, _connectInput, dstPort);
-            
-            [_viewController addConnection:connection];
-            [_viewController clearLinePoints];
-        }
-    }
-    
-    if(_currentHit)
-    {
-        _currentHit->activateInputPort(0);
-        _currentHit->activateOutputPort(0);
     }
     
     if(_connectInput) _connectInput->activateInputPort(0);

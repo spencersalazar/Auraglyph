@@ -261,6 +261,24 @@ static AGViewController * g_instance = nil;
     _objects.push_back(object);
 }
 
+- (void)addTopLevelObject:(AGInteractiveObject *)object over:(AGInteractiveObject *)over
+{
+    list<AGInteractiveObject *>::iterator ov = find(_objects.begin(), _objects.end(), over);
+    if(ov != _objects.end())
+        _objects.insert(++ov, object);
+    else
+        _objects.push_back(object);
+}
+
+- (void)addTopLevelObject:(AGInteractiveObject *)object under:(AGInteractiveObject *)under
+{
+    list<AGInteractiveObject *>::iterator un = find(_objects.begin(), _objects.end(), under);
+    if(un != _objects.end())
+        _objects.insert(un, object);
+    else
+        _objects.push_front(object);
+}
+
 - (void)removeTopLevelObject:(AGInteractiveObject *)object
 {
     if(object == _touchCapture)
