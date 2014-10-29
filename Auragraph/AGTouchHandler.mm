@@ -194,7 +194,8 @@ public:
     {
         if(s_texFont == NULL)
         {
-            const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
+//            const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
+            const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Endzone Tech.ttf" ofType:@""] UTF8String];
             s_texFont = new TexFont(fontPath, 32);
         }
         

@@ -273,7 +273,8 @@ void AGUINodeEditor::initializeNodeEditor()
     {
         s_init = true;
         
-        const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
+//        const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
+        const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Endzone Tech.ttf" ofType:@""] UTF8String];
         s_text = new TexFont(fontPath, 64);
         
         s_geoSize = 16;
@@ -763,7 +764,8 @@ m_action(nil)
 {
     if(s_text == NULL)
     {
-        const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
+//        const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
+        const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Endzone Tech.ttf" ofType:@""] UTF8String];
         s_text = new TexFont(fontPath, 64);
     }
     
