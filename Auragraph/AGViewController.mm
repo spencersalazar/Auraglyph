@@ -145,7 +145,8 @@ static AGViewController * g_instance = nil;
     _nodes.push_back(outputNode);
     
 //    const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Consolas.ttf" ofType:@""] UTF8String];
-    const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
+//    const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
+    const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Endzone Tech.ttf" ofType:@""] UTF8String];
 //    const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"SourceCodePro-Regular.ttf" ofType:@""] UTF8String];
     _font = new TexFont(fontPath, 96);
     
@@ -422,7 +423,7 @@ static AGViewController * g_instance = nil;
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     
     GLKMatrix4 textMV = GLKMatrix4Translate(_modelView, -0.02, -0.07, 3.89);
-    _font->render("AURAGLPH", GLcolor4f::white, textMV, _projection);
+    _font->render("AURAGLYPH", GLcolor4f::white, textMV, _projection);
     
     // render trash icon
     AGUITrash::instance().render();
