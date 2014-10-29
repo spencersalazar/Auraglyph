@@ -194,8 +194,7 @@ void TexFont::render(const std::string &text, const GLcolor4f &color,
     
     GLKMatrix4 modelView = GLKMatrix4Scale(_modelView, 1, m_height/m_width, 1);
 //    modelView = GLKMatrix4Scale(modelView, 10, 10, 10);
-    float res_width = m_width/m_res;
-    float res_height = m_height/m_res;
+    GLKMatrix4 scaledMV;
     
     for(int i = 0; i < text.size(); i++)
 //    for(int i = 0; i < 1; i++)
@@ -204,16 +203,15 @@ void TexFont::render(const std::string &text, const GLcolor4f &color,
         if(idx != -1) // skip unrendered chars
         {
             GlyphInfo info = m_info[text[i]];
-            int x = idx % g_linebreak;
-            int y = idx / g_linebreak;
             
-            glUniformMatrix4fv(s_uniformMVMatrix, 1, 0, modelView.m);
+            scaledMV = GLKMatrix4Scale(modelView, info.width/m_width, 1, 1);
+            glUniformMatrix4fv(s_uniformMVMatrix, 1, 0, scaledMV.m);
             glUniform4f(s_uniformTexpos, info.x/m_res, info.y/m_res, info.width/m_res, info.height/m_res);
             //glUniform4f(s_uniformTexpos, 0, 0, 1, 1);
             
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
             
-            modelView = GLKMatrix4Translate(modelView, s_radius, 0, 0);
+            modelView = GLKMatrix4Translate(modelView, s_radius*info.width/m_width, 0, 0);
         }
     }
     
