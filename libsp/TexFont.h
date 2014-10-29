@@ -22,6 +22,7 @@ public:
                 const GLKMatrix4 &modelView, const GLKMatrix4 &proj);
     
     float width();
+    float width(const std::string &text);
     float height();
     
 private:
@@ -43,6 +44,8 @@ private:
     
     struct GlyphInfo
     {
+        GlyphInfo() : isRendered(false) { }
+        bool isRendered;
         GLfloat x, y;
         GLfloat width, height;
     };

@@ -131,6 +131,7 @@ m_tex(0)
                 CGContextSetTextPosition(spriteContext, pos.x, pos.y);
             }
             
+            m_info[g_charStr[i]].isRendered = true;
             m_info[g_charStr[i]].x = pos.x;
             m_info[g_charStr[i]].y = pos.y-CTFontGetDescent(ctFont);
             m_info[g_charStr[i]].width = glyphWidth;
@@ -193,21 +194,17 @@ void TexFont::render(const std::string &text, const GLcolor4f &color,
     glUniform1i(s_uniformTexture, 0);
     
     GLKMatrix4 modelView = GLKMatrix4Scale(_modelView, 1, m_height/m_width, 1);
-//    modelView = GLKMatrix4Scale(modelView, 10, 10, 10);
     GLKMatrix4 scaledMV;
     
     for(int i = 0; i < text.size(); i++)
-//    for(int i = 0; i < 1; i++)
     {
-        int idx = g_asciiToIndex[text[i]];
-        if(idx != -1) // skip unrendered chars
+        GlyphInfo info = m_info[text[i]];
+        if(info.isRendered) // skip unrendered chars
         {
-            GlyphInfo info = m_info[text[i]];
-            
             scaledMV = GLKMatrix4Scale(modelView, info.width/m_width, 1, 1);
+            
             glUniformMatrix4fv(s_uniformMVMatrix, 1, 0, scaledMV.m);
             glUniform4f(s_uniformTexpos, info.x/m_res, info.y/m_res, info.width/m_res, info.height/m_res);
-            //glUniform4f(s_uniformTexpos, 0, 0, 1, 1);
             
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
             
@@ -223,6 +220,20 @@ void TexFont::render(const std::string &text, const GLcolor4f &color,
 float TexFont::width()
 {
     return s_radius;
+}
+
+float TexFont::width(const std::string &text)
+{
+    float widthRatio = 0;
+    float _inverseStdWidth = 1.0f/m_width;
+    int len = text.length();
+    for(int i = 0; i < len; i++)
+    {
+        GlyphInfo info = m_info[text[i]];
+        if(info.isRendered) widthRatio += info.width*_inverseStdWidth;
+    }
+    
+    return s_radius*widthRatio;
 }
 
 
