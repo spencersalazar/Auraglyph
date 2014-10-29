@@ -22,7 +22,6 @@ GLuint TexFont::s_geoSize = 0;
 GLgeoprimf *TexFont::s_geo = NULL;
 float TexFont::s_radius = 0;
 
-
 static UniChar *g_chars = NULL;
 static const char g_charStr[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}:\";',./<>?|\\`~";
 static int g_asciiToIndex[127];
@@ -80,7 +79,7 @@ m_tex(0)
     GLuint spriteTexture = 0;
 	CGContextRef spriteContext;
 	GLubyte *spriteData;
-	size_t width, height;
+	size_t texWidth, texHeight;
     
     CGDataProviderRef dataProvider = CGDataProviderCreateWithFilename(filepath.c_str());    
     CGFontRef font = CGFontCreateWithDataProvider(dataProvider);
@@ -94,13 +93,13 @@ m_tex(0)
     m_height = CTFontGetAscent(ctFont) + CTFontGetDescent(ctFont);
     
     m_res = 1024;
-	width = (int) m_res;
-	height = (int) m_res;
+	texWidth = (int) m_res;
+	texHeight = (int) m_res;
     
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     
-    spriteData = (GLubyte *) calloc(width * height * 4, sizeof(GLubyte));
-    spriteContext = CGBitmapContextCreate(spriteData, width, height, 8, width * 4, colorSpace, kCGImageAlphaPremultipliedLast);
+    spriteData = (GLubyte *) calloc(texWidth * texHeight * 4, sizeof(GLubyte));
+    spriteContext = CGBitmapContextCreate(spriteData, texWidth, texHeight, 8, texWidth * 4, colorSpace, kCGImageAlphaPremultipliedLast);
     
     CGFloat white[4] = {1.0, 1.0, 1.0, 1.0};
     
@@ -110,7 +109,7 @@ m_tex(0)
     CGContextSetFillColor(spriteContext, white);
     CGContextSetStrokeColor(spriteContext, white);
     
-    CGContextTranslateCTM(spriteContext, 0, height);
+    CGContextTranslateCTM(spriteContext, 0, texHeight);
     CGContextScaleCTM(spriteContext, 1, -1);
     
     CGContextSetTextPosition(spriteContext, 0, CTFontGetDescent(ctFont));
@@ -121,13 +120,23 @@ m_tex(0)
         CTFontGetGlyphsForCharacters(ctFont, &g_chars[i], &glyph, 1);
         if(glyph)
         {
+            float glyphWidth = CTFontGetAdvancesForGlyphs(ctFont, kCTFontDefaultOrientation, &glyph, NULL, 1);
+            CGPoint pos = CGContextGetTextPosition(spriteContext);
+            
+            if(pos.x + glyphWidth >= m_res)
+            {
+                // linebreak
+                pos.x = 0;
+                pos.y += m_height;
+                CGContextSetTextPosition(spriteContext, pos.x, pos.y);
+            }
+            
+            m_info[g_charStr[i]].x = pos.x;
+            m_info[g_charStr[i]].y = pos.y-CTFontGetDescent(ctFont);
+            m_info[g_charStr[i]].width = glyphWidth;
+            m_info[g_charStr[i]].height = m_height;
+            
             CGContextShowGlyphs(spriteContext, &glyph, 1);
-        }
-        
-        if(i%g_linebreak == g_linebreak-1)
-        {
-            CGPoint p = CGContextGetTextPosition(spriteContext);
-            CGContextSetTextPosition(spriteContext, 0, p.y+m_height);
         }
     }
     
@@ -145,7 +154,7 @@ m_tex(0)
     // Set the texture parameters to use a minifying filter and a linear filer (weighted average)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     // Specify a 2D texture image, providing the a pointer to the image data in memory
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spriteData);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texWidth, texHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, spriteData);
     // Release the image data
     free(spriteData);
     
@@ -194,11 +203,12 @@ void TexFont::render(const std::string &text, const GLcolor4f &color,
         int idx = g_asciiToIndex[text[i]];
         if(idx != -1) // skip unrendered chars
         {
+            GlyphInfo info = m_info[text[i]];
             int x = idx % g_linebreak;
             int y = idx / g_linebreak;
             
             glUniformMatrix4fv(s_uniformMVMatrix, 1, 0, modelView.m);
-            glUniform4f(s_uniformTexpos, x*res_width, y*res_height, res_width, res_height);
+            glUniform4f(s_uniformTexpos, info.x/m_res, info.y/m_res, info.width/m_res, info.height/m_res);
             //glUniform4f(s_uniformTexpos, 0, 0, 1, 1);
             
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

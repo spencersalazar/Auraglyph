@@ -43,7 +43,8 @@ private:
     
     struct GlyphInfo
     {
-        float width;
+        GLfloat x, y;
+        GLfloat width, height;
     };
     
     GLuint m_tex;
