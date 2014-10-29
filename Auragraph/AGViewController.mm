@@ -114,6 +114,11 @@ static AGViewController * g_instance = nil;
     return g_instance;
 }
 
++ (NSString *)styleFontPath
+{
+    return [[NSBundle mainBundle] pathForResource:@"Orbitron-Medium.ttf" ofType:@""];
+}
+
 - (GLKMatrix4)modelViewMatrix { return _modelView; }
 - (GLKMatrix4)projectionMatrix { return _projection; }
 
@@ -144,10 +149,7 @@ static AGViewController * g_instance = nil;
     
     _nodes.push_back(outputNode);
     
-//    const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Consolas.ttf" ofType:@""] UTF8String];
-//    const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
-    const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Endzone Tech.ttf" ofType:@""] UTF8String];
-//    const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"SourceCodePro-Regular.ttf" ofType:@""] UTF8String];
+    const char *fontPath = [[AGViewController styleFontPath] UTF8String];
     _font = new TexFont(fontPath, 96);
     
     // ensure the hw recognizer is preloaded

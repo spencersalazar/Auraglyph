@@ -175,6 +175,8 @@ private:
     AGRenderInfoV m_renderInfo;
 };
 
+#define AGPortBrowserPort_TextScale (0.62)
+
 class AGPortBrowserPort : public AGInteractiveObject
 {
 public:
@@ -194,8 +196,7 @@ public:
     {
         if(s_texFont == NULL)
         {
-//            const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
-            const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Endzone Tech.ttf" ofType:@""] UTF8String];
+            const char *fontPath = [[AGViewController styleFontPath] UTF8String];
             s_texFont = new TexFont(fontPath, 32);
         }
         
@@ -208,8 +209,8 @@ public:
         
         m_textColor = GLcolor4f::white;
         
-        float textScale = 0.5;
-        float textWidth = m_portInfo.name.length()*s_texFont->width()*textScale;
+        float textScale = AGPortBrowserPort_TextScale;
+        float textWidth = s_texFont->width(m_portInfo.name)*textScale;
         float textHeight = s_texFont->height()*textScale;
         m_textOriginOffset = GLvertex3f(-textWidth/2.0, -textHeight/2, 0);
         
@@ -260,7 +261,7 @@ public:
         
         GLvertex3f textPosition = lerp(m_textPosLerp, position+m_textOriginOffset, position+m_textOffset);
         m_textMV = GLKMatrix4Multiply(baseModelView, GLKMatrix4MakeTranslation(textPosition.x, textPosition.y, textPosition.z));
-        float textScale = 0.5;
+        float textScale = AGPortBrowserPort_TextScale;
         m_textMV = GLKMatrix4Multiply(m_textMV, GLKMatrix4MakeScale(textScale, textScale, textScale));
     }
     

@@ -14,6 +14,7 @@
 #import "AGGenericShader.h"
 #import "TexFont.h"
 #import "AGHandwritingRecognizer.h"
+#import "AGViewController.h"
 #import "Texture.h"
 #import "AGDef.h"
 
@@ -273,8 +274,7 @@ void AGUINodeEditor::initializeNodeEditor()
     {
         s_init = true;
         
-//        const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
-        const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Endzone Tech.ttf" ofType:@""] UTF8String];
+        const char *fontPath = [[AGViewController styleFontPath] UTF8String];
         s_text = new TexFont(fontPath, 64);
         
         s_geoSize = 16;
@@ -764,8 +764,7 @@ m_action(nil)
 {
     if(s_text == NULL)
     {
-//        const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Perfect DOS VGA 437.ttf" ofType:@""] UTF8String];
-        const char *fontPath = [[[NSBundle mainBundle] pathForResource:@"Endzone Tech.ttf" ofType:@""] UTF8String];
+        const char *fontPath = [[AGViewController styleFontPath] UTF8String];
         s_text = new TexFont(fontPath, 64);
     }
     

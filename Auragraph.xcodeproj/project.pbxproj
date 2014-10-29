@@ -11,6 +11,8 @@
 		0901C1C017BE3C460032904B /* SourceCodePro-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0901C1BF17BE3C460032904B /* SourceCodePro-Regular.ttf */; };
 		0901C1C217BE3C4B0032904B /* eichante.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0901C1C117BE3C4B0032904B /* eichante.ttf */; };
 		093395671A00FABC009E4802 /* Endzone Tech.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 093395661A00FABC009E4802 /* Endzone Tech.ttf */; };
+		093395691A019D43009E4802 /* Orbitron-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 093395681A019D43009E4802 /* Orbitron-Regular.ttf */; };
+		0933956B1A019E4F009E4802 /* Orbitron-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */; };
 		095D12C417ACA36C0048A012 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C317ACA36C0048A012 /* UIKit.framework */; };
 		095D12C617ACA36C0048A012 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C517ACA36C0048A012 /* Foundation.framework */; };
 		095D12C817ACA36C0048A012 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C717ACA36C0048A012 /* CoreGraphics.framework */; };
@@ -97,6 +99,8 @@
 		0901C1C117BE3C4B0032904B /* eichante.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = eichante.ttf; sourceTree = "<group>"; };
 		09077FD117C0BFFA00DFE42F /* AGDef.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGDef.h; sourceTree = "<group>"; };
 		093395661A00FABC009E4802 /* Endzone Tech.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Endzone Tech.ttf"; sourceTree = "<group>"; };
+		093395681A019D43009E4802 /* Orbitron-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Orbitron-Regular.ttf"; sourceTree = "<group>"; };
+		0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Orbitron-Medium.ttf"; sourceTree = "<group>"; };
 		093D631E18CECF0A0012C4B7 /* Animation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Animation.h; sourceTree = "<group>"; };
 		095D12C017ACA36C0048A012 /* AURAGRPH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AURAGRPH.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		095D12C317ACA36C0048A012 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -378,6 +382,8 @@
 		095D12CE17ACA36C0048A012 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */,
+				093395681A019D43009E4802 /* Orbitron-Regular.ttf */,
 				093395661A00FABC009E4802 /* Endzone Tech.ttf */,
 				099AF10E17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png */,
 				0901C1C117BE3C4B0032904B /* eichante.ttf */,
@@ -635,12 +641,14 @@
 				0989132418A0870000AB98AD /* Shader.fsh in Resources */,
 				0989132518A0870000AB98AD /* Texture.fsh in Resources */,
 				0989131C18A086E800AB98AD /* TexFont.vsh in Resources */,
+				0933956B1A019E4F009E4802 /* Orbitron-Medium.ttf in Resources */,
 				0989131D18A086E800AB98AD /* Screen.vsh in Resources */,
 				0989131E18A086E800AB98AD /* Clip.vsh in Resources */,
 				0989131F18A086E800AB98AD /* Shader.vsh in Resources */,
 				0989132018A086E800AB98AD /* Texture.vsh in Resources */,
 				095D12D217ACA36C0048A012 /* InfoPlist.strings in Resources */,
 				095D12DA17ACA36C0048A012 /* Default.png in Resources */,
+				093395691A019D43009E4802 /* Orbitron-Regular.ttf in Resources */,
 				095D12DC17ACA36C0048A012 /* Default@2x.png in Resources */,
 				095D12DE17ACA36C0048A012 /* Default-568h@2x.png in Resources */,
 				095D12E817ACA36C0048A012 /* AGViewController.xib in Resources */,

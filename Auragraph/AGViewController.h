@@ -41,4 +41,6 @@ class AGInteractiveObject;
 - (GLvertex3f)worldCoordinateForScreenCoordinate:(CGPoint)p;
 - (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)node port:(int *)port;
 
++ (NSString *)styleFontPath;
+
 @end
