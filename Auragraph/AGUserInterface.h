@@ -118,6 +118,8 @@ private:
     LTKTrace m_currentTrace;
     float m_currentValue;
     bool m_lastTraceWasRecognized;
+    bool m_decimal;
+    float m_decimalFactor;
     
     bool m_startedInAccept;
     bool m_hitAccept;

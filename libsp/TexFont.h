@@ -21,6 +21,9 @@ public:
     void render(const std::string &text, const GLcolor4f &color,
                 const GLKMatrix4 &modelView, const GLKMatrix4 &proj);
     
+    // for debugging
+    void renderTexmap(const GLcolor4f &color, const GLKMatrix4 &modelView, const GLKMatrix4 &proj);
+    
     float width();
     float width(const std::string &text);
     float height();

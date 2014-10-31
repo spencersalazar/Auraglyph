@@ -527,6 +527,7 @@ void AGUINodeEditor::render()
         valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
         std::stringstream ss;
         ss << m_currentValue;
+        if(m_decimal && floorf(m_currentValue) == m_currentValue) ss << "."; // show decimal point if user has drawn it
         s_text->render(ss.str(), GLcolor4f::white, valueMV, proj);
         
         AGGenericShader::instance().useProgram();
@@ -726,8 +727,25 @@ void AGUINodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                     case AG_FIGURE_7:
                     case AG_FIGURE_8:
                     case AG_FIGURE_9:
-                        m_currentValue = (figure-'0') + m_currentValue*10;
+                        if(m_decimal)
+                        {
+                            m_currentValue = m_currentValue + (figure-'0')*m_decimalFactor;
+                            m_decimalFactor *= 0.1;
+                        }
+                        else
+                            m_currentValue = m_currentValue*10 + (figure-'0');
                         m_lastTraceWasRecognized = true;
+                        break;
+                        
+                    case AG_FIGURE_PERIOD:
+                        if(m_decimal)
+                            m_lastTraceWasRecognized = false;
+                        else
+                        {
+                            m_decimalFactor = 0.1;
+                            m_lastTraceWasRecognized = true;
+                            m_decimal = true;
+                        }
                         break;
                         
                     default:
@@ -745,6 +763,8 @@ void AGUINodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                 m_editingPort = m_hit;
                 m_hit = -1;
                 m_currentValue = 0;
+                m_decimal = false;
+                m_drawline.clear();
                 //m_node->getEditPortValue(m_editingPort, m_currentValue);
             }
         }

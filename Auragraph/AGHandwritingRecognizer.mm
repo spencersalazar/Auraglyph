@@ -243,6 +243,27 @@ static AGHandwritingRecognizer * g_instance = NULL;
         return g_figureForNumeralShape[results[0].getShapeId()];
     }
     
+    // detect period
+    const float PERIOD_AREA_MAX = 225;
+    const int PERIOD_NUMPOINTS_MAX = 30;
+    
+    float minX = FLT_MAX, maxX = FLT_MIN, minY = FLT_MAX, maxY = FLT_MIN;
+    for(int i = 0; i < trace.getNumberOfPoints(); i++)
+    {
+        floatVector p;
+        trace.getPointAt(i, p);
+        if(p[0] < minX) minX = p[0];
+        if(p[0] > maxX) maxX = p[0];
+        if(p[1] < minY) minY = p[1];
+        if(p[1] > maxY) maxY = p[1];
+    }
+    
+    float area = (maxX - minX)*(maxY - minY);
+    
+    if(area < PERIOD_AREA_MAX && trace.getNumberOfPoints() < PERIOD_NUMPOINTS_MAX)
+        return AG_FIGURE_PERIOD;
+//    fprintf(stderr, "area: %f number of points: %i\n", (maxX - minX)*(maxY - minY), trace.getNumberOfPoints());
+    
     return AG_FIGURE_NONE;
 }
 
