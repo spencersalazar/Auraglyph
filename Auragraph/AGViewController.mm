@@ -424,7 +424,7 @@ static AGViewController * g_instance = nil;
     // additive blending
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     
-    GLKMatrix4 textMV = GLKMatrix4Translate(_modelView, -0.02, -0.07, 3.89);
+    GLKMatrix4 textMV = GLKMatrix4Translate(_modelView, -_font->width("AURAGLYPH")/2, -0.1, 3.89);
     _font->render("AURAGLYPH", GLcolor4f::white, textMV, _projection);
     
     // render trash icon
