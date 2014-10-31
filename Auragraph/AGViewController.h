@@ -37,6 +37,7 @@ class AGInteractiveObject;
 - (void)clearLinePoints;
 
 - (GLKMatrix4)modelViewMatrix;
+- (GLKMatrix4)fixedModelViewMatrix;
 - (GLKMatrix4)projectionMatrix;
 - (GLvertex3f)worldCoordinateForScreenCoordinate:(CGPoint)p;
 - (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)node port:(int *)port;

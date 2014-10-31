@@ -51,6 +51,7 @@ private:
         bool isRendered;
         GLfloat x, y;
         GLfloat width, height;
+        GLfloat preWidth;
     };
     
     GLuint m_tex;

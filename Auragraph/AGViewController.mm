@@ -58,6 +58,7 @@ static DrawPoint drawline[nDrawline];
     GLuint _program;
     
     GLKMatrix4 _modelView;
+    GLKMatrix4 _fixedModelView;
     GLKMatrix4 _projection;
     GLKMatrix4 _modelViewProjectionMatrix;
     GLKMatrix3 _normalMatrix;
@@ -120,6 +121,7 @@ static AGViewController * g_instance = nil;
 }
 
 - (GLKMatrix4)modelViewMatrix { return _modelView; }
+- (GLKMatrix4)fixedModelViewMatrix { return _fixedModelView; }
 - (GLKMatrix4)projectionMatrix { return _projection; }
 
 - (void)viewDidLoad
@@ -340,13 +342,14 @@ static AGViewController * g_instance = nil;
     GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z-4.0f);
     
     // Compute the model view matrix for the object rendered with GLKit
-    GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 0.0f);
+    GLKMatrix4 modelViewMatrix = GLKMatrix4Identity;
     modelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, modelViewMatrix);
     
     _normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
     
     _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
     _modelView = modelViewMatrix;
+    _fixedModelView = GLKMatrix4MakeTranslation(0, 0, -4.0f);
     _projection = projectionMatrix;
     
     AGRenderObject::setProjectionMatrix(projectionMatrix);
@@ -424,8 +427,11 @@ static AGViewController * g_instance = nil;
     // additive blending
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     
-    GLKMatrix4 textMV = GLKMatrix4Translate(_modelView, -_font->width("AURAGLYPH")/2, -0.1, 3.89);
+    GLKMatrix4 textMV = GLKMatrix4Translate(_fixedModelView, -_font->width("AURAGLYPH")/2, -0.1, 3.89);
     _font->render("AURAGLYPH", GLcolor4f::white, textMV, _projection);
+    
+//    GLKMatrix4 textMapMV = GLKMatrix4Translate(_modelView, 0, 0.05, 3.89);
+//    _font->renderTexmap(GLcolor4f::white, textMapMV, _projection);
     
     // render trash icon
     AGUITrash::instance().render();

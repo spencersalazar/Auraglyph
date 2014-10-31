@@ -24,8 +24,6 @@ float TexFont::s_radius = 0;
 
 static UniChar *g_chars = NULL;
 static const char g_charStr[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}:\";',./<>?|\\`~";
-static int g_asciiToIndex[127];
-static const int g_linebreak = 16;
 
 void TexFont::initalizeTexFont()
 {
@@ -33,14 +31,11 @@ void TexFont::initalizeTexFont()
     {
         s_init = true;
         
-        for(int i = 0; i < 127; i++)
-            g_asciiToIndex[i] = -1;
         int len = strlen(g_charStr)+1;
         g_chars = new UniChar[len];
         for(int i = 0; i < len; i++)
         {
             g_chars[i] = g_charStr[i];
-            g_asciiToIndex[g_charStr[i]] = i;
         }
         
         s_program = [ShaderHelper createProgram:@"TexFont"
@@ -121,6 +116,10 @@ m_tex(0)
         if(glyph)
         {
             float glyphWidth = CTFontGetAdvancesForGlyphs(ctFont, kCTFontDefaultOrientation, &glyph, NULL, 1);
+            CGRect bbox = CTFontGetBoundingRectsForGlyphs(ctFont, kCTFontDefaultOrientation, &glyph, NULL, 1);
+//            fprintf(stderr, "glyph: %c bbox: %f %f %f %f\n", g_chars[i], bbox.origin.x, bbox.origin.y, bbox.size.width, bbox.size.height);
+            float preWidth = 0;
+            if(bbox.origin.x < 0) preWidth = -bbox.origin.x;
             CGPoint pos = CGContextGetTextPosition(spriteContext);
             
             if(pos.x + glyphWidth >= m_res)
@@ -131,11 +130,18 @@ m_tex(0)
                 CGContextSetTextPosition(spriteContext, pos.x, pos.y);
             }
             
+            if(preWidth > 0)
+            {
+                pos.x += preWidth;
+                CGContextSetTextPosition(spriteContext, pos.x, pos.y);
+            }
+            
             m_info[g_charStr[i]].isRendered = true;
             m_info[g_charStr[i]].x = pos.x;
             m_info[g_charStr[i]].y = pos.y-CTFontGetDescent(ctFont);
             m_info[g_charStr[i]].width = glyphWidth;
             m_info[g_charStr[i]].height = m_height;
+            m_info[g_charStr[i]].preWidth = preWidth; // TODO: account for pre-width in rendering
             
             CGContextShowGlyphs(spriteContext, &glyph, 1);
         }
@@ -214,6 +220,48 @@ void TexFont::render(const std::string &text, const GLcolor4f &color,
     
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_TEXTURE_2D);
+}
+
+void TexFont::renderTexmap(const GLcolor4f &color, const GLKMatrix4 &_modelView, const GLKMatrix4 &proj)
+{
+    glEnable(GL_TEXTURE_2D);
+    
+    GLKMatrix4 modelView = GLKMatrix4Scale(_modelView, 10, 10, 10);
+    GLKMatrix3 normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
+    
+    glUseProgram(s_program);
+    
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLgeoprimf), s_geo);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    
+    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLgeoprimf), &s_geo->texcoord);
+    glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+    
+    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    glDisableVertexAttribArray(GLKVertexAttribNormal);
+    
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
+    glDisableVertexAttribArray(GLKVertexAttribColor);
+    
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_tex);
+    
+    glUniformMatrix4fv(s_uniformProjMatrix, 1, 0, proj.m);
+    glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, normal.m);
+    glUniform1i(s_uniformTexture, 0);
+    
+    glUniformMatrix4fv(s_uniformMVMatrix, 1, 0, modelView.m);
+    glUniform4f(s_uniformTexpos, 0, 0, 1, 1);
+    
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
+    
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    
 }
 
 
