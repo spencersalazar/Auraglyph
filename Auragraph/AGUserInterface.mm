@@ -948,7 +948,7 @@ void AGUITrash::update(float t, float dt)
 void AGUITrash::render()
 {
     GLKMatrix4 proj = AGNode::projectionMatrix();
-    GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::globalModelViewMatrix(), m_position.x, m_position.y, m_position.z);
+    GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::fixedModelViewMatrix(), m_position.x, m_position.y, m_position.z);
     modelView = GLKMatrix4Scale(modelView, m_scale, m_scale, m_scale);
     
     AGGenericShader &shader = AGTextureShader::instance();

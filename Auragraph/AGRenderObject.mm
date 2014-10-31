@@ -16,6 +16,7 @@
 
 GLKMatrix4 AGRenderObject::s_projectionMatrix = GLKMatrix4Identity;
 GLKMatrix4 AGRenderObject::s_modelViewMatrix = GLKMatrix4Identity;
+GLKMatrix4 AGRenderObject::s_fixedModelViewMatrix = GLKMatrix4Identity;
 
 AGRenderObject::AGRenderObject()
 {
@@ -33,7 +34,10 @@ AGRenderObject::~AGRenderObject()
 void AGRenderObject::update(float t, float dt)
 {
     m_renderState.projection = projectionMatrix();
-    m_renderState.modelview = globalModelViewMatrix();
+    if(renderFixed())
+        m_renderState.modelview = fixedModelViewMatrix();
+    else
+        m_renderState.modelview = globalModelViewMatrix();
     m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
     
     for(list<AGRenderObject *>::iterator i = m_children.begin(); i != m_children.end(); i++)

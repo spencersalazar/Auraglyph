@@ -161,7 +161,7 @@ static AGViewController * g_instance = nil;
     _testButton->setAction(^{
         [self presentViewController:self.trainer animated:YES completion:nil];
     });
-    _objects.push_back(_testButton);
+//    _objects.push_back(_testButton);
     
     AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
     
@@ -354,6 +354,7 @@ static AGViewController * g_instance = nil;
     
     AGRenderObject::setProjectionMatrix(projectionMatrix);
     AGRenderObject::setGlobalModelViewMatrix(modelViewMatrix);
+    AGRenderObject::setFixedModelViewMatrix(_fixedModelView);
 }
 
 - (void)update
@@ -470,9 +471,7 @@ static AGViewController * g_instance = nil;
     glBindVertexArrayOES(0);
     
     [_touchHandler render];
-    
-    _testButton->render();
-    
+        
     if(AG_ENABLE_FBO)
     {
         /* render screen texture */

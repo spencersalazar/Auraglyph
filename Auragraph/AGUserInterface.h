@@ -206,6 +206,8 @@ public:
     
     virtual void setPosition(const GLvertex3f &pos) { m_position = pos; }
     
+    virtual bool renderFixed() { return true; }
+    
 private:
     AGUITrash();
     ~AGUITrash();

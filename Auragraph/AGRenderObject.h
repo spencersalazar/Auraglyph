@@ -65,6 +65,8 @@ public:
     static GLKMatrix4 projectionMatrix() { return s_projectionMatrix; }
     static void setGlobalModelViewMatrix(const GLKMatrix4 &modelview) { s_modelViewMatrix = modelview; }
     static GLKMatrix4 globalModelViewMatrix() { return s_modelViewMatrix; }
+    static void setFixedModelViewMatrix(const GLKMatrix4 &modelview) { s_fixedModelViewMatrix = modelview; }
+    static GLKMatrix4 fixedModelViewMatrix() { return s_fixedModelViewMatrix; }
     
     AGRenderObject();
     virtual ~AGRenderObject();
@@ -81,9 +83,13 @@ public:
     list<AGRenderInfo *> m_renderList;
     AGRenderState m_renderState;
     
+    // override to force fixed-position rendering (e.g. ignores camera movement)
+    virtual bool renderFixed() { return false; }
+    
 protected:
     static GLKMatrix4 s_projectionMatrix;
     static GLKMatrix4 s_modelViewMatrix;
+    static GLKMatrix4 s_fixedModelViewMatrix;
     
     void renderPrimitives();
     
