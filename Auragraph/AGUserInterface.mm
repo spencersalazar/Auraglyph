@@ -521,7 +521,7 @@ void AGUINodeEditor::render()
         // text name + value
         GLKMatrix4 nameMV = GLKMatrix4Translate(m_modelView, -s_radius*0.9, y + s_radius/rowCount*0.1, 0);
         nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
-        s_text->render(m_node->inputPortInfo(m_editingPort).name, GLcolor4f::white, nameMV, proj);
+        s_text->render(m_node->editPortInfo(m_editingPort).name, GLcolor4f::white, nameMV, proj);
         
         GLKMatrix4 valueMV = GLKMatrix4Translate(m_modelView, s_radius*0.1, y + s_radius/rowCount*0.1, 0);
         valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
@@ -587,7 +587,7 @@ int AGUINodeEditor::hitTest(const GLvertex3f &t, bool *inBbox)
     {
         *inBbox = true;
         
-        int numPorts = m_node->numInputPorts();
+        int numPorts = m_node->numEditPorts();
         
         for(int i = 0; i < numPorts; i++)
         {
