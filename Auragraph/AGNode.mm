@@ -1014,7 +1014,7 @@ AGControl *AGControlTimerNode::renderControl(sampletime t)
 {
     if(t > m_lastTime)
     {
-        if(((float)(t - m_lastFire))/AGAudioNode::sampleRate() > m_interval)
+        if(((float)(t - m_lastFire))/AGAudioNode::sampleRate() >= m_interval)
         {
             m_control.v = 1;
             m_lastFire = t;

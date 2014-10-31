@@ -576,9 +576,7 @@ public:
     static AGAudioNode *create(const GLvertex3f &pos);
     
 private:
-    int m_state;
-    float m_value;
-    float m_increment;
+    float m_prevTrigger;
     
     float m_attack, m_decay, m_sustain, m_release;
     stk::ADSR m_adsr;
@@ -628,6 +626,7 @@ AGAudioADSRNode::AGAudioADSRNode(GLvertex3f pos) : AGAudioNode(pos)
     
     allocatePortBuffers();
     
+    m_prevTrigger = FLT_MAX;
     m_attack = 0.01;
     m_decay = 0.01;
     m_sustain = 0.5;
@@ -669,10 +668,20 @@ void AGAudioADSRNode::renderAudio(sampletime t, float *input, float *output, int
     
     for(int i = 0; i < nFrames; i++)
     {
-        m_outputBuffer[i] = m_inputPortBuffer[0][i];
+        if(m_inputPortBuffer[2][i] != m_prevTrigger)
+        {
+            if(m_inputPortBuffer[2][i] > 0)
+                m_adsr.keyOn();
+            else
+                m_adsr.keyOff();
+        }
+        m_prevTrigger = m_inputPortBuffer[2][i];
+        
+        m_outputBuffer[i] = m_adsr.tick() * m_inputPortBuffer[0][i];
         output[i] += m_outputBuffer[i];
 
         m_inputPortBuffer[0][i] = 0;
+        m_inputPortBuffer[2][i] = 0;
     }
 }
 
