@@ -134,7 +134,7 @@ AGControlNodeManager::AGControlNodeManager()
 //    m_controlNodeTypes.push_back(new ControlNodeType("Array", AGControlArrayNode::initialize, AGControlArrayNode::renderIcon, AGControlArrayNode::create));
 }
 
-const std::vector<AGControlNodeManager::ControlNodeType *> &AGControlNodeManager::controlNodeTypes() const
+const std::vector<AGControlNodeManager::ControlNodeType *> &AGControlNodeManager::nodeTypes() const
 {
     return m_controlNodeTypes;
 }

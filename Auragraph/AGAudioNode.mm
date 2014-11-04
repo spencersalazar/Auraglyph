@@ -984,7 +984,7 @@ AGAudioNodeManager::AGAudioNodeManager()
     m_audioNodeTypes.push_back(new AudioNodeType("Output", AGAudioOutputNode::initialize, AGAudioOutputNode::renderIcon, AGAudioOutputNode::create));
 }
 
-const std::vector<AGAudioNodeManager::AudioNodeType *> &AGAudioNodeManager::audioNodeTypes() const
+const std::vector<AGAudioNodeManager::AudioNodeType *> &AGAudioNodeManager::nodeTypes() const
 {
     return m_audioNodeTypes;
 }

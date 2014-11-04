@@ -61,7 +61,7 @@ public:
         AGControlNode *(*createNode)(const GLvertex3f &pos);
     };
     
-    const std::vector<ControlNodeType *> &controlNodeTypes() const;
+    const std::vector<ControlNodeType *> &nodeTypes() const;
     void renderNodeTypeIcon(ControlNodeType *type) const;
     AGControlNode * createNodeType(ControlNodeType *type, const GLvertex3f &pos) const;
     

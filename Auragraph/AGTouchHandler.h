@@ -12,6 +12,7 @@
 #import "AGHandwritingRecognizer.h"
 #import "AGNode.h"
 #import "AGUserInterface.h"
+#import "AGNodeSelector.h"
 
 
 @class AGViewController;
@@ -57,7 +58,7 @@
 
 @interface AGSelectNodeTouchHandler : AGTouchHandler
 {
-    AGUINodeSelector * _nodeSelector;
+    AGUIMetaNodeSelector * _nodeSelector;
 }
 
 - (id)initWithViewController:(AGViewController *)viewController position:(GLvertex3f)pos;

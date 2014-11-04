@@ -31,47 +31,6 @@ public:
 };
 
 
-class AGUINodeSelector
-{
-public:
-    AGUINodeSelector(const GLvertex3f &pos);
-    ~AGUINodeSelector();
-    
-    void update(float t, float dt);
-    void render();
-    
-    void touchDown(const GLvertex3f &t);
-    void touchMove(const GLvertex3f &t);
-    void touchUp(const GLvertex3f &t);
-    
-    AGAudioNode *createNode();
-    
-    bool done() { return m_done; }
-    
-private:
-    
-    GLvertex3f m_geo[4];
-    float m_radius;
-    GLuint m_geoSize;
-    
-    float m_t;
-    
-    GLvertex3f m_pos;
-    clampf m_verticalScrollPos;
-    
-    GLKMatrix4 m_modelViewProjectionMatrix;
-    GLKMatrix4 m_modelView;
-    GLKMatrix3 m_normalMatrix;
-    
-    AGAudioNode *m_audioNode;
-    
-    int m_hit;
-    GLvertex3f m_touchStart;
-    GLvertex3f m_lastTouch;
-    bool m_done;
-};
-
-
 class TexFont;
 
 class AGUINodeEditor

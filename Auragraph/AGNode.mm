@@ -581,7 +581,7 @@ void AGAudioNode::initializeAudioNode()
         geo = NULL;
         
         // initialize audio nodes
-        const std::vector<AGAudioNodeManager::AudioNodeType *> &audioNodeTypes = AGAudioNodeManager::instance().audioNodeTypes();
+        const std::vector<AGAudioNodeManager::AudioNodeType *> &audioNodeTypes = AGAudioNodeManager::instance().nodeTypes();
         for(std::vector<AGAudioNodeManager::AudioNodeType *>::const_iterator type = audioNodeTypes.begin(); type != audioNodeTypes.end(); type++)
         {
             if((*type)->initialize)
@@ -824,7 +824,7 @@ void AGControlNode::initializeControlNode()
 //        AGControlTimerNode::initialize();
         
         // initialize audio nodes
-        const std::vector<AGControlNodeManager::ControlNodeType *> &controlNodeTypes = AGControlNodeManager::instance().controlNodeTypes();
+        const std::vector<AGControlNodeManager::ControlNodeType *> &controlNodeTypes = AGControlNodeManager::instance().nodeTypes();
         for(std::vector<AGControlNodeManager::ControlNodeType *>::const_iterator type = controlNodeTypes.begin(); type != controlNodeTypes.end(); type++)
         {
             if((*type)->initialize)

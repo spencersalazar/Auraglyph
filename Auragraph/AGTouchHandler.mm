@@ -21,6 +21,7 @@
 #import "TexFont.h"
 #import "AGDef.h"
 #import "AGTrainerViewController.h"
+#include "AGNodeSelector.h"
 #import "AGGenericShader.h"
 #import "GeoGenerator.h"
 #import "spMath.h"
@@ -613,7 +614,7 @@ private:
 {
     if(self = [super initWithViewController:viewController])
     {
-        _nodeSelector = new AGUINodeSelector(pos);
+        _nodeSelector = AGUIMetaNodeSelector::audioNodeSelector(pos);
     }
     
     return self;

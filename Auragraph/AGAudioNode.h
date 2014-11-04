@@ -63,7 +63,7 @@ public:
         AGAudioNode *(*createNode)(const GLvertex3f &pos);
     };
     
-    const std::vector<AudioNodeType *> &audioNodeTypes() const;
+    const std::vector<AudioNodeType *> &nodeTypes() const;
     void renderNodeTypeIcon(AudioNodeType *type) const;
     AGAudioNode * createNodeType(AudioNodeType *type, const GLvertex3f &pos) const;
     
