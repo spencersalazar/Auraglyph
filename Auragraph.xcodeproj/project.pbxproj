@@ -13,6 +13,9 @@
 		093395671A00FABC009E4802 /* Endzone Tech.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 093395661A00FABC009E4802 /* Endzone Tech.ttf */; };
 		093395691A019D43009E4802 /* Orbitron-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 093395681A019D43009E4802 /* Orbitron-Regular.ttf */; };
 		0933956B1A019E4F009E4802 /* Orbitron-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */; };
+		0933956E1A08799A009E4802 /* AGFormulaNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0933956C1A08799A009E4802 /* AGFormulaNode.mm */; };
+		093395711A088612009E4802 /* AGArrayNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0933956F1A088612009E4802 /* AGArrayNode.mm */; };
+		093395741A088849009E4802 /* AGControlNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 093395721A088849009E4802 /* AGControlNode.mm */; };
 		095D12C417ACA36C0048A012 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C317ACA36C0048A012 /* UIKit.framework */; };
 		095D12C617ACA36C0048A012 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C517ACA36C0048A012 /* Foundation.framework */; };
 		095D12C817ACA36C0048A012 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C717ACA36C0048A012 /* CoreGraphics.framework */; };
@@ -101,6 +104,12 @@
 		093395661A00FABC009E4802 /* Endzone Tech.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Endzone Tech.ttf"; sourceTree = "<group>"; };
 		093395681A019D43009E4802 /* Orbitron-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Orbitron-Regular.ttf"; sourceTree = "<group>"; };
 		0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Orbitron-Medium.ttf"; sourceTree = "<group>"; };
+		0933956C1A08799A009E4802 /* AGFormulaNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGFormulaNode.mm; sourceTree = "<group>"; };
+		0933956D1A08799A009E4802 /* AGFormulaNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGFormulaNode.h; sourceTree = "<group>"; };
+		0933956F1A088612009E4802 /* AGArrayNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGArrayNode.mm; sourceTree = "<group>"; };
+		093395701A088612009E4802 /* AGArrayNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGArrayNode.h; sourceTree = "<group>"; };
+		093395721A088849009E4802 /* AGControlNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGControlNode.mm; sourceTree = "<group>"; };
+		093395731A088849009E4802 /* AGControlNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGControlNode.h; sourceTree = "<group>"; };
 		093D631E18CECF0A0012C4B7 /* Animation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Animation.h; sourceTree = "<group>"; };
 		095D12C017ACA36C0048A012 /* AURAGRPH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AURAGRPH.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		095D12C317ACA36C0048A012 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -353,6 +362,12 @@
 				0987409A17B98D7C0098511A /* AGNode.mm */,
 				098740AC17BC377E0098511A /* AGAudioNode.h */,
 				098740AB17BC377E0098511A /* AGAudioNode.mm */,
+				093395731A088849009E4802 /* AGControlNode.h */,
+				093395721A088849009E4802 /* AGControlNode.mm */,
+				0933956D1A08799A009E4802 /* AGFormulaNode.h */,
+				0933956C1A08799A009E4802 /* AGFormulaNode.mm */,
+				093395701A088612009E4802 /* AGArrayNode.h */,
+				0933956F1A088612009E4802 /* AGArrayNode.mm */,
 				098740B217BC61410098511A /* AGUserInterface.h */,
 				098740B117BC61410098511A /* AGUserInterface.mm */,
 				09E5EC8118A46F7300B21D97 /* AGControl.h */,
@@ -674,6 +689,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				095D12D417ACA36C0048A012 /* main.m in Sources */,
+				0933956E1A08799A009E4802 /* AGFormulaNode.mm in Sources */,
 				095D12D817ACA36C0048A012 /* AGAppDelegate.mm in Sources */,
 				095D12E517ACA36C0048A012 /* AGViewController.mm in Sources */,
 				09E5EC8218A46F7300B21D97 /* AGControl.mm in Sources */,
@@ -683,8 +699,10 @@
 				0989131A18A07E1200AB98AD /* Texture.vsh in Sources */,
 				095D12FC17ACAA100048A012 /* Texture.mm in Sources */,
 				09E5EC7F18A36A9D00B21D97 /* SPFilter.cpp in Sources */,
+				093395741A088849009E4802 /* AGControlNode.mm in Sources */,
 				09F3C50818A5A8C300E499AF /* Stk.cpp in Sources */,
 				09817F3919F87CC7000E9FB3 /* GeoGenerator.cpp in Sources */,
+				093395711A088612009E4802 /* AGArrayNode.mm in Sources */,
 				0989131918A07E1200AB98AD /* Texture.fsh in Sources */,
 				09E5EC8718A5A88100B21D97 /* ADSR.cpp in Sources */,
 				09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */,

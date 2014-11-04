@@ -308,30 +308,6 @@ protected:
 
 
 
-class AGControlTimerNode : public AGControlNode
-{
-public:
-    static void initialize();
-
-    AGControlTimerNode(const GLvertex3f &pos);
-    
-    virtual int numOutputPorts() const { return 1; }
-    virtual void setEditPortValue(int port, float value);
-    virtual void getEditPortValue(int port, float &value) const;
-
-    virtual AGControl *renderControl(sampletime t);
-    
-private:
-    static AGNodeInfo *s_nodeInfo;
-    
-    AGIntControl m_control;
-    sampletime m_lastTime;
-    sampletime m_lastFire;
-    float m_interval;
-};
-
-
-
 class AGInputNode : public AGNode
 {
 public:

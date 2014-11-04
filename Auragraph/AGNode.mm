@@ -11,9 +11,10 @@
 #import "AGViewController.h"
 #import "AGGenericShader.h"
 #import "AGAudioNode.h"
+#import "AGControlNode.h"
 
 
-static const float G_RATIO = 1.61803398875;
+//static const float G_RATIO = 1.61803398875;
 
 
 bool AGConnection::s_init = false;
@@ -820,7 +821,16 @@ void AGControlNode::initializeControlNode()
         
         glBindVertexArrayOES(0);
         
-        AGControlTimerNode::initialize();
+//        AGControlTimerNode::initialize();
+        
+        // initialize audio nodes
+        const std::vector<AGControlNodeManager::ControlNodeType *> &controlNodeTypes = AGControlNodeManager::instance().controlNodeTypes();
+        for(std::vector<AGControlNodeManager::ControlNodeType *>::const_iterator type = controlNodeTypes.begin(); type != controlNodeTypes.end(); type++)
+        {
+            if((*type)->initialize)
+                (*type)->initialize();
+        }
+
     }
 }
 
@@ -942,94 +952,6 @@ AGUIObject *AGControlNode::hitTest(const GLvertex3f &t)
        return this;
     return NULL;
 }
-
-
-//------------------------------------------------------------------------------
-// ### AGControlTimerNode ###
-//------------------------------------------------------------------------------
-#pragma mark - AGControlTimerNode
-
-AGNodeInfo *AGControlTimerNode::s_nodeInfo = NULL;
-
-void AGControlTimerNode::initialize()
-{
-    s_nodeInfo = new AGNodeInfo;
-    
-    float radius = 0.005;
-    int circleSize = 48;
-    s_nodeInfo->iconGeoSize = circleSize*2 + 4;
-    s_nodeInfo->iconGeoType = GL_LINES;
-    s_nodeInfo->iconGeo = new GLvertex3f[s_nodeInfo->iconGeoSize];
-    
-    // TODO: multiple geoTypes (GL_LINE_LOOP + GL_LINE_STRIP) instead of wasteful GL_LINES
-    
-    for(int i = 0; i < circleSize; i++)
-    {
-        float theta0 = 2*M_PI*((float)i)/((float)(circleSize));
-        float theta1 = 2*M_PI*((float)(i+1))/((float)(circleSize));
-        s_nodeInfo->iconGeo[i*2+0] = GLvertex3f(radius*cosf(theta0), radius*sinf(theta0), 0);
-        s_nodeInfo->iconGeo[i*2+1] = GLvertex3f(radius*cosf(theta1), radius*sinf(theta1), 0);
-    }
-    
-    float minute = 47;
-    float minuteAngle = M_PI/2.0 + (minute/60.0)*(-2.0*M_PI);
-    float hour = 1;
-    float hourAngle = M_PI/2.0 + (hour/12.0 + minute/60.0/12.0)*(-2.0*M_PI);
-    
-    s_nodeInfo->iconGeo[circleSize*2+0] = GLvertex3f(0, 0, 0);
-    s_nodeInfo->iconGeo[circleSize*2+1] = GLvertex3f(radius/G_RATIO*cosf(hourAngle), radius/G_RATIO*sinf(hourAngle), 0);
-    s_nodeInfo->iconGeo[circleSize*2+2] = GLvertex3f(0, 0, 0);
-    s_nodeInfo->iconGeo[circleSize*2+3] = GLvertex3f(radius*0.925*cosf(minuteAngle), radius*0.925*sinf(minuteAngle), 0);
-    
-    s_nodeInfo->editPortInfo.push_back({ "intrvl", true, true });
-    s_nodeInfo->inputPortInfo.push_back({ "intrvl", true, true });
-}
-
-AGControlTimerNode::AGControlTimerNode(const GLvertex3f &pos) :
-AGControlNode(pos)
-{
-    m_nodeInfo = s_nodeInfo;
-    m_interval = 0.5;
-    m_lastFire = 0;
-    m_lastTime = 0;
-}
-
-void AGControlTimerNode::setEditPortValue(int port, float value)
-{
-    switch(port)
-    {
-        case 0: m_interval = value; break;
-    }
-}
-
-void AGControlTimerNode::getEditPortValue(int port, float &value) const
-{
-    switch(port)
-    {
-        case 0: value = m_interval; break;
-    }
-}
-
-AGControl *AGControlTimerNode::renderControl(sampletime t)
-{
-    if(t > m_lastTime)
-    {
-        if(((float)(t - m_lastFire))/AGAudioNode::sampleRate() >= m_interval)
-        {
-            m_control.v = 1;
-            m_lastFire = t;
-        }
-        else
-        {
-            m_control.v = 0;
-        }
-        
-        m_lastTime = t;
-    }
-    
-    return &m_control;
-}
-
 
 
 //------------------------------------------------------------------------------

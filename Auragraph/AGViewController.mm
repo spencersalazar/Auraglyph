@@ -14,6 +14,7 @@
 #import "AGHandwritingRecognizer.h"
 #import "AGNode.h"
 #import "AGAudioNode.h"
+#import "AGControlNode.h"
 #import "AGAudioManager.h"
 #import "AGUserInterface.h"
 #import "TexFont.h"
@@ -421,6 +422,7 @@ static AGViewController * g_instance = nil;
 //    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
+    glEnable(GL_LINE_SMOOTH);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     // normal blending
