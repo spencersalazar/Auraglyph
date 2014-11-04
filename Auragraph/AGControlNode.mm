@@ -7,6 +7,7 @@
 //
 
 #include "AGControlNode.h"
+#include "AGArrayNode.h"
 
 
 //------------------------------------------------------------------------------
@@ -131,7 +132,7 @@ const AGControlNodeManager &AGControlNodeManager::instance()
 AGControlNodeManager::AGControlNodeManager()
 {
     m_controlNodeTypes.push_back(new ControlNodeType("Timer", AGControlTimerNode::initialize, AGControlTimerNode::renderIcon, AGControlTimerNode::create));
-//    m_controlNodeTypes.push_back(new ControlNodeType("Array", AGControlArrayNode::initialize, AGControlArrayNode::renderIcon, AGControlArrayNode::create));
+    m_controlNodeTypes.push_back(new ControlNodeType("Array", AGControlArrayNode::initialize, AGControlArrayNode::renderIcon, AGControlArrayNode::create));
 }
 
 const std::vector<AGControlNodeManager::ControlNodeType *> &AGControlNodeManager::nodeTypes() const
