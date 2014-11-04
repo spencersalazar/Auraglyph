@@ -109,6 +109,10 @@ m_tex(0)
     
     CGContextSetTextPosition(spriteContext, 0, CTFontGetDescent(ctFont));
     
+    // inter-character margin in texture atlas
+    // larger vertOffset seems to be needed to avoid artifacts
+    float horizOffset = 1, vertOffset = 10;
+    
     for(int i = 0; g_chars[i] != 0; i++)
     {
         CGGlyph glyph;
@@ -122,19 +126,30 @@ m_tex(0)
             if(bbox.origin.x < 0) preWidth = -bbox.origin.x;
             CGPoint pos = CGContextGetTextPosition(spriteContext);
             
+            bool updatePos = false;
+            
             if(pos.x + glyphWidth >= m_res)
             {
                 // linebreak
                 pos.x = 0;
-                pos.y += m_height;
-                CGContextSetTextPosition(spriteContext, pos.x, pos.y);
+                pos.y += m_height + vertOffset;
+                updatePos = true;
             }
             
             if(preWidth > 0)
             {
                 pos.x += preWidth;
-                CGContextSetTextPosition(spriteContext, pos.x, pos.y);
+                updatePos = true;
             }
+            
+            if(horizOffset > 0)
+            {
+                pos.x += horizOffset;
+                updatePos = true;
+            }
+            
+            if(updatePos)
+                CGContextSetTextPosition(spriteContext, pos.x, pos.y);
             
             m_info[g_charStr[i]].isRendered = true;
             m_info[g_charStr[i]].x = pos.x;
@@ -158,10 +173,13 @@ m_tex(0)
     glGenTextures(1, &spriteTexture);
     // Bind the texture name.
     glBindTexture(GL_TEXTURE_2D, spriteTexture);
-    // Set the texture parameters to use a minifying filter and a linear filer (weighted average)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     // Specify a 2D texture image, providing the a pointer to the image data in memory
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texWidth, texHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, spriteData);
+    // Set the texture parameters to use a minifying filter and a linear filer (weighted average)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    //
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     // Release the image data
     free(spriteData);
     
