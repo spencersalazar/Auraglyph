@@ -996,7 +996,9 @@ void AGAudioNodeManager::renderNodeTypeIcon(AudioNodeType *type) const
 
 AGAudioNode * AGAudioNodeManager::createNodeType(AudioNodeType *type, const GLvertex3f &pos) const
 {
-    return type->createNode(pos);
+    AGAudioNode *node = type->createNode(pos);
+    node->setTitle(type->name);
+    return node;
 }
 
 

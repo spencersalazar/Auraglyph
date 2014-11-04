@@ -147,7 +147,9 @@ void AGControlNodeManager::renderNodeTypeIcon(ControlNodeType *type) const
 
 AGControlNode * AGControlNodeManager::createNodeType(AGControlNodeManager::ControlNodeType *type, const GLvertex3f &pos) const
 {
-    return type->createNode(pos);
+    AGControlNode *node = type->createNode(pos);
+    node->setTitle(type->name);
+    return node;
 }
 
 

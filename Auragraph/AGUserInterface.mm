@@ -110,6 +110,11 @@ m_startedInDiscard(false),
 m_lastTraceWasRecognized(true)
 {
     initializeNodeEditor();
+    
+//    string ucname = m_node->title();
+//    for(int i = 0; i < ucname.length(); i++) ucname[i] = toupper(ucname[i]);
+//    m_title = "EDIT " + ucname;
+    m_title = "EDIT";
 }
 
 void AGUINodeEditor::update(float t, float dt)
@@ -154,6 +159,17 @@ void AGUINodeEditor::render()
     AGGenericShader::instance().setMVPMatrix(m_modelViewProjectionMatrix);
     AGGenericShader::instance().setNormalMatrix(m_normalMatrix);
     
+//    AGClipShader &shader = AGClipShader::instance();
+//    
+//    shader.useProgram();
+//    
+//    shader.setMVPMatrix(m_modelViewProjectionMatrix);
+//    shader.setNormalMatrix(m_normalMatrix);
+//    shader.setClip(GLvertex2f(-m_radius, -m_radius), GLvertex2f(m_radius*2, m_radius*2));
+//    shader.setLocalMatrix(GLKMatrix4Identity);
+//    
+//    GLKMatrix4 localMatrix;
+    
     // stroke
     glLineWidth(4.0f);
     glDrawArrays(GL_LINE_LOOP, s_boundingOffset, 4);
@@ -172,7 +188,7 @@ void AGUINodeEditor::render()
     
     GLKMatrix4 titleMV = GLKMatrix4Translate(m_modelView, -s_radius*0.9, s_radius - s_radius*2.0/rowCount, 0);
     titleMV = GLKMatrix4Scale(titleMV, 0.61, 0.61, 0.61);
-    s_text->render("EDIT", GLcolor4f::white, titleMV, proj);
+    s_text->render(m_title, GLcolor4f::white, titleMV, proj);
     
     
     /* draw items */

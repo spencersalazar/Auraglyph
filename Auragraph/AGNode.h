@@ -127,6 +127,9 @@ public:
     AGNode(GLvertex3f pos = GLvertex3f());
     virtual ~AGNode();
     
+    void setTitle(const string &title) { m_title = title; }
+    const string &title() const { return m_title; }
+    
     virtual void update(float t, float dt);
     virtual void render();
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) { assert(0); }
@@ -202,6 +205,7 @@ protected:
     virtual void removeOutbound(AGConnection *connection);
     
     AGNodeInfo *m_nodeInfo;
+    string m_title;
     
     std::list<AGConnection *> m_inbound;
     std::list<AGConnection *> m_outbound;

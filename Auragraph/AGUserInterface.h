@@ -33,15 +33,15 @@ public:
 
 class TexFont;
 
-class AGUINodeEditor
+class AGUINodeEditor : public AGInteractiveObject
 {
 public:
     static void initializeNodeEditor();
     
     AGUINodeEditor(AGNode *node);
     
-    void update(float t, float dt);
-    void render();
+    virtual void update(float t, float dt);
+    virtual void render();
     
     void touchDown(const GLvertex3f &t, const CGPoint &screen);
     void touchMove(const GLvertex3f &t, const CGPoint &screen);
@@ -63,6 +63,7 @@ private:
     static GLuint s_itemEditBoxOffset;
     
     AGNode * const m_node;
+    string m_title;
     
     bool m_doneEditing;
     

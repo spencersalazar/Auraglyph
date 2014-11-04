@@ -23,7 +23,7 @@ GLgeoprimf *TexFont::s_geo = NULL;
 float TexFont::s_radius = 0;
 
 static UniChar *g_chars = NULL;
-static const char g_charStr[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}:\";',./<>?|\\`~";
+static const char g_charStr[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}:\";',./<>?|\\`~ ";
 
 void TexFont::initalizeTexFont()
 {
