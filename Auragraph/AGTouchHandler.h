@@ -61,7 +61,7 @@
     AGUIMetaNodeSelector * _nodeSelector;
 }
 
-- (id)initWithViewController:(AGViewController *)viewController position:(GLvertex3f)pos;
+- (id)initWithViewController:(AGViewController *)viewController nodeSelector:(AGUIMetaNodeSelector *)selector;
 
 @end
 

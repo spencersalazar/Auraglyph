@@ -741,13 +741,16 @@ static AGViewController * g_instance = nil;
     
     if(figure == AG_FIGURE_CIRCLE)
     {
-        _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController position:centroidMVP];
+        AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::audioNodeSelector(centroidMVP);
+        _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
         [_viewController clearLinePoints];
     }
     else if(figure == AG_FIGURE_SQUARE)
     {
-        AGControlNode * node = new AGControlTimerNode(centroidMVP);
-        [_viewController addNode:node];
+        AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::controlNodeSelector(centroidMVP);
+        _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
+//        AGControlNode * node = new AGControlTimerNode(centroidMVP);
+//        [_viewController addNode:node];
         [_viewController clearLinePoints];
     }
     else if(figure == AG_FIGURE_TRIANGLE_DOWN)

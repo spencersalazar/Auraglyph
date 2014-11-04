@@ -181,6 +181,7 @@ public:
     virtual AGRate rate() { return RATE_CONTROL; }
     
     virtual void fadeOutAndRemove();
+    virtual void renderOut();
     
 private:
     static bool s_initNode;

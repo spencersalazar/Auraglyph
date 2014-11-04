@@ -64,9 +64,37 @@ public:
     
     inline void update(float dt) { t += dt*rate; }
     inline void reset() { t = 0; }
-    inline operator const float () const { return evaluate(t)*(end-start)+start; }
+    
+    inline operator const float () const
+    {
+        float v = evaluate(t)*(end-start)+start;
+        
+        if(start<end)
+        {
+            if(v<start) return start;
+            if(v>end) return end;
+        }
+        else if(end<start)
+        {
+            if(v<end) return end;
+            if(v>start) return start;
+        }
+        
+        return v;
+    }
     
     float t, start, end, rate;
+};
+
+class lincurvef : public curvef
+{
+public:
+    lincurvef(float _time = 1, float _start = 0, float _end = 1, float _rate = 1) :
+    curvef(_start, _end, _rate), time(_time) { }
+    
+    virtual float evaluate(float t) const { return t/time; }
+    
+    float time;
 };
 
 class powcurvef : public curvef

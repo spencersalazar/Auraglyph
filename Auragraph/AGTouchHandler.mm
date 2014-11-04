@@ -610,11 +610,12 @@ private:
 
 @implementation AGSelectNodeTouchHandler
 
-- (id)initWithViewController:(AGViewController *)viewController position:(GLvertex3f)pos
+- (id)initWithViewController:(AGViewController *)viewController nodeSelector:(AGUIMetaNodeSelector *)selector;
 {
     if(self = [super initWithViewController:viewController])
     {
-        _nodeSelector = AGUIMetaNodeSelector::audioNodeSelector(pos);
+        _nodeSelector = selector;
+        [_viewController addTopLevelObject:_nodeSelector];
     }
     
     return self;
@@ -622,7 +623,7 @@ private:
 
 - (void)dealloc
 {
-    SAFE_DELETE(_nodeSelector);
+//    SAFE_DELETE(_nodeSelector);
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
@@ -656,17 +657,19 @@ private:
     
     if(!_nodeSelector->done())
         _nextHandler = self;
+    else
+        [_viewController removeTopLevelObject:_nodeSelector];
 }
 
-- (void)update:(float)t dt:(float)dt
-{
-    _nodeSelector->update(t, dt);
-}
-
-- (void)render
-{
-    _nodeSelector->render();
-}
+//- (void)update:(float)t dt:(float)dt
+//{
+//    _nodeSelector->update(t, dt);
+//}
+//
+//- (void)render
+//{
+//    _nodeSelector->render();
+//}
 
 @end
 

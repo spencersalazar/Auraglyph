@@ -377,6 +377,11 @@ void AGNode::fadeOutAndRemove()
         (*i)->fadeOutAndRemove();
 }
 
+void AGNode::renderOut()
+{
+    this->fadeOutAndRemove();
+}
+
 void AGNode::addInbound(AGConnection *connection)
 {
     m_inbound.push_back(connection);
