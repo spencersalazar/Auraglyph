@@ -635,7 +635,7 @@ void AGUIButton::render()
     
     GLKMatrix4 proj = AGNode::projectionMatrix();
     GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::globalModelViewMatrix(), m_pos.x, m_pos.y, m_pos.z);
-    GLKMatrix4 textMV = GLKMatrix4Translate(modelView, m_size.x/2-s_text->width()*m_title.length()*textScale/2, m_size.y/2-s_text->height()*textScale/2*1.25, 0);
+    GLKMatrix4 textMV = GLKMatrix4Translate(modelView, m_size.x/2-s_text->width(m_title)*textScale/2, m_size.y/2-s_text->height()*textScale/2*1.25, 0);
 //    GLKMatrix4 textMV = modelView;
     textMV = GLKMatrix4Scale(textMV, textScale, textScale, textScale);
     
@@ -703,6 +703,51 @@ GLvrectf AGUIButton::effectiveBounds()
 void AGUIButton::setAction(void (^action)())
 {
     m_action = [action copy];
+}
+
+
+//------------------------------------------------------------------------------
+// ### AGUITextButton ###
+//------------------------------------------------------------------------------
+#pragma mark - AGUITextButton
+
+void AGUITextButton::render()
+{
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    float textScale = 1;
+    
+    GLKMatrix4 proj = AGNode::projectionMatrix();
+    GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::fixedModelViewMatrix(), m_pos.x, m_pos.y, m_pos.z);
+    GLKMatrix4 textMV = GLKMatrix4Translate(modelView, m_size.x/2-s_text->width(m_title)*textScale/2, m_size.y/2-s_text->height()*textScale/2*1.25, 0);
+    //    GLKMatrix4 textMV = modelView;
+    textMV = GLKMatrix4Scale(textMV, textScale, textScale, textScale);
+    
+    if(m_hit)
+    {
+        AGGenericShader &shader = AGGenericShader::instance();
+        
+        shader.useProgram();
+        
+        shader.setProjectionMatrix(proj);
+        shader.setModelViewMatrix(modelView);
+        shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));
+        
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
+        glEnableVertexAttribArray(GLKVertexAttribPosition);
+        
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+        glDisableVertexAttribArray(GLKVertexAttribColor);
+        
+        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+        glDisableVertexAttribArray(GLKVertexAttribNormal);
+        
+        glLineWidth(4.0);
+        glDrawArrays(GL_LINE_LOOP, 0, 4);
+    }
+    
+    s_text->render(m_title, GLcolor4f::white, textMV, proj);
 }
 
 

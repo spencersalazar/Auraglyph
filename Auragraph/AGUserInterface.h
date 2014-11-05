@@ -22,6 +22,12 @@ class AGNode;
 class AGAudioNode;
 
 
+/*******************************************************************************
+ 
+ - AGUIObject -
+ Artifact of previous system design - replaced by AGInteractiveObject
+ 
+ ******************************************************************************/
 class AGUIObject : public AGInteractiveObject
 {
 public:
@@ -33,12 +39,26 @@ public:
 
 class TexFont;
 
+
+/*******************************************************************************
+ 
+ - AGUINodeEditor -
+ Abstract base class of node editors.
+ 
+ ******************************************************************************/
 class AGUINodeEditor : public AGUIObject
 {
 public:
     virtual bool doneEditing() = 0;
 };
 
+
+/*******************************************************************************
+ 
+ - AGUIStandardNodeEditor -
+ Standard node editor.
+ 
+ ******************************************************************************/
 class AGUIStandardNodeEditor : public AGUINodeEditor
 {
 public:
@@ -124,11 +144,17 @@ private:
 };
 
 
+/*******************************************************************************
+ 
+ - AGUIButton -
+ Standard button.
+ 
+ ******************************************************************************/
 class AGUIButton : public AGInteractiveObject
 {
 public:
     AGUIButton(const std::string &title, const GLvertex3f &pos, const GLvertex3f &size);
-    ~AGUIButton();
+    virtual ~AGUIButton();
     
     virtual void update(float t, float dt);
     virtual void render();
@@ -137,9 +163,11 @@ public:
     virtual void touchMove(const GLvertex3f &t);
     virtual void touchUp(const GLvertex3f &t);
     
-    virtual void setAction(void (^action)());
+    void setAction(void (^action)());
     
-private:
+    virtual bool renderFixed() { return true; }
+    
+protected:
     
     GLvrectf effectiveBounds();
     
@@ -154,6 +182,22 @@ private:
     bool m_hitOnTouchDown;
     
     void (^m_action)();
+};
+
+
+/*******************************************************************************
+ 
+ - AGTextButton -
+ Text button - displays as just text, and showing a border when pressed.
+ 
+ ******************************************************************************/
+class AGUITextButton : public AGUIButton
+{
+public:
+    AGUITextButton(const std::string &title, const GLvertex3f &pos, const GLvertex3f &size) :
+    AGUIButton(title, pos, size) { }
+    
+    virtual void render();
 };
 
 

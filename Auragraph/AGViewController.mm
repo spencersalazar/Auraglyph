@@ -22,6 +22,7 @@
 #import "AGTrainerViewController.h"
 #import "AGGenericShader.h"
 #import "AGTouchHandler.h"
+#import "AGAboutBox.h"
 
 #import <list>
 
@@ -163,6 +164,22 @@ static AGViewController * g_instance = nil;
         [self presentViewController:self.trainer animated:YES completion:nil];
     });
 //    _objects.push_back(_testButton);
+    
+    float aboutButtonWidth = _font->width("AURAGLYPH")*1.05;
+    float aboutButtonHeight = _font->height()*1.05;
+//    AGUITextButton *aboutButton = new AGUITextButton("AURAGLYPH", GLvertex3f(-aboutButtonWidth/2, -0.1, 3.89), GLvertex2f(aboutButtonWidth, aboutButtonHeight));
+    AGUITextButton *aboutButton = new AGUITextButton("AURAGLYPH",
+                                                     GLvertex3f(-aboutButtonWidth/2, 0, 0) + [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height-10)],
+                                                     GLvertex2f(aboutButtonWidth, aboutButtonHeight));
+    __weak typeof(self) weakSelf = self;
+    aboutButton->setAction(^{
+        AGAboutBox *aboutBox = new AGAboutBox([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)]);
+        aboutBox->setCloseAction(^{
+            [weakSelf removeTopLevelObject:aboutBox];
+        });
+        [weakSelf addTopLevelObject:aboutBox];
+    });
+    [self addTopLevelObject:aboutButton];
     
     AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
     
@@ -431,7 +448,7 @@ static AGViewController * g_instance = nil;
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     
     GLKMatrix4 textMV = GLKMatrix4Translate(_fixedModelView, -_font->width("AURAGLYPH")/2, -0.1, 3.89);
-    _font->render("AURAGLYPH", GLcolor4f::white, textMV, _projection);
+    _font->render("AURAGLYPH", GLcolor4f::black, textMV, _projection);
     
 //    GLKMatrix4 textMapMV = GLKMatrix4Translate(_modelView, 0, 0.05, 3.89);
 //    _font->renderTexmap(GLcolor4f::white, textMapMV, _projection);
