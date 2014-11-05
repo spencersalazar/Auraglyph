@@ -99,6 +99,11 @@ protected:
 
 struct AGTouchInfo
 {
+    AGTouchInfo() { }
+    AGTouchInfo(const GLvertex3f &_position, const CGPoint &_screenPosition, int _touchId) :
+    position(_position), screenPosition(_screenPosition), touchId(_touchId)
+    { }
+    
     GLvertex3f position;
     CGPoint screenPosition;
     int touchId;

@@ -182,7 +182,7 @@ public:
     virtual void getEditPortValue(int port, float &value) const { }
     
     /* overridden by final subclass */
-    virtual AGInteractiveObject *createCustomEditor() const { return NULL; }
+    virtual AGUINodeEditor *createCustomEditor() const { return NULL; }
 
     /* overridden by direct subclass */
     virtual GLvertex3f relativePositionForInputPort(int port) const { return GLvertex3f(); }

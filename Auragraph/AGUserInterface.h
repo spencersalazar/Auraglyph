@@ -33,12 +33,18 @@ public:
 
 class TexFont;
 
-class AGUINodeEditor : public AGInteractiveObject
+class AGUINodeEditor : public AGUIObject
+{
+public:
+    virtual bool doneEditing() = 0;
+};
+
+class AGUIStandardNodeEditor : public AGUINodeEditor
 {
 public:
     static void initializeNodeEditor();
     
-    AGUINodeEditor(AGNode *node);
+    AGUIStandardNodeEditor(AGNode *node);
     
     virtual void update(float t, float dt);
     virtual void render();
@@ -47,7 +53,11 @@ public:
     void touchMove(const GLvertex3f &t, const CGPoint &screen);
     void touchUp(const GLvertex3f &t, const CGPoint &screen);
     
-    bool doneEditing() { return m_doneEditing; }
+    virtual void touchDown(const AGTouchInfo &t);
+    virtual void touchMove(const AGTouchInfo &t);
+    virtual void touchUp(const AGTouchInfo &t);
+    
+    virtual bool doneEditing() { return m_doneEditing; }
     bool shouldRenderDrawline() { return false; }
     
 private:

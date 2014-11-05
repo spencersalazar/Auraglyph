@@ -29,25 +29,25 @@ static const float AGUIOpen_animTimeY = 0.15;
 
 
 //------------------------------------------------------------------------------
-// ### AGUINodeEditor ###
+// ### AGUIStandardNodeEditor ###
 //------------------------------------------------------------------------------
 #pragma mark -
-#pragma mark AGUINodeEditor
+#pragma mark AGUIStandardNodeEditor
 
 static const int NODEEDITOR_ROWCOUNT = 5;
 
 
-bool AGUINodeEditor::s_init = false;
-TexFont *AGUINodeEditor::s_text = NULL;
-float AGUINodeEditor::s_radius = 0;
-GLuint AGUINodeEditor::s_geoSize = 0;
-GLvertex3f * AGUINodeEditor::s_geo = NULL;
-GLuint AGUINodeEditor::s_boundingOffset = 0;
-GLuint AGUINodeEditor::s_innerboxOffset = 0;
-GLuint AGUINodeEditor::s_buttonBoxOffset = 0;
-GLuint AGUINodeEditor::s_itemEditBoxOffset = 0;
+bool AGUIStandardNodeEditor::s_init = false;
+TexFont *AGUIStandardNodeEditor::s_text = NULL;
+float AGUIStandardNodeEditor::s_radius = 0;
+GLuint AGUIStandardNodeEditor::s_geoSize = 0;
+GLvertex3f * AGUIStandardNodeEditor::s_geo = NULL;
+GLuint AGUIStandardNodeEditor::s_boundingOffset = 0;
+GLuint AGUIStandardNodeEditor::s_innerboxOffset = 0;
+GLuint AGUIStandardNodeEditor::s_buttonBoxOffset = 0;
+GLuint AGUIStandardNodeEditor::s_itemEditBoxOffset = 0;
 
-void AGUINodeEditor::initializeNodeEditor()
+void AGUIStandardNodeEditor::initializeNodeEditor()
 {
     if(!s_init)
     {
@@ -97,7 +97,7 @@ void AGUINodeEditor::initializeNodeEditor()
     }
 }
 
-AGUINodeEditor::AGUINodeEditor(AGNode *node) :
+AGUIStandardNodeEditor::AGUIStandardNodeEditor(AGNode *node) :
 m_node(node),
 m_hit(-1),
 m_editingPort(-1),
@@ -117,7 +117,7 @@ m_lastTraceWasRecognized(true)
     m_title = "EDIT";
 }
 
-void AGUINodeEditor::update(float t, float dt)
+void AGUIStandardNodeEditor::update(float t, float dt)
 {
     m_modelView = AGNode::globalModelViewMatrix();
     GLKMatrix4 projection = AGNode::projectionMatrix();
@@ -140,7 +140,7 @@ void AGUINodeEditor::update(float t, float dt)
     m_t += dt;
 }
 
-void AGUINodeEditor::render()
+void AGUIStandardNodeEditor::render()
 {
     glBindVertexArrayOES(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -346,7 +346,7 @@ void AGUINodeEditor::render()
 }
 
 
-int AGUINodeEditor::hitTest(const GLvertex3f &t, bool *inBbox)
+int AGUIStandardNodeEditor::hitTest(const GLvertex3f &t, bool *inBbox)
 {
     float rowCount = NODEEDITOR_ROWCOUNT;
     
@@ -398,8 +398,23 @@ int AGUINodeEditor::hitTest(const GLvertex3f &t, bool *inBbox)
     return -1;
 }
 
+void AGUIStandardNodeEditor::touchDown(const AGTouchInfo &t)
+{
+    touchDown(t.position, t.screenPosition);
+}
 
-void AGUINodeEditor::touchDown(const GLvertex3f &t, const CGPoint &screen)
+void AGUIStandardNodeEditor::touchMove(const AGTouchInfo &t)
+{
+    touchMove(t.position, t.screenPosition);
+}
+
+void AGUIStandardNodeEditor::touchUp(const AGTouchInfo &t)
+{
+    touchUp(t.position, t.screenPosition);
+}
+
+
+void AGUIStandardNodeEditor::touchDown(const GLvertex3f &t, const CGPoint &screen)
 {
     if(m_editingPort < 0)
     {
@@ -447,7 +462,7 @@ void AGUINodeEditor::touchDown(const GLvertex3f &t, const CGPoint &screen)
     }
 }
 
-void AGUINodeEditor::touchMove(const GLvertex3f &t, const CGPoint &screen)
+void AGUIStandardNodeEditor::touchMove(const GLvertex3f &t, const CGPoint &screen)
 {
     if(!m_doneEditing)
     {
@@ -484,7 +499,7 @@ void AGUINodeEditor::touchMove(const GLvertex3f &t, const CGPoint &screen)
     }
 }
 
-void AGUINodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
+void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
 {
     if(!m_doneEditing)
     {

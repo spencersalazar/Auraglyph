@@ -687,7 +687,9 @@ private:
 {
     if(self = [super initWithViewController:viewController])
     {
-        _nodeEditor = new AGUINodeEditor(node);
+        _nodeEditor = node->createCustomEditor();
+        if(_nodeEditor == NULL)
+            _nodeEditor = new AGUIStandardNodeEditor(node);
     }
     
     return self;
@@ -703,12 +705,9 @@ private:
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    _nodeEditor->touchDown(pos, p);
+    _nodeEditor->touchDown(AGTouchInfo(pos, p, (int) [touches anyObject]));
     
     [_viewController clearLinePoints];
-    
-    if(_nodeEditor->shouldRenderDrawline())
-        [_viewController addLinePoint:pos];
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -716,12 +715,7 @@ private:
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    _nodeEditor->touchMove(pos, p);
-    
-    if(_nodeEditor->shouldRenderDrawline())
-        [_viewController addLinePoint:pos];
-    else
-        [_viewController clearLinePoints];
+    _nodeEditor->touchMove(AGTouchInfo(pos, p, (int) [touches anyObject]));
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
@@ -729,12 +723,7 @@ private:
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    _nodeEditor->touchUp(pos, p);
-    
-    if(_nodeEditor->shouldRenderDrawline())
-        [_viewController addLinePoint:pos];
-    else
-        [_viewController clearLinePoints];
+    _nodeEditor->touchUp(AGTouchInfo(pos, p, (int) [touches anyObject]));
     
     if(_nodeEditor->doneEditing())
         _nextHandler = nil;

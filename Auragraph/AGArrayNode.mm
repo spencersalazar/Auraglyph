@@ -64,7 +64,7 @@ void AGControlArrayNode::getEditPortValue(int port, float &value) const
     }
 }
 
-AGInteractiveObject *AGControlArrayNode::createCustomEditor() const
+AGUINodeEditor *AGControlArrayNode::createCustomEditor() const
 {
     return NULL;
 }
