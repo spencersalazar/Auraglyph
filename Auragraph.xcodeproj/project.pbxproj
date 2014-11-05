@@ -88,6 +88,7 @@
 		09C7C3E518CF27AC0099CE88 /* Waveform.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 09C7C3E318CF27AC0099CE88 /* Waveform.vsh */; };
 		09C7C3E618CF2B8E0099CE88 /* Waveform.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 09C7C3E318CF27AC0099CE88 /* Waveform.vsh */; };
 		09C7C3E718CF2B8E0099CE88 /* Waveform.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 09C7C3E218CF27AC0099CE88 /* Waveform.fsh */; };
+		09D8C3FF1A0A4DF2008D788A /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 09D8C3FE1A0A4DF2008D788A /* OFL.txt */; };
 		09D9D2EA17ECF65D00938871 /* Clip.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 09D9D2E817ECF65D00938871 /* Clip.fsh */; };
 		09D9D2EB17ECF65D00938871 /* Clip.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 09D9D2E917ECF65D00938871 /* Clip.vsh */; };
 		09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7A18A3484F00B21D97 /* Mutex.cpp */; };
@@ -265,6 +266,7 @@
 		09A8BB4019F9E39E00E15BF7 /* spMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spMath.h; sourceTree = "<group>"; };
 		09C7C3E218CF27AC0099CE88 /* Waveform.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Waveform.fsh; path = Shaders/Waveform.fsh; sourceTree = "<group>"; };
 		09C7C3E318CF27AC0099CE88 /* Waveform.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Waveform.vsh; path = Shaders/Waveform.vsh; sourceTree = "<group>"; };
+		09D8C3FE1A0A4DF2008D788A /* OFL.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
 		09D9D2E817ECF65D00938871 /* Clip.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Clip.fsh; path = Shaders/Clip.fsh; sourceTree = "<group>"; };
 		09D9D2E917ECF65D00938871 /* Clip.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Clip.vsh; path = Shaders/Clip.vsh; sourceTree = "<group>"; };
 		09E5EC7A18A3484F00B21D97 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mutex.cpp; sourceTree = "<group>"; };
@@ -407,6 +409,7 @@
 		095D12CE17ACA36C0048A012 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				09D8C3FE1A0A4DF2008D788A /* OFL.txt */,
 				0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */,
 				093395681A019D43009E4802 /* Orbitron-Regular.ttf */,
 				093395661A00FABC009E4802 /* Endzone Tech.ttf */,
@@ -673,6 +676,7 @@
 				0989132018A086E800AB98AD /* Texture.vsh in Resources */,
 				095D12D217ACA36C0048A012 /* InfoPlist.strings in Resources */,
 				095D12DA17ACA36C0048A012 /* Default.png in Resources */,
+				09D8C3FF1A0A4DF2008D788A /* OFL.txt in Resources */,
 				093395691A019D43009E4802 /* Orbitron-Regular.ttf in Resources */,
 				095D12DC17ACA36C0048A012 /* Default@2x.png in Resources */,
 				095D12DE17ACA36C0048A012 /* Default-568h@2x.png in Resources */,
