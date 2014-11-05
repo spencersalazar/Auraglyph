@@ -64,6 +64,11 @@ void AGControlArrayNode::getEditPortValue(int port, float &value) const
     }
 }
 
+AGInteractiveObject *AGControlArrayNode::createCustomEditor() const
+{
+    return NULL;
+}
+
 AGControl *AGControlArrayNode::renderControl(sampletime t)
 {
     if(t > m_lastTime)

@@ -11,6 +11,7 @@
 
 #include "AGNode.h"
 #include "AGControl.h"
+#include <list>
 
 class AGControlArrayNode : public AGControlNode
 {
@@ -23,6 +24,8 @@ public:
     virtual void setEditPortValue(int port, float value);
     virtual void getEditPortValue(int port, float &value) const;
     
+    virtual AGInteractiveObject *createCustomEditor() const;
+    
     virtual AGControl *renderControl(sampletime t);
     
     static void renderIcon();
@@ -33,6 +36,9 @@ private:
     
     AGFloatControl m_control;
     sampletime m_lastTime;
+    
+    list<float> m_items;
+    list<float>::iterator m_position;
 };
 
 

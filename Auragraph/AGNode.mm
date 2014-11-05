@@ -606,6 +606,7 @@ AGNode(pos)
     m_radius = 0.01;
     m_portRadius = 0.01 * 0.2;
     
+    m_lastTime = -1;
     m_outputBuffer = new float[bufferSize()];
     memset(m_outputBuffer, 0, sizeof(float)*bufferSize());
     m_inputPortBuffer = NULL;
@@ -730,6 +731,7 @@ void AGAudioNode::allocatePortBuffers()
     if(numInputPorts() > 0)
     {
         m_inputPortBuffer = new float*[numInputPorts()];
+        m_controlPortBuffer = new AGControl *[numInputPorts()];
         for(int i = 0; i < numInputPorts(); i++)
         {
             if(m_nodeInfo->inputPortInfo[i].canConnect)
@@ -741,6 +743,8 @@ void AGAudioNode::allocatePortBuffers()
             {
                 m_inputPortBuffer[i] = NULL;
             }
+            
+            m_controlPortBuffer[i] = NULL;
         }
     }
     else
@@ -751,6 +755,8 @@ void AGAudioNode::allocatePortBuffers()
 
 void AGAudioNode::pullInputPorts(sampletime t, int nFrames)
 {
+    if(t <= m_lastTime) return;
+    
     this->lock();
     
     if(m_inputPortBuffer != NULL)
@@ -783,6 +789,12 @@ void AGAudioNode::pullInputPorts(sampletime t, int nFrames)
     }
     
     this->unlock();
+}
+
+
+void AGAudioNode::renderLast(float *output, int nFrames)
+{
+    for(int i = 0; i < nFrames; i++) output[i] += m_outputBuffer[i];
 }
 
 

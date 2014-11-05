@@ -165,6 +165,7 @@ void AGAudioSineWaveNode::getEditPortValue(int port, float &value) const
 
 void AGAudioSineWaveNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
+    if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
     
     for(int i = 0; i < nFrames; i++)
@@ -175,6 +176,8 @@ void AGAudioSineWaveNode::renderAudio(sampletime t, float *input, float *output,
         m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
         while(m_phase >= 1.0) m_phase -= 1.0;
     }
+    
+    m_lastTime = t;
 }
 
 void AGAudioSineWaveNode::renderIcon()
@@ -283,6 +286,7 @@ void AGAudioSquareWaveNode::getEditPortValue(int port, float &value) const
 
 void AGAudioSquareWaveNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
+    if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
     
     for(int i = 0; i < nFrames; i++)
@@ -293,6 +297,8 @@ void AGAudioSquareWaveNode::renderAudio(sampletime t, float *input, float *outpu
         m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
         while(m_phase >= 1.0) m_phase -= 1.0;
     }
+    
+    m_lastTime = t;
 }
 
 
@@ -401,6 +407,7 @@ void AGAudioSawtoothWaveNode::getEditPortValue(int port, float &value) const
 
 void AGAudioSawtoothWaveNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
+    if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
     
     for(int i = 0; i < nFrames; i++)
@@ -411,6 +418,8 @@ void AGAudioSawtoothWaveNode::renderAudio(sampletime t, float *input, float *out
         m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
         while(m_phase >= 1.0) m_phase -= 1.0;
     }
+    
+    m_lastTime = t;
 }
 
 
@@ -520,6 +529,7 @@ void AGAudioTriangleWaveNode::getEditPortValue(int port, float &value) const
 
 void AGAudioTriangleWaveNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
+    if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
     
     for(int i = 0; i < nFrames; i++)
@@ -533,6 +543,8 @@ void AGAudioTriangleWaveNode::renderAudio(sampletime t, float *input, float *out
         m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
         while(m_phase >= 1.0) m_phase -= 1.0;
     }
+    
+    m_lastTime = t;
 }
 
 
@@ -664,6 +676,7 @@ void AGAudioADSRNode::getEditPortValue(int port, float &value) const
 
 void AGAudioADSRNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
+    if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
     
     for(int i = 0; i < nFrames; i++)
@@ -683,6 +696,8 @@ void AGAudioADSRNode::renderAudio(sampletime t, float *input, float *output, int
         m_inputPortBuffer[0][i] = 0;
         m_inputPortBuffer[2][i] = 0;
     }
+    
+    m_lastTime = t;
 }
 
 
@@ -881,6 +896,7 @@ void AGAudioFilterNode::getEditPortValue(int port, float &value) const
 
 void AGAudioFilterNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
+    if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
     
     for(int i = 0; i < nFrames; i++)
@@ -900,6 +916,8 @@ void AGAudioFilterNode::renderAudio(sampletime t, float *input, float *output, i
         m_inputPortBuffer[2][i] = 0; // freq
         m_inputPortBuffer[3][i] = 0; // Q
     }
+    
+    m_lastTime = t;
 }
 
 

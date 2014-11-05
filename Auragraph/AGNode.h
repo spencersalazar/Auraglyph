@@ -54,7 +54,7 @@ struct AGNodeInfo
     vector<AGPortInfo> editPortInfo;
 };
 
-typedef unsigned long long sampletime;
+typedef long long sampletime;
 
 
 class AGConnection : public AGUIObject
@@ -174,15 +174,24 @@ public:
     virtual GLvertex3f relativePositionForOutboundConnection(AGConnection * connection) const { return relativePositionForOutputPort(0); }
     
     /*** Subclassing note: the following public functions should be overridden ***/
-    // TODO: all of these should be pure virtual
+    
+    /* overridden by final subclass */
+    // TODO: should be pure virtual
     virtual void setEditPortValue(int port, float value) { }
+    /* overridden by final subclass */
     virtual void getEditPortValue(int port, float &value) const { }
     
+    /* overridden by final subclass */
+    virtual AGInteractiveObject *createCustomEditor() const { return NULL; }
+
+    /* overridden by direct subclass */
     virtual GLvertex3f relativePositionForInputPort(int port) const { return GLvertex3f(); }
     virtual GLvertex3f relativePositionForOutputPort(int port) const { return GLvertex3f(); }
     
+    /* overridden by direct subclass */
     virtual AGRate rate() { return RATE_CONTROL; }
     
+    /* overridden by final or direct subclass */
     virtual void fadeOutAndRemove();
     virtual void renderOut();
     
@@ -266,13 +275,16 @@ private:
     
 protected:
     
+    sampletime m_lastTime;
     float * m_outputBuffer;
     float ** m_inputPortBuffer;
+    AGControl ** m_controlPortBuffer;
     
     float m_gain;
     
     void allocatePortBuffers();
     void pullInputPorts(sampletime t, int nFrames);
+    void renderLast(float *output, int nFrames);
 };
 
 
