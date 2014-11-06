@@ -34,8 +34,6 @@ public:
     void setCloseAction(void (^closeAction)());
     
 private:
-    
-    static TexFont *s_text;
 
     GLvertex3f m_geo[4];
     float m_radius;

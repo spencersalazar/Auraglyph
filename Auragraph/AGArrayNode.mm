@@ -7,6 +7,55 @@
 //
 
 #include "AGArrayNode.h"
+#include "AGUserInterface.h"
+
+
+//------------------------------------------------------------------------------
+// ### AGUIArrayEditor ###
+//------------------------------------------------------------------------------
+#pragma mark - AGUIArrayEditor
+
+class AGUIArrayEditor : public AGUINodeEditor
+{
+public:
+    static void initializeNodeEditor();
+    
+    AGUIArrayEditor(AGControlArrayNode *node) :
+    m_node(node)
+    {
+    }
+    
+    virtual void update(float t, float dt);
+    virtual void render();
+    
+    virtual void touchDown(const AGTouchInfo &t);
+    virtual void touchMove(const AGTouchInfo &t);
+    virtual void touchUp(const AGTouchInfo &t);
+    
+    virtual bool doneEditing() { return m_doneEditing; }
+    
+private:
+    
+    AGControlArrayNode * const m_node;
+    
+    string m_title;
+    
+    bool m_doneEditing;
+    
+    GLKMatrix4 m_proj;
+    GLKMatrix4 m_modelView;
+    
+    std::list< std::vector<GLvertex3f> > m_drawline;
+    LTKTrace m_currentTrace;
+    
+    float m_currentValue;
+    bool m_lastTraceWasRecognized;
+    bool m_decimal;
+    float m_decimalFactor;
+    
+    int hitTest(const GLvertex3f &t, bool *inBbox);
+};
+
 
 //------------------------------------------------------------------------------
 // ### AGControlArrayNode ###

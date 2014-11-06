@@ -37,9 +37,6 @@ public:
 };
 
 
-class TexFont;
-
-
 /*******************************************************************************
  
  - AGUINodeEditor -
@@ -83,7 +80,6 @@ public:
 private:
     
     static bool s_init;
-    static TexFont *s_text;
     static float s_radius;
     static GLuint s_geoSize;
     static GLvertex3f * s_geo;
@@ -170,8 +166,6 @@ public:
 protected:
     
     GLvrectf effectiveBounds();
-    
-    static TexFont *s_text;
     
     std::string m_title;
     

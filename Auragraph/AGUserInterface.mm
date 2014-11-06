@@ -17,6 +17,7 @@
 #import "AGViewController.h"
 #import "Texture.h"
 #import "AGDef.h"
+#import "AGStyle.h"
 
 #import <sstream>
 
@@ -38,7 +39,6 @@ static const int NODEEDITOR_ROWCOUNT = 5;
 
 
 bool AGUIStandardNodeEditor::s_init = false;
-TexFont *AGUIStandardNodeEditor::s_text = NULL;
 float AGUIStandardNodeEditor::s_radius = 0;
 GLuint AGUIStandardNodeEditor::s_geoSize = 0;
 GLvertex3f * AGUIStandardNodeEditor::s_geo = NULL;
@@ -52,9 +52,6 @@ void AGUIStandardNodeEditor::initializeNodeEditor()
     if(!s_init)
     {
         s_init = true;
-        
-        const char *fontPath = [[AGViewController styleFontPath] UTF8String];
-        s_text = new TexFont(fontPath, 64);
         
         s_geoSize = 16;
         s_geo = new GLvertex3f[s_geoSize];
@@ -142,6 +139,8 @@ void AGUIStandardNodeEditor::update(float t, float dt)
 
 void AGUIStandardNodeEditor::render()
 {
+    TexFont *text = AGStyle::standardFont64();
+    
     glBindVertexArrayOES(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
@@ -188,7 +187,7 @@ void AGUIStandardNodeEditor::render()
     
     GLKMatrix4 titleMV = GLKMatrix4Translate(m_modelView, -s_radius*0.9, s_radius - s_radius*2.0/rowCount, 0);
     titleMV = GLKMatrix4Scale(titleMV, 0.61, 0.61, 0.61);
-    s_text->render(m_title, GLcolor4f::white, titleMV, proj);
+    text->render(m_title, GLcolor4f::white, titleMV, proj);
     
     
     /* draw items */
@@ -230,7 +229,7 @@ void AGUIStandardNodeEditor::render()
         
         GLKMatrix4 nameMV = GLKMatrix4Translate(m_modelView, -s_radius*0.9, y + s_radius/rowCount*0.1, 0);
         nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
-        s_text->render(m_node->editPortInfo(i).name, nameColor, nameMV, proj);
+        text->render(m_node->editPortInfo(i).name, nameColor, nameMV, proj);
         
         GLKMatrix4 valueMV = GLKMatrix4Translate(m_modelView, s_radius*0.1, y + s_radius/rowCount*0.1, 0);
         valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
@@ -238,7 +237,7 @@ void AGUIStandardNodeEditor::render()
         float v = 0;
         m_node->getEditPortValue(i, v);
         ss << v;
-        s_text->render(ss.str(), valueColor, valueMV, proj);
+        text->render(ss.str(), valueColor, valueMV, proj);
     }
     
     
@@ -301,29 +300,29 @@ void AGUIStandardNodeEditor::render()
         GLKMatrix4 textMV = GLKMatrix4Translate(m_modelView, s_radius*1.2, y + s_radius/rowCount*0.1, 0);
         textMV = GLKMatrix4Scale(textMV, 0.5, 0.5, 0.5);
         if(m_hitAccept)
-            s_text->render("Accept", GLcolor4f::white, textMV, proj);
+            text->render("Accept", GLcolor4f::white, textMV, proj);
         else
-            s_text->render("Accept", GLcolor4f::black, textMV, proj);
+            text->render("Accept", GLcolor4f::black, textMV, proj);
         
         
         textMV = GLKMatrix4Translate(m_modelView, s_radius*1.2 + s_radius*1.2, y + s_radius/rowCount*0.1, 0);
         textMV = GLKMatrix4Scale(textMV, 0.5, 0.5, 0.5);
         if(m_hitDiscard)
-            s_text->render("Discard", GLcolor4f::white, textMV, proj);
+            text->render("Discard", GLcolor4f::white, textMV, proj);
         else
-            s_text->render("Discard", GLcolor4f::black, textMV, proj);
+            text->render("Discard", GLcolor4f::black, textMV, proj);
         
         // text name + value
         GLKMatrix4 nameMV = GLKMatrix4Translate(m_modelView, -s_radius*0.9, y + s_radius/rowCount*0.1, 0);
         nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
-        s_text->render(m_node->editPortInfo(m_editingPort).name, GLcolor4f::white, nameMV, proj);
+        text->render(m_node->editPortInfo(m_editingPort).name, GLcolor4f::white, nameMV, proj);
         
         GLKMatrix4 valueMV = GLKMatrix4Translate(m_modelView, s_radius*0.1, y + s_radius/rowCount*0.1, 0);
         valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
         std::stringstream ss;
         ss << m_currentValue;
         if(m_decimal && floorf(m_currentValue) == m_currentValue) ss << "."; // show decimal point if user has drawn it
-        s_text->render(ss.str(), GLcolor4f::white, valueMV, proj);
+        text->render(ss.str(), GLcolor4f::white, valueMV, proj);
         
         AGGenericShader::instance().useProgram();
         AGGenericShader::instance().setNormalMatrix(m_normalMatrix);
@@ -587,17 +586,9 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
 //------------------------------------------------------------------------------
 #pragma mark - AGUIButton
 
-TexFont *AGUIButton::s_text = NULL;
-
 AGUIButton::AGUIButton(const std::string &title, const GLvertex3f &pos, const GLvertex3f &size) :
 m_action(nil)
 {
-    if(s_text == NULL)
-    {
-        const char *fontPath = [[AGViewController styleFontPath] UTF8String];
-        s_text = new TexFont(fontPath, 64);
-    }
-    
     m_hit = m_hitOnTouchDown = false;
     
     m_title = title;
@@ -628,6 +619,8 @@ void AGUIButton::update(float t, float dt)
 
 void AGUIButton::render()
 {
+    TexFont *text = AGStyle::standardFont64();
+    
     glBindVertexArrayOES(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
@@ -635,7 +628,7 @@ void AGUIButton::render()
     
     GLKMatrix4 proj = AGNode::projectionMatrix();
     GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::globalModelViewMatrix(), m_pos.x, m_pos.y, m_pos.z);
-    GLKMatrix4 textMV = GLKMatrix4Translate(modelView, m_size.x/2-s_text->width(m_title)*textScale/2, m_size.y/2-s_text->height()*textScale/2*1.25, 0);
+    GLKMatrix4 textMV = GLKMatrix4Translate(modelView, m_size.x/2-text->width(m_title)*textScale/2, m_size.y/2-text->height()*textScale/2*1.25, 0);
 //    GLKMatrix4 textMV = modelView;
     textMV = GLKMatrix4Scale(textMV, textScale, textScale, textScale);
     
@@ -661,7 +654,7 @@ void AGUIButton::render()
         glLineWidth(4.0);
         glDrawArrays(GL_LINE_LOOP, 0, 4);
         
-        s_text->render(m_title, GLcolor4f::white, textMV, proj);
+        text->render(m_title, GLcolor4f::white, textMV, proj);
     }
     else
     {
@@ -671,7 +664,7 @@ void AGUIButton::render()
         glLineWidth(2.0);
         glDrawArrays(GL_LINE_LOOP, 4, 4);
 
-        s_text->render(m_title, GLcolor4f::black, textMV, proj);
+        text->render(m_title, GLcolor4f::black, textMV, proj);
     }
 }
 
@@ -713,6 +706,8 @@ void AGUIButton::setAction(void (^action)())
 
 void AGUITextButton::render()
 {
+    TexFont *text = AGStyle::standardFont64();
+
     glBindVertexArrayOES(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
@@ -720,7 +715,7 @@ void AGUITextButton::render()
     
     GLKMatrix4 proj = AGNode::projectionMatrix();
     GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::fixedModelViewMatrix(), m_pos.x, m_pos.y, m_pos.z);
-    GLKMatrix4 textMV = GLKMatrix4Translate(modelView, m_size.x/2-s_text->width(m_title)*textScale/2, m_size.y/2-s_text->height()*textScale/2*1.25, 0);
+    GLKMatrix4 textMV = GLKMatrix4Translate(modelView, m_size.x/2-text->width(m_title)*textScale/2, m_size.y/2-text->height()*textScale/2*1.25, 0);
     //    GLKMatrix4 textMV = modelView;
     textMV = GLKMatrix4Scale(textMV, textScale, textScale, textScale);
     
@@ -747,7 +742,7 @@ void AGUITextButton::render()
         glDrawArrays(GL_LINE_LOOP, 0, 4);
     }
     
-    s_text->render(m_title, GLcolor4f::white, textMV, proj);
+    text->render(m_title, GLcolor4f::white, textMV, proj);
 }
 
 

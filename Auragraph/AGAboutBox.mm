@@ -8,6 +8,7 @@
 
 #include "AGAboutBox.h"
 #include "AGViewController.h"
+#include "AGStyle.h"
 
 static const float AGABOUTBOX_RADIUS = 0.066;
 
@@ -20,19 +21,11 @@ static const float AGUIOpen_animTimeY = 0.15;
 //------------------------------------------------------------------------------
 #pragma mark - AGAboutBox
 
-TexFont *AGAboutBox::s_text = NULL;
-
 AGAboutBox::AGAboutBox(const GLvertex3f &pos) :
 m_pos(pos),
 m_done(false),
 m_closeAction(NULL)
 {
-    if(s_text == NULL)
-    {
-        const char *fontPath = [[AGViewController styleFontPath] UTF8String];
-        s_text = new TexFont(fontPath, 64);
-    }
-    
     m_geoSize = 4;
     
     m_radius = AGABOUTBOX_RADIUS;
@@ -89,6 +82,8 @@ void AGAboutBox::render()
 {
     AGInteractiveObject::render();
     
+    TexFont *text = AGStyle::standardFont64();
+    
     glDisable(GL_TEXTURE_2D);
     glBindVertexArrayOES(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -122,21 +117,21 @@ void AGAboutBox::render()
     glDrawArrays(GL_TRIANGLE_FAN, 0, m_geoSize);
     
     float titleScale = 2;
-    float titleHeight = m_radius-s_text->height()*titleScale*1.5;
+    float titleHeight = m_radius-text->height()*titleScale*1.5;
     string title = "AURAGLYPH";
-    GLKMatrix4 titleMV = GLKMatrix4Translate(m_modelView, -s_text->width(title)*titleScale/2, titleHeight, 0);
+    GLKMatrix4 titleMV = GLKMatrix4Translate(m_modelView, -text->width(title)*titleScale/2, titleHeight, 0);
     titleMV = GLKMatrix4Scale(titleMV, titleScale, titleScale, titleScale);
-    s_text->render(title, GLcolor4f::white, titleMV, m_projection);
+    text->render(title, GLcolor4f::white, titleMV, m_projection);
     
-    float lineHeight = s_text->height()*1.4;
+    float lineHeight = text->height()*1.4;
     GLKMatrix4 lineMV = GLKMatrix4Translate(m_modelView, 0, titleHeight - lineHeight, 0);
     
     for(int i = 0; i < m_lines.size(); i++)
     {
         if(m_lines[i].length())
         {
-            GLKMatrix4 textMV = GLKMatrix4Translate(lineMV, -s_text->width(m_lines[i])/2, 0, 0);
-            s_text->render(m_lines[i], GLcolor4f::white, textMV, m_projection);
+            GLKMatrix4 textMV = GLKMatrix4Translate(lineMV, -text->width(m_lines[i])/2, 0, 0);
+            text->render(m_lines[i], GLcolor4f::white, textMV, m_projection);
         }
         
         lineMV = GLKMatrix4Translate(lineMV, 0, -lineHeight, 0);
