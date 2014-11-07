@@ -32,3 +32,21 @@ TexFont *AGStyle::standardFont64()
     return texFont64;
 }
 
+const GLcolor4f &AGStyle::lightColor()
+{
+    static GLcolor4f s_lightColor = GLcolor4f::white;
+    return s_lightColor;
+}
+
+const GLcolor4f &AGStyle::darkColor()
+{
+    static GLcolor4f s_darkColor = GLcolor4f::black;
+    return s_darkColor;
+}
+
+const GLcolor4f &AGStyle::frameBackgroundColor()
+{
+    static GLcolor4f s_frameBackgroundColor = GLcolor4f(0, 0, 0, 0.75);
+    return s_frameBackgroundColor;
+}
+

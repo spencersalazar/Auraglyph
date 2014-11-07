@@ -20,6 +20,7 @@ namespace GeoGen
         }
     }
     
+    
     GLvertex3f *circle64()
     {
         static GLvertex3f *s_geo = NULL;
@@ -31,6 +32,15 @@ namespace GeoGen
         }
         
         return s_geo;
+    }
+    
+    
+    void makeRect(GLvertex3f *points, float width, float height)
+    {
+        points[0] = GLvertex3f(-width/2.0f,  height/2.0f, 0);
+        points[1] = GLvertex3f(-width/2.0f, -height/2.0f, 0);
+        points[2] = GLvertex3f( width/2.0f, -height/2.0f, 0);
+        points[3] = GLvertex3f( width/2.0f,  height/2.0f, 0);
     }
 }
 

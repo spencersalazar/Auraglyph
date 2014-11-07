@@ -7,6 +7,7 @@
 //
 
 #include "AGRenderObject.h"
+#include "AGViewController.h"
 
 
 //------------------------------------------------------------------------------
@@ -105,4 +106,10 @@ AGInteractiveObject *AGInteractiveObject::hitTest(const GLvertex3f &t)
     else
         return NULL;
 }
+
+void AGInteractiveObject::removeFromTopLevel()
+{
+    [[AGViewController instance] removeTopLevelObject:this];
+}
+
 

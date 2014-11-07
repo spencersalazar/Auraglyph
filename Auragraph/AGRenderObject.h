@@ -18,6 +18,10 @@ using namespace std;
 struct AGRenderInfo
 {
 public:
+    AGRenderInfo() :
+    shader(&AGGenericShader::instance()), numVertex(0), geoType(GL_LINES)
+    { }
+    
     virtual void set() = 0;
     
     AGGenericShader *shader;
@@ -27,8 +31,11 @@ public:
 
 struct AGRenderInfoV : public AGRenderInfo
 {
+    AGRenderInfoV() : color(GLcolor4f::black), geo(NULL) { }
+    
     virtual void set()
     {
+        assert(geo != NULL);
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
         glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
         glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo);
@@ -127,6 +134,8 @@ public:
     
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
     
+    void removeFromTopLevel();
+
 protected:
     virtual GLvrectf effectiveBounds() { return GLvrectf(); }
 };

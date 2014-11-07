@@ -24,7 +24,7 @@ public:
     virtual void setEditPortValue(int port, float value);
     virtual void getEditPortValue(int port, float &value) const;
     
-    virtual AGUINodeEditor *createCustomEditor() const;
+    virtual AGUINodeEditor *createCustomEditor();
     
     virtual AGControl *renderControl(sampletime t);
     

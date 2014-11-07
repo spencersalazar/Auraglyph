@@ -45,8 +45,6 @@ private:
     float m_radius;
     GLuint m_geoSize;
     
-    float m_t;
-    
     GLvertex3f m_pos;
     clampf m_verticalScrollPos;
     lincurvef m_xScale;
@@ -87,7 +85,6 @@ AGUIMetaNodeSelector(pos),
 m_pos(pos),
 m_node(new NodeType(pos)),
 m_hit(-1),
-m_t(0),
 m_done(false)
 {
     m_geoSize = 4;
@@ -122,15 +119,6 @@ void AGUINodeSelector<NodeType, ManagerType, InfoType>::update(float t, float dt
     
     m_modelView = GLKMatrix4Translate(m_modelView, m_pos.x, m_pos.y, m_pos.z);
     
-    float squeezeHeight = AGUIOpen_squeezeHeight;
-    float animTimeX = AGUIOpen_animTimeX;
-    float animTimeY = AGUIOpen_animTimeY;
-    
-//    if(m_t < animTimeX)
-//        m_modelView = GLKMatrix4Scale(m_modelView, squeezeHeight+(m_t/animTimeX)*(1-squeezeHeight), squeezeHeight, 1);
-//    else if(m_t < animTimeX+animTimeY)
-//        m_modelView = GLKMatrix4Scale(m_modelView, 1.0, squeezeHeight+((m_t-animTimeX)/animTimeY)*(1-squeezeHeight), 1);
-    
     if(m_yScale <= AGUIOpen_squeezeHeight) m_xScale.update(dt);
     if(m_xScale >= 0.99f) m_yScale.update(dt);
     
@@ -144,8 +132,6 @@ void AGUINodeSelector<NodeType, ManagerType, InfoType>::update(float t, float dt
     m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, m_modelView);
     
     m_node->update(t, dt);
-    
-    m_t += dt;
 }
 
 template<class NodeType, class ManagerType, class InfoType>

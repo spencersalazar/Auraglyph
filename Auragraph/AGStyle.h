@@ -19,6 +19,10 @@ class AGStyle
 public:
     static const string &standardFontPath();
     static TexFont *standardFont64();
+    
+    static const GLcolor4f &lightColor();
+    static const GLcolor4f &darkColor();
+    static const GLcolor4f &frameBackgroundColor();
 };
 
 #endif /* defined(__Auragraph__AGStyle__) */

@@ -17,7 +17,7 @@ namespace GeoGen
 {
     /* makeCircle()
      - Generate vertices for circle centered at (0,0,0) and with specified radius
-     - points must have sufficient
+     - points array must have sufficient space for numPoints GLvertex3f's
      - Draw as stroke with GL_LINE_LOOP (skip the first vertex)
      or fill with GL_TRIANGLE_FAN
      */
@@ -29,6 +29,12 @@ namespace GeoGen
      */
     GLvertex3f *circle64();
     
+    /* makeRect()
+     - Generate vertices for rect centered at (0,0,0) and with specified width/height
+     - points must have sufficient space for 4 GLvertex3f's
+     - Draw as stroke with GL_LINE_LOOP or fill with GL_TRIANGLE_FAN
+     */
+    void makeRect(GLvertex3f *points, float width, float height);
 }
 
 
