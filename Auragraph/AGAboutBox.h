@@ -31,8 +31,6 @@ public:
     virtual void renderOut();
     virtual bool finishedRenderingOut();
     
-    void setCloseAction(void (^closeAction)());
-    
 private:
 
     GLvertex3f m_geo[4];
@@ -48,9 +46,10 @@ private:
     
     bool m_done;
     
-    void (^m_closeAction)();
-    
     vector<string> m_lines;
+    
+protected:
+    virtual GLvrectf effectiveBounds();
 };
 
 #endif /* defined(__Auragraph__AGAboutBox__) */

@@ -23,8 +23,7 @@ static const float AGUIOpen_animTimeY = 0.15;
 
 AGAboutBox::AGAboutBox(const GLvertex3f &pos) :
 m_pos(pos),
-m_done(false),
-m_closeAction(NULL)
+m_done(false)
 {
     m_geoSize = 4;
     
@@ -51,13 +50,11 @@ m_closeAction(NULL)
     m_lines.push_back("");
     m_lines.push_back("Orbitron font");
     m_lines.push_back("Copyright Matt McInerney");
-    m_lines.push_back("SIL Open Font License, 1.1");
+    m_lines.push_back("SIL Open Font License 1.1");
 }
 
 AGAboutBox::~AGAboutBox()
 {
-    //[m_closeAction;
-    m_closeAction = NULL;
 }
 
 void AGAboutBox::update(float t, float dt)
@@ -141,7 +138,7 @@ void AGAboutBox::render()
 AGInteractiveObject *AGAboutBox::hitTest(const GLvertex3f &t)
 {
     AGInteractiveObject *hit = AGInteractiveObject::hitTest(t);
-    if(hit != this) m_closeAction();
+    if(hit != this) { removeFromTopLevel(); } //m_closeAction();
     return this;
 }
 
@@ -156,9 +153,9 @@ bool AGAboutBox::finishedRenderingOut()
     return m_xScale <= AGUIOpen_squeezeHeight;
 }
 
-void AGAboutBox::setCloseAction(void (^closeAction)())
+GLvrectf AGAboutBox::effectiveBounds()
 {
-    m_closeAction = [closeAction copy];
+    return GLvrectf(m_pos + GLvertex3f(-m_radius, -m_radius, 0), m_pos + GLvertex3f(m_radius, m_radius, 0));
 }
 
 

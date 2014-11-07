@@ -174,9 +174,6 @@ static AGViewController * g_instance = nil;
     __weak typeof(self) weakSelf = self;
     aboutButton->setAction(^{
         AGAboutBox *aboutBox = new AGAboutBox([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)]);
-        aboutBox->setCloseAction(^{
-            [weakSelf removeTopLevelObject:aboutBox];
-        });
         [weakSelf addTopLevelObject:aboutBox];
     });
     [self addTopLevelObject:aboutButton];
