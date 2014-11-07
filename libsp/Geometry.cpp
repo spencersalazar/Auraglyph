@@ -16,11 +16,6 @@ const GLcolor4f GLcolor4f::green(0, 1, 0, 1);
 const GLcolor4f GLcolor4f::blue(0, 0, 1, 1);
 const GLcolor4f GLcolor4f::black(0, 0, 0, 1);
 
-//GLcolor4f GLcolor4f::white() { return GLcolor4f(1, 1, 1, 1); }
-//GLcolor4f GLcolor4f::red() { return GLcolor4f(1, 0, 0, 1); }
-//GLcolor4f GLcolor4f::green() { return GLcolor4f(0, 1, 0, 1); }
-//GLcolor4f GLcolor4f::blue() { return GLcolor4f(0, 0, 1, 1); }
-//GLcolor4f GLcolor4f::black() { return GLcolor4f(0, 0, 0, 1); }
 
 GLvertex3f::GLvertex3f(const GLvertex2f &v)
 {
@@ -80,6 +75,11 @@ bool operator!=(const GLvertex3f &v, const GLvertex3f &v2)
 GLvertex3f lerp(float d, const GLvertex3f &a, const GLvertex3f &b)
 {
     return GLvertex3f(a.x*(1-d)+b.x*d, a.y*(1-d)+b.y*d, a.z*(1-d)+b.z*d);
+}
+
+GLcolor4f lerp(float d, const GLcolor4f &a, const GLcolor4f &b)
+{
+    return GLcolor4f(a.r*(1-d)+b.r*d, a.g*(1-d)+b.g*d, a.b*(1-d)+b.b*d, a.a*(1-d)+b.a*d);
 }
 
 GLvertex2f operator+(const GLvertex2f &v1, const GLvertex2f &v2)

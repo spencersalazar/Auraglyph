@@ -103,6 +103,8 @@ GLvertex2f operator*(const GLvertex2f &v, const GLfloat &s);
 GLvertex2f operator/(const GLvertex2f &v, const GLfloat &s);
 bool operator==(const GLvertex2f &v, const GLvertex2f &v2);
 bool operator!=(const GLvertex2f &v, const GLvertex2f &v2);
+GLcolor4f lerp(float d, const GLcolor4f &a, const GLcolor4f &b);
+
 
 struct GLvertex2f
 {
