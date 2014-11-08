@@ -77,6 +77,10 @@ public:
     virtual bool doneEditing() { return m_doneEditing; }
     bool shouldRenderDrawline() { return false; }
     
+protected:
+    
+    virtual GLvrectf effectiveBounds();
+    
 private:
     
     static bool s_init;
@@ -230,5 +234,29 @@ private:
     GLvertex2f m_uv[4];
 };
 
+
+
+/*******************************************************************************
+ 
+ - AGUITrace -
+ 
+ ******************************************************************************/
+class AGUITrace : public AGInteractiveObject
+{
+public:
+    AGUITrace();
+    
+    virtual void update(float t, float dt);
+    virtual void render();
+    
+    virtual void touchDown(const GLvertex3f &t);
+    virtual void touchMove(const GLvertex3f &t);
+    virtual void touchUp(const GLvertex3f &t);
+    
+//    AGHandwritingRecognizerFigure recognizeNumeral();
+    
+private:
+    
+};
 
 #endif /* defined(__Auragraph__AGUserInterface__) */

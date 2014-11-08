@@ -66,9 +66,6 @@
 @end
 
 @interface AGEditTouchHandler : AGTouchHandler
-{
-    AGUINodeEditor * _nodeEditor;
-}
 
 - (id)initWithViewController:(AGViewController *)viewController node:(AGNode *)node;
 

@@ -19,7 +19,7 @@ GLKMatrix4 AGRenderObject::s_projectionMatrix = GLKMatrix4Identity;
 GLKMatrix4 AGRenderObject::s_modelViewMatrix = GLKMatrix4Identity;
 GLKMatrix4 AGRenderObject::s_fixedModelViewMatrix = GLKMatrix4Identity;
 
-AGRenderObject::AGRenderObject()
+AGRenderObject::AGRenderObject() : m_parent(NULL)
 {
     m_renderState.projection = GLKMatrix4Identity;
     m_renderState.modelview = GLKMatrix4Identity;
@@ -32,6 +32,18 @@ AGRenderObject::~AGRenderObject()
         delete *i;
 }
 
+void AGRenderObject::addChild(AGRenderObject *child)
+{
+    m_children.push_back(child);
+    child->m_parent = this;
+}
+
+void AGRenderObject::removeChild(AGRenderObject *child)
+{
+    child->m_parent = NULL;
+    m_children.remove(child);
+}
+
 void AGRenderObject::update(float t, float dt)
 {
     m_renderState.projection = projectionMatrix();
@@ -41,36 +53,44 @@ void AGRenderObject::update(float t, float dt)
         m_renderState.modelview = globalModelViewMatrix();
     m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
     
+    updateChildren(t, dt);
+}
+
+void AGRenderObject::updateChildren(float t, float dt)
+{
     for(list<AGRenderObject *>::iterator i = m_children.begin(); i != m_children.end(); i++)
         (*i)->update(t, dt);
 }
 
-void AGRenderObject::addChild(AGRenderObject *child) { m_children.push_back(child); }
-
-void AGRenderObject::removeChild(AGRenderObject *child) { m_children.remove(child); }
-
 void AGRenderObject::render()
 {
     renderPrimitives();
+    renderChildren();
+}
+
+void AGRenderObject::renderPrimitive(AGRenderInfo *info)
+{
+    glBindVertexArrayOES(0);
     
-    for(list<AGRenderObject *>::iterator i = m_children.begin(); i != m_children.end(); i++)
-        (*i)->render();
+    info->shader->useProgram();
+    info->shader->setMVPMatrix(GLKMatrix4Multiply(m_renderState.projection, m_renderState.modelview));
+    info->shader->setNormalMatrix(m_renderState.normal);
+    
+    info->set();
+    
+    glDrawArrays(info->geoType, 0, info->numVertex);
 }
 
 void AGRenderObject::renderPrimitives()
 {
     for(list<AGRenderInfo *>::iterator i = m_renderList.begin(); i != m_renderList.end(); i++)
-    {
-        glBindVertexArrayOES(0);
-        
-        (*i)->shader->useProgram();
-        (*i)->shader->setMVPMatrix(GLKMatrix4Multiply(m_renderState.projection, m_renderState.modelview));
-        (*i)->shader->setNormalMatrix(m_renderState.normal);
-        
-        (*i)->set();
-        
-        glDrawArrays((*i)->geoType, 0, (*i)->numVertex);
-    }
+        renderPrimitive(*i);
+}
+
+void AGRenderObject::renderChildren()
+{
+    for(list<AGRenderObject *>::iterator i = m_children.begin(); i != m_children.end(); i++)
+        (*i)->render();
 }
 
 void AGRenderObject::renderOut()
@@ -99,12 +119,26 @@ void AGInteractiveObject::touchUp(const AGTouchInfo &t) { }
 
 AGInteractiveObject *AGInteractiveObject::hitTest(const GLvertex3f &t)
 {
+    // first check children
+    AGInteractiveObject *hit;
+    for(list<AGRenderObject *>::iterator i = m_children.begin(); i != m_children.end(); i++)
+    {
+        AGInteractiveObject *object = dynamic_cast<AGInteractiveObject *>(*i);
+        if(object)
+        {
+            hit = object->hitTest(t);
+            if(hit != NULL)
+                return hit;
+        }
+    }
+    
+    // check self
     GLvrectf bounds = effectiveBounds();
     if(t.x >= bounds.bl.x && t.x <= bounds.ur.x &&
        t.y >= bounds.bl.y && t.y <= bounds.ur.y)
         return this;
-    else
-        return NULL;
+    
+    return NULL;
 }
 
 void AGInteractiveObject::removeFromTopLevel()

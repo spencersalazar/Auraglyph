@@ -93,13 +93,19 @@ public:
     // override to force fixed-position rendering (e.g. ignores camera movement)
     virtual bool renderFixed() { return false; }
     
+    AGRenderObject *parent() const { return m_parent; }
+    
 protected:
     static GLKMatrix4 s_projectionMatrix;
     static GLKMatrix4 s_modelViewMatrix;
     static GLKMatrix4 s_fixedModelViewMatrix;
     
+    void updateChildren(float t, float dt);
+    void renderPrimitive(AGRenderInfo *info);
     void renderPrimitives();
+    void renderChildren();
     
+    AGRenderObject *m_parent;
     list<AGRenderObject *> m_children;
 };
 

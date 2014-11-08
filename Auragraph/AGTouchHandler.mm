@@ -680,6 +680,14 @@ private:
 #pragma mark -
 #pragma mark AGEditTouchHandler
 
+@interface AGEditTouchHandler ()
+{
+    AGUINodeEditor * _nodeEditor;
+    AGInteractiveObject *_touchCapture;
+    BOOL _done;
+}
+@end
+
 @implementation AGEditTouchHandler
 
 
@@ -687,6 +695,8 @@ private:
 {
     if(self = [super initWithViewController:viewController])
     {
+        _done = NO;
+        _touchCapture = NULL;
         _nodeEditor = node->createCustomEditor();
         if(_nodeEditor == NULL)
             _nodeEditor = new AGUIStandardNodeEditor(node);
@@ -697,48 +707,80 @@ private:
 
 - (void)dealloc
 {
-    SAFE_DELETE(_nodeEditor);
+//    SAFE_DELETE(_nodeEditor);
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    if(_done) return;
+    
+    [_viewController clearLinePoints];
+    
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    _nodeEditor->touchDown(AGTouchInfo(pos, p, (int) [touches anyObject]));
+    _touchCapture = _nodeEditor->hitTest(pos);
     
-    [_viewController clearLinePoints];
+    if(_touchCapture)
+    {
+        _touchCapture->touchDown(AGTouchInfo(pos, p, (int) [touches anyObject]));
+    }
+    else
+    {
+        // add object
+        [_viewController addTopLevelObject:_nodeEditor];
+        // immediately remove (cause to fade out/collapse and then deallocate)
+        [_viewController removeTopLevelObject:_nodeEditor];
+        _nodeEditor = NULL;
+        
+        _done = YES;
+        _nextHandler = nil;
+    }
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    if(_done) return;
+    
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    _nodeEditor->touchMove(AGTouchInfo(pos, p, (int) [touches anyObject]));
+    _touchCapture->touchMove(AGTouchInfo(pos, p, (int) [touches anyObject]));
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    if(_done) return;
+    
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    _nodeEditor->touchUp(AGTouchInfo(pos, p, (int) [touches anyObject]));
+    _touchCapture->touchUp(AGTouchInfo(pos, p, (int) [touches anyObject]));
     
-    if(_nodeEditor->doneEditing())
+    _done = _nodeEditor->doneEditing();
+    
+    if(_done)
+    {
+        // add object
+        [_viewController addTopLevelObject:_nodeEditor];
+        // immediately remove (cause to fade out/collapse and then deallocate)
+        [_viewController removeTopLevelObject:_nodeEditor];
+        _nodeEditor = NULL;
+
         _nextHandler = nil;
+    }
     else
         _nextHandler = self;
 }
 
 - (void)update:(float)t dt:(float)dt
 {
-    _nodeEditor->update(t, dt);
+    if(_nodeEditor) _nodeEditor->update(t, dt);
 }
 
 - (void)render
 {
-    _nodeEditor->render();
+    if(_nodeEditor) _nodeEditor->render();
 }
 
 @end

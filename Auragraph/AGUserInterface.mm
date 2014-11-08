@@ -580,6 +580,21 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
     }
 }
 
+GLvrectf AGUIStandardNodeEditor::effectiveBounds()
+{
+    if(m_editingPort >= 0)
+    {
+        // TODO HACK: overestimate bounds
+        // because figuring out the item editor box bounds is too hard right now
+        GLvertex2f size = GLvertex2f(s_radius*2, s_radius*2);
+        return GLvrectf(m_node->position()-size, m_node->position()+size);
+    }
+    else
+    {
+        GLvertex2f size = GLvertex2f(s_radius, s_radius);
+        return GLvrectf(m_node->position()-size, m_node->position()+size);
+    }
+}
 
 //------------------------------------------------------------------------------
 // ### AGUIButton ###

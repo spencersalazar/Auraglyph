@@ -8,8 +8,12 @@
 
 #include "AGArrayNode.h"
 #include "AGUserInterface.h"
-#include "GeoGenerator.h"
 #include "AGStyle.h"
+#include "AGHandwritingRecognizer.h"
+
+#include "GeoGenerator.h"
+
+#include <sstream>
 
 
 //------------------------------------------------------------------------------
@@ -24,13 +28,191 @@ static const float AGUIOpen_animTimeY = 0.15;
 class AGUIArrayEditor : public AGUINodeEditor
 {
 public:
+    
+    class Element : public AGInteractiveObject
+    {
+    public:
+        Element(AGUIArrayEditor * arrayEditor, const GLvertex3f &pos, const GLvertex2f &size) :
+        m_arrayEditor(arrayEditor), m_pos(pos), m_size(size), m_hasValue(false),
+        m_lastTraceWasRecognized(false), m_decimal(false), m_decimalFactor(1)
+        {
+            float inset = 0.8;
+            float yHeight = 0.2;
+            m_geo[0] = GLvertex3f(-size.x/2.0f*inset, -size.y/2.0f*inset*(1-yHeight), 0);
+            m_geo[1] = GLvertex3f(-size.x/2.0f*inset, -size.y/2.0f*inset, 0);
+            m_geo[2] = GLvertex3f( size.x/2.0f*inset, -size.y/2.0f*inset, 0);
+            m_geo[3] = GLvertex3f( size.x/2.0f*inset, -size.y/2.0f*inset*(1-yHeight), 0);
+            
+            m_renderInfo.geo = m_geo;
+            m_renderInfo.geoType = GL_LINE_STRIP;
+            m_renderInfo.numVertex = 4;
+            m_renderInfo.color = lerp(0.5, GLcolor4f(0, 0, 0, 1), AGStyle::lightColor());
+            m_renderList.push_back(&m_renderInfo);
+        }
+        
+        virtual void update(float t, float dt)
+        {
+            AGInteractiveObject::update(t, dt);
+            
+            m_renderState.projection = projectionMatrix();
+            m_renderState.modelview = GLKMatrix4Translate(parent()->m_renderState.modelview, m_pos.x, m_pos.y, m_pos.z);
+            m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
+            
+            if(m_hasValue)
+                m_renderInfo.color = AGStyle::lightColor();
+            else
+                m_renderInfo.color = lerp(0.5, GLcolor4f(0, 0, 0, 1), AGStyle::lightColor());
+        }
+        
+        virtual void render()
+        {
+            AGInteractiveObject::render();
+            
+            if(m_hasValue)
+            {
+                TexFont *text = AGStyle::standardFont64();
+                
+                stringstream ss;
+                ss << m_currentValue;
+                if(m_decimal && floorf(m_currentValue) == m_currentValue) ss << "."; // show decimal point if user has drawn it
+                
+                GLKMatrix4 valueMV = GLKMatrix4Translate(m_renderState.modelview, -text->width(ss.str())/2.0f, -m_size.y/4.0f, 0);
+
+                text->render(ss.str(), AGStyle::lightColor(), valueMV, m_renderState.projection);
+            }
+            
+            if(m_drawline.size())
+            {
+                AGGenericShader::instance().useProgram();
+                AGGenericShader::instance().setNormalMatrix(m_renderState.normal);
+                AGGenericShader::instance().setModelViewMatrix(AGNode::globalModelViewMatrix());
+                AGGenericShader::instance().setProjectionMatrix(AGNode::projectionMatrix());
+                
+                // draw traces
+                for(list<std::vector<GLvertex3f> >::iterator i = m_drawline.begin(); i != m_drawline.end(); i++)
+                {
+                    vector<GLvertex3f> geo = *i;
+                    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo.data());
+                    glEnableVertexAttribArray(GLKVertexAttribPosition);
+                    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+                    glDisableVertexAttribArray(GLKVertexAttribColor);
+                    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+                    glDisableVertexAttribArray(GLKVertexAttribNormal);
+                    
+                    glDrawArrays(GL_LINE_STRIP, 0, geo.size());
+                }
+            }
+        }
+        
+        virtual void touchDown(const AGTouchInfo &t)
+        {
+            if(!m_lastTraceWasRecognized && m_drawline.size())
+                m_drawline.remove(m_drawline.back());
+            
+            m_drawline.push_back(std::vector<GLvertex3f>());
+            m_currentTrace = LTKTrace();
+            
+            m_drawline.back().push_back(t.position);
+            
+            floatVector point;
+            point.push_back(t.screenPosition.x);
+            point.push_back(t.screenPosition.y);
+            m_currentTrace.addPoint(point);
+        }
+        
+        virtual void touchMove(const AGTouchInfo &t)
+        {
+            m_drawline.back().push_back(t.position);
+            
+            floatVector point;
+            point.push_back(t.screenPosition.x);
+            point.push_back(t.screenPosition.y);
+            m_currentTrace.addPoint(point);
+        }
+        
+        virtual void touchUp(const AGTouchInfo &t)
+        {
+            if(m_currentTrace.getNumberOfPoints() > 0)
+            {
+                // attempt recognition
+                AGHandwritingRecognizerFigure figure = [[AGHandwritingRecognizer instance] recognizeNumeral:m_currentTrace];
+                
+                switch(figure)
+                {
+                    case AG_FIGURE_0:
+                    case AG_FIGURE_1:
+                    case AG_FIGURE_2:
+                    case AG_FIGURE_3:
+                    case AG_FIGURE_4:
+                    case AG_FIGURE_5:
+                    case AG_FIGURE_6:
+                    case AG_FIGURE_7:
+                    case AG_FIGURE_8:
+                    case AG_FIGURE_9:
+                        if(m_decimal)
+                        {
+                            m_currentValue = m_currentValue + (figure-'0')*m_decimalFactor;
+                            m_decimalFactor *= 0.1;
+                        }
+                        else
+                            m_currentValue = m_currentValue*10 + (figure-'0');
+                        m_lastTraceWasRecognized = true;
+                        break;
+                        
+                    case AG_FIGURE_PERIOD:
+                        if(m_decimal)
+                            m_lastTraceWasRecognized = false;
+                        else
+                        {
+                            m_decimalFactor = 0.1;
+                            m_lastTraceWasRecognized = true;
+                            m_decimal = true;
+                        }
+                        break;
+                        
+                    default:
+                        m_lastTraceWasRecognized = false;
+                }
+            }
+            
+            m_hasValue = m_lastTraceWasRecognized;
+        }
+        
+    protected:
+        GLvertex3f m_geo[4];
+        AGRenderInfoV m_renderInfo;
+        
+        GLvertex2f m_size;
+        GLvertex3f m_pos;
+        
+        AGUIArrayEditor * const m_arrayEditor;
+        
+        virtual GLvrectf effectiveBounds()
+        {
+            return GLvrectf(m_arrayEditor->position()+m_pos-m_size, m_arrayEditor->position()+m_pos+m_size);
+        }
+        
+        bool m_hasValue;
+        
+        std::list< std::vector<GLvertex3f> > m_drawline;
+        LTKTrace m_currentTrace;
+        
+        float m_currentValue;
+        bool m_lastTraceWasRecognized;
+        bool m_decimal;
+        float m_decimalFactor;
+    };
+    
     static void initializeNodeEditor();
     
     AGUIArrayEditor(AGControlArrayNode *node) :
     m_node(node),
     m_doneEditing(false)
     {
-        GeoGen::makeRect(m_boxGeo, 0.08, 0.03);
+        m_width = 0.08f;
+        m_height = 0.02f;
+        
+        GeoGen::makeRect(m_boxGeo, m_width, m_height);
         
         m_boxOuterInfo.geo = m_boxGeo;
         m_boxOuterInfo.geoType = GL_LINE_LOOP;
@@ -46,11 +228,14 @@ public:
         
         m_xScale = lincurvef(AGUIOpen_animTimeX, AGUIOpen_squeezeHeight, 1);
         m_yScale = lincurvef(AGUIOpen_animTimeY, AGUIOpen_squeezeHeight, 1);
+        
+        Element *e = new Element(this, GLvertex3f(-m_width/3.0f, 0.0f, 0.0f), GLvertex2f(m_width/3.0f, m_height));
+        addChild(e);
     }
     
     virtual void update(float t, float dt)
     {
-        AGInteractiveObject::update(t, dt);
+//        AGInteractiveObject::update(t, dt);
         
         m_modelView = AGNode::globalModelViewMatrix();
         m_renderState.projection = AGNode::projectionMatrix();
@@ -67,26 +252,28 @@ public:
         
         m_renderState.modelview = m_modelView;
         m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_modelView), NULL);
+        
+        updateChildren(t, dt);
     }
     
     virtual void render()
     {
-        AGInteractiveObject::render();
+        renderPrimitive(&m_boxInnerInfo);
+        renderChildren();
+        renderPrimitive(&m_boxOuterInfo);
     }
     
 //    virtual AGInteractiveObject *hitTest(const GLvertex3f &t)
 //    {
 //        AGInteractiveObject *hit = AGInteractiveObject::hitTest(t);
-//        if(hit != this)
-//            ;
+////        if(hit != this || (hit && hit->parent() != this))
+////            m_doneEditing = true;
 //        return this;
 //    }
     
     virtual void touchDown(const AGTouchInfo &t)
     {
         AGInteractiveObject::touchDown(t);
-        
-        if(hitTest(t.position) != this) m_doneEditing = true;
     }
     
     virtual void touchMove(const AGTouchInfo &t)
@@ -97,6 +284,11 @@ public:
     virtual void touchUp(const AGTouchInfo &t)
     {
         AGInteractiveObject::touchUp(t);
+    }
+    
+    GLvertex3f position()
+    {
+        return m_node->position();
     }
     
     void renderOut()
@@ -112,12 +304,19 @@ public:
     
     virtual bool doneEditing() { return m_doneEditing; }
     
+protected:
+    virtual GLvrectf effectiveBounds()
+    {
+        return GLvrectf(m_node->position()-GLvertex3f(m_width/2, m_height/2, 0), m_node->position()+GLvertex3f(m_width/2, m_height/2, 0));
+    }
+    
 private:
     
     AGControlArrayNode * const m_node;
     
     string m_title;
     
+    float m_width, m_height;
     AGRenderInfoV m_boxOuterInfo, m_boxInnerInfo;
     GLvertex3f m_boxGeo[4];
     
@@ -126,14 +325,6 @@ private:
     lincurvef m_yScale;
 
     bool m_doneEditing;
-    
-    std::list< std::vector<GLvertex3f> > m_drawline;
-    LTKTrace m_currentTrace;
-    
-    float m_currentValue;
-    bool m_lastTraceWasRecognized;
-    bool m_decimal;
-    float m_decimalFactor;
     
 //    int hitTest(const GLvertex3f &t, bool *inBbox);
 };
