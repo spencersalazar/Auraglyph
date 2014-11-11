@@ -93,6 +93,8 @@ public:
     // override to force fixed-position rendering (e.g. ignores camera movement)
     virtual bool renderFixed() { return false; }
     
+    virtual GLvertex3f position() { return GLvertex3f(); }
+    virtual GLvertex2f size() { return GLvertex2f(); }
     AGRenderObject *parent() const { return m_parent; }
     
 protected:
@@ -138,12 +140,11 @@ public:
     virtual void touchMove(const AGTouchInfo &t);
     virtual void touchUp(const AGTouchInfo &t);
     
+    virtual GLvrectf effectiveBounds() { return GLvrectf(position()-size()*0.5, position()+size()*0.5); }
+    
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
     
     void removeFromTopLevel();
-
-protected:
-    virtual GLvrectf effectiveBounds() { return GLvrectf(); }
 };
 
 

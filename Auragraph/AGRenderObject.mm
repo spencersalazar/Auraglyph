@@ -113,9 +113,9 @@ void AGInteractiveObject::touchDown(const GLvertex3f &t) { }
 void AGInteractiveObject::touchMove(const GLvertex3f &t) { }
 void AGInteractiveObject::touchUp(const GLvertex3f &t) { }
 
-void AGInteractiveObject::touchDown(const AGTouchInfo &t) { }
-void AGInteractiveObject::touchMove(const AGTouchInfo &t) { }
-void AGInteractiveObject::touchUp(const AGTouchInfo &t) { }
+void AGInteractiveObject::touchDown(const AGTouchInfo &t) { touchDown(t.position); }
+void AGInteractiveObject::touchMove(const AGTouchInfo &t) { touchMove(t.position); }
+void AGInteractiveObject::touchUp(const AGTouchInfo &t) { touchUp(t.position); }
 
 AGInteractiveObject *AGInteractiveObject::hitTest(const GLvertex3f &t)
 {

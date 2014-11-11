@@ -110,11 +110,9 @@ public:
         AGInteractiveObject::render();
     }
     
-protected:
-    GLvrectf effectiveBounds()
-    {
-        return GLvrectf(m_pos-m_size*0.5, m_pos+m_size*0.5);
-    }
+    virtual GLvertex3f position() { return parent()->position()+m_pos; }
+    virtual GLvertex2f size() { return m_size.xy(); }
+    virtual GLvrectf effectiveBounds() { return GLvrectf(position()-size()*0.5, position()+size()*0.5); }
     
 private:
     GLvertex3f m_boxGeo[4];
@@ -314,6 +312,9 @@ public:
         }
     }
     
+    virtual GLvertex3f position() { return m_pos; }
+    virtual GLvertex2f size() { return m_size; }
+
 protected:
     GLvertex3f m_geo[4];
     AGRenderInfoV m_boxOuterInfo;
@@ -322,11 +323,6 @@ protected:
     GLvertex2f m_size;
     GLvertex3f m_pos;
     AGSqueezeAnimation m_squeeze;
-    
-    virtual GLvrectf effectiveBounds()
-    {
-        return GLvrectf(m_pos-m_size, m_pos+m_size);
-    }
     
     std::list< std::vector<GLvertex3f> > m_drawline;
     LTKTrace m_currentTrace;
@@ -542,11 +538,6 @@ public:
         AGInteractiveObject::touchUp(t);
     }
     
-    GLvertex3f position()
-    {
-        return m_node->position();
-    }
-    
     void renderOut()
     {
         m_squeeze.close();
@@ -559,11 +550,8 @@ public:
     
     virtual bool doneEditing() { return m_doneEditing; }
     
-protected:
-    virtual GLvrectf effectiveBounds()
-    {
-        return GLvrectf(m_node->position()-GLvertex3f(m_width/2, m_height/2, 0), m_node->position()+GLvertex3f(m_width/2, m_height/2, 0));
-    }
+    virtual GLvertex3f position() { return m_node->position(); }
+    virtual GLvertex2f size() { return GLvertex2f(m_width, m_height); }
     
 private:
     
