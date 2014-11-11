@@ -9,13 +9,14 @@
 #include "AGNodeSelector.h"
 #include "AGAudioNode.h"
 #include "AGControlNode.h"
+#include "AGStyle.h"
 
 
 static const float AGNODESELECTOR_RADIUS = 0.02;
 
-static const float AGUIOpen_squeezeHeight = 0.00125;
-static const float AGUIOpen_animTimeX = 0.4;
-static const float AGUIOpen_animTimeY = 0.15;
+//static const float AGUIOpen_squeezeHeight = 0.00125;
+//static const float AGUIOpen_animTimeX = 0.4;
+//static const float AGUIOpen_animTimeY = 0.15;
 
 
 template<class NodeType, class ManagerType, class InfoType>
@@ -100,8 +101,8 @@ m_done(false)
     int nTypes = ManagerType::instance().nodeTypes().size();
     m_verticalScrollPos.clamp(0, ceilf(nTypes/2.0f-2)*m_radius);
     
-    m_xScale = lincurvef(AGUIOpen_animTimeX, AGUIOpen_squeezeHeight, 1);
-    m_yScale = lincurvef(AGUIOpen_animTimeY, AGUIOpen_squeezeHeight, 1);
+    m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
+    m_yScale = lincurvef(AGStyle::open_animTimeY, AGStyle::open_squeezeHeight, 1);
     //    NSLog(@"scrollMax: %f", m_verticalScrollPos.max);
 }
 
@@ -119,12 +120,12 @@ void AGUINodeSelector<NodeType, ManagerType, InfoType>::update(float t, float dt
     
     m_modelView = GLKMatrix4Translate(m_modelView, m_pos.x, m_pos.y, m_pos.z);
     
-    if(m_yScale <= AGUIOpen_squeezeHeight) m_xScale.update(dt);
+    if(m_yScale <= AGStyle::open_squeezeHeight) m_xScale.update(dt);
     if(m_xScale >= 0.99f) m_yScale.update(dt);
     
     m_modelView = GLKMatrix4Scale(m_modelView,
-                                  m_yScale <= AGUIOpen_squeezeHeight ? (float)m_xScale : 1.0f,
-                                  m_xScale >= 0.99f ? (float)m_yScale : AGUIOpen_squeezeHeight,
+                                  m_yScale <= AGStyle::open_squeezeHeight ? (float)m_xScale : 1.0f,
+                                  m_xScale >= 0.99f ? (float)m_yScale : AGStyle::open_squeezeHeight,
                                   1);
     
     m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_modelView), NULL);
@@ -305,14 +306,14 @@ template<class NodeType, class ManagerType, class InfoType>
 void AGUINodeSelector<NodeType, ManagerType, InfoType>::renderOut()
 {
     m_node->renderOut();
-    m_xScale = lincurvef(AGUIOpen_animTimeX/2, 1, AGUIOpen_squeezeHeight);
-    m_yScale = lincurvef(AGUIOpen_animTimeY/2, 1, AGUIOpen_squeezeHeight);
+    m_xScale = lincurvef(AGStyle::open_animTimeX/2, 1, AGStyle::open_squeezeHeight);
+    m_yScale = lincurvef(AGStyle::open_animTimeY/2, 1, AGStyle::open_squeezeHeight);
 }
 
 template<class NodeType, class ManagerType, class InfoType>
 bool AGUINodeSelector<NodeType, ManagerType, InfoType>::finishedRenderingOut()
 {
-    return m_xScale <= AGUIOpen_squeezeHeight;
+    return m_xScale <= AGStyle::open_squeezeHeight;
 //    return true;
 }
 

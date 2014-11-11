@@ -15,15 +15,15 @@
 
 #include <sstream>
 
-
 //------------------------------------------------------------------------------
 // ### AGUIArrayEditor ###
 //------------------------------------------------------------------------------
 #pragma mark - AGUIArrayEditor
 
-static const float AGUIOpen_squeezeHeight = 0.00125;
-static const float AGUIOpen_animTimeX = 0.4;
-static const float AGUIOpen_animTimeY = 0.15;
+//------------------------------------------------------------------------------
+// ### AGUIArrayEditor ###
+//------------------------------------------------------------------------------
+#pragma mark - AGUIArrayEditor
 
 class AGUIArrayEditor : public AGUINodeEditor
 {
@@ -89,12 +89,16 @@ public:
                 AGGenericShader::instance().setProjectionMatrix(AGNode::projectionMatrix());
                 
                 // draw traces
+                list<std::vector<GLvertex3f> >::iterator last = m_drawline.size() ? --m_drawline.end() : m_drawline.begin();
                 for(list<std::vector<GLvertex3f> >::iterator i = m_drawline.begin(); i != m_drawline.end(); i++)
                 {
                     vector<GLvertex3f> geo = *i;
                     glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo.data());
                     glEnableVertexAttribArray(GLKVertexAttribPosition);
-                    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+                    if(i == last && !m_lastTraceWasRecognized)
+                        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &AGStyle::errorColor());
+                    else
+                        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &AGStyle::lightColor());
                     glDisableVertexAttribArray(GLKVertexAttribColor);
                     glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
                     glDisableVertexAttribArray(GLKVertexAttribNormal);
@@ -108,6 +112,7 @@ public:
         {
             if(!m_lastTraceWasRecognized && m_drawline.size())
                 m_drawline.remove(m_drawline.back());
+            m_lastTraceWasRecognized = true;
             
             m_drawline.push_back(std::vector<GLvertex3f>());
             m_currentTrace = LTKTrace();
@@ -226,8 +231,8 @@ public:
         m_boxInnerInfo.color = AGStyle::frameBackgroundColor();
         m_renderList.push_back(&m_boxInnerInfo);
         
-        m_xScale = lincurvef(AGUIOpen_animTimeX, AGUIOpen_squeezeHeight, 1);
-        m_yScale = lincurvef(AGUIOpen_animTimeY, AGUIOpen_squeezeHeight, 1);
+        m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
+        m_yScale = lincurvef(AGStyle::open_animTimeY, AGStyle::open_squeezeHeight, 1);
         
         Element *e = new Element(this, GLvertex3f(-m_width/3.0f, 0.0f, 0.0f), GLvertex2f(m_width/3.0f, m_height));
         addChild(e);
@@ -242,12 +247,12 @@ public:
         
         m_modelView = GLKMatrix4Translate(m_modelView, m_node->position().x, m_node->position().y, m_node->position().z);
         
-        if(m_yScale <= AGUIOpen_squeezeHeight) m_xScale.update(dt);
+        if(m_yScale <= AGStyle::open_squeezeHeight) m_xScale.update(dt);
         if(m_xScale >= 0.99f) m_yScale.update(dt);
         
         m_modelView = GLKMatrix4Scale(m_modelView,
-                                      m_yScale <= AGUIOpen_squeezeHeight ? (float)m_xScale : 1.0f,
-                                      m_xScale >= 0.99f ? (float)m_yScale : AGUIOpen_squeezeHeight,
+                                      m_yScale <= AGStyle::open_squeezeHeight ? (float)m_xScale : 1.0f,
+                                      m_xScale >= 0.99f ? (float)m_yScale : AGStyle::open_squeezeHeight,
                                       1);
         
         m_renderState.modelview = m_modelView;
@@ -293,13 +298,13 @@ public:
     
     void renderOut()
     {
-        m_xScale = lincurvef(AGUIOpen_animTimeX/2, 1, AGUIOpen_squeezeHeight);
-        m_yScale = lincurvef(AGUIOpen_animTimeY/2, 1, AGUIOpen_squeezeHeight);
+        m_xScale = lincurvef(AGStyle::open_animTimeX/2, 1, AGStyle::open_squeezeHeight);
+        m_yScale = lincurvef(AGStyle::open_animTimeY/2, 1, AGStyle::open_squeezeHeight);
     }
     
     bool finishedRenderingOut()
     {
-        return m_xScale <= AGUIOpen_squeezeHeight;
+        return m_xScale <= AGStyle::open_squeezeHeight;
     }
     
     virtual bool doneEditing() { return m_doneEditing; }

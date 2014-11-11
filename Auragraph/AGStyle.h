@@ -23,6 +23,11 @@ public:
     static const GLcolor4f &lightColor();
     static const GLcolor4f &darkColor();
     static const GLcolor4f &frameBackgroundColor();
+    static const GLcolor4f &errorColor();
+    
+    static const float open_squeezeHeight;
+    static const float open_animTimeX;
+    static const float open_animTimeY;
 };
 
 #endif /* defined(__Auragraph__AGStyle__) */

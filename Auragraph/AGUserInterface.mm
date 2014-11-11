@@ -24,9 +24,9 @@
 
 static const float AGNODESELECTOR_RADIUS = 0.02;
 
-static const float AGUIOpen_squeezeHeight = 0.00125;
-static const float AGUIOpen_animTimeX = 0.4;
-static const float AGUIOpen_animTimeY = 0.15;
+//static const float AGUIOpen_squeezeHeight = 0.00125;
+//static const float AGUIOpen_animTimeX = 0.4;
+//static const float AGUIOpen_animTimeY = 0.15;
 
 
 //------------------------------------------------------------------------------
@@ -121,9 +121,9 @@ void AGUIStandardNodeEditor::update(float t, float dt)
     
     m_modelView = GLKMatrix4Translate(m_modelView, m_node->position().x, m_node->position().y, m_node->position().z);
     
-    float squeezeHeight = AGUIOpen_squeezeHeight;
-    float animTimeX = AGUIOpen_animTimeX;
-    float animTimeY = AGUIOpen_animTimeY;
+    float squeezeHeight = AGStyle::open_squeezeHeight;
+    float animTimeX = AGStyle::open_animTimeX;
+    float animTimeY = AGStyle::open_animTimeY;
     
     if(m_t < animTimeX)
         m_modelView = GLKMatrix4Scale(m_modelView, squeezeHeight+(m_t/animTimeX)*(1-squeezeHeight), squeezeHeight, 1);

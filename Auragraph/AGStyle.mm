@@ -8,6 +8,9 @@
 
 #include "AGStyle.h"
 
+const float AGStyle::open_squeezeHeight = 0.00125;
+const float AGStyle::open_animTimeX = 0.4;
+const float AGStyle::open_animTimeY = 0.15;
 
 const string &AGStyle::standardFontPath()
 {
@@ -48,5 +51,11 @@ const GLcolor4f &AGStyle::frameBackgroundColor()
 {
     static GLcolor4f s_frameBackgroundColor = GLcolor4f(0, 0, 0, 0.75);
     return s_frameBackgroundColor;
+}
+
+const GLcolor4f &AGStyle::errorColor()
+{
+    static GLcolor4f s_errorColor = GLcolor4f(1, 0, 0, 1);
+    return s_errorColor;
 }
 

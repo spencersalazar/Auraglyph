@@ -12,9 +12,9 @@
 
 static const float AGABOUTBOX_RADIUS = 0.066;
 
-static const float AGUIOpen_squeezeHeight = 0.00125;
-static const float AGUIOpen_animTimeX = 0.4;
-static const float AGUIOpen_animTimeY = 0.15;
+//static const float AGUIOpen_squeezeHeight = 0.00125;
+//static const float AGUIOpen_animTimeX = 0.4;
+//static const float AGUIOpen_animTimeY = 0.15;
 
 //------------------------------------------------------------------------------
 // ### AGAboutBox ###
@@ -35,8 +35,8 @@ m_done(false)
     m_geo[2] = GLvertex3f(m_radius, -m_radius, 0);
     m_geo[3] = GLvertex3f(m_radius, m_radius, 0);
     
-    m_xScale = lincurvef(AGUIOpen_animTimeX, AGUIOpen_squeezeHeight, 1);
-    m_yScale = lincurvef(AGUIOpen_animTimeY, AGUIOpen_squeezeHeight, 1);
+    m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
+    m_yScale = lincurvef(AGStyle::open_animTimeY, AGStyle::open_squeezeHeight, 1);
     
     m_lines.push_back("HANDWRITTEN COMPUTER MUSIC");
     m_lines.push_back("");
@@ -66,12 +66,12 @@ void AGAboutBox::update(float t, float dt)
     
     m_modelView = GLKMatrix4Translate(m_modelView, m_pos.x, m_pos.y, m_pos.z);
     
-    if(m_yScale <= AGUIOpen_squeezeHeight) m_xScale.update(dt);
+    if(m_yScale <= AGStyle::open_squeezeHeight) m_xScale.update(dt);
     if(m_xScale >= 0.99f) m_yScale.update(dt);
     
     m_modelView = GLKMatrix4Scale(m_modelView,
-                                  m_yScale <= AGUIOpen_squeezeHeight ? (float)m_xScale : 1.0f,
-                                  m_xScale >= 0.99f ? (float)m_yScale : AGUIOpen_squeezeHeight,
+                                  m_yScale <= AGStyle::open_squeezeHeight ? (float)m_xScale : 1.0f,
+                                  m_xScale >= 0.99f ? (float)m_yScale : AGStyle::open_squeezeHeight,
                                   1);
 }
 
@@ -144,13 +144,13 @@ AGInteractiveObject *AGAboutBox::hitTest(const GLvertex3f &t)
 
 void AGAboutBox::renderOut()
 {
-    m_xScale = lincurvef(AGUIOpen_animTimeX/2, 1, AGUIOpen_squeezeHeight);
-    m_yScale = lincurvef(AGUIOpen_animTimeY/2, 1, AGUIOpen_squeezeHeight);
+    m_xScale = lincurvef(AGStyle::open_animTimeX/2, 1, AGStyle::open_squeezeHeight);
+    m_yScale = lincurvef(AGStyle::open_animTimeY/2, 1, AGStyle::open_squeezeHeight);
 }
 
 bool AGAboutBox::finishedRenderingOut()
 {
-    return m_xScale <= AGUIOpen_squeezeHeight;
+    return m_xScale <= AGStyle::open_squeezeHeight;
 }
 
 GLvrectf AGAboutBox::effectiveBounds()
