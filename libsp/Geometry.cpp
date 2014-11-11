@@ -115,3 +115,10 @@ bool operator!=(const GLvertex2f &v, const GLvertex2f &v2)
 {
     return v.x != v2.x || v.y != v2.y;
 }
+
+bool GLvrectf::contains(const GLvertex3f &p)
+{
+    if(p.x >= bl.x && p.y >= bl.y && p.x <= ur.x && p.y <= ur.y)
+        return true;
+    return false;
+}

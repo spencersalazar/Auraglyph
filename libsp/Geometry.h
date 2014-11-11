@@ -199,6 +199,8 @@ struct GLvrectf
     bl(_bl), ur(_ur), br(GLvertex3f(_ur.x, _bl.y, 0.5*(_ur.z+_bl.z))), ul(GLvertex3f(_bl.x, _ur.y, 0.5*(_ur.z+_bl.z)))
     { }
     
+    bool contains(const GLvertex3f &p);
+    
     GLvertex3f bl; // bottom left
     GLvertex3f br; // bottom right
     GLvertex3f ul; // upper left
