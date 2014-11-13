@@ -6,20 +6,21 @@
 //  Copyright (c) 2013 Spencer Salazar. All rights reserved.
 //
 
-#import "AGUserInterface.h"
-#import "AGNode.h"
-#import "AGAudioNode.h"
-#import "ES2Render.h"
-#import "ShaderHelper.h"
-#import "AGGenericShader.h"
-#import "TexFont.h"
-#import "AGHandwritingRecognizer.h"
-#import "AGViewController.h"
-#import "Texture.h"
-#import "AGDef.h"
-#import "AGStyle.h"
+#include "AGUserInterface.h"
+#include "AGNode.h"
+#include "AGAudioNode.h"
+#include "AGGenericShader.h"
+#include "AGHandwritingRecognizer.h"
+#include "AGViewController.h"
+#include "AGDef.h"
+#include "AGStyle.h"
 
-#import <sstream>
+#include "TexFont.h"
+#include "Texture.h"
+#include "ES2Render.h"
+#include "GeoGenerator.h"
+
+#include <sstream>
 
 
 static const float AGNODESELECTOR_RADIUS = 0.02;
@@ -759,6 +760,50 @@ void AGUITextButton::render()
     }
     
     text->render(m_title, GLcolor4f::white, textMV, proj);
+}
+
+
+//------------------------------------------------------------------------------
+// ### AGUIIconButton ###
+//------------------------------------------------------------------------------
+#pragma mark - AGUIIconButton
+AGUIIconButton::AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size, AGRenderInfoV iconRenderInfo) :
+AGUIButton("", pos, size), m_iconInfo(iconRenderInfo)
+{
+    GeoGen::makeRect(m_geo, size.x, size.y);
+    
+    m_boxInfo.geo = m_geo;
+    m_boxInfo.geoType = GL_TRIANGLE_FAN;
+    m_boxInfo.numVertex = 4;
+    m_boxInfo.color = AGStyle::lightColor();
+    m_renderList.push_back(&m_boxInfo);
+    
+    m_renderList.push_back(&m_iconInfo);
+}
+
+void AGUIIconButton::update(float t, float dt)
+{
+    AGInteractiveObject::update(t, dt);
+    
+    m_renderState.modelview = GLKMatrix4Translate(m_parent->m_renderState.modelview, m_pos.x, m_pos.y, m_pos.z);
+    m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
+    
+    if(m_hit)
+    {
+        m_iconInfo.color = AGStyle::lightColor();
+        m_boxInfo.geoType = GL_LINE_LOOP;
+    }
+    else
+    {
+        m_iconInfo.color = AGStyle::darkColor();
+        m_boxInfo.geoType = GL_TRIANGLE_FAN;
+    }
+}
+
+void AGUIIconButton::render()
+{
+    // bypass AGUIButton::render()
+    AGInteractiveObject::render();
 }
 
 

@@ -17,63 +17,6 @@
 
 
 //------------------------------------------------------------------------------
-// ### AGUIIconButton ###
-//------------------------------------------------------------------------------
-#pragma mark - AGUIIconButton
-
-class AGUIIconButton : public AGUIButton
-{
-public:
-    AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size, AGRenderInfoV iconRenderInfo) :
-    AGUIButton("", pos, size), m_iconInfo(iconRenderInfo)
-    {
-        GeoGen::makeRect(m_geo, size.x, size.y);
-        
-        m_boxInfo.geo = m_geo;
-        m_boxInfo.geoType = GL_TRIANGLE_FAN;
-        m_boxInfo.numVertex = 4;
-        m_boxInfo.color = AGStyle::lightColor();
-        m_renderList.push_back(&m_boxInfo);
-        
-        m_renderList.push_back(&m_iconInfo);
-    }
-    
-    virtual void update(float t, float dt)
-    {
-        AGInteractiveObject::update(t, dt);
-        
-        m_renderState.modelview = GLKMatrix4Translate(m_parent->m_renderState.modelview, m_pos.x, m_pos.y, m_pos.z);
-        m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
-        
-        if(m_hit)
-        {
-            m_iconInfo.color = AGStyle::lightColor();
-            m_boxInfo.geoType = GL_LINE_LOOP;
-        }
-        else
-        {
-            m_iconInfo.color = AGStyle::darkColor();
-            m_boxInfo.geoType = GL_TRIANGLE_FAN;
-        }
-    }
-    
-    virtual void render()
-    {
-        AGInteractiveObject::render();
-    }
-    
-    virtual GLvertex3f position() { return parent()->position()+m_pos; }
-    virtual GLvertex2f size() { return m_size.xy(); }
-    virtual GLvrectf effectiveBounds() { return GLvrectf(position()-size()*0.5, position()+size()*0.5); }
-    
-private:
-    GLvertex3f m_boxGeo[4];
-    AGRenderInfoV m_boxInfo;
-    AGRenderInfoV m_iconInfo;
-};
-
-
-//------------------------------------------------------------------------------
 // ### AGUINumberInput ###
 //------------------------------------------------------------------------------
 #pragma mark - AGUINumberInput

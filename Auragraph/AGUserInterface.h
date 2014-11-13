@@ -198,7 +198,38 @@ public:
     virtual void render();
 };
 
+/*******************************************************************************
+ 
+ - AGUIIconButton -
+ Button that allows display of customized icon.
+ 
+ ******************************************************************************/
+class AGUIIconButton : public AGUIButton
+{
+public:
+    AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size, AGRenderInfoV iconRenderInfo);
+    
+    virtual void update(float t, float dt);
+    virtual void render();
+    
+    virtual GLvertex3f position() { return parent()->position()+m_pos; }
+    virtual GLvertex2f size() { return m_size.xy(); }
+    virtual GLvrectf effectiveBounds() { return GLvrectf(position()-size()*0.5, position()+size()*0.5); }
+    
+private:
+    GLvertex3f m_boxGeo[4];
+    AGRenderInfoV m_boxInfo;
+    AGRenderInfoV m_iconInfo;
+};
 
+
+
+/*******************************************************************************
+ 
+ - AGUITrash -
+ Node deletion interface.
+ 
+ ******************************************************************************/
 class AGUITrash : public AGUIObject
 {
 public:
@@ -233,7 +264,6 @@ private:
     GLvertex3f m_geo[4];
     GLvertex2f m_uv[4];
 };
-
 
 
 /*******************************************************************************
