@@ -98,6 +98,7 @@
 		09E5EC8718A5A88100B21D97 /* ADSR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC8618A5A88100B21D97 /* ADSR.cpp */; };
 		09F3C50818A5A8C300E499AF /* Stk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F3C50718A5A8C300E499AF /* Stk.cpp */; };
 		09FC92471A14F55D005D14A3 /* AGTimer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09FC92451A14F55D005D14A3 /* AGTimer.mm */; };
+		09FC924B1A153A83005D14A3 /* AGConnection.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09FC92491A153A83005D14A3 /* AGConnection.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -287,6 +288,8 @@
 		09FC92451A14F55D005D14A3 /* AGTimer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGTimer.mm; sourceTree = "<group>"; };
 		09FC92461A14F55D005D14A3 /* AGTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGTimer.h; sourceTree = "<group>"; };
 		09FC92481A14F915005D14A3 /* spstl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spstl.h; sourceTree = "<group>"; };
+		09FC92491A153A83005D14A3 /* AGConnection.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGConnection.mm; sourceTree = "<group>"; };
+		09FC924A1A153A83005D14A3 /* AGConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGConnection.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -374,6 +377,8 @@
 				098F9B3819EE49BA00CE2F24 /* AGRenderObject.mm */,
 				0987409B17B98D7C0098511A /* AGNode.h */,
 				0987409A17B98D7C0098511A /* AGNode.mm */,
+				09FC924A1A153A83005D14A3 /* AGConnection.h */,
+				09FC92491A153A83005D14A3 /* AGConnection.mm */,
 				098740AC17BC377E0098511A /* AGAudioNode.h */,
 				098740AB17BC377E0098511A /* AGAudioNode.mm */,
 				093395731A088849009E4802 /* AGControlNode.h */,
@@ -745,6 +750,7 @@
 				098740AD17BC377E0098511A /* AGAudioNode.mm in Sources */,
 				09C7C3E518CF27AC0099CE88 /* Waveform.vsh in Sources */,
 				098740B017BC527E0098511A /* ES2Render.mm in Sources */,
+				09FC924B1A153A83005D14A3 /* AGConnection.mm in Sources */,
 				098740B317BC61410098511A /* AGUserInterface.mm in Sources */,
 				0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */,
 				09C7C3E418CF27AC0099CE88 /* Waveform.fsh in Sources */,
