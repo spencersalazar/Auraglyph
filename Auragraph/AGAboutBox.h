@@ -10,12 +10,12 @@
 #define __Auragraph__AGAboutBox__
 
 
-#include "Geometry.h"
-#include "Animation.h"
 #include "AGRenderObject.h"
 #include "AGAudioNode.h"
 #include "AGUserInterface.h"
-#include "TexFont.h"
+#include "AGStyle.h"
+
+#include "Geometry.h"
 
 class AGAboutBox : public AGInteractiveObject
 {
@@ -31,6 +31,8 @@ public:
     virtual void renderOut();
     virtual bool finishedRenderingOut();
     
+    virtual GLvrectf effectiveBounds();
+
 private:
 
     GLvertex3f m_geo[4];
@@ -38,8 +40,7 @@ private:
     GLuint m_geoSize;
     
     GLvertex3f m_pos;
-    lincurvef m_xScale;
-    lincurvef m_yScale;
+    AGSqueezeAnimation m_squeeze;
     
     GLKMatrix4 m_projection;
     GLKMatrix4 m_modelView;
@@ -47,9 +48,6 @@ private:
     bool m_done;
     
     vector<string> m_lines;
-    
-protected:
-    virtual GLvrectf effectiveBounds();
 };
 
 #endif /* defined(__Auragraph__AGAboutBox__) */

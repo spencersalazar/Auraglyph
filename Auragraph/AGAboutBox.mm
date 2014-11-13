@@ -31,9 +31,6 @@ m_done(false)
     m_geo[2] = GLvertex3f(m_radius, -m_radius, 0);
     m_geo[3] = GLvertex3f(m_radius, m_radius, 0);
     
-    m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
-    m_yScale = lincurvef(AGStyle::open_animTimeY, AGStyle::open_squeezeHeight, 1);
-    
     m_lines.push_back("HANDWRITTEN COMPUTER MUSIC");
     m_lines.push_back("");
     m_lines.push_back("");
@@ -56,19 +53,13 @@ AGAboutBox::~AGAboutBox()
 void AGAboutBox::update(float t, float dt)
 {
     AGInteractiveObject::update(t, dt);
+    m_squeeze.update(t, dt);
     
     m_modelView = AGNode::fixedModelViewMatrix();
     m_projection = AGNode::projectionMatrix();
     
     m_modelView = GLKMatrix4Translate(m_modelView, m_pos.x, m_pos.y, m_pos.z);
-    
-    if(m_yScale <= AGStyle::open_squeezeHeight) m_xScale.update(dt);
-    if(m_xScale >= 0.99f) m_yScale.update(dt);
-    
-    m_modelView = GLKMatrix4Scale(m_modelView,
-                                  m_yScale <= AGStyle::open_squeezeHeight ? (float)m_xScale : 1.0f,
-                                  m_xScale >= 0.99f ? (float)m_yScale : AGStyle::open_squeezeHeight,
-                                  1);
+    m_modelView = GLKMatrix4Multiply(m_modelView, m_squeeze.matrix());
 }
 
 void AGAboutBox::render()
@@ -140,13 +131,12 @@ AGInteractiveObject *AGAboutBox::hitTest(const GLvertex3f &t)
 
 void AGAboutBox::renderOut()
 {
-    m_xScale = lincurvef(AGStyle::open_animTimeX/2, 1, AGStyle::open_squeezeHeight);
-    m_yScale = lincurvef(AGStyle::open_animTimeY/2, 1, AGStyle::open_squeezeHeight);
+    m_squeeze.close();
 }
 
 bool AGAboutBox::finishedRenderingOut()
 {
-    return m_xScale <= AGStyle::open_squeezeHeight;
+    return m_squeeze.finishedClosing();
 }
 
 GLvrectf AGAboutBox::effectiveBounds()
