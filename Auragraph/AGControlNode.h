@@ -26,6 +26,9 @@ public:
     virtual void setEditPortValue(int port, float value);
     virtual void getEditPortValue(int port, float &value) const;
     
+    virtual void update(float t, float dt);
+    virtual void render();
+    
     static void renderIcon();
     static AGControlNode *create(const GLvertex3f &pos);
 
@@ -35,8 +38,8 @@ private:
     AGTimer *m_timer;
     
     AGIntControl m_control;
-    sampletime m_lastTime;
-    sampletime m_lastFire;
+    float m_lastTime;
+    float m_lastFire;
     float m_interval;
 };
 

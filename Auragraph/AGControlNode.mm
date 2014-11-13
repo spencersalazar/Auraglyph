@@ -64,6 +64,43 @@ AGControlNode(pos, s_nodeInfo)
     });
 }
 
+void AGControlTimerNode::update(float t, float dt)
+{
+    AGControlNode::update(t, dt);
+    
+//    if(t - m_lastFire >= m_interval)
+//        m_lastFire = t;
+//    m_lastTime = t;
+}
+
+void AGControlTimerNode::render()
+{
+    AGControlNode::render();
+    
+//    int circleSize = 48;
+//    int circleFill = (int) floorf((1.0f - (m_lastTime - m_lastFire)/m_interval) * circleSize);
+//    
+//    glBindVertexArrayOES(0);
+//    
+//    GLKMatrix4 mvp = GLKMatrix4Scale(m_modelViewProjectionMatrix, 1.1, 1.1, 1.1);
+//
+//    AGGenericShader &shader = AGGenericShader::instance();
+//    shader.useProgram();
+//    shader.setMVPMatrix(mvp);
+//    shader.setNormalMatrix(m_normalMatrix);
+//    
+//    glBindVertexArrayOES(0);
+//    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_nodeInfo->iconGeo);
+//    
+//    GLcolor4f color = GLcolor4f::white;
+//    color.a = m_fadeOut;
+//    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
+//    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+//    
+//    glLineWidth(2.0f);
+//    glDrawArrays(m_nodeInfo->iconGeoType, 0, circleFill*2);
+}
+
 void AGControlTimerNode::setEditPortValue(int port, float value)
 {
     switch(port)
