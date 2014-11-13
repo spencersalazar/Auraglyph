@@ -625,6 +625,7 @@ m_action(nil)
 
 AGUIButton::~AGUIButton()
 {
+    if(m_action != nil) Block_release(m_action);
     m_action = nil;
 }
 
@@ -710,7 +711,7 @@ GLvrectf AGUIButton::effectiveBounds()
 
 void AGUIButton::setAction(void (^action)())
 {
-    m_action = [action copy];
+    m_action = action;
 }
 
 

@@ -17,9 +17,9 @@
 
 
 //------------------------------------------------------------------------------
-// ### AGUINumberInput ###
+// ### AGUIIconButton ###
 //------------------------------------------------------------------------------
-#pragma mark - AGUINumberInput
+#pragma mark - AGUIIconButton
 
 class AGUIIconButton : public AGUIButton
 {
@@ -72,12 +72,18 @@ private:
     AGRenderInfoV m_iconInfo;
 };
 
+
+//------------------------------------------------------------------------------
+// ### AGUINumberInput ###
+//------------------------------------------------------------------------------
+#pragma mark - AGUINumberInput
+
 class AGUINumberInput : public AGInteractiveObject
 {
 public:
     AGUINumberInput(const GLvertex3f &pos, const GLvertex2f &size) :
-    m_pos(pos), m_size(size), m_currentValue(0),
-    m_lastTraceWasRecognized(false), m_decimal(false), m_decimalFactor(1)
+    m_pos(pos), m_size(size), m_action(NULL), m_decimal(false),
+    m_lastTraceWasRecognized(false)
     {
         GeoGen::makeRect(m_geo, size.x, size.y);
         
@@ -107,7 +113,11 @@ public:
         m_undoGeo[4] = GLvertex3f(-buttonSize*0.3, 0, 0);
         m_undoGeo[5] = GLvertex3f( buttonSize*0.3, 0, 0);
         m_undoInfo.geo = m_undoGeo;
-        addChild(new AGUIIconButton(GLvertex3f(-size.x, size.y, 0)*0.5f+GLvertex3f(buttonSize/2, -buttonSize/2, 0), GLvertex2f(buttonSize, buttonSize), m_undoInfo));
+        AGUIButton *undoButton = new AGUIIconButton(GLvertex3f(-size.x, size.y, 0)*0.5f+GLvertex3f(buttonSize/2, -buttonSize/2, 0),
+                                                    GLvertex2f(buttonSize, buttonSize),
+                                                    m_undoInfo);
+        undoButton->setAction(^{ undo(); });
+        addChild(undoButton);
         
         // cancel button
         AGRenderInfoV m_cancelInfo;
@@ -118,7 +128,11 @@ public:
         m_cancelGeo[2] = GLvertex3f(-buttonSize*0.3, -buttonSize*0.3, 0);
         m_cancelGeo[3] = GLvertex3f( buttonSize*0.3,  buttonSize*0.3, 0);
         m_cancelInfo.geo = m_cancelGeo;
-        addChild(new AGUIIconButton(size*0.5f+GLvertex3f(-buttonSize/2 -buttonSize*1.25, -buttonSize/2, 0), GLvertex2f(buttonSize, buttonSize), m_cancelInfo));
+        AGUIButton *cancelButton = new AGUIIconButton(size*0.5f+GLvertex3f(-buttonSize/2 -buttonSize*1.25, -buttonSize/2, 0),
+                                                      GLvertex2f(buttonSize, buttonSize),
+                                                      m_cancelInfo);
+        cancelButton->setAction(^{ cancel(); });
+        addChild(cancelButton);
         
         // ok button
         AGRenderInfoV m_okInfo;
@@ -128,9 +142,19 @@ public:
         m_okGeo[1] = GLvertex3f( 0, -buttonSize*0.3, 0);
         m_okGeo[2] = GLvertex3f( buttonSize*0.3, buttonSize*0.3, 0);
         m_okInfo.geo = m_okGeo;
-        addChild(new AGUIIconButton(size*0.5f+GLvertex3f(-buttonSize/2, -buttonSize/2, 0), GLvertex2f(buttonSize, buttonSize), m_okInfo));
+        AGUIButton *okButton = new AGUIIconButton(size*0.5f+GLvertex3f(-buttonSize/2, -buttonSize/2, 0),
+                                                  GLvertex2f(buttonSize, buttonSize),
+                                                  m_okInfo);
+        okButton->setAction(^{ accept(); });
+        addChild(okButton);
         
         m_squeeze.open();
+    }
+    
+    ~AGUINumberInput()
+    {
+        // TODO: Block_release?
+        m_action = NULL;
     }
     
     virtual void update(float t, float dt)
@@ -179,13 +203,9 @@ public:
         {
             TexFont *text = AGStyle::standardFont64();
             
-            stringstream ss;
-            ss << m_currentValue;
-            if(m_decimal && floorf(m_currentValue) == m_currentValue) ss << "."; // show decimal point if user has drawn it
+            GLKMatrix4 valueMV = GLKMatrix4Translate(m_renderState.modelview, -text->width(m_currentValue)/2.0f, -m_size.y/4.0f, 0);
             
-            GLKMatrix4 valueMV = GLKMatrix4Translate(m_renderState.modelview, -text->width(ss.str())/2.0f, -m_size.y/4.0f, 0);
-            
-            text->render(ss.str(), AGStyle::lightColor(), valueMV, m_renderState.projection);
+            text->render(m_currentValue, AGStyle::lightColor(), valueMV, m_renderState.projection);
         }
         
         renderChildren();
@@ -227,6 +247,12 @@ public:
             
             switch(figure)
             {
+                case AG_FIGURE_PERIOD:
+                    if(!m_decimal)
+                        m_currentValue += figure;
+                    m_decimal = true;
+                    break;
+                    
                 case AG_FIGURE_0:
                 case AG_FIGURE_1:
                 case AG_FIGURE_2:
@@ -237,25 +263,8 @@ public:
                 case AG_FIGURE_7:
                 case AG_FIGURE_8:
                 case AG_FIGURE_9:
-                    if(m_decimal)
-                    {
-                        m_currentValue = m_currentValue + (figure-'0')*m_decimalFactor;
-                        m_decimalFactor *= 0.1;
-                    }
-                    else
-                        m_currentValue = m_currentValue*10 + (figure-'0');
-                    m_lastTraceWasRecognized = true;
-                    break;
-                    
-                case AG_FIGURE_PERIOD:
-                    if(m_decimal)
-                        m_lastTraceWasRecognized = false;
-                    else
-                    {
-                        m_decimalFactor = 0.1;
-                        m_lastTraceWasRecognized = true;
-                        m_decimal = true;
-                    }
+                    // append to string
+                    m_currentValue += figure;
                     break;
                     
                 default:
@@ -266,6 +275,27 @@ public:
     
     virtual GLvertex3f position() { return m_pos; }
     virtual GLvertex2f size() { return m_size; }
+    
+    void undo()
+    {
+        m_currentValue.erase(--m_currentValue.end());
+    }
+    
+    void cancel()
+    {
+        if(m_action) m_action(false, 0);
+    }
+    
+    void accept()
+    {
+        if(m_action) m_action(true, ::atof(m_currentValue.c_str()));
+    }
+    
+    void setAction(void (^action)(bool accepted, float value))
+    {
+        // TODO: Block_copy?
+        m_action = action;
+    }
 
 protected:
     GLvertex3f m_geo[4];
@@ -279,14 +309,15 @@ protected:
     std::list< std::vector<GLvertex3f> > m_drawline;
     LTKTrace m_currentTrace;
     
-    float m_currentValue;
+    string m_currentValue;
     bool m_lastTraceWasRecognized;
     bool m_decimal;
-    float m_decimalFactor;
     
     GLvertex3f m_undoGeo[6];
     GLvertex3f m_cancelGeo[4];
     GLvertex3f m_okGeo[3];
+    
+    void (^m_action)(bool accepted, float value);
 };
 
 
@@ -345,8 +376,6 @@ public:
                 glLineWidth(8.0);
             }
             
-            AGInteractiveObject::render();
-            
             if(m_pressed)
                 glLineWidth(width);
 
@@ -361,6 +390,8 @@ public:
 
                 text->render(ss.str(), AGStyle::lightColor(), valueMV, m_renderState.projection);
             }
+            
+            AGInteractiveObject::render();
         }
         
         virtual void touchDown(const AGTouchInfo &t)
@@ -383,6 +414,7 @@ public:
                 // open number editor
                 GLvertex2f size(m_size.x*2, m_size.y*G_RATIO);
                 m_numInput = new AGUINumberInput(m_arrayEditor->position()+m_pos, size);
+                m_numInput->setAction(^(bool accepted, float value) { numberInputAction(accepted, value); });
                 addChild(m_numInput);
             }
             
@@ -409,6 +441,19 @@ public:
         float m_value;
         
         AGUINumberInput *m_numInput;
+        
+        void numberInputAction(bool accepted, float value)
+        {
+            if(accepted)
+            {
+                m_hasValue = true;
+                m_value = value;
+            }
+            
+            removeChild(m_numInput);
+            delete m_numInput;
+            m_numInput = NULL;
+        }
     };
     
     static void initializeNodeEditor();
@@ -493,6 +538,8 @@ public:
     void renderOut()
     {
         m_squeeze.close();
+        
+        AGInteractiveObject::renderOut();
     }
     
     bool finishedRenderingOut()
