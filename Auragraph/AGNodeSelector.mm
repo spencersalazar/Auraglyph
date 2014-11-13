@@ -14,10 +14,6 @@
 
 static const float AGNODESELECTOR_RADIUS = 0.02;
 
-//static const float AGUIOpen_squeezeHeight = 0.00125;
-//static const float AGUIOpen_animTimeX = 0.4;
-//static const float AGUIOpen_animTimeY = 0.15;
-
 
 template<class NodeType, class ManagerType, class InfoType>
 class AGUINodeSelector : public AGUIMetaNodeSelector

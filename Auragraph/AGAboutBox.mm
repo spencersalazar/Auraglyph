@@ -12,10 +12,6 @@
 
 static const float AGABOUTBOX_RADIUS = 0.066;
 
-//static const float AGUIOpen_squeezeHeight = 0.00125;
-//static const float AGUIOpen_animTimeX = 0.4;
-//static const float AGUIOpen_animTimeY = 0.15;
-
 //------------------------------------------------------------------------------
 // ### AGAboutBox ###
 //------------------------------------------------------------------------------
