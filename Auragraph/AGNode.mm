@@ -317,10 +317,11 @@ void AGNode::pushControl(int port, AGControl *control)
 {
     this->lock();
     
-    libsp::map(m_outbound, ^(AGConnection *&conn) {
+    itmap(m_outbound, ^(AGConnection *&conn) {
         if(conn->rate() == RATE_CONTROL)
         {
             conn->dst()->receiveControl_internal(conn->dstPort(), control);
+            conn->controlActivate();
         }
     });
     

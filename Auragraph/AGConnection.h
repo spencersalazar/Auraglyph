@@ -19,6 +19,7 @@
 
 #include <string>
 #include <vector>
+#include <list>
 
 using namespace std;
 
@@ -36,7 +37,7 @@ struct AGPortInfo
     bool canConnect; // can create connection btw this port and another port
     bool canEdit; // should this port appear in the node's editor window
     
-    // TODO: min, max, units label, etc.
+    // TODO: min, max, units label, rate, etc.
 };
 
 struct AGNodeInfo
@@ -76,6 +77,8 @@ public:
     
     AGRate rate() { return m_rate; }
     
+    void controlActivate();
+    
     void fadeOutAndRemove();
     
 private:
@@ -84,6 +87,7 @@ private:
     static GLuint s_program;
     static GLint s_uniformMVPMatrix;
     static GLint s_uniformNormalMatrix;
+    static GLuint s_flareTex;
     
     GLvertex3f m_geo[3];
     GLcolor4f m_color;
@@ -105,6 +109,10 @@ private:
     powcurvef m_alpha;
     
     const AGRate m_rate;
+    
+    list<float> m_flares;
+    GLvertex3f m_flareGeo[4];
+    GLvertex2f m_flareUV[4];
     
     static void initalize();
     

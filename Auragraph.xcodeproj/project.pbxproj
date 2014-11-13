@@ -99,6 +99,7 @@
 		09F3C50818A5A8C300E499AF /* Stk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F3C50718A5A8C300E499AF /* Stk.cpp */; };
 		09FC92471A14F55D005D14A3 /* AGTimer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09FC92451A14F55D005D14A3 /* AGTimer.mm */; };
 		09FC924B1A153A83005D14A3 /* AGConnection.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09FC92491A153A83005D14A3 /* AGConnection.mm */; };
+		09FC924D1A153C0A005D14A3 /* flare.png in Resources */ = {isa = PBXBuildFile; fileRef = 09FC924C1A153C0A005D14A3 /* flare.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -290,6 +291,7 @@
 		09FC92481A14F915005D14A3 /* spstl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spstl.h; sourceTree = "<group>"; };
 		09FC92491A153A83005D14A3 /* AGConnection.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGConnection.mm; sourceTree = "<group>"; };
 		09FC924A1A153A83005D14A3 /* AGConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGConnection.h; sourceTree = "<group>"; };
+		09FC924C1A153C0A005D14A3 /* flare.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flare.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -567,6 +569,7 @@
 		0989130F189F6D3A00AB98AD /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				09FC924C1A153C0A005D14A3 /* flare.png */,
 				09891311189F6D3A00AB98AD /* trash.png */,
 			);
 			path = Images;
@@ -684,6 +687,7 @@
 				0989132218A0870000AB98AD /* Screen.fsh in Resources */,
 				0989132318A0870000AB98AD /* Clip.fsh in Resources */,
 				0989132418A0870000AB98AD /* Shader.fsh in Resources */,
+				09FC924D1A153C0A005D14A3 /* flare.png in Resources */,
 				0989132518A0870000AB98AD /* Texture.fsh in Resources */,
 				0989131C18A086E800AB98AD /* TexFont.vsh in Resources */,
 				0933956B1A019E4F009E4802 /* Orbitron-Medium.ttf in Resources */,

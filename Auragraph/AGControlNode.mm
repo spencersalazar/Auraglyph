@@ -64,6 +64,12 @@ AGControlNode(pos, s_nodeInfo)
     });
 }
 
+AGControlTimerNode::~AGControlTimerNode()
+{
+    delete m_timer;
+    m_timer = NULL;
+}
+
 void AGControlTimerNode::update(float t, float dt)
 {
     AGControlNode::update(t, dt);

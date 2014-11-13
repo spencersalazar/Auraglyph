@@ -85,8 +85,10 @@ static AGAudioManager *g_audioManager;
     memset(g_audio_buf, 0, sizeof(float)*1024);
     
     _timersMutex.lock();
-    libsp::map(_timers, ^(AGTimer *&timer){
-        timer->checkTimer(t/AGAudioNode::sampleRate(), numFrames/AGAudioNode::sampleRate());
+    itmap(_timers, ^(AGTimer *&timer){
+        float tf = ((float)t)/((float)AGAudioNode::sampleRate());
+        float dtf = ((float)numFrames)/((float)AGAudioNode::sampleRate());
+        timer->checkTimer(tf, dtf);
     });
     _timersMutex.unlock();
     

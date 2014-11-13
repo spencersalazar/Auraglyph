@@ -21,6 +21,7 @@ public:
     static void initialize();
     
     AGControlTimerNode(const GLvertex3f &pos);
+    ~AGControlTimerNode();
     
     virtual int numOutputPorts() const { return 1; }
     virtual void setEditPortValue(int port, float value);

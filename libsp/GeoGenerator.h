@@ -35,6 +35,11 @@ namespace GeoGen
      - Draw as stroke with GL_LINE_LOOP or fill with GL_TRIANGLE_FAN
      */
     void makeRect(GLvertex3f *points, float width, float height);
+    
+    /* makeRectUV()
+     - Generate standard square tex UVs for the rect above.
+     */
+    void makeRectUV(GLvertex2f *points);
 }
 
 

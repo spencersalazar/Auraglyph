@@ -27,7 +27,7 @@ void AGTimer::checkTimer(float t, float dt)
     // initial condition
     if(m_lastFire == FLT_MIN) m_lastFire = t;
     
-    if(t > m_lastFire)
+    if(t-m_lastFire >= m_interval)
     {
         m_action(this);
         m_lastFire = t;

@@ -48,7 +48,7 @@ public:
     // audio
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) { assert(0); }
     // control
-    virtual void pushControl(int port, AGControl *control);
+    void pushControl(int port, AGControl *control);
     virtual void receiveControl(int port, AGControl *control) { }
 
     enum HitTestResult

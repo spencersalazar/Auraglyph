@@ -10,11 +10,23 @@
 #include "AGNode.h"
 #include "AGViewController.h"
 
+#include "Texture.h"
+#include "spstl.h"
+#include "GeoGenerator.h"
+
 bool AGConnection::s_init = false;
 GLuint AGConnection::s_program = 0;
 GLint AGConnection::s_uniformMVPMatrix = 0;
 GLint AGConnection::s_uniformNormalMatrix = 0;
+GLuint AGConnection::s_flareTex = 0;
 
+// ripped from waveform shader
+// for control signal animation
+#define WINDOW_POW 2.5
+static float window(float x, float pos)
+{
+    return x*(1.0-pow(abs(2.0*pos-1.0), WINDOW_POW));
+}
 
 //------------------------------------------------------------------------------
 // ### AGConnection ###
@@ -31,6 +43,7 @@ void AGConnection::initalize()
                                  withAttributes:SHADERHELPER_ATTR_POSITION | SHADERHELPER_ATTR_NORMAL | SHADERHELPER_ATTR_COLOR];
         s_uniformMVPMatrix = glGetUniformLocation(s_program, "modelViewProjectionMatrix");
         s_uniformNormalMatrix = glGetUniformLocation(s_program, "normalMatrix");
+        s_flareTex = loadTexture("flare.png");
     }
 }
 
@@ -52,6 +65,10 @@ m_geoSize(0), m_hit(false), m_stretch(false), m_active(true), m_alpha(1, 0, 0.5,
     m_color = GLcolor4f(0.75, 0.75, 0.75, 1);
     
     m_break = false;
+    
+    float flareSize = 0.004;
+    GeoGen::makeRect(m_flareGeo, flareSize, flareSize);
+    GeoGen::makeRectUV(m_flareUV);
 }
 
 AGConnection::~AGConnection()
@@ -108,6 +125,15 @@ void AGConnection::update(float t, float dt)
         if(m_alpha < 0.01)
             [[AGViewController instance] removeConnection:this];
     }
+    
+    float flareSpeed = 2;
+    itmap(m_flares, ^(float &f){
+        f += dt*flareSpeed*(0.25f+(1.0f+cosf(M_PI*(f-0.1)))/2.0f);
+//        printf("flare: %f\n", f);
+    });
+    itfilter(m_flares, ^bool (float &f){
+        return f >= 1;
+    });
 }
 
 void AGConnection::render()
@@ -193,6 +219,59 @@ void AGConnection::render()
         
         glEnableVertexAttribArray(GLKVertexAttribPosition);
     }
+    
+    if(m_flares.size())
+    {
+        GLKMatrix4 projection = AGNode::projectionMatrix();
+        GLKMatrix4 modelView = AGNode::globalModelViewMatrix();
+        GLvertex3f vec = (m_inTerminal - m_outTerminal);
+        
+        //float portOffset = 0.002;
+        float portOffset = 0.000;
+        modelView = GLKMatrix4Translate(modelView, m_outTerminal.x, m_outTerminal.y, m_outTerminal.z);
+        modelView = GLKMatrix4Rotate(modelView, vec.xy().angle(), 0, 0, 1);
+        modelView = GLKMatrix4Translate(modelView, portOffset, 0, 0);
+        
+        AGGenericShader &texShader = AGTextureShader::instance();
+        
+        texShader.useProgram();
+        
+        texShader.setProjectionMatrix(projection);
+        texShader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));
+        
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_flareGeo);
+        glEnableVertexAttribArray(GLKVertexAttribPosition);
+        
+        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+        
+        glEnable(GL_TEXTURE_2D);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, s_flareTex);
+        
+        glEnable(GL_BLEND);
+        // additive blending
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        
+        glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLvertex2f), m_flareUV);
+        glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+        
+        float distFactor = (vec.xy().magnitude() - portOffset*2);
+        
+        itmap(m_flares, ^(float &f){
+            GLKMatrix4 flareModelView = GLKMatrix4Translate(modelView, f*distFactor, 0, 0);
+            GLcolor4f flareColor = GLcolor4f(1, 1, 1, window(1, f));
+            
+            glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &flareColor);
+            texShader.setModelViewMatrix(flareModelView);
+            
+            glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+            glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+            glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        });
+        
+        // normal blending
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
 }
 
 void AGConnection::touchDown(const GLvertex3f &t)
@@ -250,6 +329,11 @@ AGUIObject *AGConnection::hitTest(const GLvertex3f &_t)
         return this;
     
     return NULL;
+}
+
+void AGConnection::controlActivate()
+{
+    m_flares.push_back(0);
 }
 
 
