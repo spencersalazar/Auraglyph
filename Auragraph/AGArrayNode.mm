@@ -278,7 +278,7 @@ public:
     public:
         Element(AGUIArrayEditor * arrayEditor, const GLvertex3f &pos, const GLvertex2f &size) :
         m_arrayEditor(arrayEditor), m_pos(pos), m_size(size), m_hasValue(false),
-        m_pressed(false), m_numInput(NULL)
+        m_pressed(false), m_numInput(NULL), m_editAction(NULL), m_valueRef(NULL)
         {
             float inset = 0.8;
             float yHeight = 0.2;
@@ -292,6 +292,12 @@ public:
             m_renderInfo.numVertex = 4;
             m_renderInfo.color = lerp(0.5, GLcolor4f(0, 0, 0, 1), AGStyle::lightColor());
             m_renderList.push_back(&m_renderInfo);
+        }
+        
+        ~Element()
+        {
+            // TODO: Block_release?
+            m_editAction = NULL;
         }
         
         virtual void update(float t, float dt)
@@ -364,6 +370,25 @@ public:
             m_pressed = false;
         }
         
+        
+        void setEditAction(void (^editAction)(Element *e))
+        {
+            // TODO: Block_copy?
+            m_editAction = editAction;
+        }
+
+        float value() { return m_value; }
+        void setValueRef(float *valueRef)
+        {
+            if(valueRef)
+            {
+                m_hasValue = true;
+                m_value = *valueRef;
+            }
+            
+            m_valueRef = valueRef;
+        }
+
     protected:
         GLvertex3f m_geo[4];
         AGRenderInfoV m_renderInfo;
@@ -382,6 +407,8 @@ public:
         bool m_pressed;
         
         float m_value;
+        float *m_valueRef;
+        void (^m_editAction)(Element *e);
         
         AGUINumberInput *m_numInput;
         
@@ -391,6 +418,8 @@ public:
             {
                 m_hasValue = true;
                 m_value = value;
+                if(m_valueRef) *m_valueRef = m_value;
+                if(m_editAction) m_editAction(this);
             }
             
             removeChild(m_numInput);
@@ -424,8 +453,39 @@ public:
         
         m_squeeze.open();
         
-        Element *e = new Element(this, GLvertex3f(-m_width/3.0f, 0.0f, 0.0f), GLvertex2f(m_width/3.0f, m_height));
-        addChild(e);
+        m_editAction = ^(Element *e){
+            if(e == m_ghostElement)
+            {
+                m_node->m_items.push_back(e->value());
+                e->setValueRef(&(m_node->m_items.back()));
+                
+                int len = m_node->m_items.size();
+                m_ghostElement = new Element(this, GLvertex3f(-m_width/3.0f + m_width/3.0*len, 0.0f, 0.0f), GLvertex2f(m_width/3.0f, m_height));
+                m_ghostElement->setValueRef(NULL);
+                m_ghostElement->setEditAction(m_editAction);
+                addChild(m_ghostElement);
+            }
+        };
+        
+        int j = 0;
+        for(list<float>::iterator i = m_node->m_items.begin(); i != m_node->m_items.end(); i++)
+        {
+            Element *e = new Element(this, GLvertex3f(-m_width/3.0f + m_width/3.0*j, 0.0f, 0.0f), GLvertex2f(m_width/3.0f, m_height));
+            e->setValueRef(&*i);
+            e->setEditAction(m_editAction);
+            addChild(e);
+            j++;
+        }
+        
+        m_ghostElement = new Element(this, GLvertex3f(-m_width/3.0f + m_width/3.0*j, 0.0f, 0.0f), GLvertex2f(m_width/3.0f, m_height));
+        m_ghostElement->setValueRef(NULL);
+        m_ghostElement->setEditAction(m_editAction);
+        addChild(m_ghostElement);
+    }
+    
+    ~AGUIArrayEditor()
+    {
+        m_editAction = NULL;
     }
     
     virtual void update(float t, float dt)
@@ -509,6 +569,10 @@ private:
     AGSqueezeAnimation m_squeeze;
 
     bool m_doneEditing;
+    
+    //vector<Element *> m_elements;
+    Element *m_ghostElement;
+    void (^m_editAction)(Element *e);
     
 //    int hitTest(const GLvertex3f &t, bool *inBbox);
 };

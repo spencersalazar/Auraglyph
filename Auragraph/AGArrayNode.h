@@ -13,8 +13,12 @@
 #include "AGControl.h"
 #include <list>
 
+class AGUIArrayEditor;
+
 class AGControlArrayNode : public AGControlNode
 {
+    friend class AGUIArrayEditor;
+    
 public:
     static void initialize();
     
