@@ -8,7 +8,7 @@
 
 #include "AGControlNode.h"
 #include "AGArrayNode.h"
-
+#include "AGTimer.h"
 
 //------------------------------------------------------------------------------
 // ### AGControlTimerNode ###
@@ -52,19 +52,23 @@ void AGControlTimerNode::initialize()
 }
 
 AGControlTimerNode::AGControlTimerNode(const GLvertex3f &pos) :
-AGControlNode(pos)
+AGControlNode(pos, s_nodeInfo)
 {
-    m_nodeInfo = s_nodeInfo;
     m_interval = 0.5;
     m_lastFire = 0;
     m_lastTime = 0;
+    
+    m_timer = new AGTimer(m_interval, ^(AGTimer *) {
+        m_control.v = 1;
+        pushControl(0, &m_control);
+    });
 }
 
 void AGControlTimerNode::setEditPortValue(int port, float value)
 {
     switch(port)
     {
-        case 0: m_interval = value; break;
+        case 0: m_interval = value; m_timer->setInterval(m_interval); break;
     }
 }
 
@@ -74,26 +78,6 @@ void AGControlTimerNode::getEditPortValue(int port, float &value) const
     {
         case 0: value = m_interval; break;
     }
-}
-
-AGControl *AGControlTimerNode::renderControl(sampletime t)
-{
-    if(t > m_lastTime)
-    {
-        if(((float)(t - m_lastFire))/AGAudioNode::sampleRate() >= m_interval)
-        {
-            m_control.v = 1;
-            m_lastFire = t;
-        }
-        else
-        {
-            m_control.v = 0;
-        }
-        
-        m_lastTime = t;
-    }
-    
-    return &m_control;
 }
 
 void AGControlTimerNode::renderIcon()

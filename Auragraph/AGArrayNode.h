@@ -30,7 +30,7 @@ public:
     
     virtual AGUINodeEditor *createCustomEditor();
     
-    virtual AGControl *renderControl(sampletime t);
+    virtual void receiveControl(int port, AGControl *control);
     
     static void renderIcon();
     static AGControlNode *create(const GLvertex3f &pos);

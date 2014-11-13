@@ -614,10 +614,10 @@ void AGControlArrayNode::initialize()
 }
 
 AGControlArrayNode::AGControlArrayNode(const GLvertex3f &pos) :
-AGControlNode(pos)
+AGControlNode(pos, s_nodeInfo)
 {
-    m_nodeInfo = s_nodeInfo;
     m_lastTime = 0;
+    m_position = m_items.begin();
 }
 
 void AGControlArrayNode::setEditPortValue(int port, float value)
@@ -639,14 +639,21 @@ AGUINodeEditor *AGControlArrayNode::createCustomEditor()
     return new AGUIArrayEditor(this);
 }
 
-AGControl *AGControlArrayNode::renderControl(sampletime t)
+void AGControlArrayNode::receiveControl(int port, AGControl *control)
 {
-    if(t > m_lastTime)
+    switch(port)
     {
-        m_control = 0;
+        case 0: // iterate
+            if(m_items.size())
+            {
+                m_control.v = *m_position;
+                m_position++;
+                if(m_position == m_items.end()) m_position = m_items.begin();
+                
+                pushControl(0, &m_control);
+            }
+            break;
     }
-    
-    return &m_control;
 }
 
 void AGControlArrayNode::renderIcon()

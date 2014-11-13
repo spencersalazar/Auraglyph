@@ -13,6 +13,8 @@
 #include "AGNode.h"
 
 
+class AGTimer;
+
 class AGControlTimerNode : public AGControlNode
 {
 public:
@@ -24,13 +26,13 @@ public:
     virtual void setEditPortValue(int port, float value);
     virtual void getEditPortValue(int port, float &value) const;
     
-    virtual AGControl *renderControl(sampletime t);
-    
     static void renderIcon();
     static AGControlNode *create(const GLvertex3f &pos);
 
 private:
     static AGNodeInfo *s_nodeInfo;
+    
+    AGTimer *m_timer;
     
     AGIntControl m_control;
     sampletime m_lastTime;

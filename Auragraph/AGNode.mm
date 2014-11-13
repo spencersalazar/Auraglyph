@@ -13,6 +13,8 @@
 #import "AGAudioNode.h"
 #import "AGControlNode.h"
 
+#import "spstl.h"
+
 
 //static const float G_RATIO = 1.61803398875;
 
@@ -343,14 +345,25 @@ void AGNode::initalizeNode()
 }
 
 
-AGNode::AGNode(GLvertex3f pos) :
+AGNode::AGNode(GLvertex3f pos, AGNodeInfo *nodeInfo) :
 m_pos(pos),
-m_nodeInfo(NULL),
+m_nodeInfo(nodeInfo),
 m_active(true),
 m_fadeOut(1, 0, 0.5, 2)
 {
     m_inputActivation = m_outputActivation = 0;
     m_activation = 0;
+    
+    if(numInputPorts() > 0)
+    {
+        m_controlPortBuffer = new AGControl *[numInputPorts()];
+        for(int i = 0; i < numInputPorts(); i++)
+            m_controlPortBuffer[i] = NULL;
+    }
+    else
+    {
+        m_controlPortBuffer = NULL;
+    }
 }
 
 AGNode::~AGNode()
@@ -550,6 +563,26 @@ void AGNode::touchUp(const GLvertex3f &t)
     trash.deactivate();
 }
 
+void AGNode::pushControl(int port, AGControl *control)
+{
+    this->lock();
+    
+    libsp::map(m_outbound, ^(AGConnection *&conn) {
+        if(conn->rate() == RATE_CONTROL)
+        {
+            conn->dst()->receiveControl_internal(conn->dstPort(), control);
+        }
+    });
+    
+    this->unlock();
+}
+
+void AGNode::receiveControl_internal(int port, AGControl *control)
+{
+    m_controlPortBuffer[port] = control;
+    receiveControl(port, control);
+}
+
 
 //------------------------------------------------------------------------------
 // ### AGAudioNode ###
@@ -596,8 +629,8 @@ void AGAudioNode::initializeAudioNode()
 }
 
 
-AGAudioNode::AGAudioNode(GLvertex3f pos) :
-AGNode(pos)
+AGAudioNode::AGAudioNode(GLvertex3f pos, AGNodeInfo *nodeInfo) :
+AGNode(pos, nodeInfo)
 {
     initializeAudioNode();
     
@@ -778,14 +811,6 @@ void AGAudioNode::pullInputPorts(sampletime t, int nFrames)
         {
             conn->src()->renderAudio(t, NULL, m_inputPortBuffer[conn->dstPort()], nFrames);
         }
-        else
-        {
-            AGControl *control = conn->src()->renderControl(t);
-            float v;
-            control->mapTo(v);
-            for(int i = 0; i < nFrames; i++)
-                m_inputPortBuffer[conn->dstPort()][i] += v;
-        }
     }
     
     this->unlock();
@@ -851,8 +876,8 @@ void AGControlNode::initializeControlNode()
     }
 }
 
-AGControlNode::AGControlNode(GLvertex3f pos) :
-AGNode(pos)
+AGControlNode::AGControlNode(GLvertex3f pos, AGNodeInfo *nodeInfo) :
+AGNode(pos, nodeInfo)
 {
     initializeControlNode();
 }
@@ -918,48 +943,6 @@ void AGControlNode::render()
     
     AGNode::render();
 }
-
-//AGNode::HitTestResult AGControlNode::hit(const GLvertex3f &hit)
-//{
-//    float x, y;
-//    
-//    if(numInputPorts())
-//    {
-//        // check input port
-//        x = hit.x - (m_pos.x - s_radius);
-//        y = hit.y - m_pos.y;
-//        if(x*x + y*y <= s_portRadius*s_portRadius)
-//        {
-//            return HIT_INPUT_NODE;
-//        }
-//    }
-//    
-//    if(numOutputPorts())
-//    {
-//        // check output port
-//        x = hit.x - (m_pos.x + s_radius);
-//        y = hit.y - m_pos.y;
-//        if(x*x + y*y <= s_portRadius*s_portRadius)
-//        {
-//            return HIT_OUTPUT_NODE;
-//        }
-//    }
-//    
-//    // check whole node
-//    x = hit.x - m_pos.x;
-//    y = hit.y - m_pos.y;
-//    if(x*x + y*y <= s_radius*s_radius)
-//    {
-//        return HIT_MAIN_NODE;
-//    }
-//    
-//    return HIT_NONE;
-//}
-//
-//void AGControlNode::unhit()
-//{
-//    
-//}
 
 AGUIObject *AGControlNode::hitTest(const GLvertex3f &t)
 {

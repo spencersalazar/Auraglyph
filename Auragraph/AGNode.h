@@ -124,16 +124,21 @@ public:
     static void connect(AGConnection * connection);
     static void disconnect(AGConnection * connection);
     
-    AGNode(GLvertex3f pos = GLvertex3f());
+    AGNode(GLvertex3f pos = GLvertex3f(), AGNodeInfo *nodeInfo = NULL);
     virtual ~AGNode();
     
     void setTitle(const string &title) { m_title = title; }
     const string &title() const { return m_title; }
     
+    // TODO: render/push functions protected?
+    // graphics
     virtual void update(float t, float dt);
     virtual void render();
+    // audio
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) { assert(0); }
-    virtual AGControl *renderControl(sampletime t) { assert(0); return NULL; }
+    // control
+    virtual void pushControl(int port, AGControl *control);
+    virtual void receiveControl(int port, AGControl *control) { }
 
     enum HitTestResult
     {
@@ -199,6 +204,7 @@ private:
     static bool s_initNode;
     
     Mutex m_mutex;
+    virtual void receiveControl_internal(int port, AGControl *control);
     
 protected:
     static float s_portRadius;
@@ -218,6 +224,9 @@ protected:
     
     std::list<AGConnection *> m_inbound;
     std::list<AGConnection *> m_outbound;
+    
+    AGControl ** m_controlPortBuffer;
+    
 //    AGPortInfo * m_inputPortInfo;
     
     GLvertex3f m_pos;
@@ -242,7 +251,7 @@ public:
     
     static void initializeAudioNode();
     
-    AGAudioNode(GLvertex3f pos = GLvertex3f());
+    AGAudioNode(GLvertex3f pos = GLvertex3f(), AGNodeInfo *nodeInfo = NULL);
     virtual ~AGAudioNode();
     
     virtual void update(float t, float dt);
@@ -278,7 +287,6 @@ protected:
     sampletime m_lastTime;
     float * m_outputBuffer;
     float ** m_inputPortBuffer;
-    AGControl ** m_controlPortBuffer;
     
     float m_gain;
     
@@ -293,7 +301,7 @@ class AGControlNode : public AGNode
 public:
     static void initializeControlNode();
     
-    AGControlNode(GLvertex3f pos = GLvertex3f());
+    AGControlNode(GLvertex3f pos = GLvertex3f(), AGNodeInfo *nodeInfo = NULL);
     virtual ~AGControlNode() { }
     
     virtual void update(float t, float dt);

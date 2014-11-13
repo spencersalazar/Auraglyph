@@ -9,7 +9,12 @@
 #import "AGAudioManager.h"
 #import "AGNode.h"
 #import "AGAudioNode.h"
+#import "AGTimer.h"
+
 #import "mo_audio.h"
+
+#import "Mutex.h"
+#import "spstl.h"
 
 
 static float g_audio_buf[1024];
@@ -17,6 +22,9 @@ static float g_audio_buf[1024];
 @interface AGAudioManager ()
 {
     sampletime t;
+    
+    list<AGTimer *> _timers;
+    Mutex _timersMutex;
 }
 
 - (void)renderAudio:(Float32 *)buffer numFrames:(UInt32)numFrames;
@@ -28,14 +36,23 @@ void audio_cb( Float32 * buffer, UInt32 numFrames, void * userData )
     [(__bridge AGAudioManager *)userData renderAudio:buffer numFrames:numFrames];
 }
 
+static AGAudioManager *g_audioManager;
+
 @implementation AGAudioManager
 
 @synthesize outputNode;
+
++ (id)instance
+{
+    return g_audioManager;
+}
 
 - (id)init
 {
     if(self = [super init])
     {
+        g_audioManager = self;
+        
         t = 0;
         self.outputNode = NULL;
         
@@ -48,11 +65,31 @@ void audio_cb( Float32 * buffer, UInt32 numFrames, void * userData )
     return self;
 }
 
+- (void)addTimer:(AGTimer *)timer
+{
+    _timersMutex.lock();
+    _timers.push_back(timer);
+    _timersMutex.unlock();
+}
+
+- (void)removeTimer:(AGTimer *)timer
+{
+    _timersMutex.lock();
+    _timers.remove(timer);
+    _timersMutex.unlock();
+}
+
 
 - (void)renderAudio:(Float32 *)buffer numFrames:(UInt32)numFrames
 {
     memset(g_audio_buf, 0, sizeof(float)*1024);
-
+    
+    _timersMutex.lock();
+    libsp::map(_timers, ^(AGTimer *&timer){
+        timer->checkTimer(t/AGAudioNode::sampleRate(), numFrames/AGAudioNode::sampleRate());
+    });
+    _timersMutex.unlock();
+    
     if(self.outputNode)
     {
         self.outputNode->renderAudio(t, NULL, g_audio_buf, numFrames);

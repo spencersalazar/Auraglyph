@@ -20,9 +20,8 @@
 
 AGNodeInfo *AGAudioOutputNode::s_audioNodeInfo = NULL;
 
-AGAudioOutputNode::AGAudioOutputNode(GLvertex3f pos) : AGAudioNode(pos)
+AGAudioOutputNode::AGAudioOutputNode(GLvertex3f pos) : AGAudioNode(pos, s_audioNodeInfo)
 {
-//    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
     m_nodeInfo = s_audioNodeInfo;
 }
 
@@ -134,10 +133,10 @@ void AGAudioSineWaveNode::initialize()
     s_audioNodeInfo->editPortInfo.push_back({ "gain", true, true });
 }
 
-AGAudioSineWaveNode::AGAudioSineWaveNode(GLvertex3f pos) : AGAudioNode(pos)
+AGAudioSineWaveNode::AGAudioSineWaveNode(GLvertex3f pos) : AGAudioNode(pos, s_audioNodeInfo)
 {
 //    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
-    m_nodeInfo = s_audioNodeInfo;
+//    m_nodeInfo = s_audioNodeInfo;
     
     m_freq = 220;
     m_phase = 0;
@@ -167,6 +166,9 @@ void AGAudioSineWaveNode::renderAudio(sampletime t, float *input, float *output,
 {
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
+    
+    if(m_controlPortBuffer[0] != NULL) m_controlPortBuffer[0]->mapTo(m_freq);
+    if(m_controlPortBuffer[1] != NULL) m_controlPortBuffer[1]->mapTo(m_gain);
     
     for(int i = 0; i < nFrames; i++)
     {
@@ -254,10 +256,10 @@ void AGAudioSquareWaveNode::initialize()
     s_audioNodeInfo->editPortInfo.push_back({ "gain", true, true });
 }
 
-AGAudioSquareWaveNode::AGAudioSquareWaveNode(GLvertex3f pos) : AGAudioNode(pos)
+AGAudioSquareWaveNode::AGAudioSquareWaveNode(GLvertex3f pos) : AGAudioNode(pos, s_audioNodeInfo)
 {
 //    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
-    m_nodeInfo = s_audioNodeInfo;
+//    m_nodeInfo = s_audioNodeInfo;
     
     m_freq = 220;
     m_phase = 0;
@@ -288,6 +290,9 @@ void AGAudioSquareWaveNode::renderAudio(sampletime t, float *input, float *outpu
 {
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
+    
+    if(m_controlPortBuffer[0] != NULL) m_controlPortBuffer[0]->mapTo(m_freq);
+    if(m_controlPortBuffer[1] != NULL) m_controlPortBuffer[1]->mapTo(m_gain);
     
     for(int i = 0; i < nFrames; i++)
     {
@@ -375,10 +380,10 @@ void AGAudioSawtoothWaveNode::initialize()
     s_audioNodeInfo->editPortInfo.push_back({ "gain", true, true });
 }
 
-AGAudioSawtoothWaveNode::AGAudioSawtoothWaveNode(GLvertex3f pos) : AGAudioNode(pos)
+AGAudioSawtoothWaveNode::AGAudioSawtoothWaveNode(GLvertex3f pos) : AGAudioNode(pos, s_audioNodeInfo)
 {
 //    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
-    m_nodeInfo = s_audioNodeInfo;
+//    m_nodeInfo = s_audioNodeInfo;
     
     m_freq = 220;
     m_phase = 0;
@@ -409,6 +414,9 @@ void AGAudioSawtoothWaveNode::renderAudio(sampletime t, float *input, float *out
 {
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
+    
+    if(m_controlPortBuffer[0] != NULL) m_controlPortBuffer[0]->mapTo(m_freq);
+    if(m_controlPortBuffer[1] != NULL) m_controlPortBuffer[1]->mapTo(m_gain);
     
     for(int i = 0; i < nFrames; i++)
     {
@@ -497,10 +505,10 @@ void AGAudioTriangleWaveNode::initialize()
     s_audioNodeInfo->editPortInfo.push_back({ "gain", true, true });
 }
 
-AGAudioTriangleWaveNode::AGAudioTriangleWaveNode(GLvertex3f pos) : AGAudioNode(pos)
+AGAudioTriangleWaveNode::AGAudioTriangleWaveNode(GLvertex3f pos) : AGAudioNode(pos, s_audioNodeInfo)
 {
 //    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
-    m_nodeInfo = s_audioNodeInfo;
+//    m_nodeInfo = s_audioNodeInfo;
     
     m_freq = 220;
     m_phase = 0;
@@ -531,6 +539,9 @@ void AGAudioTriangleWaveNode::renderAudio(sampletime t, float *input, float *out
 {
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
+    
+    if(m_controlPortBuffer[0] != NULL) m_controlPortBuffer[0]->mapTo(m_freq);
+    if(m_controlPortBuffer[1] != NULL) m_controlPortBuffer[1]->mapTo(m_gain);
     
     for(int i = 0; i < nFrames; i++)
     {
@@ -631,10 +642,10 @@ void AGAudioADSRNode::initialize()
 }
 
 
-AGAudioADSRNode::AGAudioADSRNode(GLvertex3f pos) : AGAudioNode(pos)
+AGAudioADSRNode::AGAudioADSRNode(GLvertex3f pos) : AGAudioNode(pos, s_audioNodeInfo)
 {
 //    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
-    m_nodeInfo = s_audioNodeInfo;
+//    m_nodeInfo = s_audioNodeInfo;
     
     allocatePortBuffers();
     
@@ -849,11 +860,11 @@ void AGAudioFilterNode::initialize()
 
 
 AGAudioFilterNode::AGAudioFilterNode(GLvertex3f pos, Butter2Filter *filter, AGNodeInfo *nodeInfo) :
-AGAudioNode(pos),
+AGAudioNode(pos, nodeInfo),
 m_filter(filter)
 {
 //    m_inputPortInfo = &nodeInfo->portInfo[0];
-    m_nodeInfo = nodeInfo;
+//    m_nodeInfo = nodeInfo;
     
     allocatePortBuffers();
     

@@ -9,9 +9,15 @@
 #import <Foundation/Foundation.h>
 
 class AGAudioOutputNode;
+class AGTimer;
 
 @interface AGAudioManager : NSObject
 
 @property (nonatomic) AGAudioOutputNode * outputNode;
+
++ (id)instance;
+
+- (void)addTimer:(AGTimer *)timer;
+- (void)removeTimer:(AGTimer *)timer;
 
 @end
