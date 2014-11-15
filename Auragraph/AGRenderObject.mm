@@ -8,12 +8,38 @@
 
 #include "AGRenderObject.h"
 #include "AGViewController.h"
+#include "AGGenericShader.h"
 
 #define DEBUG_BOUNDS 0
 
 #if DEBUG_BOUNDS
 #include "GeoGenerator.h"
 #endif // DEBUG_BOUNDS
+
+
+//------------------------------------------------------------------------------
+// ### AGRenderInfo ###
+//------------------------------------------------------------------------------
+AGRenderInfo::AGRenderInfo() :
+shader(&AGGenericShader::instance()), numVertex(0), geoType(GL_LINES)
+{ }
+
+AGRenderInfoV::AGRenderInfoV() : color(GLcolor4f::black), geo(NULL) { }
+
+void AGRenderInfoV::set()
+{
+    assert(geo != NULL);
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
+    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo);
+}
+
+void AGRenderInfoVC::set()
+{
+    glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvcprimf), &geo->color);
+    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvcprimf), &geo->vertex);
+}
 
 //------------------------------------------------------------------------------
 // ### AGRenderObject ###

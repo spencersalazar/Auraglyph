@@ -9,18 +9,18 @@
 #ifndef __Auragraph__AGRenderObject__
 #define __Auragraph__AGRenderObject__
 
-#import "Geometry.h"
-#import "AGGenericShader.h"
+#include "Geometry.h"
+#include <GLKit/GLKit.h>
 
-#import <list>
+#include <list>
 using namespace std;
+
+class AGGenericShader;
 
 struct AGRenderInfo
 {
 public:
-    AGRenderInfo() :
-    shader(&AGGenericShader::instance()), numVertex(0), geoType(GL_LINES)
-    { }
+    AGRenderInfo();
     
     virtual void set() = 0;
     
@@ -31,15 +31,9 @@ public:
 
 struct AGRenderInfoV : public AGRenderInfo
 {
-    AGRenderInfoV() : color(GLcolor4f::black), geo(NULL) { }
+    AGRenderInfoV();
     
-    virtual void set()
-    {
-        assert(geo != NULL);
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
-        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo);
-    }
+    virtual void set();
     
     GLcolor4f color;
     GLvertex3f *geo;
@@ -47,16 +41,10 @@ struct AGRenderInfoV : public AGRenderInfo
 
 struct AGRenderInfoVC : public AGRenderInfo
 {
-    virtual void set()
-    {
-        glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvcprimf), &geo->color);
-        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvcprimf), &geo->vertex);
-    }
+    virtual void set();
     
     GLvcprimf *geo;
 };
-
 
 struct AGRenderState
 {

@@ -9,6 +9,7 @@
 #include "AGConnection.h"
 #include "AGNode.h"
 #include "AGViewController.h"
+#include "AGGenericShader.h"
 
 #include "Texture.h"
 #include "spstl.h"

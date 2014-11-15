@@ -10,6 +10,7 @@
 #include "AGUserInterface.h"
 #include "AGStyle.h"
 #include "AGHandwritingRecognizer.h"
+#include "AGGenericShader.h"
 
 #include "GeoGenerator.h"
 
