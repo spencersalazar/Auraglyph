@@ -602,40 +602,46 @@ static AGViewController * g_instance = nil;
             CGPoint p = [[touches anyObject] locationInView:self.view];
             GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
             
-            AGInteractiveObject *hit = NULL;
+            AGNode * node = NULL;
+            int port;
+            AGNode::HitTestResult result = [self hitTest:pos node:&node port:&port];
             
-            for(std::list<AGInteractiveObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
+            switch(result)
             {
-                if((hit = (*i)->hitTest(pos))) break;
-            }
-            
-            if(hit)
-            {
-                _touchCapture = hit;
-                _touchCapture->touchDown(pos);
-            }
-            else
-            {
-                AGNode * node = NULL;
-                int port;
-                AGNode::HitTestResult result = [self hitTest:pos node:&node port:&port];
-                
-                switch(result)
+                case AGNode::HIT_INPUT_NODE:
+                case AGNode::HIT_OUTPUT_NODE:
+                    _touchHandler = [[AGConnectTouchHandler alloc] initWithViewController:self];
+                    break;
+                    
+                case AGNode::HIT_MAIN_NODE:
+                    _touchHandler = [[AGMoveNodeTouchHandler alloc] initWithViewController:self node:node];
+                    break;
+                    
+                case AGNode::HIT_NONE:
                 {
-                    case AGNode::HIT_INPUT_NODE:
-                    case AGNode::HIT_OUTPUT_NODE:
-                        _touchHandler = [[AGConnectTouchHandler alloc] initWithViewController:self];
-                        break;
-                        
-                    case AGNode::HIT_MAIN_NODE:
-                        _touchHandler = [[AGMoveNodeTouchHandler alloc] initWithViewController:self node:node];
-                        break;
-                        
-                    case AGNode::HIT_NONE:
+                    AGInteractiveObject *hit = NULL;
+                    
+                    for(std::list<AGInteractiveObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
+                    {
+                        hit = (*i)->hitTest(pos);
+                        if(hit != NULL)
+                            break;
+                    }
+                    
+                    if(hit)
+                    {
+                        _touchCapture = hit;
+                        _touchCapture->touchDown(pos);
+                    }
+                    else
+                    {
                         _touchHandler = [[AGDrawNodeTouchHandler alloc] initWithViewController:self];
-                        break;
+                    }
                 }
+                    break;
             }
+
+            
         }
         
         [_touchHandler touchesBegan:touches withEvent:event];
