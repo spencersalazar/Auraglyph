@@ -9,7 +9,7 @@
 #include "AGRenderObject.h"
 #include "AGViewController.h"
 
-#define DEBUG_BOUNDS 1
+#define DEBUG_BOUNDS 0
 
 #if DEBUG_BOUNDS
 #include "GeoGenerator.h"
@@ -106,6 +106,7 @@ void AGRenderObject::renderOut()
 
 void AGRenderObject::debug_renderBounds()
 {
+#if DEBUG_BOUNDS
     GLvrectf bounds = effectiveBounds();
     GLcolor4f color = GLcolor4f(0.0f, 1.0f, 1.0f, 0.5f);
     
@@ -121,6 +122,7 @@ void AGRenderObject::debug_renderBounds()
     glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), &bounds);
     
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+#endif // DEBUG_BOUNDS
 }
 
 

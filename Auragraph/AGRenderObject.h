@@ -95,6 +95,7 @@ public:
     
     virtual GLvertex3f position() { return GLvertex3f(); }
     virtual GLvertex2f size() { return GLvertex2f(); }
+    // TODO: make non-virtual
     virtual GLvrectf effectiveBounds() { return GLvrectf(position()-size()*0.5, position()+size()*0.5); }
     AGRenderObject *parent() const { return m_parent; }
     

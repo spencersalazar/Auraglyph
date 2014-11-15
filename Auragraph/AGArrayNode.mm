@@ -390,6 +390,9 @@ public:
             
             m_valueRef = valueRef;
         }
+        
+        virtual GLvertex3f position() { return m_arrayEditor->position()+m_pos; }
+        virtual GLvertex2f size() { return m_size; }
 
     protected:
         GLvertex3f m_geo[4];
@@ -399,11 +402,6 @@ public:
         GLvertex3f m_pos;
         
         AGUIArrayEditor * const m_arrayEditor;
-        
-        virtual GLvrectf effectiveBounds()
-        {
-            return GLvrectf(m_arrayEditor->position()+m_pos-m_size, m_arrayEditor->position()+m_pos+m_size);
-        }
         
         bool m_hasValue;
         bool m_pressed;
