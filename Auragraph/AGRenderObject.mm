@@ -9,6 +9,11 @@
 #include "AGRenderObject.h"
 #include "AGViewController.h"
 
+#define DEBUG_BOUNDS 1
+
+#if DEBUG_BOUNDS
+#include "GeoGenerator.h"
+#endif // DEBUG_BOUNDS
 
 //------------------------------------------------------------------------------
 // ### AGRenderObject ###
@@ -97,6 +102,25 @@ void AGRenderObject::renderOut()
 {
     for(list<AGRenderObject *>::iterator i = m_children.begin(); i != m_children.end(); i++)
         (*i)->renderOut();
+}
+
+void AGRenderObject::debug_renderBounds()
+{
+    GLvrectf bounds = effectiveBounds();
+    GLcolor4f color = GLcolor4f(0.0f, 1.0f, 1.0f, 0.5f);
+    
+    glBindVertexArrayOES(0);
+    
+    AGGenericShader &shader = AGGenericShader::instance();
+    shader.useProgram();
+    shader.setMVPMatrix(GLKMatrix4Multiply(projectionMatrix(), globalModelViewMatrix()));
+    shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(globalModelViewMatrix()), NULL));
+    
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
+    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), &bounds);
+    
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 }
 
 

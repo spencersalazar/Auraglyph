@@ -152,6 +152,8 @@ public:
         }
         
         renderChildren();
+        
+        debug_renderBounds();
     }
     
     virtual void touchDown(const AGTouchInfo &t)
@@ -341,6 +343,8 @@ public:
             }
             
             AGInteractiveObject::render();
+            
+            debug_renderBounds();
         }
         
         virtual void touchDown(const AGTouchInfo &t)
@@ -521,6 +525,8 @@ public:
             renderChildren();
             renderPrimitive(&m_boxOuterInfo);
         }
+        
+        debug_renderBounds();
     }
     
     virtual void touchDown(const AGTouchInfo &t)

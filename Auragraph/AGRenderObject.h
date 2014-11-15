@@ -95,6 +95,7 @@ public:
     
     virtual GLvertex3f position() { return GLvertex3f(); }
     virtual GLvertex2f size() { return GLvertex2f(); }
+    virtual GLvrectf effectiveBounds() { return GLvrectf(position()-size()*0.5, position()+size()*0.5); }
     AGRenderObject *parent() const { return m_parent; }
     
 protected:
@@ -106,9 +107,13 @@ protected:
     void renderPrimitive(AGRenderInfo *info);
     void renderPrimitives();
     void renderChildren();
+    void debug_renderBounds();
     
     AGRenderObject *m_parent;
     list<AGRenderObject *> m_children;
+    
+private:
+    bool m_renderedBounds;
 };
 
 
@@ -139,8 +144,6 @@ public:
     virtual void touchDown(const AGTouchInfo &t);
     virtual void touchMove(const AGTouchInfo &t);
     virtual void touchUp(const AGTouchInfo &t);
-    
-    virtual GLvrectf effectiveBounds() { return GLvrectf(position()-size()*0.5, position()+size()*0.5); }
     
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
     

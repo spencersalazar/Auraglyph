@@ -188,7 +188,7 @@ struct GLtrif
 } __attribute__((packed));
 
 // rect primitive -- 4 vertex primitives
-// renderable directly as GL_TRIANGLE_STRIP
+// fill directly as GL_TRIANGLE_FAN or stroke as GL_LINE_LOOP
 struct GLvrectf
 {
     GLvrectf() :
@@ -203,8 +203,8 @@ struct GLvrectf
     
     GLvertex3f bl; // bottom left
     GLvertex3f br; // bottom right
-    GLvertex3f ul; // upper left
     GLvertex3f ur; // upper right
+    GLvertex3f ul; // upper left
 } __attribute__((packed));
 
 
