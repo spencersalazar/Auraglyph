@@ -42,7 +42,7 @@ struct GLvertex3f
     GLvertex2f xy() const;
     
     GLvertex2f toLatLong() const;
-} __attribute__((packed));
+} __attribute__((packed)) __attribute__((aligned (4)));
 
 GLvertex3f operator+(const GLvertex3f &v1, const GLvertex3f &v2);
 GLvertex3f operator-(const GLvertex3f &v1, const GLvertex3f &v2);
@@ -94,7 +94,7 @@ struct GLcolor4f
     static const GLcolor4f blue;
     static const GLcolor4f black;
     
-} __attribute__((packed));
+} __attribute__((packed)) __attribute__((aligned (4)));
 
 
 GLvertex2f operator+(const GLvertex2f &v1, const GLvertex2f &v2);
@@ -142,7 +142,7 @@ struct GLvertex2f
         return GLvertex2f(x,y)/magnitude();
     }
     
-} __attribute__((packed));
+} __attribute__((packed)) __attribute__((aligned (4)));
 
 
 // geometry primitve, i.e. vertex/normal/uv/color

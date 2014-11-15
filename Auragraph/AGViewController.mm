@@ -410,8 +410,6 @@ static AGViewController * g_instance = nil;
         (*i)->update(_t, dt);
     for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
         (*i)->update(_t, dt);
-//    for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
-//        (*i)->update(_t, dt);
     
     [_touchHandler update:_t dt:dt];
 
