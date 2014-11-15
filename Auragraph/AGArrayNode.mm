@@ -96,7 +96,7 @@ public:
     
     ~AGUINumberInput()
     {
-        // TODO: Block_release?
+        AGBlock_release(m_action);
         m_action = NULL;
     }
     
@@ -238,8 +238,7 @@ public:
     
     void setAction(void (^action)(bool accepted, float value))
     {
-        // TODO: Block_copy?
-        m_action = action;
+        m_action = AGBlock_copy(action);
     }
 
 protected:
@@ -298,7 +297,7 @@ public:
         
         ~Element()
         {
-            // TODO: Block_release?
+            AGBlock_release(m_action);
             m_editAction = NULL;
         }
         
@@ -377,8 +376,7 @@ public:
         
         void setEditAction(void (^editAction)(Element *e))
         {
-            // TODO: Block_copy?
-            m_editAction = editAction;
+            m_editAction = AGBlock_copy(editAction);
         }
 
         float value() { return m_value; }

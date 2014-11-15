@@ -15,4 +15,7 @@
 
 #define G_RATIO ((float) 1.61803398875)
 
+#define AGBlock_copy(b) b
+#define AGBlock_release(b)
+
 #endif
