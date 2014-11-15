@@ -9,6 +9,11 @@
 #ifndef Auragraph_spstl_h
 #define Auragraph_spstl_h
 
+
+/*------------------------------------------------------------------------------
+  itmap()
+  Map a block to every item in a C++/STL iterable container
+ -----------------------------------------------------------------------------*/
 template<class T>
 void itmap(T &container, void (^func)(typename T::reference v))
 {
@@ -16,6 +21,10 @@ void itmap(T &container, void (^func)(typename T::reference v))
         func(*i);
 }
 
+/*------------------------------------------------------------------------------
+ itfilter()
+ Use a block to remove/filter elements from a C++/STL iterable container
+ -----------------------------------------------------------------------------*/
 template<class T>
 void itfilter(T &container, bool (^func)(typename T::reference v))
 {
