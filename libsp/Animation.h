@@ -120,4 +120,30 @@ public:
 };
 
 
+template<typename T, typename SlewType=float>
+struct slew
+{
+//    slew() : slewrate(0.1) { }
+//    slew(SlewType _slew) : slewrate(_slew) { }
+    slew(SlewType _slew, T _start) : value(_start), target(_start), slewrate(_slew) { }
+    
+    inline void reset(T _val) { target = _val; value = _val; }
+    inline void interp() { value = (target-value)*slewrate + value; }
+    
+    // cast directly to float
+    operator const T &() const { return value; }
+    
+    void operator=(const T &f) { target = f; }
+    void operator+=(const T &f) { target = target+f; }
+    void operator-=(const T &f) { target = target-f; }
+    void operator*=(const T &f) { target = target*f; }
+    void operator/=(const T &f) { target
+        = target/f; }
+    
+    T value, target;
+    SlewType slewrate;
+};
+
+
+
 #endif

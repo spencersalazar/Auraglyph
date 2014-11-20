@@ -55,7 +55,7 @@ struct AGNodeInfo
 typedef long long sampletime;
 
 
-class AGConnection : public AGUIObject
+class AGConnection : public AGInteractiveObject
 {
 public:
     
@@ -69,7 +69,7 @@ public:
     virtual void touchMove(const GLvertex3f &t);
     virtual void touchUp(const GLvertex3f &t);
     
-    virtual AGUIObject *hitTest(const GLvertex3f &t);
+    virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
     
     AGNode * src() const { return m_src; }
     AGNode * dst() const { return m_dst; }
@@ -84,9 +84,6 @@ public:
 private:
     
     static bool s_init;
-    static GLuint s_program;
-    static GLint s_uniformMVPMatrix;
-    static GLint s_uniformNormalMatrix;
     static GLuint s_flareTex;
     
     GLvertex3f m_geo[3];
@@ -103,7 +100,7 @@ private:
     bool m_hit;
     bool m_stretch;
     bool m_break;
-    GLvertex3f m_stretchPoint;
+    slew<GLvertex3f> m_stretchPoint;
     
     bool m_active;
     powcurvef m_alpha;
