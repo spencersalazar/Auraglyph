@@ -111,6 +111,8 @@ private:
     GLvertex3f m_flareGeo[4];
     GLvertex2f m_flareUV[4];
     
+    slew<float> m_controlVisScale;
+    
     static void initalize();
     
     void updatePath();
