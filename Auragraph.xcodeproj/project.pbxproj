@@ -63,8 +63,6 @@
 		098740BF17BCE0130098511A /* Perfect DOS VGA 437.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 098740BE17BCE0130098511A /* Perfect DOS VGA 437.ttf */; };
 		09891313189F6D3A00AB98AD /* trash.png in Resources */ = {isa = PBXBuildFile; fileRef = 09891311189F6D3A00AB98AD /* trash.png */; };
 		09891316189F70D200AB98AD /* AGTouchHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09891315189F70D200AB98AD /* AGTouchHandler.mm */; };
-		0989131918A07E1200AB98AD /* Texture.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 0989131718A07E1200AB98AD /* Texture.fsh */; };
-		0989131A18A07E1200AB98AD /* Texture.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 0989131818A07E1200AB98AD /* Texture.vsh */; };
 		0989131C18A086E800AB98AD /* TexFont.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 098740B717BCC16B0098511A /* TexFont.vsh */; };
 		0989131D18A086E800AB98AD /* Screen.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 098C0E1317C4278C00171366 /* Screen.vsh */; };
 		0989131E18A086E800AB98AD /* Clip.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 09D9D2E917ECF65D00938871 /* Clip.vsh */; };
@@ -88,13 +86,9 @@
 		099AF12A17D1A6DA000BAB7B /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 099AF12517D1A6DA000BAB7B /* SSZipArchive.m */; };
 		099AF12C17D1A6EE000BAB7B /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 099AF12B17D1A6EE000BAB7B /* libz.dylib */; };
 		099AF12E17D1A892000BAB7B /* projects.zip in Resources */ = {isa = PBXBuildFile; fileRef = 099AF12D17D1A892000BAB7B /* projects.zip */; };
-		09C7C3E418CF27AC0099CE88 /* Waveform.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 09C7C3E218CF27AC0099CE88 /* Waveform.fsh */; };
-		09C7C3E518CF27AC0099CE88 /* Waveform.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 09C7C3E318CF27AC0099CE88 /* Waveform.vsh */; };
 		09C7C3E618CF2B8E0099CE88 /* Waveform.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 09C7C3E318CF27AC0099CE88 /* Waveform.vsh */; };
 		09C7C3E718CF2B8E0099CE88 /* Waveform.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 09C7C3E218CF27AC0099CE88 /* Waveform.fsh */; };
 		09D8C3FF1A0A4DF2008D788A /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 09D8C3FE1A0A4DF2008D788A /* OFL.txt */; };
-		09D9D2EA17ECF65D00938871 /* Clip.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 09D9D2E817ECF65D00938871 /* Clip.fsh */; };
-		09D9D2EB17ECF65D00938871 /* Clip.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 09D9D2E917ECF65D00938871 /* Clip.vsh */; };
 		09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7A18A3484F00B21D97 /* Mutex.cpp */; };
 		09E5EC7F18A36A9D00B21D97 /* SPFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */; };
 		09E5EC8218A46F7300B21D97 /* AGControl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC8018A46F7300B21D97 /* AGControl.mm */; };
@@ -279,11 +273,11 @@
 		099AF12B17D1A6EE000BAB7B /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		099AF12D17D1A892000BAB7B /* projects.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = projects.zip; sourceTree = "<group>"; };
 		09A8BB4019F9E39E00E15BF7 /* spMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spMath.h; sourceTree = "<group>"; };
-		09C7C3E218CF27AC0099CE88 /* Waveform.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Waveform.fsh; path = Shaders/Waveform.fsh; sourceTree = "<group>"; };
-		09C7C3E318CF27AC0099CE88 /* Waveform.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Waveform.vsh; path = Shaders/Waveform.vsh; sourceTree = "<group>"; };
+		09C7C3E218CF27AC0099CE88 /* Waveform.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Waveform.fsh; path = Shaders/Waveform.fsh; sourceTree = "<group>"; };
+		09C7C3E318CF27AC0099CE88 /* Waveform.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Waveform.vsh; path = Shaders/Waveform.vsh; sourceTree = "<group>"; };
 		09D8C3FE1A0A4DF2008D788A /* OFL.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
-		09D9D2E817ECF65D00938871 /* Clip.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Clip.fsh; path = Shaders/Clip.fsh; sourceTree = "<group>"; };
-		09D9D2E917ECF65D00938871 /* Clip.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Clip.vsh; path = Shaders/Clip.vsh; sourceTree = "<group>"; };
+		09D9D2E817ECF65D00938871 /* Clip.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Clip.fsh; path = Shaders/Clip.fsh; sourceTree = "<group>"; };
+		09D9D2E917ECF65D00938871 /* Clip.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Clip.vsh; path = Shaders/Clip.vsh; sourceTree = "<group>"; };
 		09E5EC7A18A3484F00B21D97 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mutex.cpp; sourceTree = "<group>"; };
 		09E5EC7B18A3484F00B21D97 /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = "<group>"; };
 		09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SPFilter.cpp; sourceTree = "<group>"; };
@@ -745,9 +739,7 @@
 				09E5EC8218A46F7300B21D97 /* AGControl.mm in Sources */,
 				09891316189F70D200AB98AD /* AGTouchHandler.mm in Sources */,
 				095D12FB17ACAA100048A012 /* Geometry.cpp in Sources */,
-				09D9D2EB17ECF65D00938871 /* Clip.vsh in Sources */,
 				093395771A08BFAC009E4802 /* AGNodeSelector.mm in Sources */,
-				0989131A18A07E1200AB98AD /* Texture.vsh in Sources */,
 				095D12FC17ACAA100048A012 /* Texture.mm in Sources */,
 				09E5EC7F18A36A9D00B21D97 /* SPFilter.cpp in Sources */,
 				09FC92471A14F55D005D14A3 /* AGTimer.mm in Sources */,
@@ -755,7 +747,6 @@
 				09F3C50818A5A8C300E499AF /* Stk.cpp in Sources */,
 				09817F3919F87CC7000E9FB3 /* GeoGenerator.cpp in Sources */,
 				093395711A088612009E4802 /* AGArrayNode.mm in Sources */,
-				0989131918A07E1200AB98AD /* Texture.fsh in Sources */,
 				09E5EC8718A5A88100B21D97 /* ADSR.cpp in Sources */,
 				09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */,
 				09412E0C1A2112300065598D /* NSString+STLString.mm in Sources */,
@@ -769,18 +760,15 @@
 				098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */,
 				098740AA17BB99DE0098511A /* TexFont.mm in Sources */,
 				098740AD17BC377E0098511A /* AGAudioNode.mm in Sources */,
-				09C7C3E518CF27AC0099CE88 /* Waveform.vsh in Sources */,
 				098740B017BC527E0098511A /* ES2Render.mm in Sources */,
 				09FC924B1A153A83005D14A3 /* AGConnection.mm in Sources */,
 				098740B317BC61410098511A /* AGUserInterface.mm in Sources */,
 				0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */,
 				09412E061A205A070065598D /* AGDocument.mm in Sources */,
-				09C7C3E418CF27AC0099CE88 /* Waveform.fsh in Sources */,
 				091081801A0B63DB0063028B /* AGStyle.mm in Sources */,
 				099AF11317D12DD9000BAB7B /* AGTrainerViewController.mm in Sources */,
 				099AF12617D1A6DA000BAB7B /* ioapi.c in Sources */,
 				099AF12717D1A6DA000BAB7B /* mztools.c in Sources */,
-				09D9D2EA17ECF65D00938871 /* Clip.fsh in Sources */,
 				099AF12817D1A6DA000BAB7B /* unzip.c in Sources */,
 				099AF12917D1A6DA000BAB7B /* zip.c in Sources */,
 				099AF12A17D1A6DA000BAB7B /* SSZipArchive.m in Sources */,
