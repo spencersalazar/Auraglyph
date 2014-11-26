@@ -28,6 +28,8 @@ extern "C" int shaperecst(int argc, const char** argv);
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    application.statusBarHidden = YES;
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     self.viewController = [[AGViewController alloc] initWithNibName:@"AGViewController" bundle:nil];

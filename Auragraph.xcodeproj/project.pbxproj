@@ -19,6 +19,9 @@
 		093395741A088849009E4802 /* AGControlNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 093395721A088849009E4802 /* AGControlNode.mm */; };
 		093395771A08BFAC009E4802 /* AGNodeSelector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 093395751A08BFAC009E4802 /* AGNodeSelector.mm */; };
 		0933957A1A0A3785009E4802 /* AGAboutBox.mm in Sources */ = {isa = PBXBuildFile; fileRef = 093395781A0A3785009E4802 /* AGAboutBox.mm */; };
+		09412E061A205A070065598D /* AGDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09412E041A205A070065598D /* AGDocument.mm */; };
+		09412E091A210B630065598D /* sputil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09412E071A210B630065598D /* sputil.cpp */; };
+		09412E0C1A2112300065598D /* NSString+STLString.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09412E0B1A2112300065598D /* NSString+STLString.mm */; };
 		095D12C417ACA36C0048A012 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C317ACA36C0048A012 /* UIKit.framework */; };
 		095D12C617ACA36C0048A012 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C517ACA36C0048A012 /* Foundation.framework */; };
 		095D12C817ACA36C0048A012 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C717ACA36C0048A012 /* CoreGraphics.framework */; };
@@ -124,6 +127,12 @@
 		093395781A0A3785009E4802 /* AGAboutBox.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGAboutBox.mm; sourceTree = "<group>"; };
 		093395791A0A3785009E4802 /* AGAboutBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAboutBox.h; sourceTree = "<group>"; };
 		093D631E18CECF0A0012C4B7 /* Animation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Animation.h; sourceTree = "<group>"; };
+		09412E041A205A070065598D /* AGDocument.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGDocument.mm; sourceTree = "<group>"; };
+		09412E051A205A070065598D /* AGDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGDocument.h; sourceTree = "<group>"; };
+		09412E071A210B630065598D /* sputil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sputil.cpp; sourceTree = "<group>"; };
+		09412E081A210B630065598D /* sputil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sputil.h; sourceTree = "<group>"; };
+		09412E0A1A2112300065598D /* NSString+STLString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+STLString.h"; sourceTree = "<group>"; };
+		09412E0B1A2112300065598D /* NSString+STLString.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSString+STLString.mm"; sourceTree = "<group>"; };
 		095D12C017ACA36C0048A012 /* AURAGRPH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AURAGRPH.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		095D12C317ACA36C0048A012 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		095D12C517ACA36C0048A012 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -413,6 +422,8 @@
 				0910817E1A0B63DB0063028B /* AGStyle.mm */,
 				09FC92461A14F55D005D14A3 /* AGTimer.h */,
 				09FC92451A14F55D005D14A3 /* AGTimer.mm */,
+				09412E051A205A070065598D /* AGDocument.h */,
+				09412E041A205A070065598D /* AGDocument.mm */,
 				099AF11017D12DD9000BAB7B /* AGTrainerViewController.h */,
 				099AF11117D12DD9000BAB7B /* AGTrainerViewController.mm */,
 				099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */,
@@ -476,6 +487,10 @@
 				09817F3819F87CC7000E9FB3 /* GeoGenerator.cpp */,
 				09A8BB4019F9E39E00E15BF7 /* spMath.h */,
 				09FC92481A14F915005D14A3 /* spstl.h */,
+				09412E081A210B630065598D /* sputil.h */,
+				09412E071A210B630065598D /* sputil.cpp */,
+				09412E0A1A2112300065598D /* NSString+STLString.h */,
+				09412E0B1A2112300065598D /* NSString+STLString.mm */,
 			);
 			path = libsp;
 			sourceTree = "<group>";
@@ -743,10 +758,12 @@
 				0989131918A07E1200AB98AD /* Texture.fsh in Sources */,
 				09E5EC8718A5A88100B21D97 /* ADSR.cpp in Sources */,
 				09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */,
+				09412E0C1A2112300065598D /* NSString+STLString.mm in Sources */,
 				098F9B3A19EE49BA00CE2F24 /* AGRenderObject.mm in Sources */,
 				095D12FF17ACAB7B0048A012 /* ShaderHelper.mm in Sources */,
 				095E853117B358FC0065EF8E /* shaperectst.mm in Sources */,
 				095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */,
+				09412E091A210B630065598D /* sputil.cpp in Sources */,
 				0987409C17B98D7C0098511A /* AGNode.mm in Sources */,
 				098740A017BA2AB90098511A /* mo_audio.mm in Sources */,
 				098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */,
@@ -757,6 +774,7 @@
 				09FC924B1A153A83005D14A3 /* AGConnection.mm in Sources */,
 				098740B317BC61410098511A /* AGUserInterface.mm in Sources */,
 				0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */,
+				09412E061A205A070065598D /* AGDocument.mm in Sources */,
 				09C7C3E418CF27AC0099CE88 /* Waveform.fsh in Sources */,
 				091081801A0B63DB0063028B /* AGStyle.mm in Sources */,
 				099AF11317D12DD9000BAB7B /* AGTrainerViewController.mm in Sources */,

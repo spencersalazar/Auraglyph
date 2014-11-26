@@ -23,8 +23,12 @@
 #import "AGGenericShader.h"
 #import "AGTouchHandler.h"
 #import "AGAboutBox.h"
+#import "AGDocument.h"
 
 #import <list>
+#import <map>
+
+using namespace std;
 
 
 #define AG_ENABLE_FBO 0
@@ -87,6 +91,11 @@ static DrawPoint drawline[nDrawline];
     
     std::list<AGInteractiveObject *> _objects;
     std::list<AGInteractiveObject *> _removeList;
+    
+    AGDocument _defaultDocument;
+    map<AGNode *, string> _nodeUUID;
+    map<AGConnection *, string> _conectionUUID;
+    map<AGFreeDraw *, string> _freedrawUUID;
     
     TexFont * _font;
     
@@ -156,18 +165,18 @@ static AGViewController * g_instance = nil;
     const char *fontPath = [[AGViewController styleFontPath] UTF8String];
     _font = new TexFont(fontPath, 96);
     
-    // ensure the hw recognizer is preloaded
+    /* preload hw recognizer */
     (void) [AGHandwritingRecognizer instance];
     
-    _testButton = new AGUIButton("Trainer", [self worldCoordinateForScreenCoordinate:CGPointMake(10, self.view.bounds.size.height-10)], GLvertex2f(0.028, 0.007));
-    _testButton->setAction(^{
-        [self presentViewController:self.trainer animated:YES completion:nil];
-    });
+//    _testButton = new AGUIButton("Trainer", [self worldCoordinateForScreenCoordinate:CGPointMake(10, self.view.bounds.size.height-10)], GLvertex2f(0.028, 0.007));
+//    _testButton->setAction(^{
+//        [self presentViewController:self.trainer animated:YES completion:nil];
+//    });
 //    _objects.push_back(_testButton);
     
+    /* add about button */
     float aboutButtonWidth = _font->width("AURAGLYPH")*1.05;
     float aboutButtonHeight = _font->height()*1.05;
-//    AGUITextButton *aboutButton = new AGUITextButton("AURAGLYPH", GLvertex3f(-aboutButtonWidth/2, -0.1, 3.89), GLvertex2f(aboutButtonWidth, aboutButtonHeight));
     AGUITextButton *aboutButton = new AGUITextButton("AURAGLYPH",
                                                      GLvertex3f(-aboutButtonWidth/2, 0, 0) + [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height-10)],
                                                      GLvertex2f(aboutButtonWidth, aboutButtonHeight));
@@ -178,6 +187,22 @@ static AGViewController * g_instance = nil;
     });
     [self addTopLevelObject:aboutButton];
     
+    _defaultDocument.saveTo("_default.ag");
+    /* add save button */
+    float saveButtonWidth = _font->width("  Save  ")*1.05;
+    float saveButtonHeight = _font->height()*1.05;
+    AGUIButton *saveButton = new AGUIButton("Save",
+                                            GLvertex3f(0, -aboutButtonHeight/2, 0) + [self worldCoordinateForScreenCoordinate:CGPointMake(10, 10)],
+                                            GLvertex2f(saveButtonWidth, saveButtonHeight));
+//    __weak typeof(self) weakSelf = self;
+    saveButton->setAction(^{
+        AGViewController *strongSelf = weakSelf;
+        if(strongSelf)
+            strongSelf->_defaultDocument.save();
+    });
+    [self addTopLevelObject:saveButton];
+    
+    /* position trash */
     AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
     
     g_instance = self;
@@ -269,10 +294,15 @@ static AGViewController * g_instance = nil;
 - (void)addNode:(AGNode *)node
 {
     _nodes.push_back(node);
+    
+    AGDocument::Node docNode = node->serialize();
+    _defaultDocument.addNode(docNode);
 }
 
 - (void)removeNode:(AGNode *)node
 {
+    _defaultDocument.removeNode(node->uuid());
+    
     _nodeRemoveList.push_back(node);
 }
 

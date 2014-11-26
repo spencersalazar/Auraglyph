@@ -12,6 +12,7 @@
 #import "AGGenericShader.h"
 #import "AGAudioNode.h"
 #import "AGControlNode.h"
+#include "sputil.h"
 
 #import "spstl.h"
 
@@ -99,7 +100,8 @@ AGNode::AGNode(GLvertex3f pos, AGNodeInfo *nodeInfo) :
 m_pos(pos),
 m_nodeInfo(nodeInfo),
 m_active(true),
-m_fadeOut(1, 0, 0.5, 2)
+m_fadeOut(1, 0, 0.5, 2),
+m_uuid(makeUUID())
 {
     m_inputActivation = m_outputActivation = 0;
     m_activation = 0;
@@ -574,6 +576,19 @@ void AGAudioNode::renderLast(float *output, int nFrames)
 }
 
 
+AGDocument::Node AGAudioNode::serialize()
+{
+    AGDocument::Node n;
+    n._class = AGDocument::Node::AUDIO;
+    n.type = type();
+    n.uuid = uuid();
+    n.x = position().x;
+    n.y = position().y;
+    
+    return n;
+}
+
+
 
 //------------------------------------------------------------------------------
 // ### AGControlNode ###
@@ -705,6 +720,19 @@ AGUIObject *AGControlNode::hitTest(const GLvertex3f &t)
 }
 
 
+AGDocument::Node AGControlNode::serialize()
+{
+    AGDocument::Node n;
+    n._class = AGDocument::Node::CONTROL;
+    n.type = type();
+    n.uuid = uuid();
+    n.x = position().x;
+    n.y = position().y;
+    
+    return n;
+}
+
+
 //------------------------------------------------------------------------------
 // ### AGInputNode ###
 //------------------------------------------------------------------------------
@@ -802,6 +830,19 @@ AGUIObject *AGInputNode::hitTest(const GLvertex3f &t)
 }
 
 
+AGDocument::Node AGInputNode::serialize()
+{
+    AGDocument::Node n;
+    n._class = AGDocument::Node::INPUT;
+    n.type = type();
+    n.uuid = uuid();
+    n.x = position().x;
+    n.y = position().y;
+    
+    return n;
+}
+
+
 //------------------------------------------------------------------------------
 // ### AGOutputNode ###
 //------------------------------------------------------------------------------
@@ -895,6 +936,19 @@ AGUIObject *AGOutputNode::hitTest(const GLvertex3f &t)
 }
 
 
+AGDocument::Node AGOutputNode::serialize()
+{
+    AGDocument::Node n;
+    n._class = AGDocument::Node::OUTPUT;
+    n.type = type();
+    n.uuid = uuid();
+    n.x = position().x;
+    n.y = position().y;
+    
+    return n;
+}
+
+
 //------------------------------------------------------------------------------
 // ### AGFreeDraw ###
 //------------------------------------------------------------------------------
@@ -902,7 +956,8 @@ AGUIObject *AGOutputNode::hitTest(const GLvertex3f &t)
 
 AGFreeDraw::AGFreeDraw(GLvncprimf *points, int nPoints) :
 m_active(true),
-m_alpha(1, 0, 0.5, 2)
+m_alpha(1, 0, 0.5, 2),
+m_uuid(makeUUID())
 {
     m_nPoints = nPoints;
     m_points = new GLvncprimf[m_nPoints];
@@ -1035,6 +1090,25 @@ AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
     return NULL;
 }
 
+
+AGDocument::Freedraw AGFreeDraw::serialize()
+{
+    AGDocument::Freedraw fd;
+    fd.uuid = uuid();
+    fd.x = position().x;
+    fd.y = position().y;
+    fd.z = position().z;
+    
+    fd.points.reserve(m_nPoints*3);
+    for(int i = 0; i < m_nPoints; i++)
+    {
+        fd.points.push_back(m_points[i].vertex.x);
+        fd.points.push_back(m_points[i].vertex.y);
+        fd.points.push_back(m_points[i].vertex.z);
+    }
+    
+    return fd;
+}
 
 
 

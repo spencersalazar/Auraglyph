@@ -20,10 +20,38 @@
 #import "Mutex.h"
 #import "AGControl.h"
 #import "AGConnection.h"
+#include "AGDocument.h"
 
 #import <list>
 #import <string>
 #import <vector>
+
+
+using namespace std;
+
+
+
+struct AGPortInfo
+{
+    string name;
+    bool canConnect; // can create connection btw this port and another port
+    bool canEdit; // should this port appear in the node's editor window
+    
+    // TODO: min, max, units label, rate, etc.
+};
+
+struct AGNodeInfo
+{
+    AGNodeInfo() : iconGeo(NULL), iconGeoSize(0), iconGeoType(GL_LINE_STRIP) { }
+    
+    string type;
+    GLvertex3f *iconGeo;
+    GLuint iconGeoSize;
+    GLuint iconGeoType;
+    
+    vector<AGPortInfo> inputPortInfo;
+    vector<AGPortInfo> editPortInfo;
+};
 
 
 class AGNode : public AGUIObject
@@ -38,6 +66,8 @@ public:
     AGNode(GLvertex3f pos = GLvertex3f(), AGNodeInfo *nodeInfo = NULL);
     virtual ~AGNode();
     
+    const string &type() { return m_nodeInfo->type; }
+    const string &uuid() { return m_uuid; }
     void setTitle(const string &title) { m_title = title; }
     const string &title() const { return m_title; }
     
@@ -111,6 +141,9 @@ public:
     virtual void fadeOutAndRemove();
     virtual void renderOut();
     
+    /* serialization - overridden by direct subclass */
+    virtual AGDocument::Node serialize() = 0;
+    
 private:
     static bool s_initNode;
     
@@ -132,6 +165,7 @@ protected:
     
     AGNodeInfo *m_nodeInfo;
     string m_title;
+    const string m_uuid;
     
     std::list<AGConnection *> m_inbound;
     std::list<AGConnection *> m_outbound;
@@ -181,6 +215,8 @@ public:
     static int sampleRate() { return s_sampleRate; }
     static int bufferSize() { return 1024; }
     
+    virtual AGDocument::Node serialize();
+    
 private:
     
     static bool s_init;
@@ -225,7 +261,9 @@ public:
     
     virtual GLvertex3f relativePositionForInputPort(int port) const { return GLvertex3f(-s_radius, 0, 0); }
     virtual GLvertex3f relativePositionForOutputPort(int port) const { return GLvertex3f(s_radius, 0, 0); }
-        
+    
+    virtual AGDocument::Node serialize();
+    
 private:
     
     static bool s_init;
@@ -260,6 +298,8 @@ public:
     virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();
 
+    virtual AGDocument::Node serialize();
+    
 private:
     
     static bool s_init;
@@ -289,6 +329,8 @@ public:
     virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();
 
+    virtual AGDocument::Node serialize();
+    
 private:
     
     static bool s_init;
@@ -307,6 +349,8 @@ public:
     AGFreeDraw(GLvncprimf *points, int nPoints);
     ~AGFreeDraw();
     
+    const string &uuid() { return m_uuid; }
+    
     virtual void update(float t, float dt);
     virtual void render();
     
@@ -316,7 +360,11 @@ public:
     
     virtual AGUIObject *hitTest(const GLvertex3f &t);
     
+    virtual AGDocument::Freedraw serialize();
+    
 private:
+    const string m_uuid;
+    
     GLvncprimf *m_points;
     int m_nPoints;
     bool m_touchDown;

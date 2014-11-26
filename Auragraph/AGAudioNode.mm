@@ -30,6 +30,8 @@ void AGAudioOutputNode::initialize()
     s_audioNodeInfo = new AGNodeInfo;
     // s_initAudioOutputNode = true;
     
+    s_audioNodeInfo->type = "Output";
+    
     s_audioNodeInfo->iconGeoSize = 8;
     GLvertex3f *iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
     s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
@@ -110,6 +112,8 @@ AGNodeInfo *AGAudioSineWaveNode::s_audioNodeInfo = NULL;
 void AGAudioSineWaveNode::initialize()
 {
     s_audioNodeInfo = new AGNodeInfo;
+    
+    s_audioNodeInfo->type = "SineWave";
     
     // generate geometry
     s_audioNodeInfo->iconGeoSize = 32;
@@ -232,6 +236,8 @@ AGNodeInfo *AGAudioSquareWaveNode::s_audioNodeInfo = NULL;
 void AGAudioSquareWaveNode::initialize()
 {
     s_audioNodeInfo = new AGNodeInfo;
+    
+    s_audioNodeInfo->type = "SquareWave";
     
     // generate geometry
     s_audioNodeInfo->iconGeoSize = 6;
@@ -359,6 +365,8 @@ void AGAudioSawtoothWaveNode::initialize()
 {
     s_audioNodeInfo = new AGNodeInfo;
     
+    s_audioNodeInfo->type = "SawtoothWave";
+    
     // generate geometry
     s_audioNodeInfo->iconGeoSize = 4;
     GLvertex3f * iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
@@ -483,6 +491,8 @@ AGNodeInfo *AGAudioTriangleWaveNode::s_audioNodeInfo = NULL;
 void AGAudioTriangleWaveNode::initialize()
 {
     s_audioNodeInfo = new AGNodeInfo;
+    
+    s_audioNodeInfo->type = "TriangleWave";
     
     // generate geometry
     s_audioNodeInfo->iconGeoSize = 4;
@@ -613,6 +623,8 @@ AGNodeInfo *AGAudioADSRNode::s_audioNodeInfo = NULL;
 void AGAudioADSRNode::initialize()
 {
     s_audioNodeInfo = new AGNodeInfo;
+    
+    s_audioNodeInfo->type = "ADSR";
     
     // generate geometry
     s_audioNodeInfo->iconGeoSize = 5;
@@ -775,6 +787,7 @@ void AGAudioFilterNode::initialize()
 {
     /* lowpass node info */
     s_lowPassNodeInfo = new AGNodeInfo;
+    s_lowPassNodeInfo->type = "LowPass";
     
     // generate geometry
     s_lowPassNodeInfo->iconGeoSize = 5;
@@ -803,6 +816,7 @@ void AGAudioFilterNode::initialize()
     
     /* hipass node info */
     s_hiPassNodeInfo = new AGNodeInfo;
+    s_hiPassNodeInfo->type = "HiPass";
     
     // generate geometry
     s_hiPassNodeInfo->iconGeoSize = 5;
@@ -831,6 +845,7 @@ void AGAudioFilterNode::initialize()
     
     /* bandpass node info */
     s_bandPassNodeInfo = new AGNodeInfo;
+    s_bandPassNodeInfo->type = "BandPass";
     
     // generate geometry
     s_bandPassNodeInfo->iconGeoSize = 5;

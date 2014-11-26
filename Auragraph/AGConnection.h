@@ -31,27 +31,6 @@ enum AGRate
     RATE_AUDIO,
 };
 
-struct AGPortInfo
-{
-    string name;
-    bool canConnect; // can create connection btw this port and another port
-    bool canEdit; // should this port appear in the node's editor window
-    
-    // TODO: min, max, units label, rate, etc.
-};
-
-struct AGNodeInfo
-{
-    AGNodeInfo() : iconGeo(NULL), iconGeoSize(0), iconGeoType(GL_LINE_STRIP) { }
-    
-    GLvertex3f *iconGeo;
-    GLuint iconGeoSize;
-    GLuint iconGeoType;
-    
-    vector<AGPortInfo> inputPortInfo;
-    vector<AGPortInfo> editPortInfo;
-};
-
 typedef long long sampletime;
 
 
