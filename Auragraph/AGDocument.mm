@@ -151,7 +151,8 @@ void AGDocument::save()
     });
     
     NSData *data = [NSJSONSerialization dataWithJSONObject:doc
-                                                   options:0 error:NULL];
+                                                   options:NSJSONWritingPrettyPrinted
+                                                     error:NULL];
     NSString *filepath = filenameForTitle(m_title);
     [data writeToFile:filepath atomically:YES];
 }

@@ -14,6 +14,7 @@
 #include "Texture.h"
 #include "spstl.h"
 #include "GeoGenerator.h"
+#include "sputil.h"
 
 bool AGConnection::s_init = false;
 GLuint AGConnection::s_flareTex = 0;
@@ -64,7 +65,7 @@ AGConnection::AGConnection(AGNode * src, AGNode * dst, int dstPort) :
 m_src(src), m_dst(dst), m_dstPort(dstPort),
 m_rate((src->rate() == RATE_AUDIO && dst->rate() == RATE_AUDIO) ? RATE_AUDIO : RATE_CONTROL),
 m_geoSize(0), m_hit(false), m_stretch(false), m_active(true), m_alpha(1, 0, 0.5, 4),
-m_stretchPoint(0.25, GLvertex3f()), m_controlVisScale(0.1, 0)
+m_stretchPoint(0.25, GLvertex3f()), m_controlVisScale(0.1, 0), m_uuid(makeUUID())
 {
     initalize();
     
@@ -386,9 +387,20 @@ AGInteractiveObject *AGConnection::hitTest(const GLvertex3f &_t)
 
 void AGConnection::controlActivate()
 {
-    //m_flares.push_back(0);
+    // immediately pop up to "1"
     m_controlVisScale.reset(1);
+    // set target to 0 - slowly contract
     m_controlVisScale = 0;
 }
 
+
+AGDocument::Connection AGConnection::serialize()
+{
+    AGDocument::Connection docConnection;
+    docConnection.uuid = m_uuid;
+    docConnection.srcUuid = src()->uuid();
+    docConnection.dstUuid = dst()->uuid();
+    
+    return docConnection;
+}
 

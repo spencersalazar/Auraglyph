@@ -24,6 +24,7 @@
 #import "AGTouchHandler.h"
 #import "AGAboutBox.h"
 #import "AGDocument.h"
+#import "spstl.h"
 
 #import <list>
 #import <map>
@@ -114,6 +115,7 @@ static DrawPoint drawline[nDrawline];
 - (void)setupGL;
 - (void)tearDownGL;
 - (void)updateMatrices;
+- (void)save;
 
 @end
 
@@ -194,11 +196,11 @@ static AGViewController * g_instance = nil;
     AGUIButton *saveButton = new AGUIButton("Save",
                                             GLvertex3f(0, -aboutButtonHeight/2, 0) + [self worldCoordinateForScreenCoordinate:CGPointMake(10, 10)],
                                             GLvertex2f(saveButtonWidth, saveButtonHeight));
-//    __weak typeof(self) weakSelf = self;
     saveButton->setAction(^{
-        AGViewController *strongSelf = weakSelf;
-        if(strongSelf)
-            strongSelf->_defaultDocument.save();
+//        AGViewController *strongSelf = weakSelf;
+//        if(strongSelf)
+//            strongSelf->_defaultDocument.save();
+        [weakSelf save];
     });
     [self addTopLevelObject:saveButton];
     
@@ -295,15 +297,15 @@ static AGViewController * g_instance = nil;
 {
     _nodes.push_back(node);
     
-    AGDocument::Node docNode = node->serialize();
-    _defaultDocument.addNode(docNode);
+//    AGDocument::Node docNode = node->serialize();
+//    _defaultDocument.addNode(docNode);
 }
 
 - (void)removeNode:(AGNode *)node
 {
     _defaultDocument.removeNode(node->uuid());
     
-    _nodeRemoveList.push_back(node);
+//    _nodeRemoveList.push_back(node);
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object
@@ -738,6 +740,38 @@ static AGViewController * g_instance = nil;
 {
     [self touchesMoved:touches withEvent:event];
 }
+
+
+
+- (void)save
+{
+    __block AGDocument doc;
+    
+    itmap(_nodes, ^(AGNode *&node){
+        AGDocument::Node docNode = node->serialize();
+        doc.addNode(docNode);
+    });
+    
+    itmap(_objects, ^(AGInteractiveObject *&obj){
+        AGConnection *connection;
+        AGFreeDraw *freedraw;
+        
+        if((connection = dynamic_cast<AGConnection *>(obj)) != NULL)
+        {
+            AGDocument::Connection docConnection = connection->serialize();
+            doc.addConnection(docConnection);
+        }
+        
+        if((freedraw = dynamic_cast<AGFreeDraw *>(obj)) != NULL)
+        {
+            AGDocument::Freedraw docFreedraw = freedraw->serialize();
+            doc.addFreedraw(docFreedraw);
+        }
+    });
+    
+    doc.saveTo("_default.ag");
+}
+
 
 
 @end

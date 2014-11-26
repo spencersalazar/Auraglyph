@@ -11,6 +11,7 @@
 
 #include "AGRenderObject.h"
 #include "AGUserInterface.h"
+#include "AGDocument.h"
 
 #include "Geometry.h"
 #include "Animation.h"
@@ -60,10 +61,14 @@ public:
     
     void fadeOutAndRemove();
     
+    AGDocument::Connection serialize();
+    
 private:
     
     static bool s_init;
     static GLuint s_flareTex;
+    
+    const string m_uuid;
     
     GLvertex3f m_geo[3];
     GLcolor4f m_color;
