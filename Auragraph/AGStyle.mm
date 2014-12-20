@@ -18,6 +18,7 @@ const string &AGStyle::standardFontPath()
     if(s_path.length() == 0)
     {
         s_path = string([[[NSBundle mainBundle] pathForResource:@"Orbitron-Medium.ttf" ofType:@""] UTF8String]);
+//        s_path = string([[[NSBundle mainBundle] pathForResource:@"bankgthd.ttf" ofType:@""] UTF8String]);
     }
     
     return s_path;
