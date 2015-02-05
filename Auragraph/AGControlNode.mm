@@ -57,9 +57,11 @@ AGControlNode(pos, s_nodeInfo)
     m_interval = 0.5;
     m_lastFire = 0;
     m_lastTime = 0;
+    m_control.v = 0;
     
     m_timer = new AGTimer(m_interval, ^(AGTimer *) {
-        m_control.v = 1;
+        // flip
+        m_control.v = !m_control.v;
         pushControl(0, &m_control);
     });
 }

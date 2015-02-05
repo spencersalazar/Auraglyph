@@ -604,6 +604,7 @@ public:
     virtual void getEditPortValue(int port, float &value) const;
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
+    virtual void receiveControl(int port, AGControl *control);
     
     static void renderIcon();
     static AGAudioNode *create(const GLvertex3f &pos);
@@ -723,6 +724,21 @@ void AGAudioADSRNode::renderAudio(sampletime t, float *input, float *output, int
     m_lastTime = t;
 }
 
+void AGAudioADSRNode::receiveControl(int port, AGControl *control)
+{
+    switch(port)
+    {
+        case 2:
+        {
+            int fire = 0;
+            control->mapTo(fire);
+            if(fire)
+                m_adsr.keyOn();
+            else
+                m_adsr.keyOff();
+        }
+    }
+}
 
 void AGAudioADSRNode::renderIcon()
 {

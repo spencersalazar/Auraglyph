@@ -14,6 +14,7 @@ class AGControl
 public:
     virtual ~AGControl() { }
     virtual void mapTo(float &value) = 0;
+    virtual void mapTo(int &value) = 0;
 };
 
 class AGIntControl : public AGControl
@@ -22,6 +23,7 @@ public:
     AGIntControl() : v(0) { }
     AGIntControl(int _v) : v(_v) { }
     virtual void mapTo(float &value) { value = v; }
+    virtual void mapTo(int &value) { value = v; }
     int v;
 };
 
@@ -31,6 +33,7 @@ public:
     AGFloatControl() : v(0) { }
     AGFloatControl(float _v) : v(_v) { }
     virtual void mapTo(float &value) { value = v; }
+    virtual void mapTo(int &value) { value = (int)v; /* TODO: warning? */ }
     float v;
 };
 
