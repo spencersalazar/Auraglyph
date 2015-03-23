@@ -26,7 +26,14 @@ class AGDocument
 public:
     struct ParamValue
     {
-        enum { INT, FLOAT, STRING, FLOAT_ARRAY } type;
+        ParamValue() : type(INT), i(0), f(0) { }
+        ParamValue(int _i) : type(INT), i(_i), f(0) { }
+        ParamValue(float _f) : type(FLOAT), i(0), f(_f) { }
+        ParamValue(const string &_s) : type(STRING), i(0), f(0), s(_s) { }
+        ParamValue(const list<float> &_fa) : type(FLOAT_ARRAY), i(0), f(0), fa(_fa) { }
+        
+        enum Type { INT, FLOAT, STRING, FLOAT_ARRAY };
+        Type type;
         int i;
         float f;
         string s;
@@ -61,9 +68,9 @@ public:
     ~AGDocument();
     
     void create();
-    void load(string title);
+    void load(const string &title);
     void save();
-    void saveTo(string title);
+    void saveTo(const string &title);
     
     void recreate(void (^createNode)(const Node &node),
                   void (^createConnection)(const Connection &connection),
@@ -84,6 +91,8 @@ public:
 //    static Node makeNode(AGControlNode *);
 //    static Connection makeConnection(AGConnection *);
 //    static Freedraw makeFreedraw(AGFreeDraw *);
+    
+    static bool existsForTitle(const string &title);
     
 private:
     string m_title;

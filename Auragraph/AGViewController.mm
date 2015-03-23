@@ -33,6 +33,7 @@ using namespace std;
 
 
 #define AG_ENABLE_FBO 0
+#define AG_DEFAULT_FILENAME "_default.ag"
 
 
 // Uniform index.
@@ -93,7 +94,8 @@ static DrawPoint drawline[nDrawline];
     std::list<AGInteractiveObject *> _objects;
     std::list<AGInteractiveObject *> _removeList;
     
-    AGDocument _defaultDocument;
+//    AGDocument _defaultDocument;
+//    AGDocument *_currentDocument;
     map<AGNode *, string> _nodeUUID;
     map<AGConnection *, string> _conectionUUID;
     map<AGFreeDraw *, string> _freedrawUUID;
@@ -159,10 +161,6 @@ static AGViewController * g_instance = nil;
     
     self.audioManager = [AGAudioManager new];
     [self updateMatrices];
-    AGAudioOutputNode * outputNode = new AGAudioOutputNode([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)]);
-    self.audioManager.outputNode = outputNode;
-    
-    _nodes.push_back(outputNode);
     
     const char *fontPath = [[AGViewController styleFontPath] UTF8String];
     _font = new TexFont(fontPath, 96);
@@ -189,7 +187,6 @@ static AGViewController * g_instance = nil;
     });
     [self addTopLevelObject:aboutButton];
     
-    _defaultDocument.saveTo("_default.ag");
     /* add save button */
     float saveButtonWidth = _font->width("  Save  ")*1.05;
     float saveButtonHeight = _font->height()*1.05;
@@ -206,6 +203,37 @@ static AGViewController * g_instance = nil;
     
     /* position trash */
     AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
+    
+    __block AGAudioOutputNode * outputNode = NULL;
+    
+    /* load default program */
+    if(AGDocument::existsForTitle(AG_DEFAULT_FILENAME))
+    {
+        AGDocument defaultDoc;
+        defaultDoc.load(AG_DEFAULT_FILENAME);
+        
+        defaultDoc.recreate(^(const AGDocument::Node &docNode) {
+            AGNode *node = NULL;
+            if(docNode._class == AGDocument::Node::AUDIO)
+                node = AGAudioNodeManager::instance().createNodeType(docNode);
+            if(docNode.type == "Output")
+                // TODO: fix this hacky shit
+                outputNode = dynamic_cast<AGAudioOutputNode *>(node);
+            if(node != NULL)
+                [self addNode:node];
+        }, ^(const AGDocument::Connection &connection) {
+            
+        }, ^(const AGDocument::Freedraw &freedraw) {
+            
+        });
+    }
+    else
+    {
+        outputNode = new AGAudioOutputNode([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)]);
+        _nodes.push_back(outputNode);
+    }
+    
+    self.audioManager.outputNode = outputNode;
     
     g_instance = self;
 }
@@ -303,9 +331,9 @@ static AGViewController * g_instance = nil;
 
 - (void)removeNode:(AGNode *)node
 {
-    _defaultDocument.removeNode(node->uuid());
+//    _defaultDocument.removeNode(node->uuid());
     
-//    _nodeRemoveList.push_back(node);
+    _nodeRemoveList.push_back(node);
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object

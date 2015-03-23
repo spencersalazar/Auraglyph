@@ -10,6 +10,8 @@
 		0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0901C1BA17BE2F970032904B /* AGGenericShader.mm */; };
 		0901C1C017BE3C460032904B /* SourceCodePro-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0901C1BF17BE3C460032904B /* SourceCodePro-Regular.ttf */; };
 		0901C1C217BE3C4B0032904B /* eichante.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0901C1C117BE3C4B0032904B /* eichante.ttf */; };
+		090354F51A325CCD00F68107 /* Microgramma.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 090354F41A325CCD00F68107 /* Microgramma.ttf */; };
+		090354F71A329EAA00F68107 /* bankgthd.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 090354F61A329EAA00F68107 /* bankgthd.ttf */; };
 		091081801A0B63DB0063028B /* AGStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0910817E1A0B63DB0063028B /* AGStyle.mm */; };
 		093395671A00FABC009E4802 /* Endzone Tech.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 093395661A00FABC009E4802 /* Endzone Tech.ttf */; };
 		093395691A019D43009E4802 /* Orbitron-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 093395681A019D43009E4802 /* Orbitron-Regular.ttf */; };
@@ -104,6 +106,8 @@
 		0901C1BB17BE2F970032904B /* AGGenericShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGGenericShader.h; sourceTree = "<group>"; };
 		0901C1BF17BE3C460032904B /* SourceCodePro-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SourceCodePro-Regular.ttf"; sourceTree = "<group>"; };
 		0901C1C117BE3C4B0032904B /* eichante.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = eichante.ttf; sourceTree = "<group>"; };
+		090354F41A325CCD00F68107 /* Microgramma.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Microgramma.ttf; sourceTree = "<group>"; };
+		090354F61A329EAA00F68107 /* bankgthd.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = bankgthd.ttf; sourceTree = "<group>"; };
 		09077FD117C0BFFA00DFE42F /* AGDef.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGDef.h; sourceTree = "<group>"; };
 		0910817E1A0B63DB0063028B /* AGStyle.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGStyle.mm; sourceTree = "<group>"; };
 		0910817F1A0B63DB0063028B /* AGStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGStyle.h; sourceTree = "<group>"; };
@@ -432,7 +436,9 @@
 		095D12CE17ACA36C0048A012 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				090354F61A329EAA00F68107 /* bankgthd.ttf */,
 				09D8C3FE1A0A4DF2008D788A /* OFL.txt */,
+				090354F41A325CCD00F68107 /* Microgramma.ttf */,
 				0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */,
 				093395681A019D43009E4802 /* Orbitron-Regular.ttf */,
 				093395661A00FABC009E4802 /* Endzone Tech.ttf */,
@@ -721,6 +727,8 @@
 				099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */,
 				099AF11617D13365000BAB7B /* AGTrainerViewCell.xib in Resources */,
 				099AF11817D157C5000BAB7B /* AGTrainerHeaderView.xib in Resources */,
+				090354F71A329EAA00F68107 /* bankgthd.ttf in Resources */,
+				090354F51A325CCD00F68107 /* Microgramma.ttf in Resources */,
 				099AF12E17D1A892000BAB7B /* projects.zip in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

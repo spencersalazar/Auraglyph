@@ -22,6 +22,31 @@ void itmap(T &container, void (^func)(typename T::reference v))
 }
 
 /*------------------------------------------------------------------------------
+  itmap()
+  Map a block to every item in a C++/STL iterable container
+  (with shortcircuit)
+ -----------------------------------------------------------------------------*/
+template<class T>
+void itmap(T &container, bool (^func)(typename T::reference v))
+{
+    for(typename T::iterator i = container.begin(); i != container.end(); i++)
+    {
+        if(!func(*i)) break;
+    }
+}
+
+// const version
+template<class T>
+void itmap(const T &container, bool (^func)(typename T::const_reference v))
+{
+    for(typename T::const_iterator i = container.begin(); i != container.end(); i++)
+    {
+        if(!func(*i)) break;
+    }
+}
+
+
+/*------------------------------------------------------------------------------
  itfilter()
  Use a block to remove/filter elements from a C++/STL iterable container
  -----------------------------------------------------------------------------*/

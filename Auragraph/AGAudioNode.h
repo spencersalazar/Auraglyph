@@ -9,14 +9,17 @@
 #ifndef __Auragraph__AGAudioNode__
 #define __Auragraph__AGAudioNode__
 
+#import "AGNode.h"
+
 #import "Geometry.h"
+#import "ShaderHelper.h"
+
 #import <GLKit/GLKit.h>
 #import <Foundation/Foundation.h>
-#import "ShaderHelper.h"
+
 #import <list>
 #import <vector>
 #import <string>
-#import "AGNode.h"
 
 using namespace std;
 
@@ -27,6 +30,7 @@ public:
     static void initialize();
     
     AGAudioOutputNode(GLvertex3f pos);
+    AGAudioOutputNode(const AGDocument::Node &docNode);
     
     virtual int numOutputPorts() const { return 0; }
     virtual int numInputPorts() const { return 1; }
@@ -50,22 +54,26 @@ public:
     {
         // TODO: make class
         AudioNodeType(std::string _name, void (*_initialize)(), void (*_renderIcon)(),
-                      AGAudioNode *(*_createNode)(const GLvertex3f &pos)) :
+                      AGAudioNode *(*_createNode)(const GLvertex3f &pos),
+                      AGAudioNode *(*_createNodeWithDocNode)(const AGDocument::Node &docNode)) :
         name(_name),
         initialize(_initialize),
         renderIcon(_renderIcon),
-        createNode(_createNode)
+        createNode(_createNode),
+        createWithDocNode(_createNodeWithDocNode)
         { }
         
         std::string name;
         void (*initialize)();
         void (*renderIcon)();
         AGAudioNode *(*createNode)(const GLvertex3f &pos);
+        AGAudioNode *(*createWithDocNode)(const AGDocument::Node &docNode);
     };
     
     const std::vector<AudioNodeType *> &nodeTypes() const;
     void renderNodeTypeIcon(AudioNodeType *type) const;
     AGAudioNode * createNodeType(AudioNodeType *type, const GLvertex3f &pos) const;
+    AGAudioNode * createNodeType(const AGDocument::Node &docNode) const;
     
 private:
     static AGAudioNodeManager * s_instance;

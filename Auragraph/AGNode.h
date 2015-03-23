@@ -10,21 +10,23 @@
 #define __Auragraph__AGNode__
 
 
-#import <GLKit/GLKit.h>
-#import "Geometry.h"
-#import "Animation.h"
-#import "ES2Render.h"
-#import <Foundation/Foundation.h>
-#import "ShaderHelper.h"
-#import "AGUserInterface.h"
-#import "Mutex.h"
-#import "AGControl.h"
-#import "AGConnection.h"
+#include "AGControl.h"
+#include "AGConnection.h"
 #include "AGDocument.h"
+#include "AGUserInterface.h"
 
-#import <list>
-#import <string>
-#import <vector>
+#include "Geometry.h"
+#include "Animation.h"
+#include "ES2Render.h"
+#include "ShaderHelper.h"
+#include "Mutex.h"
+
+#import <GLKit/GLKit.h>
+#import <Foundation/Foundation.h>
+
+#include <list>
+#include <string>
+#include <vector>
 
 
 using namespace std;
@@ -64,6 +66,7 @@ public:
     static void disconnect(AGConnection * connection);
     
     AGNode(GLvertex3f pos = GLvertex3f(), AGNodeInfo *nodeInfo = NULL);
+    AGNode(const AGDocument::Node &docNode, AGNodeInfo *nodeInfo);
     virtual ~AGNode();
     
     const string &type() { return m_nodeInfo->type; }
@@ -165,7 +168,7 @@ protected:
     
     AGNodeInfo *m_nodeInfo;
     string m_title;
-    const string m_uuid;
+    string m_uuid; // TODO: const
     
     std::list<AGConnection *> m_inbound;
     std::list<AGConnection *> m_outbound;
@@ -197,6 +200,7 @@ public:
     static void initializeAudioNode();
     
     AGAudioNode(GLvertex3f pos = GLvertex3f(), AGNodeInfo *nodeInfo = NULL);
+    AGAudioNode(const AGDocument::Node &docNode, AGNodeInfo *nodeInfo);
     virtual ~AGAudioNode();
     
     virtual void update(float t, float dt);
@@ -216,6 +220,8 @@ public:
     static int bufferSize() { return 1024; }
     
     virtual AGDocument::Node serialize();
+    template<class NodeClass>
+    static AGAudioNode *createFromDocNode(const AGDocument::Node &docNode);
     
 private:
     

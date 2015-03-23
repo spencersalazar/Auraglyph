@@ -14,6 +14,7 @@
 #include "spstl.h"
 #include "NSString+STLString.h"
 
+
 static NSString *filenameForTitle(string title)
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -73,13 +74,54 @@ void AGDocument::create()
     
 }
 
-void AGDocument::load(string title)
+void AGDocument::load(const string &title)
 {
     m_title = title;
     
     NSString *filename = filenameForTitle(m_title);
     NSData *data = [NSData dataWithContentsOfFile:filename];
-    NSDictionary *top = [NSJSONSerialization JSONObjectWithData:data options:0 error:NULL];
+    NSDictionary *doc = [NSJSONSerialization JSONObjectWithData:data options:0 error:NULL];
+    
+    if(doc)
+    {
+        for(NSString *key in doc)
+        {
+            NSDictionary *dict = doc[key];
+            NSString *object = dict[@"object"];
+            
+            if([object isEqualToString:@"node"])
+            {
+                Node n;
+                n.uuid = [key stlString];
+                n._class = (AGDocument::Node::Class) [dict[@"class"] intValue];
+                n.type = [dict[@"type"] stlString];
+                n.x = [dict[@"x"] floatValue]; n.y = [dict[@"y"] floatValue]; n.z = [dict[@"z"] floatValue];
+                
+                // TODO: params
+                
+                m_nodes[n.uuid] = n;
+            }
+            else if([object isEqualToString:@"connection"])
+            {
+                Connection c;
+                
+                c.uuid = [key stlString];
+                c.srcUuid = [dict[@"source"] stlString];
+                c.dstUuid = [dict[@"destination"] stlString];
+                
+                m_connections[c.uuid] = c;
+            }
+            else if([object isEqualToString:@"freedraw"])
+            {
+                Freedraw f;
+                
+                f.uuid = [key stlString];
+                f.points.reserve([dict[@"points"] count]);
+                for(NSNumber *num in dict[@"points"])
+                    f.points.push_back([num floatValue]);
+            }
+        }
+    }
 }
 
 void AGDocument::save()
@@ -157,16 +199,31 @@ void AGDocument::save()
     [data writeToFile:filepath atomically:YES];
 }
 
-void AGDocument::saveTo(string title)
+void AGDocument::saveTo(const string &title)
 {
     m_title = title;
     save();
 }
 
 void AGDocument::recreate(void (^createNode)(const Node &node),
-              void (^createConnection)(const Connection &connection),
-              void (^createFreedraw)(const Freedraw &freedraw))
+                          void (^createConnection)(const Connection &connection),
+                          void (^createFreedraw)(const Freedraw &freedraw))
 {
-    
+    itmap(m_nodes, ^(pair<const string, Node> &kv){
+        createNode(kv.second);
+    });
+    itmap(m_connections, ^(pair<const string, Connection> &kv){
+        createConnection(kv.second);
+    });
+    itmap(m_freedraws, ^(pair<const string, Freedraw> &kv){
+        createFreedraw(kv.second);
+    });
+}
+
+
+bool AGDocument::existsForTitle(const string &title)
+{
+    NSString *filename = filenameForTitle(title);
+    return [[NSFileManager defaultManager] fileExistsAtPath:filename isDirectory:NULL];
 }
 

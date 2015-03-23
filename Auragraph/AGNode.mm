@@ -118,6 +118,28 @@ m_uuid(makeUUID())
     }
 }
 
+AGNode::AGNode(const AGDocument::Node &docNode, AGNodeInfo *nodeInfo) :
+m_pos(GLvertex3f(docNode.x, docNode.y, docNode.z)),
+m_nodeInfo(nodeInfo),
+m_active(true),
+m_fadeOut(1, 0, 0.5, 2),
+m_uuid(docNode.uuid)
+{
+    m_inputActivation = m_outputActivation = 0;
+    m_activation = 0;
+    
+    if(numInputPorts() > 0)
+    {
+        m_controlPortBuffer = new AGControl *[numInputPorts()];
+        for(int i = 0; i < numInputPorts(); i++)
+            m_controlPortBuffer[i] = NULL;
+    }
+    else
+    {
+        m_controlPortBuffer = NULL;
+    }
+}
+
 AGNode::~AGNode()
 {
 }
@@ -369,15 +391,7 @@ void AGAudioNode::initializeAudioNode()
         genVertexArrayAndBuffer(s_geoSize, geo, s_vertexArray, s_vertexBuffer);
         
         delete[] geo;
-        geo = NULL;
-        
-        // initialize audio nodes
-        const std::vector<AGAudioNodeManager::AudioNodeType *> &audioNodeTypes = AGAudioNodeManager::instance().nodeTypes();
-        for(std::vector<AGAudioNodeManager::AudioNodeType *>::const_iterator type = audioNodeTypes.begin(); type != audioNodeTypes.end(); type++)
-        {
-            if((*type)->initialize)
-                (*type)->initialize();
-        }
+        geo = NULL;        
     }
 }
 
@@ -397,6 +411,24 @@ AGNode(pos, nodeInfo)
     memset(m_outputBuffer, 0, sizeof(float)*bufferSize());
     m_inputPortBuffer = NULL;
 }
+
+AGAudioNode::AGAudioNode(const AGDocument::Node &docNode, AGNodeInfo *nodeInfo) :
+AGNode(docNode, nodeInfo)
+{
+    initializeAudioNode();
+    
+    m_gain = 1;
+    
+    m_radius = 0.01;
+    m_portRadius = 0.01 * 0.2;
+    
+    m_lastTime = -1;
+    m_outputBuffer = new float[bufferSize()];
+    memset(m_outputBuffer, 0, sizeof(float)*bufferSize());
+    m_inputPortBuffer = NULL;
+}
+
+
 
 AGAudioNode::~AGAudioNode()
 {
@@ -578,14 +610,42 @@ void AGAudioNode::renderLast(float *output, int nFrames)
 
 AGDocument::Node AGAudioNode::serialize()
 {
-    AGDocument::Node n;
-    n._class = AGDocument::Node::AUDIO;
-    n.type = type();
-    n.uuid = uuid();
-    n.x = position().x;
-    n.y = position().y;
+    AGDocument::Node docNode;
+    docNode._class = AGDocument::Node::AUDIO;
+    docNode.type = type();
+    docNode.uuid = uuid();
+    docNode.x = position().x;
+    docNode.y = position().y;
+    docNode.z = position().z;
     
-    return n;
+    for(int i = 0; i < numEditPorts(); i++)
+    {
+        float v;
+        getEditPortValue(i, v);
+        docNode.params[editPortInfo(i).name] = AGDocument::ParamValue(v);
+    }
+    
+    return docNode;
+}
+
+template<class NodeClass>
+AGAudioNode *AGAudioNode::createFromDocNode(const AGDocument::Node &docNode)
+{
+    AGAudioNode *node = new NodeClass(GLvertex3f(docNode.x, docNode.y, docNode.z));
+    node->m_uuid = docNode.uuid;
+    
+    for(int i = 0; i < node->numEditPorts(); i++)
+    {
+        const string &name = node->editPortInfo(i).name;
+        if(docNode.params.count(name))
+        {
+            AGDocument::ParamValue pv = docNode.params.find(name)->second;
+            float v = pv.f;
+            node->getEditPortValue(i, v);
+        }
+    }
+    
+    return node;
 }
 
 
