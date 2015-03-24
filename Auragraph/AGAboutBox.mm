@@ -38,7 +38,7 @@ m_done(false)
     m_lines.push_back("by Spencer Salazar");
     m_lines.push_back("Stanford University | CCRMA");
     m_lines.push_back("https://ccrma.stanford.edu/~spencer");
-    m_lines.push_back("Copyright 2014");
+    m_lines.push_back("Copyright 2015");
     m_lines.push_back("All rights reserved");
     m_lines.push_back("");
     m_lines.push_back("");
