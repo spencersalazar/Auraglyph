@@ -1028,6 +1028,30 @@ m_uuid(makeUUID())
     m_touchPoint0 = -1;
 }
 
+AGFreeDraw::AGFreeDraw(const AGDocument::Freedraw &docFreedraw) :
+m_active(true),
+m_alpha(1, 0, 0.5, 2),
+m_uuid(docFreedraw.uuid)
+{
+    m_nPoints = docFreedraw.points.size()/3;
+    
+    m_points = new GLvncprimf[m_nPoints];
+    for(int i = 0; i < m_nPoints; i++)
+    {
+        m_points[i].vertex.x = docFreedraw.points[i*3+0];
+        m_points[i].vertex.y = docFreedraw.points[i*3+1];
+        m_points[i].vertex.z = docFreedraw.points[i*3+2];
+        
+        // hardcode for now
+        m_points[i].normal = GLvertex3f(0, 0, 1);
+        m_points[i].color = GLcolor4f::white;
+    }
+    m_touchDown = false;
+    m_position = GLvertex3f(docFreedraw.x, docFreedraw.y, docFreedraw.z);
+    
+    m_touchPoint0 = -1;
+}
+
 AGFreeDraw::~AGFreeDraw()
 {
     delete[] m_points;

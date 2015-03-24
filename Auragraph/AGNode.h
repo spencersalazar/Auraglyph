@@ -353,6 +353,7 @@ class AGFreeDraw : public AGUIObject
 {
 public:
     AGFreeDraw(GLvncprimf *points, int nPoints);
+    AGFreeDraw(const AGDocument::Freedraw &docFreedraw);
     ~AGFreeDraw();
     
     const string &uuid() { return m_uuid; }

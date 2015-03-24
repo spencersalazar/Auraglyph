@@ -55,6 +55,7 @@ public:
         string uuid;
         string srcUuid;
         string dstUuid;
+        int dstPort;
     };
     
     struct Freedraw

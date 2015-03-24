@@ -212,6 +212,8 @@ static AGViewController * g_instance = nil;
         AGDocument defaultDoc;
         defaultDoc.load(AG_DEFAULT_FILENAME);
         
+        __block map<string, AGNode *> uuid2node;
+        
         defaultDoc.recreate(^(const AGDocument::Node &docNode) {
             AGNode *node = NULL;
             if(docNode._class == AGDocument::Node::AUDIO)
@@ -220,11 +222,21 @@ static AGViewController * g_instance = nil;
                 // TODO: fix this hacky shit
                 outputNode = dynamic_cast<AGAudioOutputNode *>(node);
             if(node != NULL)
+            {
+                uuid2node[node->uuid()] = node;
                 [self addNode:node];
-        }, ^(const AGDocument::Connection &connection) {
-            
-        }, ^(const AGDocument::Freedraw &freedraw) {
-            
+            }
+        }, ^(const AGDocument::Connection &docConnection) {
+            if(uuid2node.count(docConnection.srcUuid) && uuid2node.count(docConnection.dstUuid))
+            {
+                AGNode *srcNode = uuid2node[docConnection.srcUuid];
+                AGNode *dstNode = uuid2node[docConnection.dstUuid];
+                AGConnection *conn = new AGConnection(srcNode, dstNode, docConnection.dstPort);
+                [self addConnection:conn];
+            }
+        }, ^(const AGDocument::Freedraw &docFreedraw) {
+            AGFreeDraw *freedraw = new AGFreeDraw(docFreedraw);
+            [self addTopLevelObject:freedraw];
         });
     }
     else

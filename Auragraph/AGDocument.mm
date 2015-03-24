@@ -116,9 +116,16 @@ void AGDocument::load(const string &title)
                 Freedraw f;
                 
                 f.uuid = [key stlString];
+                f.x = [dict[@"x"] floatValue]; f.y = [dict[@"y"] floatValue]; f.z = [dict[@"z"] floatValue];
                 f.points.reserve([dict[@"points"] count]);
                 for(NSNumber *num in dict[@"points"])
                     f.points.push_back([num floatValue]);
+                
+                m_freedraws[f.uuid] = f;
+            }
+            else
+            {
+                NSLog(@"AGDocument::load: error: unhandled object '%@'", object);
             }
         }
     }

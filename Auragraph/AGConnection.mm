@@ -400,6 +400,7 @@ AGDocument::Connection AGConnection::serialize()
     docConnection.uuid = m_uuid;
     docConnection.srcUuid = src()->uuid();
     docConnection.dstUuid = dst()->uuid();
+    docConnection.dstPort = dstPort();
     
     return docConnection;
 }
