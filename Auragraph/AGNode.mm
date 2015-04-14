@@ -1221,3 +1221,79 @@ AGDocument::Freedraw AGFreeDraw::serialize()
 
 
 
+//------------------------------------------------------------------------------
+// ### AGNodeManager ###
+//------------------------------------------------------------------------------
+class AGNodeManager
+{
+    static const AGNodeManager &inputNodeManager();
+    static const AGNodeManager &outputNodeManager();
+    
+    struct NodeInfo
+    {
+        NodeInfo(std::string _name, void (*_initialize)(), void (*_renderIcon)(),
+                 AGNode *(*_createNode)(const GLvertex3f &pos),
+                 AGNode *(*_createNodeWithDocNode)(const AGDocument::Node &docNode)) :
+        name(_name),
+        initialize(_initialize),
+        renderIcon(_renderIcon),
+        createNode(_createNode),
+        createWithDocNode(_createNodeWithDocNode)
+        { }
+        
+        std::string name;
+        void (*initialize)();
+        void (*renderIcon)();
+        AGNode *(*createNode)(const GLvertex3f &pos);
+        AGNode *(*createWithDocNode)(const AGDocument::Node &docNode);
+    };
+    
+    const std::vector<NodeInfo *> &nodeInfos() const;
+    void renderNodeTypeIcon(NodeInfo *type) const;
+    AGNode *createNodeType(NodeInfo *type, const GLvertex3f &pos) const;
+    AGNode *createNodeType(const AGDocument::Node &docNode) const;
+    
+private:
+    static AGNodeManager *s_inputNodeManager;
+    static AGNodeManager *s_outputNodeManager;
+    
+    std::vector<NodeInfo *> m_audioNodeTypes;
+    
+    AGNodeManager();
+};
+
+AGNodeManager *AGNodeManager::s_inputNodeManager = NULL;
+AGNodeManager *AGNodeManager::s_outputNodeManager = NULL;
+
+const AGNodeManager &AGNodeManager::inputNodeManager()
+{
+    if(s_inputNodeManager == NULL)
+    {
+        s_inputNodeManager = new AGNodeManager();
+        
+        s_inputNodeManager->m_audioNodeTypes.push_back(new NodeInfo("Slider", NULL, NULL, NULL, NULL));
+        s_inputNodeManager->m_audioNodeTypes.push_back(new NodeInfo("Knob", NULL, NULL, NULL, NULL));
+        s_inputNodeManager->m_audioNodeTypes.push_back(new NodeInfo("Button", NULL, NULL, NULL, NULL));
+    }
+    
+    return *s_inputNodeManager;
+}
+
+const AGNodeManager &AGNodeManager::outputNodeManager()
+{
+    if(s_outputNodeManager == NULL)
+    {
+        s_outputNodeManager = new AGNodeManager();
+    }
+    
+    return *s_outputNodeManager;
+}
+
+AGNodeManager::AGNodeManager()
+{
+    
+}
+
+
+
+
