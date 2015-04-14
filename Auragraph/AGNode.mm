@@ -852,6 +852,8 @@ AGNode(pos)
 
 void AGInputNode::update(float t, float dt)
 {
+    AGNode::update(t, dt);
+    
     GLKMatrix4 projection = projectionMatrix();
     GLKMatrix4 modelView = globalModelViewMatrix();
     
@@ -865,6 +867,11 @@ void AGInputNode::update(float t, float dt)
 void AGInputNode::render()
 {
     glBindVertexArrayOES(s_vertexArray);
+    
+    GLcolor4f color = GLcolor4f::white;
+    color.a = m_fadeOut;
+    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &color);
+    glDisableVertexAttribArray(GLKVertexAttribColor);
     
     // TODO
     AGGenericShader &shader = AGGenericShader::instance();
@@ -962,6 +969,8 @@ AGNode(pos)
 
 void AGOutputNode::update(float t, float dt)
 {
+    AGNode::update(t, dt);
+    
     GLKMatrix4 projection = projectionMatrix();
     GLKMatrix4 modelView = globalModelViewMatrix();
     
@@ -975,6 +984,11 @@ void AGOutputNode::update(float t, float dt)
 void AGOutputNode::render()
 {
     glBindVertexArrayOES(s_vertexArray);
+    
+    GLcolor4f color = GLcolor4f::white;
+    color.a = m_fadeOut;
+    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &color);
+    glDisableVertexAttribArray(GLKVertexAttribColor);
     
     // TODO
     AGGenericShader &shader = AGGenericShader::instance();
