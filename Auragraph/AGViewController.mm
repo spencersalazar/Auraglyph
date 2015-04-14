@@ -33,7 +33,7 @@ using namespace std;
 
 
 #define AG_ENABLE_FBO 0
-#define AG_DEFAULT_FILENAME "_default.ag"
+#define AG_DEFAULT_FILENAME "_default"
 
 
 // Uniform index.
@@ -167,6 +167,8 @@ static AGViewController * g_instance = nil;
     
     /* preload hw recognizer */
     (void) [AGHandwritingRecognizer instance];
+    /* preload audio node manager */
+    (void) AGAudioNodeManager::instance();
     
 //    _testButton = new AGUIButton("Trainer", [self worldCoordinateForScreenCoordinate:CGPointMake(10, self.view.bounds.size.height-10)], GLvertex2f(0.028, 0.007));
 //    _testButton->setAction(^{
@@ -809,7 +811,7 @@ static AGViewController * g_instance = nil;
         }
     });
     
-    doc.saveTo("_default.ag");
+    doc.saveTo("_default");
 }
 
 

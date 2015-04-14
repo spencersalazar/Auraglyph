@@ -138,6 +138,17 @@ m_uuid(docNode.uuid)
     {
         m_controlPortBuffer = NULL;
     }
+    
+    for(int i = 0; i < numEditPorts(); i++)
+    {
+        const string &name = editPortInfo(i).name;
+        if(docNode.params.count(name))
+        {
+            AGDocument::ParamValue pv = docNode.params.find(name)->second;
+            float v = pv.f;
+            setEditPortValue(i, v);
+        }
+    }
 }
 
 AGNode::~AGNode()
@@ -628,25 +639,25 @@ AGDocument::Node AGAudioNode::serialize()
     return docNode;
 }
 
-template<class NodeClass>
-AGAudioNode *AGAudioNode::createFromDocNode(const AGDocument::Node &docNode)
-{
-    AGAudioNode *node = new NodeClass(GLvertex3f(docNode.x, docNode.y, docNode.z));
-    node->m_uuid = docNode.uuid;
-    
-    for(int i = 0; i < node->numEditPorts(); i++)
-    {
-        const string &name = node->editPortInfo(i).name;
-        if(docNode.params.count(name))
-        {
-            AGDocument::ParamValue pv = docNode.params.find(name)->second;
-            float v = pv.f;
-            node->getEditPortValue(i, v);
-        }
-    }
-    
-    return node;
-}
+//template<class NodeClass>
+//AGAudioNode *AGAudioNode::createFromDocNode(const AGDocument::Node &docNode)
+//{
+//    AGAudioNode *node = new NodeClass(GLvertex3f(docNode.x, docNode.y, docNode.z));
+//    node->m_uuid = docNode.uuid;
+//    
+//    for(int i = 0; i < node->numEditPorts(); i++)
+//    {
+//        const string &name = node->editPortInfo(i).name;
+//        if(docNode.params.count(name))
+//        {
+//            AGDocument::ParamValue pv = docNode.params.find(name)->second;
+//            float v = pv.f;
+//            node->getEditPortValue(i, v);
+//        }
+//    }
+//    
+//    return node;
+//}
 
 
 

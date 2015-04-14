@@ -19,7 +19,7 @@ static NSString *filenameForTitle(string title)
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
-    return [basePath stringByAppendingPathComponent:[NSString stringWithCString:title.c_str() encoding:NSUTF8StringEncoding]];
+    return [[basePath stringByAppendingPathComponent:[NSString stringWithCString:title.c_str() encoding:NSUTF8StringEncoding]] stringByAppendingPathExtension:@"json"];
 }
 
 
@@ -97,7 +97,13 @@ void AGDocument::load(const string &title)
                 n.type = [dict[@"type"] stlString];
                 n.x = [dict[@"x"] floatValue]; n.y = [dict[@"y"] floatValue]; n.z = [dict[@"z"] floatValue];
                 
-                // TODO: params
+                if([dict objectForKey:@"params"])
+                {
+                    for(NSString *param in object[@"params"])
+                    {
+                        
+                    }
+                }
                 
                 m_nodes[n.uuid] = n;
             }
@@ -141,14 +147,16 @@ void AGDocument::save()
         
         NSMutableDictionary *params = [NSMutableDictionary new];
         itmap(node.params, ^(pair<const string, ParamValue> &param){
+            NSString *serialType = nil;
             id serialValue = nil;
             
             switch(param.second.type)
             {
-                case ParamValue::INT: serialValue = @(param.second.i); break;
-                case ParamValue::FLOAT: serialValue = @(param.second.f); break;
-                case ParamValue::STRING: serialValue = [NSString stringWithSTLString:param.second.s]; break;
+                case ParamValue::INT: serialValue = @(param.second.i); serialType = @"int"; break;
+                case ParamValue::FLOAT: serialValue = @(param.second.f); serialType = @"float"; break;
+                case ParamValue::STRING: serialValue = [NSString stringWithSTLString:param.second.s]; serialType = @"string"; break;
                 case ParamValue::FLOAT_ARRAY:
+                     serialType = @"array_float";
                     serialValue = [NSMutableArray arrayWithCapacity:param.second.fa.size()];
                     itmap(param.second.fa, ^(float &f){
                         [serialValue addObject:@(f)];
@@ -156,7 +164,7 @@ void AGDocument::save()
                     break;
             }
             
-            [params setObject:serialValue
+            [params setObject:@{ @"type": serialType, @"value": serialValue }
                        forKey:[NSString stringWithSTLString:param.first]];
         });
         
@@ -203,6 +211,7 @@ void AGDocument::save()
                                                    options:NSJSONWritingPrettyPrinted
                                                      error:NULL];
     NSString *filepath = filenameForTitle(m_title);
+    NSLog(@"Saving to %@", filepath);
     [data writeToFile:filepath atomically:YES];
 }
 

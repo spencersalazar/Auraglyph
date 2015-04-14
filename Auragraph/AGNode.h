@@ -220,8 +220,8 @@ public:
     static int bufferSize() { return 1024; }
     
     virtual AGDocument::Node serialize();
-    template<class NodeClass>
-    static AGAudioNode *createFromDocNode(const AGDocument::Node &docNode);
+//    template<class NodeClass>
+//    static AGAudioNode *createFromDocNode(const AGDocument::Node &docNode);
     
 private:
     
