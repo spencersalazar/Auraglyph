@@ -392,6 +392,7 @@ private:
 //------------------------------------------------------------------------------
 class AGNodeManager
 {
+public:
     static const AGNodeManager &inputNodeManager();
     static const AGNodeManager &outputNodeManager();
     
@@ -416,7 +417,7 @@ class AGNodeManager
         AGNode *(*createWithDocNode)(const AGDocument::Node &docNode);
     };
     
-    const std::vector<NodeInfo *> &nodeInfos() const;
+    const std::vector<NodeInfo *> &nodeTypes() const;
     void renderNodeTypeIcon(NodeInfo *type) const;
     AGNode *createNodeType(NodeInfo *type, const GLvertex3f &pos) const;
     AGNode *createNodeType(const AGDocument::Node &docNode) const;

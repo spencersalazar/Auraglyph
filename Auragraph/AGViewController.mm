@@ -879,8 +879,11 @@ static AGViewController * g_instance = nil;
     }
     else if(figure == AG_FIGURE_TRIANGLE_DOWN)
     {
-        AGInputNode * node = new AGInputNode(centroidMVP);
-        [_viewController addNode:node];
+//        AGInputNode * node = new AGInputNode(centroidMVP);
+//        [_viewController addNode:node];
+//        [_viewController clearLinePoints];
+        AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::inputNodeSelector(centroidMVP);
+        _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
         [_viewController clearLinePoints];
     }
     else if(figure == AG_FIGURE_TRIANGLE_UP)

@@ -15,10 +15,11 @@
 static const float AGNODESELECTOR_RADIUS = 0.02;
 
 
-template<class NodeType, class ManagerType, class InfoType>
+template<class NodeType, class ManagerType>
 class AGUINodeSelector : public AGUIMetaNodeSelector
 {
 public:
+    AGUINodeSelector(const ManagerType &manager, const GLvertex3f &pos);
     AGUINodeSelector(const GLvertex3f &pos);
     virtual ~AGUINodeSelector();
     
@@ -37,6 +38,7 @@ public:
     virtual bool finishedRenderingOut();
     
 private:
+    const ManagerType &m_manager;
     
     GLvertex3f m_geo[4];
     float m_radius;
@@ -62,12 +64,22 @@ private:
 
 AGUIMetaNodeSelector *AGUIMetaNodeSelector::audioNodeSelector(const GLvertex3f &pos)
 {
-    return new AGUINodeSelector<AGAudioNode, AGAudioNodeManager, AGAudioNodeManager::AudioNodeType>(pos);
+    return new AGUINodeSelector<AGAudioNode, AGAudioNodeManager>(AGAudioNodeManager::instance(), pos);
 }
 
 AGUIMetaNodeSelector *AGUIMetaNodeSelector::controlNodeSelector(const GLvertex3f &pos)
 {
-    return new AGUINodeSelector<AGControlNode, AGControlNodeManager, AGControlNodeManager::ControlNodeType>(pos);
+    return new AGUINodeSelector<AGControlNode, AGControlNodeManager>(AGControlNodeManager::instance(), pos);
+}
+
+AGUIMetaNodeSelector *AGUIMetaNodeSelector::inputNodeSelector(const GLvertex3f &pos)
+{
+    return new AGUINodeSelector<AGInputNode, AGNodeManager>(AGNodeManager::inputNodeManager(), pos);
+}
+
+AGUIMetaNodeSelector *AGUIMetaNodeSelector::outputNodeSelector(const GLvertex3f &pos)
+{
+    return new AGUINodeSelector<AGOutputNode, AGNodeManager>(AGNodeManager::outputNodeManager(), pos);
 }
 
 
@@ -76,13 +88,14 @@ AGUIMetaNodeSelector *AGUIMetaNodeSelector::controlNodeSelector(const GLvertex3f
 //------------------------------------------------------------------------------
 #pragma mark - AGUINodeSelector
 
-template<class NodeType, class ManagerType, class InfoType>
-AGUINodeSelector<NodeType, ManagerType, InfoType>::AGUINodeSelector(const GLvertex3f &pos) :
+template<class NodeType, class ManagerType>
+AGUINodeSelector<NodeType, ManagerType>::AGUINodeSelector(const ManagerType &manager, const GLvertex3f &pos) :
 AGUIMetaNodeSelector(pos),
 m_pos(pos),
 m_node(new NodeType(pos)),
 m_hit(-1),
-m_done(false)
+m_done(false),
+m_manager(manager)
 {
     m_geoSize = 4;
     
@@ -94,7 +107,7 @@ m_done(false)
     m_geo[2] = GLvertex3f(m_radius, -m_radius, 0);
     m_geo[3] = GLvertex3f(m_radius, m_radius, 0);
     
-    int nTypes = ManagerType::instance().nodeTypes().size();
+    int nTypes = m_manager.nodeTypes().size();
     m_verticalScrollPos.clamp(0, ceilf(nTypes/2.0f-2)*m_radius);
     
     m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
@@ -102,14 +115,14 @@ m_done(false)
     //    NSLog(@"scrollMax: %f", m_verticalScrollPos.max);
 }
 
-template<class NodeType, class ManagerType, class InfoType>
-AGUINodeSelector<NodeType, ManagerType, InfoType>::~AGUINodeSelector()
+template<class NodeType, class ManagerType>
+AGUINodeSelector<NodeType, ManagerType>::~AGUINodeSelector()
 {
     SAFE_DELETE(m_node);
 }
 
-template<class NodeType, class ManagerType, class InfoType>
-void AGUINodeSelector<NodeType, ManagerType, InfoType>::update(float t, float dt)
+template<class NodeType, class ManagerType>
+void AGUINodeSelector<NodeType, ManagerType>::update(float t, float dt)
 {
     m_modelView = AGNode::globalModelViewMatrix();
     GLKMatrix4 projection = AGNode::projectionMatrix();
@@ -131,8 +144,8 @@ void AGUINodeSelector<NodeType, ManagerType, InfoType>::update(float t, float dt
     m_node->update(t, dt);
 }
 
-template<class NodeType, class ManagerType, class InfoType>
-void AGUINodeSelector<NodeType, ManagerType, InfoType>::render()
+template<class NodeType, class ManagerType>
+void AGUINodeSelector<NodeType, ManagerType>::render()
 {
     glDisable(GL_TEXTURE_2D);
     glBindVertexArrayOES(0);
@@ -179,8 +192,7 @@ void AGUINodeSelector<NodeType, ManagerType, InfoType>::render()
     
     GLKMatrix4 projection = AGNode::projectionMatrix();
     
-    const std::vector<InfoType *> nodeTypes = ManagerType::instance().nodeTypes();
-    for(int i = 0; i < nodeTypes.size(); i++)
+    for(int i = 0; i < m_manager.nodeTypes().size(); i++)
     {
         GLvertex3f iconPos = startPos + (xInc*(i%2)) + (yInc*(i/2));
         
@@ -219,12 +231,12 @@ void AGUINodeSelector<NodeType, ManagerType, InfoType>::render()
         shader.setLocalMatrix(GLKMatrix4MakeTranslation(iconPos.x, iconPos.y, iconPos.z));
         
         glLineWidth(4.0f);
-        ManagerType::instance().renderNodeTypeIcon(nodeTypes[i]);
+        m_manager.renderNodeTypeIcon(m_manager.nodeTypes()[i]);
     }
 }
 
-template<class NodeType, class ManagerType, class InfoType>
-void AGUINodeSelector<NodeType, ManagerType, InfoType>::touchDown(const GLvertex3f &t)
+template<class NodeType, class ManagerType>
+void AGUINodeSelector<NodeType, ManagerType>::touchDown(const GLvertex3f &t)
 {
     m_touchStart = t;
     m_hit = -1;
@@ -232,13 +244,12 @@ void AGUINodeSelector<NodeType, ManagerType, InfoType>::touchDown(const GLvertex
     // check if in entire bounds
     if(pointInRectangle(t.xy(), m_pos.xy()-GLvertex2f(m_radius, m_radius), m_pos.xy()+GLvertex2f(m_radius, m_radius)))
     {
-        const std::vector<InfoType *> nodeTypes = ManagerType::instance().nodeTypes();
         GLvertex3f startPos = m_pos + GLvertex3f(-m_radius/2, m_radius/2 + m_verticalScrollPos, 0);
         GLvertex3f xInc(m_radius, 0, 0);
         GLvertex3f yInc(0, -m_radius, 0);
         float iconRadius = m_radius/2;
         
-        for(int i = 0; i < nodeTypes.size(); i++)
+        for(int i = 0; i < m_manager.nodeTypes().size(); i++)
         {
             GLvertex3f iconPos = startPos + (xInc*(i%2)) + (yInc*(i/2));
             
@@ -255,8 +266,8 @@ void AGUINodeSelector<NodeType, ManagerType, InfoType>::touchDown(const GLvertex
     m_lastTouch = t;
 }
 
-template<class NodeType, class ManagerType, class InfoType>
-void AGUINodeSelector<NodeType, ManagerType, InfoType>::touchMove(const GLvertex3f &t)
+template<class NodeType, class ManagerType>
+void AGUINodeSelector<NodeType, ManagerType>::touchMove(const GLvertex3f &t)
 {
     float maxTravel = m_radius*0.05;
     
@@ -271,8 +282,8 @@ void AGUINodeSelector<NodeType, ManagerType, InfoType>::touchMove(const GLvertex
     m_lastTouch = t;
 }
 
-template<class NodeType, class ManagerType, class InfoType>
-void AGUINodeSelector<NodeType, ManagerType, InfoType>::touchUp(const GLvertex3f &t)
+template<class NodeType, class ManagerType>
+void AGUINodeSelector<NodeType, ManagerType>::touchUp(const GLvertex3f &t)
 {
     if(pointInRectangle(t.xy(), m_pos.xy()-GLvertex2f(m_radius, m_radius), m_pos.xy()+GLvertex2f(m_radius, m_radius)))
     {
@@ -284,13 +295,12 @@ void AGUINodeSelector<NodeType, ManagerType, InfoType>::touchUp(const GLvertex3f
     }
 }
 
-template<class NodeType, class ManagerType, class InfoType>
-AGNode *AGUINodeSelector<NodeType, ManagerType, InfoType>::createNode()
+template<class NodeType, class ManagerType>
+AGNode *AGUINodeSelector<NodeType, ManagerType>::createNode()
 {
     if(m_hit >= 0)
     {
-        const std::vector<InfoType *> nodeTypes = ManagerType::instance().nodeTypes();
-        return ManagerType::instance().createNodeType(nodeTypes[m_hit], m_pos);
+        return m_manager.createNodeType(m_manager.nodeTypes()[m_hit], m_pos);
     }
     else
     {
@@ -298,16 +308,16 @@ AGNode *AGUINodeSelector<NodeType, ManagerType, InfoType>::createNode()
     }
 }
 
-template<class NodeType, class ManagerType, class InfoType>
-void AGUINodeSelector<NodeType, ManagerType, InfoType>::renderOut()
+template<class NodeType, class ManagerType>
+void AGUINodeSelector<NodeType, ManagerType>::renderOut()
 {
     m_node->renderOut();
     m_xScale = lincurvef(AGStyle::open_animTimeX/2, 1, AGStyle::open_squeezeHeight);
     m_yScale = lincurvef(AGStyle::open_animTimeY/2, 1, AGStyle::open_squeezeHeight);
 }
 
-template<class NodeType, class ManagerType, class InfoType>
-bool AGUINodeSelector<NodeType, ManagerType, InfoType>::finishedRenderingOut()
+template<class NodeType, class ManagerType>
+bool AGUINodeSelector<NodeType, ManagerType>::finishedRenderingOut()
 {
     return m_xScale <= AGStyle::open_squeezeHeight;
 //    return true;

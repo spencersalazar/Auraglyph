@@ -64,12 +64,17 @@ const AGNodeManager &AGNodeManager::inputNodeManager()
                                                                NULL));
 //        s_inputNodeManager->m_audioNodeTypes.push_back(new NodeInfo("Knob", NULL, NULL, NULL, NULL));
 //        s_inputNodeManager->m_audioNodeTypes.push_back(new NodeInfo("Button", NULL, NULL, NULL, NULL));
+        
+        itmap(s_inputNodeManager->m_nodeTypes, ^bool (NodeInfo *const &type){
+            type->initialize();
+            return true;
+        });
     }
     
     return *s_inputNodeManager;
 }
 
-const std::vector<AGNodeManager::NodeInfo *> &AGNodeManager::nodeInfos() const
+const std::vector<AGNodeManager::NodeInfo *> &AGNodeManager::nodeTypes() const
 {
     return m_nodeTypes;
 }

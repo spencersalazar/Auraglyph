@@ -19,7 +19,9 @@ class AGUIMetaNodeSelector : public AGInteractiveObject
 public:
     static AGUIMetaNodeSelector *audioNodeSelector(const GLvertex3f &pos);
     static AGUIMetaNodeSelector *controlNodeSelector(const GLvertex3f &pos);
-    
+    static AGUIMetaNodeSelector *inputNodeSelector(const GLvertex3f &pos);
+    static AGUIMetaNodeSelector *outputNodeSelector(const GLvertex3f &pos);
+
     AGUIMetaNodeSelector(const GLvertex3f &pos) { }
     virtual ~AGUIMetaNodeSelector() { }
     

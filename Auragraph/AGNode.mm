@@ -1240,7 +1240,6 @@ const AGNodeManager &AGNodeManager::outputNodeManager()
 
 AGNodeManager::AGNodeManager()
 {
-    
 }
 
 
