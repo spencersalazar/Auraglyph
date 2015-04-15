@@ -294,10 +294,11 @@ public:
     
     static void initializeInputNode();
     
-    AGInputNode(GLvertex3f pos = GLvertex3f());
+    AGInputNode(GLvertex3f pos = GLvertex3f(), AGNodeInfo *nodeInfo = NULL);
     
     virtual void update(float t, float dt);    
     virtual void render();
+    virtual void renderUI() { }
     
     virtual AGUIObject *hitTest(const GLvertex3f &t);
 
@@ -385,6 +386,76 @@ private:
     int m_touchPoint0;
 };
 
+
+//------------------------------------------------------------------------------
+// ### AGNodeManager ###
+//------------------------------------------------------------------------------
+class AGNodeManager
+{
+    static const AGNodeManager &inputNodeManager();
+    static const AGNodeManager &outputNodeManager();
+    
+    struct NodeInfo
+    {
+        NodeInfo(std::string _name,
+                 void (*_initialize)(),
+                 void (*_renderIcon)(),
+                 AGNode *(*_createNode)(const GLvertex3f &pos),
+                 AGNode *(*_createNodeWithDocNode)(const AGDocument::Node &docNode)) :
+        name(_name),
+        initialize(_initialize),
+        renderIcon(_renderIcon),
+        createNode(_createNode),
+        createWithDocNode(_createNodeWithDocNode)
+        { }
+        
+        std::string name;
+        void (*initialize)();
+        void (*renderIcon)();
+        AGNode *(*createNode)(const GLvertex3f &pos);
+        AGNode *(*createWithDocNode)(const AGDocument::Node &docNode);
+    };
+    
+    const std::vector<NodeInfo *> &nodeInfos() const;
+    void renderNodeTypeIcon(NodeInfo *type) const;
+    AGNode *createNodeType(NodeInfo *type, const GLvertex3f &pos) const;
+    AGNode *createNodeType(const AGDocument::Node &docNode) const;
+    
+private:
+    static AGNodeManager *s_inputNodeManager;
+    static AGNodeManager *s_outputNodeManager;
+    
+    std::vector<NodeInfo *> m_nodeTypes;
+    
+    AGNodeManager();
+};
+
+//------------------------------------------------------------------------------
+// ### utility functions ###
+//------------------------------------------------------------------------------
+template<class NodeClass>
+static AGNode *createNode(const AGDocument::Node &docNode)
+{
+    return new NodeClass(docNode);
+}
+
+template<class NodeClass>
+static AGNode *createNode(const GLvertex3f &pos)
+{
+    return new NodeClass(pos);
+}
+
+template<class NodeClass>
+static void renderNodeIcon()
+{
+    AGNodeInfo *nodeInfo = NodeClass::nodeInfo();
+    
+    glBindVertexArrayOES(0);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), nodeInfo->iconGeo);
+    
+    glLineWidth(2.0);
+    glDrawArrays(nodeInfo->iconGeoType, 0, nodeInfo->iconGeoSize);
+}
 
 
 
