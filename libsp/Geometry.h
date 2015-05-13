@@ -14,7 +14,18 @@
 #import <OpenGLES/ES1/glext.h>
 #import <CoreGraphics/CoreGraphics.h>
 
+
 struct GLvertex2f;
+struct GLvertex3f;
+
+
+GLvertex3f operator+(const GLvertex3f &v1, const GLvertex3f &v2);
+GLvertex3f operator-(const GLvertex3f &v1, const GLvertex3f &v2);
+GLvertex3f operator*(const GLvertex3f &v, const GLfloat &s);
+GLvertex3f operator/(const GLvertex3f &v, const GLfloat &s);
+bool operator==(const GLvertex3f &v, const GLvertex3f &v2);
+bool operator!=(const GLvertex3f &v, const GLvertex3f &v2);
+GLvertex3f lerp(float d, const GLvertex3f &a, const GLvertex3f &b);
 
 struct GLvertex3f
 {
@@ -44,13 +55,6 @@ struct GLvertex3f
     GLvertex2f toLatLong() const;
 } __attribute__((aligned(4),packed));
 
-GLvertex3f operator+(const GLvertex3f &v1, const GLvertex3f &v2);
-GLvertex3f operator-(const GLvertex3f &v1, const GLvertex3f &v2);
-GLvertex3f operator*(const GLvertex3f &v, const GLfloat &s);
-GLvertex3f operator/(const GLvertex3f &v, const GLfloat &s);
-bool operator==(const GLvertex3f &v, const GLvertex3f &v2);
-bool operator!=(const GLvertex3f &v, const GLvertex3f &v2);
-GLvertex3f lerp(float d, const GLvertex3f &a, const GLvertex3f &b);
 
 struct GLcolor4f
 {
@@ -97,14 +101,16 @@ struct GLcolor4f
 } __attribute__((aligned(4),packed));
 
 
+GLcolor4f lerp(float d, const GLcolor4f &a, const GLcolor4f &b);
+
+
 GLvertex2f operator+(const GLvertex2f &v1, const GLvertex2f &v2);
 GLvertex2f operator-(const GLvertex2f &v1, const GLvertex2f &v2);
 GLvertex2f operator*(const GLvertex2f &v, const GLfloat &s);
 GLvertex2f operator/(const GLvertex2f &v, const GLfloat &s);
 bool operator==(const GLvertex2f &v, const GLvertex2f &v2);
 bool operator!=(const GLvertex2f &v, const GLvertex2f &v2);
-GLcolor4f lerp(float d, const GLcolor4f &a, const GLcolor4f &b);
-
+GLvertex2f rotateZ(const GLvertex2f &v, GLfloat rads);
 
 struct GLvertex2f
 {

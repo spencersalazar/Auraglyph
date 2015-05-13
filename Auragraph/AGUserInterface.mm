@@ -779,7 +779,7 @@ void AGUITextButton::render()
 // ### AGUIIconButton ###
 //------------------------------------------------------------------------------
 #pragma mark - AGUIIconButton
-AGUIIconButton::AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size, AGRenderInfoV iconRenderInfo) :
+AGUIIconButton::AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size, const AGRenderInfoV &iconRenderInfo) :
 AGUIButton("", pos, size),
 m_iconInfo(iconRenderInfo)
 {
@@ -811,12 +811,12 @@ void AGUIIconButton::setIconMode(AGUIIconButton::IconMode m)
     {
         SAFE_DELETE_ARRAY(m_boxGeo);
         
-        m_boxGeo = new GLvertex3f[32];
-        GeoGen::makeCircle(m_boxGeo, 32, m_size.x/2);
+        m_boxGeo = new GLvertex3f[48];
+        GeoGen::makeCircle(m_boxGeo, 48, m_size.x/2);
         
         m_boxInfo.geo = m_boxGeo;
         m_boxInfo.geoType = GL_LINE_LOOP;
-        m_boxInfo.numVertex = 32;
+        m_boxInfo.numVertex = 48;
         m_boxInfo.geoOffset = 1;
     }
 }
@@ -843,14 +843,14 @@ void AGUIIconButton::update(float t, float dt)
         m_iconInfo.color = AGStyle::darkColor();
         m_boxInfo.geoType = GL_TRIANGLE_FAN;
         m_boxInfo.geoOffset = 0;
-        m_boxInfo.numVertex = (m_iconMode == ICONMODE_CIRCLE ? 32 : 4);
+        m_boxInfo.numVertex = (m_iconMode == ICONMODE_CIRCLE ? 48 : 4);
     }
     else
     {
         m_iconInfo.color = AGStyle::lightColor();
         m_boxInfo.geoType = GL_LINE_LOOP;
         m_boxInfo.geoOffset = (m_iconMode == ICONMODE_CIRCLE ? 1 : 0);
-        m_boxInfo.numVertex = (m_iconMode == ICONMODE_CIRCLE ? 31 : 4);
+        m_boxInfo.numVertex = (m_iconMode == ICONMODE_CIRCLE ? 47 : 4);
     }
 }
 
@@ -858,7 +858,7 @@ void AGUIIconButton::render()
 {
     // bypass AGUIButton::render()
     
-    glLineWidth(1.0);
+    glLineWidth(2.0);
 
     AGInteractiveObject::render();
 }

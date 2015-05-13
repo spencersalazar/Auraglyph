@@ -257,14 +257,21 @@ static AGViewController * g_instance = nil;
     [self addTopLevelObject:saveButton];
     
     /* freedraw button */
-    float freedrawButtonWidth = 0.01;
+    float freedrawButtonWidth = 0.0095;
+    GLvertex3f modeButtonStartPos = [self worldCoordinateForScreenCoordinate:CGPointMake(27.5, self.view.bounds.size.height-20)];
     AGRenderInfoV freedrawRenderInfo;
-    freedrawRenderInfo.numVertex = 32;
-    freedrawRenderInfo.geoType = GL_LINE_STRIP;
+    freedrawRenderInfo.numVertex = 5;
+    freedrawRenderInfo.geoType = GL_LINE_LOOP;
+//    freedrawRenderInfo.geoOffset = 0;
     freedrawRenderInfo.geo = new GLvertex3f[freedrawRenderInfo.numVertex];
-    GeoGen::makeCircleStroke(freedrawRenderInfo.geo, freedrawRenderInfo.numVertex, freedrawButtonWidth/2*(G_RATIO-1));
+    float w = freedrawButtonWidth*(G_RATIO-1), h = w*0.3, t = h*0.75, rot = -M_PI/4;
+    freedrawRenderInfo.geo[0] = rotateZ(GLvertex2f(-w/2,   -h/2), rot);
+    freedrawRenderInfo.geo[1] = rotateZ(GLvertex2f( w/2-t, -h/2), rot);
+    freedrawRenderInfo.geo[2] = rotateZ(GLvertex2f( w/2,      0), rot);
+    freedrawRenderInfo.geo[3] = rotateZ(GLvertex2f( w/2-t,  h/2), rot);
+    freedrawRenderInfo.geo[4] = rotateZ(GLvertex2f(-w/2,    h/2), rot);
     freedrawRenderInfo.color = AGStyle::lightColor();
-    AGUIIconButton *freedrawButton = new AGUIIconButton(GLvertex3f(freedrawButtonWidth/2, freedrawButtonWidth/2, 0) + [self worldCoordinateForScreenCoordinate:CGPointMake(10, self.view.bounds.size.height-20)],
+    AGUIIconButton *freedrawButton = new AGUIIconButton(modeButtonStartPos,
                                                         GLvertex2f(freedrawButtonWidth, freedrawButtonWidth),
                                                         freedrawRenderInfo);
     freedrawButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
@@ -274,8 +281,26 @@ static AGViewController * g_instance = nil;
     });
     [self addTopLevelObject:freedrawButton];
     
+    /* node button */
+    float nodeButtonWidth = freedrawButtonWidth;
+    AGRenderInfoV nodeRenderInfo;
+    nodeRenderInfo.numVertex = 10;
+    nodeRenderInfo.geoType = GL_LINE_STRIP;
+    nodeRenderInfo.geo = new GLvertex3f[nodeRenderInfo.numVertex];
+    GeoGen::makeCircleStroke(nodeRenderInfo.geo, nodeRenderInfo.numVertex, nodeButtonWidth/2*(G_RATIO-1));
+    nodeRenderInfo.color = AGStyle::lightColor();
+    AGUIIconButton *nodeButton = new AGUIIconButton(modeButtonStartPos + GLvertex3f(0, nodeButtonWidth*1.25, 0),
+                                                    GLvertex2f(nodeButtonWidth, nodeButtonWidth),
+                                                    nodeRenderInfo);
+    nodeButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
+    nodeButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
+    nodeButton->setAction(^{
+        NSLog(@"node %i", nodeButton->isPressed());
+    });
+    [self addTopLevelObject:nodeButton];
+    
     /* trash */
-    AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-10)]);
+    AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
 }
 
 - (void)dealloc
