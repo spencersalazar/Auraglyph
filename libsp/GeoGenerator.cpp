@@ -20,6 +20,15 @@ namespace GeoGen
         }
     }
     
+    void makeCircleStroke(GLvertex3f *points, int numPoints, float radius)
+    {
+        for(int i = 0; i < numPoints; i++)
+        {
+            float theta = 2*M_PI*((float)i)/((float)(numPoints-1));
+            points[i] = GLvertex3f(radius*cosf(theta), radius*sinf(theta), 0);
+        }
+    }
+    
     
     GLvertex3f *circle64()
     {

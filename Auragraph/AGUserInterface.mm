@@ -601,7 +601,8 @@ GLvrectf AGUIStandardNodeEditor::effectiveBounds()
 AGUIButton::AGUIButton(const std::string &title, const GLvertex3f &pos, const GLvertex3f &size) :
 m_action(nil)
 {
-    m_hit = m_hitOnTouchDown = false;
+    m_hit = m_hitOnTouchDown = m_latch = false;
+    m_interactionType = INTERACTION_UPDOWN;
     
     m_title = title;
     
@@ -662,22 +663,22 @@ void AGUIButton::render()
     glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
     glDisableVertexAttribArray(GLKVertexAttribNormal);
     
-    if(m_hit)
+    if(isPressed())
     {
         glLineWidth(4.0);
-        glDrawArrays(GL_LINE_LOOP, 0, 4);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
         
-        text->render(m_title, GLcolor4f::white, textMV, proj);
+        text->render(m_title, AGStyle::darkColor(), textMV, proj);
     }
     else
     {
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        glDrawArrays(GL_LINE_LOOP, 0, 4);
         
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::black);
         glLineWidth(2.0);
         glDrawArrays(GL_LINE_LOOP, 4, 4);
 
-        text->render(m_title, GLcolor4f::black, textMV, proj);
+        text->render(m_title, AGStyle::lightColor(), textMV, proj);
     }
 }
 
@@ -686,6 +687,13 @@ void AGUIButton::touchDown(const GLvertex3f &t)
 {
     m_hit = true;
     m_hitOnTouchDown = true;
+    
+    if(m_interactionType == INTERACTION_LATCH)
+    {
+        m_latch = !m_latch;
+        if(m_action)
+            m_action();
+    }
 }
 
 void AGUIButton::touchMove(const GLvertex3f &t)
@@ -695,7 +703,7 @@ void AGUIButton::touchMove(const GLvertex3f &t)
 
 void AGUIButton::touchUp(const GLvertex3f &t)
 {
-    if(m_hit && m_action)
+    if(m_interactionType == INTERACTION_UPDOWN && m_hit && m_action)
         m_action();
     
     m_hit = false;
@@ -709,6 +717,14 @@ GLvrectf AGUIButton::effectiveBounds()
 void AGUIButton::setAction(void (^action)())
 {
     m_action = action;
+}
+
+bool AGUIButton::isPressed()
+{
+    if(m_interactionType == INTERACTION_UPDOWN)
+        return m_hit;
+    else
+        return m_latch;
 }
 
 
@@ -732,7 +748,7 @@ void AGUITextButton::render()
     //    GLKMatrix4 textMV = modelView;
     textMV = GLKMatrix4Scale(textMV, textScale, textScale, textScale);
     
-    if(m_hit)
+    if(isPressed())
     {
         AGGenericShader &shader = AGGenericShader::instance();
         
@@ -745,17 +761,17 @@ void AGUITextButton::render()
         glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
         glEnableVertexAttribArray(GLKVertexAttribPosition);
         
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &AGStyle::lightColor());
         glDisableVertexAttribArray(GLKVertexAttribColor);
         
         glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
         glDisableVertexAttribArray(GLKVertexAttribNormal);
         
         glLineWidth(4.0);
-        glDrawArrays(GL_LINE_LOOP, 0, 4);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }
     
-    text->render(m_title, GLcolor4f::white, textMV, proj);
+    text->render(m_title, AGStyle::lightColor(), textMV, proj);
 }
 
 
@@ -781,24 +797,32 @@ void AGUIIconButton::update(float t, float dt)
 {
     AGInteractiveObject::update(t, dt);
     
-    m_renderState.modelview = GLKMatrix4Translate(m_parent->m_renderState.modelview, m_pos.x, m_pos.y, m_pos.z);
+    GLKMatrix4 parentModelview;
+    if(m_parent) parentModelview = m_parent->m_renderState.modelview;
+    else if(renderFixed()) parentModelview = AGRenderObject::fixedModelViewMatrix();
+    else parentModelview = AGRenderObject::globalModelViewMatrix();
+    
+    m_renderState.modelview = GLKMatrix4Translate(parentModelview, m_pos.x, m_pos.y, m_pos.z);
     m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
     
-    if(m_hit)
-    {
-        m_iconInfo.color = AGStyle::lightColor();
-        m_boxInfo.geoType = GL_LINE_LOOP;
-    }
-    else
+    if(isPressed())
     {
         m_iconInfo.color = AGStyle::darkColor();
         m_boxInfo.geoType = GL_TRIANGLE_FAN;
+    }
+    else
+    {
+        m_iconInfo.color = AGStyle::lightColor();
+        m_boxInfo.geoType = GL_LINE_LOOP;
     }
 }
 
 void AGUIIconButton::render()
 {
     // bypass AGUIButton::render()
+    
+    glLineWidth(1.0);
+
     AGInteractiveObject::render();
 }
 

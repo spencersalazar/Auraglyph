@@ -156,8 +156,27 @@ public:
     virtual void touchUp(const GLvertex3f &t);
     
     void setAction(void (^action)());
+    bool isPressed();
     
     virtual bool renderFixed() { return true; }
+    
+//    enum ActionType
+//    {
+//        ACTION_ONTOUCHDOWN,
+//        ACTION_ONTOUCHUP,
+//    };
+//    
+//    void setActionType(ActionType t) { m_actionType = t; }
+//    ActionType getActionType() { return m_actionType; }
+    
+    enum InteractionType
+    {
+        INTERACTION_UPDOWN,
+        INTERACTION_LATCH,
+    };
+    
+    void setInteractionType(InteractionType t) { m_interactionType = t; }
+    InteractionType getInteractionType() { return m_interactionType; }
     
 protected:
     
@@ -170,6 +189,10 @@ protected:
     
     bool m_hit;
     bool m_hitOnTouchDown;
+    bool m_latch;
+    
+//    ActionType m_actionType;
+    InteractionType m_interactionType;
     
     void (^m_action)();
 };
@@ -201,7 +224,7 @@ public:
     virtual void update(float t, float dt);
     virtual void render();
     
-    virtual GLvertex3f position() { return parent()->position()+m_pos; }
+    virtual GLvertex3f position() { GLvertex3f parentPos = GLvertex3f(0, 0, 0); if(parent()) parentPos = parent()->position(); return parentPos+m_pos; }
     virtual GLvertex2f size() { return m_size.xy(); }
     virtual GLvrectf effectiveBounds() { return GLvrectf(position()-size()*0.5, position()+size()*0.5); }
     
