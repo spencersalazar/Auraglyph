@@ -780,17 +780,50 @@ void AGUITextButton::render()
 //------------------------------------------------------------------------------
 #pragma mark - AGUIIconButton
 AGUIIconButton::AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size, AGRenderInfoV iconRenderInfo) :
-AGUIButton("", pos, size), m_iconInfo(iconRenderInfo)
+AGUIButton("", pos, size),
+m_iconInfo(iconRenderInfo)
 {
-    GeoGen::makeRect(m_geo, size.x, size.y);
+    m_boxGeo = NULL;
+    setIconMode(ICONMODE_SQUARE);
     
-    m_boxInfo.geo = m_geo;
-    m_boxInfo.geoType = GL_TRIANGLE_FAN;
-    m_boxInfo.numVertex = 4;
     m_boxInfo.color = AGStyle::lightColor();
     m_renderList.push_back(&m_boxInfo);
     
     m_renderList.push_back(&m_iconInfo);
+}
+
+void AGUIIconButton::setIconMode(AGUIIconButton::IconMode m)
+{
+    m_iconMode = m;
+    
+    if(m_iconMode == ICONMODE_SQUARE)
+    {
+        SAFE_DELETE_ARRAY(m_boxGeo);
+        
+        m_boxGeo = new GLvertex3f[4];
+        GeoGen::makeRect(m_boxGeo, m_size.x, m_size.y);
+        
+        m_boxInfo.geo = m_boxGeo;
+        m_boxInfo.geoType = GL_TRIANGLE_FAN;
+        m_boxInfo.numVertex = 4;
+    }
+    else if (m_iconMode == ICONMODE_CIRCLE)
+    {
+        SAFE_DELETE_ARRAY(m_boxGeo);
+        
+        m_boxGeo = new GLvertex3f[32];
+        GeoGen::makeCircle(m_boxGeo, 32, m_size.x/2);
+        
+        m_boxInfo.geo = m_boxGeo;
+        m_boxInfo.geoType = GL_LINE_LOOP;
+        m_boxInfo.numVertex = 32;
+        m_boxInfo.geoOffset = 1;
+    }
+}
+
+AGUIIconButton::IconMode AGUIIconButton::getIconMode()
+{
+    return m_iconMode;
 }
 
 void AGUIIconButton::update(float t, float dt)
@@ -809,11 +842,15 @@ void AGUIIconButton::update(float t, float dt)
     {
         m_iconInfo.color = AGStyle::darkColor();
         m_boxInfo.geoType = GL_TRIANGLE_FAN;
+        m_boxInfo.geoOffset = 0;
+        m_boxInfo.numVertex = (m_iconMode == ICONMODE_CIRCLE ? 32 : 4);
     }
     else
     {
         m_iconInfo.color = AGStyle::lightColor();
         m_boxInfo.geoType = GL_LINE_LOOP;
+        m_boxInfo.geoOffset = (m_iconMode == ICONMODE_CIRCLE ? 1 : 0);
+        m_boxInfo.numVertex = (m_iconMode == ICONMODE_CIRCLE ? 31 : 4);
     }
 }
 

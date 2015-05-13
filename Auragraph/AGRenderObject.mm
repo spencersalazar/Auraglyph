@@ -21,7 +21,7 @@
 // ### AGRenderInfo ###
 //------------------------------------------------------------------------------
 AGRenderInfo::AGRenderInfo() :
-shader(&AGGenericShader::instance()), numVertex(0), geoType(GL_LINES)
+shader(&AGGenericShader::instance()), numVertex(0), geoType(GL_LINES), geoOffset(0)
 { }
 
 AGRenderInfoV::AGRenderInfoV() : color(GLcolor4f::black), geo(NULL) { }
@@ -109,7 +109,7 @@ void AGRenderObject::renderPrimitive(AGRenderInfo *info)
     
     info->set();
     
-    glDrawArrays(info->geoType, 0, info->numVertex);
+    glDrawArrays(info->geoType, info->geoOffset, info->numVertex);
 }
 
 void AGRenderObject::renderPrimitives()

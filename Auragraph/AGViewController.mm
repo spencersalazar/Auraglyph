@@ -268,13 +268,14 @@ static AGViewController * g_instance = nil;
                                                         GLvertex2f(freedrawButtonWidth, freedrawButtonWidth),
                                                         freedrawRenderInfo);
     freedrawButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
+    freedrawButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
     freedrawButton->setAction(^{
         NSLog(@"freedraw %i", freedrawButton->isPressed());
     });
     [self addTopLevelObject:freedrawButton];
     
     /* trash */
-    AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
+    AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-10)]);
 }
 
 - (void)dealloc

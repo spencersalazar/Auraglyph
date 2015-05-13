@@ -228,10 +228,21 @@ public:
     virtual GLvertex2f size() { return m_size.xy(); }
     virtual GLvrectf effectiveBounds() { return GLvrectf(position()-size()*0.5, position()+size()*0.5); }
     
+    enum IconMode
+    {
+        ICONMODE_SQUARE,
+        ICONMODE_CIRCLE,
+    };
+    
+    void setIconMode(IconMode m);
+    IconMode getIconMode();
+    
 private:
-    GLvertex3f m_boxGeo[4];
+    GLvertex3f *m_boxGeo;
     AGRenderInfoV m_boxInfo;
     AGRenderInfoV m_iconInfo;
+    
+    IconMode m_iconMode;
 };
 
 

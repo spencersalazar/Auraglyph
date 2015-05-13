@@ -27,6 +27,7 @@ public:
     AGGenericShader *shader;
     GLuint numVertex;
     GLuint geoType;
+    GLuint geoOffset;
 };
 
 struct AGRenderInfoV : public AGRenderInfo
