@@ -24,6 +24,7 @@
 #import "AGTouchHandler.h"
 #import "AGAboutBox.h"
 #import "AGDocument.h"
+#import "GeoGenerator.h"
 #import "spstl.h"
 
 #import <list>
@@ -59,6 +60,12 @@ struct DrawPoint
 static const int nDrawline = 1024;
 static int nDrawlineUsed = 0;
 static DrawPoint drawline[nDrawline];
+
+enum DrawMode
+{
+    DRAWMODE_NODE,
+    DRAWMODE_FREEDRAW
+};
 
 
 @interface AGViewController ()
@@ -100,6 +107,8 @@ static DrawPoint drawline[nDrawline];
     map<AGConnection *, string> _conectionUUID;
     map<AGFreeDraw *, string> _freedrawUUID;
     
+    DrawMode _drawMode;
+    
     TexFont * _font;
     
     AGUIButton * _testButton;
@@ -116,6 +125,7 @@ static DrawPoint drawline[nDrawline];
 
 - (void)setupGL;
 - (void)tearDownGL;
+- (void)initUI;
 - (void)updateMatrices;
 - (void)save;
 
@@ -176,35 +186,7 @@ static AGViewController * g_instance = nil;
 //    });
 //    _objects.push_back(_testButton);
     
-    /* add about button */
-    float aboutButtonWidth = _font->width("AURAGLYPH")*1.05;
-    float aboutButtonHeight = _font->height()*1.05;
-    AGUITextButton *aboutButton = new AGUITextButton("AURAGLYPH",
-                                                     GLvertex3f(-aboutButtonWidth/2, 0, 0) + [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height-10)],
-                                                     GLvertex2f(aboutButtonWidth, aboutButtonHeight));
-    __weak typeof(self) weakSelf = self;
-    aboutButton->setAction(^{
-        AGAboutBox *aboutBox = new AGAboutBox([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)]);
-        [weakSelf addTopLevelObject:aboutBox];
-    });
-    [self addTopLevelObject:aboutButton];
-    
-    /* add save button */
-    float saveButtonWidth = _font->width("  Save  ")*1.05;
-    float saveButtonHeight = _font->height()*1.05;
-    AGUIButton *saveButton = new AGUIButton("Save",
-                                            GLvertex3f(0, -aboutButtonHeight/2, 0) + [self worldCoordinateForScreenCoordinate:CGPointMake(10, 10)],
-                                            GLvertex2f(saveButtonWidth, saveButtonHeight));
-    saveButton->setAction(^{
-//        AGViewController *strongSelf = weakSelf;
-//        if(strongSelf)
-//            strongSelf->_defaultDocument.save();
-        [weakSelf save];
-    });
-    [self addTopLevelObject:saveButton];
-    
-    /* position trash */
-    AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
+    [self initUI];
     
     __block AGAudioOutputNode * outputNode = NULL;
     
@@ -250,6 +232,88 @@ static AGViewController * g_instance = nil;
     self.audioManager.outputNode = outputNode;
     
     g_instance = self;
+}
+
+- (void)initUI
+{
+    __weak typeof(self) weakSelf = self;
+    
+    /* about button */
+    float aboutButtonWidth = _font->width("AURAGLYPH")*1.05;
+    float aboutButtonHeight = _font->height()*1.05;
+//    AGUITextButton *aboutButton = new AGUITextButton("AURAGLYPH",
+//                                                     GLvertex3f(-aboutButtonWidth/2, 0, 0) + [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height-10)],
+//                                                     GLvertex2f(aboutButtonWidth, aboutButtonHeight));
+//    aboutButton->setAction(^{
+//        AGAboutBox *aboutBox = new AGAboutBox([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)]);
+//        [weakSelf addTopLevelObject:aboutBox];
+//    });
+//    [self addTopLevelObject:aboutButton];
+    
+    /* save button */
+    float saveButtonWidth = _font->width("  Save  ")*1.05;
+    float saveButtonHeight = _font->height()*1.05;
+    AGUIButton *saveButton = new AGUIButton("Save",
+                                            GLvertex3f(0, -aboutButtonHeight/2, 0) + [self worldCoordinateForScreenCoordinate:CGPointMake(10, 10)],
+                                            GLvertex2f(saveButtonWidth, saveButtonHeight));
+    saveButton->setAction(^{
+        //        AGViewController *strongSelf = weakSelf;
+        //        if(strongSelf)
+        //            strongSelf->_defaultDocument.save();
+        [weakSelf save];
+    });
+    [self addTopLevelObject:saveButton];
+    
+    AGUIButtonGroup *modeButtonGroup = new AGUIButtonGroup();
+    
+    /* freedraw button */
+    float freedrawButtonWidth = 0.0095;
+    GLvertex3f modeButtonStartPos = [self worldCoordinateForScreenCoordinate:CGPointMake(27.5, self.view.bounds.size.height-20)];
+    AGRenderInfoV freedrawRenderInfo;
+    freedrawRenderInfo.numVertex = 5;
+    freedrawRenderInfo.geoType = GL_LINE_LOOP;
+//    freedrawRenderInfo.geoOffset = 0;
+    freedrawRenderInfo.geo = new GLvertex3f[freedrawRenderInfo.numVertex];
+    float w = freedrawButtonWidth*(G_RATIO-1), h = w*0.3, t = h*0.75, rot = -M_PI/4;
+    freedrawRenderInfo.geo[0] = rotateZ(GLvertex2f(-w/2,   -h/2), rot);
+    freedrawRenderInfo.geo[1] = rotateZ(GLvertex2f( w/2-t, -h/2), rot);
+    freedrawRenderInfo.geo[2] = rotateZ(GLvertex2f( w/2,      0), rot);
+    freedrawRenderInfo.geo[3] = rotateZ(GLvertex2f( w/2-t,  h/2), rot);
+    freedrawRenderInfo.geo[4] = rotateZ(GLvertex2f(-w/2,    h/2), rot);
+    freedrawRenderInfo.color = AGStyle::lightColor();
+    AGUIIconButton *freedrawButton = new AGUIIconButton(modeButtonStartPos,
+                                                        GLvertex2f(freedrawButtonWidth, freedrawButtonWidth),
+                                                        freedrawRenderInfo);
+    freedrawButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
+    freedrawButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
+    modeButtonGroup->addButton(freedrawButton, ^{
+        //NSLog(@"freedraw");
+        _drawMode = DRAWMODE_FREEDRAW;
+    }, false);
+    
+    /* node button */
+    float nodeButtonWidth = freedrawButtonWidth;
+    AGRenderInfoV nodeRenderInfo;
+    nodeRenderInfo.numVertex = 10;
+    nodeRenderInfo.geoType = GL_LINE_STRIP;
+    nodeRenderInfo.geo = new GLvertex3f[nodeRenderInfo.numVertex];
+    GeoGen::makeCircleStroke(nodeRenderInfo.geo, nodeRenderInfo.numVertex, nodeButtonWidth/2*(G_RATIO-1));
+    nodeRenderInfo.color = AGStyle::lightColor();
+    AGUIIconButton *nodeButton = new AGUIIconButton(modeButtonStartPos + GLvertex3f(0, nodeButtonWidth*1.25, 0),
+                                                    GLvertex2f(nodeButtonWidth, nodeButtonWidth),
+                                                    nodeRenderInfo);
+    nodeButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
+    nodeButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
+    modeButtonGroup->addButton(nodeButton, ^{
+        //NSLog(@"node");
+        _drawMode = DRAWMODE_NODE;
+    }, true);
+    
+    [self addTopLevelObject:modeButtonGroup];
+    _drawMode = DRAWMODE_NODE;
+    
+    /* trash */
+    AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
 }
 
 - (void)dealloc
@@ -516,8 +580,13 @@ static AGViewController * g_instance = nil;
     // additive blending
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     
-    GLKMatrix4 textMV = GLKMatrix4Translate(_fixedModelView, -_font->width("AURAGLYPH")/2, -0.1, 3.89);
-    _font->render("AURAGLYPH", GLcolor4f::black, textMV, _projection);
+    glEnable(GL_TEXTURE_2D);
+    glUseProgram(0);
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+//    GLKMatrix4 textMV = GLKMatrix4Translate(_fixedModelView, -_font->width("AURAGLYPH")/2, -0.1, 3.89);
+//    _font->render("AURAGLYPH", GLcolor4f::black, textMV, _projection);
     
 //    GLKMatrix4 textMapMV = GLKMatrix4Translate(_modelView, 0, 0.05, 3.89);
 //    _font->renderTexmap(GLcolor4f::white, textMapMV, _projection);
@@ -709,7 +778,15 @@ static AGViewController * g_instance = nil;
                     }
                     else
                     {
-                        _touchHandler = [[AGDrawNodeTouchHandler alloc] initWithViewController:self];
+                        switch (_drawMode)
+                        {
+                            case DRAWMODE_NODE:
+                                _touchHandler = [[AGDrawNodeTouchHandler alloc] initWithViewController:self];
+                                break;
+                            case DRAWMODE_FREEDRAW:
+                                _touchHandler = [[AGDrawFreedrawTouchHandler alloc] initWithViewController:self];
+                                break;
+                        }
                     }
                 }
                     break;
@@ -780,7 +857,7 @@ static AGViewController * g_instance = nil;
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    [self touchesMoved:touches withEvent:event];
+    [self touchesEnded:touches withEvent:event];
 }
 
 
@@ -894,10 +971,10 @@ static AGViewController * g_instance = nil;
     }
     else
     {
-        AGFreeDraw *freeDraw = new AGFreeDraw((GLvncprimf *) drawline, nDrawlineUsed);
-        
-        [_viewController addFreeDraw:freeDraw];
-        [_viewController clearLinePoints];
+//        AGFreeDraw *freeDraw = new AGFreeDraw((GLvncprimf *) drawline, nDrawlineUsed);
+//        
+//        [_viewController addFreeDraw:freeDraw];
+//        [_viewController clearLinePoints];
     }
 }
 

@@ -39,6 +39,15 @@
 
 @end
 
+@interface AGDrawFreedrawTouchHandler : AGTouchHandler
+{
+    vector<GLvertex3f> _linePoints;
+    LTKTrace _currentTrace;
+    GLvertex3f _currentTraceSum;
+}
+
+@end
+
 @interface AGMoveNodeTouchHandler : AGTouchHandler
 {
     GLvertex3f _anchorOffset;

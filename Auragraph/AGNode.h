@@ -353,7 +353,7 @@ private:
 class AGFreeDraw : public AGUIObject
 {
 public:
-    AGFreeDraw(GLvncprimf *points, int nPoints);
+    AGFreeDraw(GLvertex3f *points, int nPoints);
     AGFreeDraw(const AGDocument::Freedraw &docFreedraw);
     ~AGFreeDraw();
     
@@ -373,7 +373,7 @@ public:
 private:
     const string m_uuid;
     
-    GLvncprimf *m_points;
+    GLvertex3f *m_points;
     int m_nPoints;
     bool m_touchDown;
     GLvertex3f m_position;

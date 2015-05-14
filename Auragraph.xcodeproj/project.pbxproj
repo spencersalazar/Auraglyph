@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0900A3821B04A10800C249D9 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0900A3811B04A10800C249D9 /* Images.xcassets */; };
 		0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0901C1BA17BE2F970032904B /* AGGenericShader.mm */; };
 		0901C1C017BE3C460032904B /* SourceCodePro-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0901C1BF17BE3C460032904B /* SourceCodePro-Regular.ttf */; };
 		0901C1C217BE3C4B0032904B /* eichante.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0901C1C117BE3C4B0032904B /* eichante.ttf */; };
@@ -103,6 +104,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0900A3811B04A10800C249D9 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		0901C1BA17BE2F970032904B /* AGGenericShader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGGenericShader.mm; sourceTree = "<group>"; };
 		0901C1BB17BE2F970032904B /* AGGenericShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGGenericShader.h; sourceTree = "<group>"; };
 		0901C1BF17BE3C460032904B /* SourceCodePro-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SourceCodePro-Regular.ttf"; sourceTree = "<group>"; };
@@ -134,7 +136,7 @@
 		09412E081A210B630065598D /* sputil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sputil.h; sourceTree = "<group>"; };
 		09412E0A1A2112300065598D /* NSString+STLString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+STLString.h"; sourceTree = "<group>"; };
 		09412E0B1A2112300065598D /* NSString+STLString.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSString+STLString.mm"; sourceTree = "<group>"; };
-		095D12C017ACA36C0048A012 /* AURAGRPH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AURAGRPH.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		095D12C017ACA36C0048A012 /* AURAGLPH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AURAGLPH.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		095D12C317ACA36C0048A012 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		095D12C517ACA36C0048A012 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		095D12C717ACA36C0048A012 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -346,7 +348,7 @@
 		095D12C117ACA36C0048A012 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				095D12C017ACA36C0048A012 /* AURAGRPH.app */,
+				095D12C017ACA36C0048A012 /* AURAGLPH.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -441,6 +443,7 @@
 		095D12CE17ACA36C0048A012 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0900A3811B04A10800C249D9 /* Images.xcassets */,
 				090354F61A329EAA00F68107 /* bankgthd.ttf */,
 				09D8C3FE1A0A4DF2008D788A /* OFL.txt */,
 				090354F41A325CCD00F68107 /* Microgramma.ttf */,
@@ -666,7 +669,7 @@
 			);
 			name = Auragraph;
 			productName = Auragraph;
-			productReference = 095D12C017ACA36C0048A012 /* AURAGRPH.app */;
+			productReference = 095D12C017ACA36C0048A012 /* AURAGLPH.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -709,6 +712,7 @@
 				0989132418A0870000AB98AD /* Shader.fsh in Resources */,
 				09FC924D1A153C0A005D14A3 /* flare.png in Resources */,
 				0989132518A0870000AB98AD /* Texture.fsh in Resources */,
+				0900A3821B04A10800C249D9 /* Images.xcassets in Resources */,
 				0989131C18A086E800AB98AD /* TexFont.vsh in Resources */,
 				0933956B1A019E4F009E4802 /* Orbitron-Medium.ttf in Resources */,
 				0989131D18A086E800AB98AD /* Screen.vsh in Resources */,
@@ -873,7 +877,8 @@
 		095D12EC17ACA36C0048A012 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = armv7;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LIBRARY = "libstdc++";
 				DEAD_CODE_STRIPPING = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -886,7 +891,7 @@
 					"\"$(SRCROOT)/LipiTk/lib\"",
 				);
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_NAME = AURAGRPH;
+				PRODUCT_NAME = AURAGLPH;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -894,7 +899,8 @@
 		095D12ED17ACA36C0048A012 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = armv7;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LIBRARY = "libstdc++";
 				DEAD_CODE_STRIPPING = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -907,7 +913,7 @@
 					"\"$(SRCROOT)/LipiTk/lib\"",
 				);
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_NAME = AURAGRPH;
+				PRODUCT_NAME = AURAGLPH;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

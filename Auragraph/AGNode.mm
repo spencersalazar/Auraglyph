@@ -1039,14 +1039,14 @@ AGDocument::Node AGOutputNode::serialize()
 //------------------------------------------------------------------------------
 #pragma mark - AGFreeDraw
 
-AGFreeDraw::AGFreeDraw(GLvncprimf *points, int nPoints) :
+AGFreeDraw::AGFreeDraw(GLvertex3f *points, int nPoints) :
 m_active(true),
 m_alpha(1, 0, 0.5, 2),
 m_uuid(makeUUID())
 {
     m_nPoints = nPoints;
-    m_points = new GLvncprimf[m_nPoints];
-    memcpy(m_points, points, m_nPoints * sizeof(GLvncprimf));
+    m_points = new GLvertex3f[m_nPoints];
+    memcpy(m_points, points, m_nPoints * sizeof(GLvertex3f));
     m_touchDown = false;
     m_position = GLvertex3f();
     
@@ -1060,16 +1060,12 @@ m_uuid(docFreedraw.uuid)
 {
     m_nPoints = docFreedraw.points.size()/3;
     
-    m_points = new GLvncprimf[m_nPoints];
+    m_points = new GLvertex3f[m_nPoints];
     for(int i = 0; i < m_nPoints; i++)
     {
-        m_points[i].vertex.x = docFreedraw.points[i*3+0];
-        m_points[i].vertex.y = docFreedraw.points[i*3+1];
-        m_points[i].vertex.z = docFreedraw.points[i*3+2];
-        
-        // hardcode for now
-        m_points[i].normal = GLvertex3f(0, 0, 1);
-        m_points[i].color = GLcolor4f::white;
+        m_points[i].x = docFreedraw.points[i*3+0];
+        m_points[i].y = docFreedraw.points[i*3+1];
+        m_points[i].z = docFreedraw.points[i*3+2];
     }
     m_touchDown = false;
     m_position = GLvertex3f(docFreedraw.x, docFreedraw.y, docFreedraw.z);
@@ -1105,7 +1101,7 @@ void AGFreeDraw::render()
     shader.setModelViewMatrix(modelView);
     shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), m_points);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, m_points);
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     
     glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
@@ -1186,8 +1182,8 @@ AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
     
     for(int i = 0; i < m_nPoints-1; i++)
     {
-        GLvertex2f p0 = m_points[i].vertex.xy() + pos;
-        GLvertex2f p1 = m_points[i+1].vertex.xy() + pos;
+        GLvertex2f p0 = m_points[i].xy() + pos;
+        GLvertex2f p1 = m_points[i+1].xy() + pos;
         
         if(pointOnLine(t, p0, p1, 0.0025))
         {
@@ -1211,9 +1207,9 @@ AGDocument::Freedraw AGFreeDraw::serialize()
     fd.points.reserve(m_nPoints*3);
     for(int i = 0; i < m_nPoints; i++)
     {
-        fd.points.push_back(m_points[i].vertex.x);
-        fd.points.push_back(m_points[i].vertex.y);
-        fd.points.push_back(m_points[i].vertex.z);
+        fd.points.push_back(m_points[i].x);
+        fd.points.push_back(m_points[i].y);
+        fd.points.push_back(m_points[i].z);
     }
     
     return fd;

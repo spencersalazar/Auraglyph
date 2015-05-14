@@ -19,6 +19,7 @@
 #include "Texture.h"
 #include "ES2Render.h"
 #include "GeoGenerator.h"
+#include "spstl.h"
 
 #include <sstream>
 
@@ -601,7 +602,8 @@ GLvrectf AGUIStandardNodeEditor::effectiveBounds()
 AGUIButton::AGUIButton(const std::string &title, const GLvertex3f &pos, const GLvertex3f &size) :
 m_action(nil)
 {
-    m_hit = m_hitOnTouchDown = false;
+    m_hit = m_hitOnTouchDown = m_latch = false;
+    m_interactionType = INTERACTION_UPDOWN;
     
     m_title = title;
     
@@ -662,22 +664,22 @@ void AGUIButton::render()
     glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
     glDisableVertexAttribArray(GLKVertexAttribNormal);
     
-    if(m_hit)
+    if(isPressed())
     {
         glLineWidth(4.0);
-        glDrawArrays(GL_LINE_LOOP, 0, 4);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
         
-        text->render(m_title, GLcolor4f::white, textMV, proj);
+        text->render(m_title, AGStyle::darkColor(), textMV, proj);
     }
     else
     {
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        glDrawArrays(GL_LINE_LOOP, 0, 4);
         
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::black);
         glLineWidth(2.0);
         glDrawArrays(GL_LINE_LOOP, 4, 4);
 
-        text->render(m_title, GLcolor4f::black, textMV, proj);
+        text->render(m_title, AGStyle::lightColor(), textMV, proj);
     }
 }
 
@@ -686,6 +688,13 @@ void AGUIButton::touchDown(const GLvertex3f &t)
 {
     m_hit = true;
     m_hitOnTouchDown = true;
+    
+    if(m_interactionType == INTERACTION_LATCH)
+    {
+        m_latch = !m_latch;
+        if(m_action)
+            m_action();
+    }
 }
 
 void AGUIButton::touchMove(const GLvertex3f &t)
@@ -695,7 +704,7 @@ void AGUIButton::touchMove(const GLvertex3f &t)
 
 void AGUIButton::touchUp(const GLvertex3f &t)
 {
-    if(m_hit && m_action)
+    if(m_interactionType == INTERACTION_UPDOWN && m_hit && m_action)
         m_action();
     
     m_hit = false;
@@ -709,6 +718,19 @@ GLvrectf AGUIButton::effectiveBounds()
 void AGUIButton::setAction(void (^action)())
 {
     m_action = action;
+}
+
+bool AGUIButton::isPressed()
+{
+    if(m_interactionType == INTERACTION_UPDOWN)
+        return m_hit;
+    else
+        return m_latch;
+}
+
+void AGUIButton::setLatched(bool latched)
+{
+    m_latch = latched;
 }
 
 
@@ -732,7 +754,7 @@ void AGUITextButton::render()
     //    GLKMatrix4 textMV = modelView;
     textMV = GLKMatrix4Scale(textMV, textScale, textScale, textScale);
     
-    if(m_hit)
+    if(isPressed())
     {
         AGGenericShader &shader = AGGenericShader::instance();
         
@@ -745,17 +767,17 @@ void AGUITextButton::render()
         glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
         glEnableVertexAttribArray(GLKVertexAttribPosition);
         
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &AGStyle::lightColor());
         glDisableVertexAttribArray(GLKVertexAttribColor);
         
         glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
         glDisableVertexAttribArray(GLKVertexAttribNormal);
         
         glLineWidth(4.0);
-        glDrawArrays(GL_LINE_LOOP, 0, 4);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }
     
-    text->render(m_title, GLcolor4f::white, textMV, proj);
+    text->render(m_title, AGStyle::lightColor(), textMV, proj);
 }
 
 
@@ -763,44 +785,124 @@ void AGUITextButton::render()
 // ### AGUIIconButton ###
 //------------------------------------------------------------------------------
 #pragma mark - AGUIIconButton
-AGUIIconButton::AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size, AGRenderInfoV iconRenderInfo) :
-AGUIButton("", pos, size), m_iconInfo(iconRenderInfo)
+AGUIIconButton::AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size, const AGRenderInfoV &iconRenderInfo) :
+AGUIButton("", pos, size),
+m_iconInfo(iconRenderInfo)
 {
-    GeoGen::makeRect(m_geo, size.x, size.y);
+    m_boxGeo = NULL;
+    setIconMode(ICONMODE_SQUARE);
     
-    m_boxInfo.geo = m_geo;
-    m_boxInfo.geoType = GL_TRIANGLE_FAN;
-    m_boxInfo.numVertex = 4;
     m_boxInfo.color = AGStyle::lightColor();
     m_renderList.push_back(&m_boxInfo);
     
     m_renderList.push_back(&m_iconInfo);
 }
 
+void AGUIIconButton::setIconMode(AGUIIconButton::IconMode m)
+{
+    m_iconMode = m;
+    
+    if(m_iconMode == ICONMODE_SQUARE)
+    {
+        SAFE_DELETE_ARRAY(m_boxGeo);
+        
+        m_boxGeo = new GLvertex3f[4];
+        GeoGen::makeRect(m_boxGeo, m_size.x, m_size.y);
+        
+        m_boxInfo.geo = m_boxGeo;
+        m_boxInfo.geoType = GL_TRIANGLE_FAN;
+        m_boxInfo.numVertex = 4;
+    }
+    else if (m_iconMode == ICONMODE_CIRCLE)
+    {
+        SAFE_DELETE_ARRAY(m_boxGeo);
+        
+        m_boxGeo = new GLvertex3f[48];
+        GeoGen::makeCircle(m_boxGeo, 48, m_size.x/2);
+        
+        m_boxInfo.geo = m_boxGeo;
+        m_boxInfo.geoType = GL_LINE_LOOP;
+        m_boxInfo.numVertex = 48;
+        m_boxInfo.geoOffset = 1;
+    }
+}
+
+AGUIIconButton::IconMode AGUIIconButton::getIconMode()
+{
+    return m_iconMode;
+}
+
 void AGUIIconButton::update(float t, float dt)
 {
     AGInteractiveObject::update(t, dt);
     
-    m_renderState.modelview = GLKMatrix4Translate(m_parent->m_renderState.modelview, m_pos.x, m_pos.y, m_pos.z);
+    GLKMatrix4 parentModelview;
+    if(m_parent) parentModelview = m_parent->m_renderState.modelview;
+    else if(renderFixed()) parentModelview = AGRenderObject::fixedModelViewMatrix();
+    else parentModelview = AGRenderObject::globalModelViewMatrix();
+    
+    m_renderState.modelview = GLKMatrix4Translate(parentModelview, m_pos.x, m_pos.y, m_pos.z);
     m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
     
-    if(m_hit)
-    {
-        m_iconInfo.color = AGStyle::lightColor();
-        m_boxInfo.geoType = GL_LINE_LOOP;
-    }
-    else
+    if(isPressed())
     {
         m_iconInfo.color = AGStyle::darkColor();
         m_boxInfo.geoType = GL_TRIANGLE_FAN;
+        m_boxInfo.geoOffset = 0;
+        m_boxInfo.numVertex = (m_iconMode == ICONMODE_CIRCLE ? 48 : 4);
+    }
+    else
+    {
+        m_iconInfo.color = AGStyle::lightColor();
+        m_boxInfo.geoType = GL_LINE_LOOP;
+        m_boxInfo.geoOffset = (m_iconMode == ICONMODE_CIRCLE ? 1 : 0);
+        m_boxInfo.numVertex = (m_iconMode == ICONMODE_CIRCLE ? 47 : 4);
     }
 }
 
 void AGUIIconButton::render()
 {
     // bypass AGUIButton::render()
+    
+    glLineWidth(2.0);
+
     AGInteractiveObject::render();
 }
+
+
+
+
+//------------------------------------------------------------------------------
+// ### AGUIButtonGroup ###
+//------------------------------------------------------------------------------
+#pragma mark - AGUIButtonGroup
+
+AGUIButtonGroup::AGUIButtonGroup()
+{
+}
+
+AGUIButtonGroup::~AGUIButtonGroup()
+{
+}
+
+void AGUIButtonGroup::addButton(AGUIButton *button, void (^action)(), bool isDefault)
+{
+    button->setLatched(isDefault);
+    m_buttons.push_back(button);
+    addChild(button);
+    
+    button->setAction(^{
+        itmap(m_buttons, ^(AGUIButton *&_b) {
+            if(_b != button)
+                _b->setLatched(false);
+        });
+        
+        if(action != NULL)
+            action();
+    });
+}
+
+
 
 
 //------------------------------------------------------------------------------
@@ -854,6 +956,9 @@ void AGUITrash::update(float t, float dt)
 
 void AGUITrash::render()
 {
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
     GLKMatrix4 proj = AGNode::projectionMatrix();
     GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::fixedModelViewMatrix(), m_position.x, m_position.y, m_position.z);
     modelView = GLKMatrix4Scale(modelView, m_scale, m_scale, m_scale);

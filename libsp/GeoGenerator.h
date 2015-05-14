@@ -23,6 +23,13 @@ namespace GeoGen
      */
     void makeCircle(GLvertex3f *points, int numPoints, float radius);
     
+    /* makeCircle()
+     - Generate vertices for circle centered at (0,0,0) and with specified radius
+     - points array must have sufficient space for numPoints GLvertex3f's
+     - Draw as stroke with GL_LINE_LOOP
+     */
+    void makeCircleStroke(GLvertex3f *points, int numPoints, float radius);
+    
     /* circle64()
      - Return 64 vertex circle, created a la makeCircle() above
      - radius = 1

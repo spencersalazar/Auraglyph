@@ -27,6 +27,7 @@ public:
     AGGenericShader *shader;
     GLuint numVertex;
     GLuint geoType;
+    GLuint geoOffset;
 };
 
 struct AGRenderInfoV : public AGRenderInfo
@@ -106,16 +107,22 @@ private:
 };
 
 
+#ifdef __LP64__ // arm64
+typedef uint64_t TouchID;
+#else // arm32
+typedef uint32_t TouchID;
+#endif
+
 struct AGTouchInfo
 {
     AGTouchInfo() { }
-    AGTouchInfo(const GLvertex3f &_position, const CGPoint &_screenPosition, int _touchId) :
+    AGTouchInfo(const GLvertex3f &_position, const CGPoint &_screenPosition, TouchID _touchId) :
     position(_position), screenPosition(_screenPosition), touchId(_touchId)
     { }
     
     GLvertex3f position;
     CGPoint screenPosition;
-    int touchId;
+    TouchID touchId;
 };
 
 

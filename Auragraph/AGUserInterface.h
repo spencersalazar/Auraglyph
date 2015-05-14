@@ -156,8 +156,28 @@ public:
     virtual void touchUp(const GLvertex3f &t);
     
     void setAction(void (^action)());
+    bool isPressed();
+    void setLatched(bool latched);
     
     virtual bool renderFixed() { return true; }
+    
+//    enum ActionType
+//    {
+//        ACTION_ONTOUCHDOWN,
+//        ACTION_ONTOUCHUP,
+//    };
+//    
+//    void setActionType(ActionType t) { m_actionType = t; }
+//    ActionType getActionType() { return m_actionType; }
+    
+    enum InteractionType
+    {
+        INTERACTION_UPDOWN,
+        INTERACTION_LATCH,
+    };
+    
+    void setInteractionType(InteractionType t) { m_interactionType = t; }
+    InteractionType getInteractionType() { return m_interactionType; }
     
 protected:
     
@@ -170,6 +190,10 @@ protected:
     
     bool m_hit;
     bool m_hitOnTouchDown;
+    bool m_latch;
+    
+//    ActionType m_actionType;
+    InteractionType m_interactionType;
     
     void (^m_action)();
 };
@@ -196,19 +220,48 @@ public:
 class AGUIIconButton : public AGUIButton
 {
 public:
-    AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size, AGRenderInfoV iconRenderInfo);
+    AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size, const AGRenderInfoV &iconRenderInfo);
     
     virtual void update(float t, float dt);
     virtual void render();
     
-    virtual GLvertex3f position() { return parent()->position()+m_pos; }
+    virtual GLvertex3f position() { GLvertex3f parentPos = GLvertex3f(0, 0, 0); if(parent()) parentPos = parent()->position(); return parentPos+m_pos; }
     virtual GLvertex2f size() { return m_size.xy(); }
     virtual GLvrectf effectiveBounds() { return GLvrectf(position()-size()*0.5, position()+size()*0.5); }
     
+    enum IconMode
+    {
+        ICONMODE_SQUARE,
+        ICONMODE_CIRCLE,
+    };
+    
+    void setIconMode(IconMode m);
+    IconMode getIconMode();
+    
 private:
-    GLvertex3f m_boxGeo[4];
+    GLvertex3f *m_boxGeo;
     AGRenderInfoV m_boxInfo;
     AGRenderInfoV m_iconInfo;
+    
+    IconMode m_iconMode;
+};
+
+
+
+/*------------------------------------------------------------------------------
+ - AGUIButtonGroup -
+ Button group for mode selector-type buttons.
+ -----------------------------------------------------------------------------*/
+class AGUIButtonGroup : public AGInteractiveObject
+{
+public:
+    AGUIButtonGroup();
+    ~AGUIButtonGroup();
+    
+    void addButton(AGUIButton *button, void (^action)(), bool isDefault);
+    
+private:
+    std::list<AGUIButton *> m_buttons;
 };
 
 
