@@ -256,6 +256,8 @@ static AGViewController * g_instance = nil;
     });
     [self addTopLevelObject:saveButton];
     
+    AGUIButtonGroup *modeButtonGroup = new AGUIButtonGroup();
+    
     /* freedraw button */
     float freedrawButtonWidth = 0.0095;
     GLvertex3f modeButtonStartPos = [self worldCoordinateForScreenCoordinate:CGPointMake(27.5, self.view.bounds.size.height-20)];
@@ -276,10 +278,9 @@ static AGViewController * g_instance = nil;
                                                         freedrawRenderInfo);
     freedrawButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
     freedrawButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
-    freedrawButton->setAction(^{
-        NSLog(@"freedraw %i", freedrawButton->isPressed());
-    });
-    [self addTopLevelObject:freedrawButton];
+    modeButtonGroup->addButton(freedrawButton, ^{
+        NSLog(@"freedraw", freedrawButton->isPressed());
+    }, false);
     
     /* node button */
     float nodeButtonWidth = freedrawButtonWidth;
@@ -294,10 +295,11 @@ static AGViewController * g_instance = nil;
                                                     nodeRenderInfo);
     nodeButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
     nodeButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
-    nodeButton->setAction(^{
-        NSLog(@"node %i", nodeButton->isPressed());
-    });
-    [self addTopLevelObject:nodeButton];
+    modeButtonGroup->addButton(nodeButton, ^{
+        NSLog(@"node");
+    }, true);
+    
+    [self addTopLevelObject:modeButtonGroup];
     
     /* trash */
     AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);

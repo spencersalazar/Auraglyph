@@ -157,6 +157,7 @@ public:
     
     void setAction(void (^action)());
     bool isPressed();
+    void setLatched(bool latched);
     
     virtual bool renderFixed() { return true; }
     
@@ -243,6 +244,24 @@ private:
     AGRenderInfoV m_iconInfo;
     
     IconMode m_iconMode;
+};
+
+
+
+/*------------------------------------------------------------------------------
+ - AGUIButtonGroup -
+ Button group for mode selector-type buttons.
+ -----------------------------------------------------------------------------*/
+class AGUIButtonGroup : public AGInteractiveObject
+{
+public:
+    AGUIButtonGroup();
+    ~AGUIButtonGroup();
+    
+    void addButton(AGUIButton *button, void (^action)(), bool isDefault);
+    
+private:
+    std::list<AGUIButton *> m_buttons;
 };
 
 

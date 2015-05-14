@@ -19,6 +19,7 @@
 #include "Texture.h"
 #include "ES2Render.h"
 #include "GeoGenerator.h"
+#include "spstl.h"
 
 #include <sstream>
 
@@ -727,6 +728,11 @@ bool AGUIButton::isPressed()
         return m_latch;
 }
 
+void AGUIButton::setLatched(bool latched)
+{
+    m_latch = latched;
+}
+
 
 //------------------------------------------------------------------------------
 // ### AGUITextButton ###
@@ -862,6 +868,41 @@ void AGUIIconButton::render()
 
     AGInteractiveObject::render();
 }
+
+
+
+
+//------------------------------------------------------------------------------
+// ### AGUIButtonGroup ###
+//------------------------------------------------------------------------------
+#pragma mark - AGUIButtonGroup
+
+AGUIButtonGroup::AGUIButtonGroup()
+{
+}
+
+AGUIButtonGroup::~AGUIButtonGroup()
+{
+}
+
+void AGUIButtonGroup::addButton(AGUIButton *button, void (^action)(), bool isDefault)
+{
+    button->setLatched(isDefault);
+    m_buttons.push_back(button);
+    addChild(button);
+    
+    button->setAction(^{
+        itmap(m_buttons, ^(AGUIButton *&_b) {
+            if(_b != button)
+                _b->setLatched(false);
+        });
+        
+        if(action != NULL)
+            action();
+    });
+}
+
+
 
 
 //------------------------------------------------------------------------------
