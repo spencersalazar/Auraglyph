@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0900A3821B04A10800C249D9 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0900A3811B04A10800C249D9 /* Images.xcassets */; };
 		0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0901C1BA17BE2F970032904B /* AGGenericShader.mm */; };
 		0901C1C017BE3C460032904B /* SourceCodePro-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0901C1BF17BE3C460032904B /* SourceCodePro-Regular.ttf */; };
 		0901C1C217BE3C4B0032904B /* eichante.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0901C1C117BE3C4B0032904B /* eichante.ttf */; };
@@ -102,6 +103,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0900A3811B04A10800C249D9 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		0901C1BA17BE2F970032904B /* AGGenericShader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGGenericShader.mm; sourceTree = "<group>"; };
 		0901C1BB17BE2F970032904B /* AGGenericShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGGenericShader.h; sourceTree = "<group>"; };
 		0901C1BF17BE3C460032904B /* SourceCodePro-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SourceCodePro-Regular.ttf"; sourceTree = "<group>"; };
@@ -436,6 +438,7 @@
 		095D12CE17ACA36C0048A012 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0900A3811B04A10800C249D9 /* Images.xcassets */,
 				090354F61A329EAA00F68107 /* bankgthd.ttf */,
 				09D8C3FE1A0A4DF2008D788A /* OFL.txt */,
 				090354F41A325CCD00F68107 /* Microgramma.ttf */,
@@ -704,6 +707,7 @@
 				0989132418A0870000AB98AD /* Shader.fsh in Resources */,
 				09FC924D1A153C0A005D14A3 /* flare.png in Resources */,
 				0989132518A0870000AB98AD /* Texture.fsh in Resources */,
+				0900A3821B04A10800C249D9 /* Images.xcassets in Resources */,
 				0989131C18A086E800AB98AD /* TexFont.vsh in Resources */,
 				0933956B1A019E4F009E4802 /* Orbitron-Medium.ttf in Resources */,
 				0989131D18A086E800AB98AD /* Screen.vsh in Resources */,
@@ -868,6 +872,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = armv7;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LIBRARY = "libstdc++";
 				DEAD_CODE_STRIPPING = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -889,6 +895,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = armv7;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LIBRARY = "libstdc++";
 				DEAD_CODE_STRIPPING = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
