@@ -138,7 +138,10 @@ m_uuid(docNode.uuid)
     {
         m_controlPortBuffer = NULL;
     }
-    
+}
+
+void AGNode::loadEditPortValues(const AGDocument::Node &docNode)
+{
     for(int i = 0; i < numEditPorts(); i++)
     {
         const string &name = editPortInfo(i).name;

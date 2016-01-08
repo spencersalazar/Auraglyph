@@ -130,6 +130,8 @@ public:
     /* overridden by final subclass */
     virtual void getEditPortValue(int port, float &value) const { }
     
+    void loadEditPortValues(const AGDocument::Node &docNode);
+    
     /* overridden by final subclass */
     virtual AGUINodeEditor *createCustomEditor() { return NULL; }
 
