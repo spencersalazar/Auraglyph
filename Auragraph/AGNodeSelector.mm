@@ -170,6 +170,25 @@ void AGUINodeSelector<NodeType, ManagerType, InfoType>::render()
     glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &blackA);
     glDrawArrays(GL_TRIANGLE_FAN, 0, m_geoSize);
     
+    /* draw scroll bar */
+    int nTypes = ManagerType::instance().nodeTypes().size();
+    float scroll_bar_margin = 0.95;
+    float scroll_max = ceilf(nTypes/2.0f-2)*m_radius;
+    float scroll_bar_tray_height = m_radius*2*scroll_bar_margin;
+    // percent of the total scroll area that is visible * tray height
+    float scroll_bar_height = m_radius*2/scroll_max * scroll_bar_tray_height;
+    // percent of scroll position * (tray height - bar height)
+    float scroll_bar_y = m_verticalScrollPos/scroll_max*(scroll_bar_tray_height-scroll_bar_height);
+    GLvertex3f scroll_bar_geo[2];
+    scroll_bar_geo[0] = GLvertex2f(m_radius*scroll_bar_margin, m_radius*scroll_bar_margin-scroll_bar_y);
+    scroll_bar_geo[1] = GLvertex2f(m_radius*scroll_bar_margin, m_radius*scroll_bar_margin-(scroll_bar_y+scroll_bar_height));
+    
+    // load it up and draw
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+    glLineWidth(1.0);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), scroll_bar_geo);
+    glDrawArrays(GL_LINES, 0, 2);
+    
     /* draw node types */
     
     //    GLvertex3f startPos(-m_radius/2, -m_radius/2, 0);
@@ -266,6 +285,8 @@ void AGUINodeSelector<NodeType, ManagerType, InfoType>::touchMove(const GLvertex
         m_verticalScrollPos += (t.y - m_lastTouch.y);
         m_hit = -1;
         m_done = false;
+        
+        NSLog(@"scroll pct: %f", m_verticalScrollPos/m_verticalScrollPos.max);
     }
     
     m_lastTouch = t;
