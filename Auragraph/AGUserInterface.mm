@@ -106,10 +106,12 @@ m_lastTraceWasRecognized(true)
 {
     initializeNodeEditor();
     
-//    string ucname = m_node->title();
-//    for(int i = 0; i < ucname.length(); i++) ucname[i] = toupper(ucname[i]);
+    string ucname = m_node->title();
+    for(int i = 0; i < ucname.length(); i++)
+        ucname[i] = toupper(ucname[i]);
 //    m_title = "EDIT " + ucname;
-    m_title = "EDIT";
+//    m_title = "EDIT";
+    m_title = ucname;
 }
 
 void AGUIStandardNodeEditor::update(float t, float dt)
