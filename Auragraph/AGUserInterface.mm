@@ -584,8 +584,18 @@ GLvrectf AGUIStandardNodeEditor::effectiveBounds()
     {
         // TODO HACK: overestimate bounds
         // because figuring out the item editor box bounds is too hard right now
-        GLvertex2f size = GLvertex2f(s_radius*2, s_radius*2);
-        return GLvrectf(m_node->position()-size, m_node->position()+size);
+//        GLvertex2f size = GLvertex2f(s_radius*2, s_radius*2);
+//        return GLvrectf(m_node->position()-size, m_node->position()+size);
+        
+        float rowCount = NODEEDITOR_ROWCOUNT;
+        GLvertex3f pos = m_node->position();
+        float y = s_radius - s_radius*2.0*(m_editingPort+2)/rowCount;
+        
+        float bb_center = y - s_radius + s_radius*2/rowCount;
+        return GLvrectf(GLvertex2f(pos.x+s_geo[s_itemEditBoxOffset].x,
+                                   pos.y+bb_center+s_geo[s_itemEditBoxOffset+2].y),
+                        GLvertex2f(pos.x+s_geo[s_itemEditBoxOffset+2].x,
+                                   pos.y+bb_center+s_geo[s_itemEditBoxOffset].y));
     }
     else
     {

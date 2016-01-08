@@ -780,6 +780,7 @@ private:
 - (void)dealloc
 {
 //    SAFE_DELETE(_nodeEditor);
+    // _nodeEditor will be automatically deallocated after it fades out
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
