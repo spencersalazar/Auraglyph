@@ -946,7 +946,7 @@ AGUITrash::AGUITrash()
 
     m_scale.value = 0.5;
     m_scale.target = 1;
-    m_scale.slew = 0.1;
+    m_scale.rate = 0.1;
 }
 
 AGUITrash::~AGUITrash()

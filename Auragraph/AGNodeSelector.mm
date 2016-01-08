@@ -95,7 +95,7 @@ m_done(false)
     m_geo[3] = GLvertex3f(m_radius, m_radius, 0);
     
     int nTypes = ManagerType::instance().nodeTypes().size();
-    m_verticalScrollPos.clamp(0, ceilf(nTypes/2.0f-2)*m_radius);
+    m_verticalScrollPos.clampTo(0, ceilf(nTypes/2.0f-2)*m_radius);
     
     m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
     m_yScale = lincurvef(AGStyle::open_animTimeY, AGStyle::open_squeezeHeight, 1);

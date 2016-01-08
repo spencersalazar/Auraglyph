@@ -9,49 +9,69 @@
 #ifndef Auragraph_Animation_h
 #define Auragraph_Animation_h
 
-
-struct slewf
+/*------------------------------------------------------------------------------
+ slew/slewf
+ Gradually ease data type to target value. "Getting" the value returns the
+ smoothed value, while "setting" it sets the target that is eased to. You need
+ to call interp() at a periodic interval, e.g. the graphics frame rate.
+ -----------------------------------------------------------------------------*/
+template<typename T>
+struct slew
 {
-    slewf() : value(0), target(0), slew(0) { }
-    slewf(float _slew) : value(0), target(0), slew(_slew) { }
-    slewf(float _slew, float _start) : value(_start), target(_start), slew(_slew) { }
+    slew() : value(0), target(0), rate(0) { }
+    slew(float _rate) : value(0), target(0), rate(_rate) { }
+    slew(float _rate, T _start) : value(_start), target(_start), rate(_rate) { }
     
-    inline void interp() { value = (target-value)*slew + value; }
+    inline void reset(T _val) { target = _val; value = _val; }
+    inline void interp() { value = (target-value)*rate + value; }
     
     // cast directly to float
-    operator const float &() const { return value; }
+    operator const T &() const { return value; }
     
-    void operator=(const float &f) { target = f; }
-    void operator+=(const float &f) { *this = value+f; }
-    void operator-=(const float &f) { *this = value-f; }
-    void operator*=(const float &f) { *this = value*f; }
-    void operator/=(const float &f) { *this = value/f; }
+    void operator=(const T &f) { target = f; }
+    void operator+=(const T &f) { *this = value+f; }
+    void operator-=(const T &f) { *this = value-f; }
+    void operator*=(const T &f) { *this = value*f; }
+    void operator/=(const T &f) { *this = value/f; }
     
-    float value, target, slew;
+    T value, target;
+    float rate;
 };
 
-struct clampf
+typedef slew<float> slewf;
+
+/*------------------------------------------------------------------------------
+ clamp/clampf
+ Clamp value to min/max values. Setting the value will force it into the 
+ configured range, and getting it thereafter will return the (potentially)
+ clamped value.
+ -----------------------------------------------------------------------------*/
+template<typename T>
+struct clamp
 {
-    clampf(float _min = 0, float _max = 1) { value = 0; clamp(_min, _max); }
+    clamp(T _min = 0, T _max = 1) { value = 0; clampTo(_min, _max); }
     
-    inline void clamp(float _min, float _max) { min = _min; max = _max; }
+    inline void clampTo(T _min, T _max) { min = _min; max = _max; }
     
-    inline operator const float &() const { return value; }
+    inline operator const T &() const { return value; }
     
-    inline void operator=(const float &f)
+    inline void operator=(const T &f)
     {
         if(f > max) value = max;
         else if(f < min) value = min;
         else value = f;
     }
     
-    void operator+=(const float &f) { *this = value+f; }
-    void operator-=(const float &f) { *this = value-f; }
-    void operator*=(const float &f) { *this = value*f; }
-    void operator/=(const float &f) { *this = value/f; }
+    void operator+=(const T &f) { *this = value+f; }
+    void operator-=(const T &f) { *this = value-f; }
+    void operator*=(const T &f) { *this = value*f; }
+    void operator/=(const T &f) { *this = value/f; }
     
-    float value, min, max;
+    T value, min, max;
 };
+
+typedef clamp<float> clampf;
+
 
 class curvef
 {
@@ -120,29 +140,29 @@ public:
 };
 
 
-template<typename T, typename SlewType=float>
-struct slew
-{
-//    slew() : slewrate(0.1) { }
-//    slew(SlewType _slew) : slewrate(_slew) { }
-    slew(SlewType _slew, T _start) : value(_start), target(_start), slewrate(_slew) { }
-    
-    inline void reset(T _val) { target = _val; value = _val; }
-    inline void interp() { value = (target-value)*slewrate + value; }
-    
-    // cast directly to float
-    operator const T &() const { return value; }
-    
-    void operator=(const T &f) { target = f; }
-    void operator+=(const T &f) { target = target+f; }
-    void operator-=(const T &f) { target = target-f; }
-    void operator*=(const T &f) { target = target*f; }
-    void operator/=(const T &f) { target
-        = target/f; }
-    
-    T value, target;
-    SlewType slewrate;
-};
+//template<typename T, typename SlewType=float>
+//struct slew
+//{
+////    slew() : slewrate(0.1) { }
+////    slew(SlewType _slew) : slewrate(_slew) { }
+//    slew(SlewType _slew, T _start) : value(_start), target(_start), slewrate(_slew) { }
+//    
+//    inline void reset(T _val) { target = _val; value = _val; }
+//    inline void interp() { value = (target-value)*slewrate + value; }
+//    
+//    // cast directly to float
+//    operator const T &() const { return value; }
+//    
+//    void operator=(const T &f) { target = f; }
+//    void operator+=(const T &f) { target = target+f; }
+//    void operator-=(const T &f) { target = target-f; }
+//    void operator*=(const T &f) { target = target*f; }
+//    void operator/=(const T &f) { target
+//        = target/f; }
+//    
+//    T value, target;
+//    SlewType slewrate;
+//};
 
 
 
