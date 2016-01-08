@@ -285,8 +285,6 @@ void AGUINodeSelector<NodeType, ManagerType, InfoType>::touchMove(const GLvertex
         m_verticalScrollPos += (t.y - m_lastTouch.y);
         m_hit = -1;
         m_done = false;
-        
-        NSLog(@"scroll pct: %f", m_verticalScrollPos/m_verticalScrollPos.max);
     }
     
     m_lastTouch = t;
