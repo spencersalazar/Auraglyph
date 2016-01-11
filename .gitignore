@@ -1,3 +1,5 @@
+.DS_Store
+
 Auragraph.xcodeproj/project.xcworkspace/
 Auragraph.xcodeproj/xcuserdata/
 
@@ -8,4 +10,14 @@ nime2014/*.log
 nime2014/*.pdf
 nime2014/*.synctex.gz
 nime2014/texput.log
+
+proposal/*.aux
+proposal/*.bbl
+proposal/*.blg
+proposal/*.log
+proposal/*.pdf
+proposal/*.synctex.gz
+proposal/texput.log
+proposal/.proposal.lb
+proposal/proposal.out
 
