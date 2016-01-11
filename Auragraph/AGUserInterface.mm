@@ -112,6 +112,9 @@ m_lastTraceWasRecognized(true)
 //    m_title = "EDIT " + ucname;
 //    m_title = "EDIT";
     m_title = ucname;
+    
+    m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
+    m_yScale = lincurvef(AGStyle::open_animTimeY, AGStyle::open_squeezeHeight, 1);
 }
 
 void AGUIStandardNodeEditor::update(float t, float dt)
@@ -125,10 +128,18 @@ void AGUIStandardNodeEditor::update(float t, float dt)
     float animTimeX = AGStyle::open_animTimeX;
     float animTimeY = AGStyle::open_animTimeY;
     
-    if(m_t < animTimeX)
-        m_modelView = GLKMatrix4Scale(m_modelView, squeezeHeight+(m_t/animTimeX)*(1-squeezeHeight), squeezeHeight, 1);
-    else if(m_t < animTimeX+animTimeY)
-        m_modelView = GLKMatrix4Scale(m_modelView, 1.0, squeezeHeight+((m_t-animTimeX)/animTimeY)*(1-squeezeHeight), 1);
+//    if(m_t < animTimeX)
+//        m_modelView = GLKMatrix4Scale(m_modelView, squeezeHeight+(m_t/animTimeX)*(1-squeezeHeight), squeezeHeight, 1);
+//    else if(m_t < animTimeX+animTimeY)
+//        m_modelView = GLKMatrix4Scale(m_modelView, 1.0, squeezeHeight+((m_t-animTimeX)/animTimeY)*(1-squeezeHeight), 1);
+    
+    if(m_yScale <= AGStyle::open_squeezeHeight) m_xScale.update(dt);
+    if(m_xScale >= 0.99f) m_yScale.update(dt);
+    
+    m_modelView = GLKMatrix4Scale(m_modelView,
+                                  m_yScale <= AGStyle::open_squeezeHeight ? (float)m_xScale : 1.0f,
+                                  m_xScale >= 0.99f ? (float)m_yScale : AGStyle::open_squeezeHeight,
+                                  1);
     
     m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_modelView), NULL);
     
@@ -604,6 +615,17 @@ GLvrectf AGUIStandardNodeEditor::effectiveBounds()
         GLvertex2f size = GLvertex2f(s_radius, s_radius);
         return GLvrectf(m_node->position()-size, m_node->position()+size);
     }
+}
+
+void AGUIStandardNodeEditor::renderOut()
+{
+    m_xScale = lincurvef(AGStyle::open_animTimeX/2, 1, AGStyle::open_squeezeHeight);
+    m_yScale = lincurvef(AGStyle::open_animTimeY/2, 1, AGStyle::open_squeezeHeight);
+}
+
+bool AGUIStandardNodeEditor::finishedRenderingOut()
+{
+    return m_xScale <= AGStyle::open_squeezeHeight;
 }
 
 //------------------------------------------------------------------------------

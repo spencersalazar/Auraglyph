@@ -71,6 +71,9 @@ public:
     virtual bool doneEditing() { return m_doneEditing; }
     bool shouldRenderDrawline() { return false; }
     
+    void renderOut();
+    bool finishedRenderingOut();
+    
 protected:
     
     virtual GLvrectf effectiveBounds();
@@ -95,6 +98,9 @@ private:
     GLKMatrix4 m_modelView;
     GLKMatrix3 m_normalMatrix;
 
+    lincurvef m_xScale;
+    lincurvef m_yScale;
+    
     int m_hit;
     int m_editingPort;
     

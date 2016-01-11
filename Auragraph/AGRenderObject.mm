@@ -84,6 +84,8 @@ void AGRenderObject::update(float t, float dt)
         m_renderState.modelview = globalModelViewMatrix();
     m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
     
+    m_alpha.update(dt);
+    
     updateChildren(t, dt);
 }
 
@@ -126,8 +128,15 @@ void AGRenderObject::renderChildren()
 
 void AGRenderObject::renderOut()
 {
+    m_alpha = 0;
+    
     for(list<AGRenderObject *>::iterator i = m_children.begin(); i != m_children.end(); i++)
         (*i)->renderOut();
+}
+
+bool AGRenderObject::finishedRenderingOut()
+{
+    return m_alpha < 0.01;
 }
 
 void AGRenderObject::debug_renderBounds()
