@@ -64,7 +64,7 @@ void AGConnection::initalize()
 AGConnection::AGConnection(AGNode * src, AGNode * dst, int dstPort) :
 m_src(src), m_dst(dst), m_dstPort(dstPort),
 m_rate((src->rate() == RATE_AUDIO && dst->rate() == RATE_AUDIO) ? RATE_AUDIO : RATE_CONTROL),
-m_geoSize(0), m_hit(false), m_stretch(false), m_active(true), m_alpha(1, 0, 0.5, 4),
+m_geoSize(0), m_hit(false), m_stretch(false), m_active(true),
 m_stretchPoint(0.25, GLvertex3f()), m_controlVisScale(0.1, 0), m_uuid(makeUUID())
 {
     initalize();
@@ -78,6 +78,9 @@ m_stretchPoint(0.25, GLvertex3f()), m_controlVisScale(0.1, 0), m_uuid(makeUUID()
     updatePath();
     
     m_color = GLcolor4f(0.75, 0.75, 0.75, 1);
+    m_alpha.k = 0.5;
+    m_alpha.rate = 4;
+    m_alpha.finish(); // force to 1
     
     m_break = false;
     
@@ -92,11 +95,11 @@ AGConnection::~AGConnection()
     //    AGNode::disconnect(this);
 }
 
-void AGConnection::fadeOutAndRemove()
+void AGConnection::renderOut()
 {
+    AGRenderObject::renderOut();
     AGNode::disconnect(this);
     m_active = false;
-    m_alpha.reset();
 }
 
 void AGConnection::updatePath()
@@ -113,6 +116,8 @@ void AGConnection::updatePath()
 
 void AGConnection::update(float t, float dt)
 {
+    AGRenderObject::update(t, dt);
+    
     m_stretchPoint.interp();
     m_controlVisScale.interp();
     
@@ -120,6 +125,7 @@ void AGConnection::update(float t, float dt)
         m_color = GLcolor4f::red;
     else
         m_color = GLcolor4f::white;
+    m_color.a = m_alpha;
     
     if(m_active)
     {
@@ -136,15 +142,6 @@ void AGConnection::update(float t, float dt)
         }
         
         updatePath();
-    }
-    else
-    {
-        m_alpha.update(dt);
-        m_color.a = m_alpha;
-        
-        // TODO: replace this with removeFromTopLevel or related
-        if(m_alpha < 0.01)
-            [[AGViewController instance] removeConnection:this];
     }
     
     float flareSpeed = 2;
@@ -360,7 +357,7 @@ void AGConnection::touchUp(const GLvertex3f &t)
     
     if(m_break)
     {
-        fadeOutAndRemove();
+        removeFromTopLevel();
     }
     else
     {
