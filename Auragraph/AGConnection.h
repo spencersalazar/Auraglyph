@@ -59,7 +59,7 @@ public:
     
     void controlActivate();
     
-    void fadeOutAndRemove();
+    void renderOut();
     
     AGDocument::Connection serialize();
     
@@ -87,7 +87,7 @@ private:
     slew<GLvertex3f> m_stretchPoint;
     
     bool m_active;
-    powcurvef m_alpha;
+//    powcurvef m_alpha;
     
     const AGRate m_rate;
     

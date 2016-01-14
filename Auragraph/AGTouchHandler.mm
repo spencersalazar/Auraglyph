@@ -780,6 +780,7 @@ private:
 - (void)dealloc
 {
 //    SAFE_DELETE(_nodeEditor);
+    // _nodeEditor will be automatically deallocated after it fades out
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
@@ -795,7 +796,7 @@ private:
     
     if(_touchCapture)
     {
-        _touchCapture->touchDown(AGTouchInfo(pos, p, (int) [touches anyObject]));
+        _touchCapture->touchDown(AGTouchInfo(pos, p, (TouchID) [touches anyObject]));
     }
     else
     {
@@ -817,7 +818,7 @@ private:
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    _touchCapture->touchMove(AGTouchInfo(pos, p, (int) [touches anyObject]));
+    _touchCapture->touchMove(AGTouchInfo(pos, p, (TouchID) [touches anyObject]));
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
@@ -827,7 +828,7 @@ private:
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    _touchCapture->touchUp(AGTouchInfo(pos, p, (int) [touches anyObject]));
+    _touchCapture->touchUp(AGTouchInfo(pos, p, (TouchID) [touches anyObject]));
     
     _done = _nodeEditor->doneEditing();
     

@@ -172,6 +172,7 @@ AGAudioSineWaveNode::AGAudioSineWaveNode(const AGDocument::Node &docNode) : AGAu
     m_freq = 220;
     m_phase = 0;
     
+    loadEditPortValues(docNode);
     allocatePortBuffers();
 }
 
@@ -306,6 +307,7 @@ AGAudioSquareWaveNode::AGAudioSquareWaveNode(const AGDocument::Node &docNode) : 
     m_freq = 220;
     m_phase = 0;
     
+    loadEditPortValues(docNode);
     allocatePortBuffers();
 }
 
@@ -441,6 +443,7 @@ AGAudioSawtoothWaveNode::AGAudioSawtoothWaveNode(const AGDocument::Node &docNode
     m_freq = 220;
     m_phase = 0;
     
+    loadEditPortValues(docNode);
     allocatePortBuffers();
 }
 
@@ -577,6 +580,7 @@ AGAudioTriangleWaveNode::AGAudioTriangleWaveNode(const AGDocument::Node &docNode
     m_freq = 220;
     m_phase = 0;
     
+    loadEditPortValues(docNode);
     allocatePortBuffers();
 }
 
@@ -724,14 +728,15 @@ AGAudioADSRNode::AGAudioADSRNode(GLvertex3f pos) : AGAudioNode(pos, s_audioNodeI
 
 AGAudioADSRNode::AGAudioADSRNode(const AGDocument::Node &docNode) : AGAudioNode(docNode, s_audioNodeInfo)
 {
-    allocatePortBuffers();
-    
     m_prevTrigger = FLT_MAX;
     m_attack = 0.01;
     m_decay = 0.01;
     m_sustain = 0.5;
     m_release = 0.1;
     m_adsr.setAllTimes(m_attack, m_decay, m_sustain, m_release);
+    
+    loadEditPortValues(docNode);
+    allocatePortBuffers();
 }
 
 
@@ -971,13 +976,12 @@ AGAudioFilterNode::AGAudioFilterNode(const AGDocument::Node &docNode, Butter2Fil
 AGAudioNode(docNode, nodeInfo),
 m_filter(filter)
 {
-    allocatePortBuffers();
-    
     m_freq = 220;
     m_Q = 1;
     
     filter->set(m_freq, m_Q);
     
+    loadEditPortValues(docNode);
     allocatePortBuffers();
 }
 

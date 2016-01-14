@@ -138,7 +138,10 @@ m_uuid(docNode.uuid)
     {
         m_controlPortBuffer = NULL;
     }
-    
+}
+
+void AGNode::loadEditPortValues(const AGDocument::Node &docNode)
+{
     for(int i = 0; i < numEditPorts(); i++)
     {
         const string &name = editPortInfo(i).name;
@@ -170,9 +173,9 @@ void AGNode::fadeOutAndRemove()
     std::list<AGConnection *> _inbound = m_inbound;
     std::list<AGConnection *> _outbound = m_outbound;
     for(std::list<AGConnection *>::iterator i = _inbound.begin(); i != _inbound.end(); i++)
-        (*i)->fadeOutAndRemove();
+        (*i)->removeFromTopLevel();
     for(std::list<AGConnection *>::iterator i = _outbound.begin(); i != _outbound.end(); i++)
-        (*i)->fadeOutAndRemove();
+        (*i)->removeFromTopLevel();
 }
 
 void AGNode::renderOut()

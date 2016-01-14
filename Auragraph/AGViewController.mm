@@ -36,6 +36,9 @@ using namespace std;
 #define AG_ENABLE_FBO 0
 #define AG_DEFAULT_FILENAME "_default"
 
+#define AG_DO_TRAINER 0
+#define AG_RESET_DOCUMENT 0
+
 
 // Uniform index.
 enum
@@ -191,7 +194,7 @@ static AGViewController * g_instance = nil;
     __block AGAudioOutputNode * outputNode = NULL;
     
     /* load default program */
-    if(AGDocument::existsForTitle(AG_DEFAULT_FILENAME))
+    if(!AG_RESET_DOCUMENT && AGDocument::existsForTitle(AG_DEFAULT_FILENAME))
     {
         AGDocument defaultDoc;
         defaultDoc.load(AG_DEFAULT_FILENAME);
@@ -215,6 +218,7 @@ static AGViewController * g_instance = nil;
             {
                 AGNode *srcNode = uuid2node[docConnection.srcUuid];
                 AGNode *dstNode = uuid2node[docConnection.dstUuid];
+                assert(docConnection.dstPort >= 0 && docConnection.dstPort < dstNode->numInputPorts());
                 AGConnection *conn = new AGConnection(srcNode, dstNode, docConnection.dstPort);
                 [self addConnection:conn];
             }
@@ -232,6 +236,11 @@ static AGViewController * g_instance = nil;
     self.audioManager.outputNode = outputNode;
     
     g_instance = self;
+    
+    if(AG_DO_TRAINER)
+    {
+        [self presentViewController:self.trainer animated:YES completion:nil];
+    }
 }
 
 - (void)initUI
@@ -705,8 +714,9 @@ static AGViewController * g_instance = nil;
 {
     int viewport[] = { (int)self.view.bounds.origin.x, (int)self.view.bounds.origin.y,
         (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
+    bool success;
     GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, 0.01),
-                                      _modelView, _projection, viewport, NULL);
+                                      _modelView, _projection, viewport, &success);
     
 //    vec = GLKMatrix4MultiplyVector3(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z), vec);
     

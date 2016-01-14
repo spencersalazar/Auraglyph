@@ -50,7 +50,7 @@ GLKMatrix4 AGRenderObject::s_projectionMatrix = GLKMatrix4Identity;
 GLKMatrix4 AGRenderObject::s_modelViewMatrix = GLKMatrix4Identity;
 GLKMatrix4 AGRenderObject::s_fixedModelViewMatrix = GLKMatrix4Identity;
 
-AGRenderObject::AGRenderObject() : m_parent(NULL)
+AGRenderObject::AGRenderObject() : m_parent(NULL), m_alpha(powcurvef(0, 1, 0.5, 4))
 {
     m_renderState.projection = GLKMatrix4Identity;
     m_renderState.modelview = GLKMatrix4Identity;
@@ -84,6 +84,8 @@ void AGRenderObject::update(float t, float dt)
         m_renderState.modelview = globalModelViewMatrix();
     m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
     
+    m_alpha.update(dt);
+    
     updateChildren(t, dt);
 }
 
@@ -107,6 +109,7 @@ void AGRenderObject::renderPrimitive(AGRenderInfo *info)
     info->shader->setMVPMatrix(GLKMatrix4Multiply(m_renderState.projection, m_renderState.modelview));
     info->shader->setNormalMatrix(m_renderState.normal);
     
+    // TODO: need to set alpha in render info
     info->set();
     
     glDrawArrays(info->geoType, info->geoOffset, info->numVertex);
@@ -126,8 +129,15 @@ void AGRenderObject::renderChildren()
 
 void AGRenderObject::renderOut()
 {
+    m_alpha.reset(1, 0);
+    
     for(list<AGRenderObject *>::iterator i = m_children.begin(); i != m_children.end(); i++)
         (*i)->renderOut();
+}
+
+bool AGRenderObject::finishedRenderingOut()
+{
+    return m_alpha < 0.01;
 }
 
 void AGRenderObject::debug_renderBounds()

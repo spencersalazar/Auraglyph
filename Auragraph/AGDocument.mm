@@ -122,6 +122,7 @@ void AGDocument::load(const string &title)
                 c.uuid = [key stlString];
                 c.srcUuid = [dict[@"source"] stlString];
                 c.dstUuid = [dict[@"destination"] stlString];
+                c.dstPort = [dict[@"port"] intValue];
                 
                 m_connections[c.uuid] = c;
             }
@@ -194,6 +195,7 @@ void AGDocument::save()
                         @"connection", @"object",
                         [NSString stringWithSTLString:conn.srcUuid], @"source",
                         [NSString stringWithSTLString:conn.dstUuid], @"destination",
+                        [NSString stringWithFormat:@"%i", conn.dstPort], @"port",
                         nil]
                 forKey:[NSString stringWithSTLString:uuid]];
     });

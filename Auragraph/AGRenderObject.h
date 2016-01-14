@@ -10,6 +10,7 @@
 #define __Auragraph__AGRenderObject__
 
 #include "Geometry.h"
+#include "Animation.h"
 #include <GLKit/GLKit.h>
 
 #include <list>
@@ -71,7 +72,7 @@ public:
     virtual void render();
     
     virtual void renderOut();
-    virtual bool finishedRenderingOut() { return true; }
+    virtual bool finishedRenderingOut();
     
     void addChild(AGRenderObject *child);
     void removeChild(AGRenderObject *child);
@@ -101,6 +102,8 @@ protected:
     
     AGRenderObject *m_parent;
     list<AGRenderObject *> m_children;
+    
+    powcurvef m_alpha;
     
 private:
     bool m_renderedBounds;

@@ -106,10 +106,15 @@ m_lastTraceWasRecognized(true)
 {
     initializeNodeEditor();
     
-//    string ucname = m_node->title();
-//    for(int i = 0; i < ucname.length(); i++) ucname[i] = toupper(ucname[i]);
+    string ucname = m_node->title();
+    for(int i = 0; i < ucname.length(); i++)
+        ucname[i] = toupper(ucname[i]);
 //    m_title = "EDIT " + ucname;
-    m_title = "EDIT";
+//    m_title = "EDIT";
+    m_title = ucname;
+    
+    m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
+    m_yScale = lincurvef(AGStyle::open_animTimeY, AGStyle::open_squeezeHeight, 1);
 }
 
 void AGUIStandardNodeEditor::update(float t, float dt)
@@ -123,10 +128,18 @@ void AGUIStandardNodeEditor::update(float t, float dt)
     float animTimeX = AGStyle::open_animTimeX;
     float animTimeY = AGStyle::open_animTimeY;
     
-    if(m_t < animTimeX)
-        m_modelView = GLKMatrix4Scale(m_modelView, squeezeHeight+(m_t/animTimeX)*(1-squeezeHeight), squeezeHeight, 1);
-    else if(m_t < animTimeX+animTimeY)
-        m_modelView = GLKMatrix4Scale(m_modelView, 1.0, squeezeHeight+((m_t-animTimeX)/animTimeY)*(1-squeezeHeight), 1);
+//    if(m_t < animTimeX)
+//        m_modelView = GLKMatrix4Scale(m_modelView, squeezeHeight+(m_t/animTimeX)*(1-squeezeHeight), squeezeHeight, 1);
+//    else if(m_t < animTimeX+animTimeY)
+//        m_modelView = GLKMatrix4Scale(m_modelView, 1.0, squeezeHeight+((m_t-animTimeX)/animTimeY)*(1-squeezeHeight), 1);
+    
+    if(m_yScale <= AGStyle::open_squeezeHeight) m_xScale.update(dt);
+    if(m_xScale >= 0.99f) m_yScale.update(dt);
+    
+    m_modelView = GLKMatrix4Scale(m_modelView,
+                                  m_yScale <= AGStyle::open_squeezeHeight ? (float)m_xScale : 1.0f,
+                                  m_xScale >= 0.99f ? (float)m_yScale : AGStyle::open_squeezeHeight,
+                                  1);
     
     m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_modelView), NULL);
     
@@ -584,14 +597,35 @@ GLvrectf AGUIStandardNodeEditor::effectiveBounds()
     {
         // TODO HACK: overestimate bounds
         // because figuring out the item editor box bounds is too hard right now
-        GLvertex2f size = GLvertex2f(s_radius*2, s_radius*2);
-        return GLvrectf(m_node->position()-size, m_node->position()+size);
+//        GLvertex2f size = GLvertex2f(s_radius*2, s_radius*2);
+//        return GLvrectf(m_node->position()-size, m_node->position()+size);
+        
+        float rowCount = NODEEDITOR_ROWCOUNT;
+        GLvertex3f pos = m_node->position();
+        float y = s_radius - s_radius*2.0*(m_editingPort+2)/rowCount;
+        
+        float bb_center = y - s_radius + s_radius*2/rowCount;
+        return GLvrectf(GLvertex2f(pos.x+s_geo[s_itemEditBoxOffset].x,
+                                   pos.y+bb_center+s_geo[s_itemEditBoxOffset+2].y),
+                        GLvertex2f(pos.x+s_geo[s_itemEditBoxOffset+2].x,
+                                   pos.y+bb_center+s_geo[s_itemEditBoxOffset].y));
     }
     else
     {
         GLvertex2f size = GLvertex2f(s_radius, s_radius);
         return GLvrectf(m_node->position()-size, m_node->position()+size);
     }
+}
+
+void AGUIStandardNodeEditor::renderOut()
+{
+    m_xScale = lincurvef(AGStyle::open_animTimeX/2, 1, AGStyle::open_squeezeHeight);
+    m_yScale = lincurvef(AGStyle::open_animTimeY/2, 1, AGStyle::open_squeezeHeight);
+}
+
+bool AGUIStandardNodeEditor::finishedRenderingOut()
+{
+    return m_xScale <= AGStyle::open_squeezeHeight;
 }
 
 //------------------------------------------------------------------------------
@@ -936,7 +970,7 @@ AGUITrash::AGUITrash()
 
     m_scale.value = 0.5;
     m_scale.target = 1;
-    m_scale.slew = 0.1;
+    m_scale.rate = 0.1;
 }
 
 AGUITrash::~AGUITrash()

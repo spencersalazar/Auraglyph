@@ -108,7 +108,9 @@ m_manager(manager)
     m_geo[3] = GLvertex3f(m_radius, m_radius, 0);
     
     int nTypes = m_manager.nodeTypes().size();
-    m_verticalScrollPos.clamp(0, ceilf(nTypes/2.0f-2)*m_radius);
+//    m_verticalScrollPos.clamp(0, ceilf(nTypes/2.0f-2)*m_radius);
+//    int nTypes = ManagerType::instance().nodeTypes().size();
+    m_verticalScrollPos.clampTo(0, ceilf(nTypes/2.0f-2)*m_radius);
     
     m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
     m_yScale = lincurvef(AGStyle::open_animTimeY, AGStyle::open_squeezeHeight, 1);
@@ -182,6 +184,25 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
     GLcolor4f blackA = GLcolor4f(0, 0, 0, 0.75);
     glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &blackA);
     glDrawArrays(GL_TRIANGLE_FAN, 0, m_geoSize);
+    
+    /* draw scroll bar */
+    int nTypes = m_manager.nodeTypes().size();
+    float scroll_bar_margin = 0.95;
+    float scroll_max = ceilf(nTypes/2.0f-2)*m_radius;
+    float scroll_bar_tray_height = m_radius*2*scroll_bar_margin;
+    // percent of the total scroll area that is visible * tray height
+    float scroll_bar_height = m_radius*2/scroll_max * scroll_bar_tray_height;
+    // percent of scroll position * (tray height - bar height)
+    float scroll_bar_y = m_verticalScrollPos/scroll_max*(scroll_bar_tray_height-scroll_bar_height);
+    GLvertex3f scroll_bar_geo[2];
+    scroll_bar_geo[0] = GLvertex2f(m_radius*scroll_bar_margin, m_radius*scroll_bar_margin-scroll_bar_y);
+    scroll_bar_geo[1] = GLvertex2f(m_radius*scroll_bar_margin, m_radius*scroll_bar_margin-(scroll_bar_y+scroll_bar_height));
+    
+    // load it up and draw
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+    glLineWidth(1.0);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), scroll_bar_geo);
+    glDrawArrays(GL_LINES, 0, 2);
     
     /* draw node types */
     
