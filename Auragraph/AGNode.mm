@@ -825,9 +825,15 @@ void AGInputNode::initializeInputNode()
         s_geo = new GLvncprimf[s_geoSize];
         float radius = AGNode::s_sizeFactor/1.25;
         
-        s_geo[0].vertex = GLvertex3f(-radius, radius, 0);
-        s_geo[1].vertex = GLvertex3f(radius, radius, 0);
-        s_geo[2].vertex = GLvertex3f(0, -(sqrtf(radius*radius*4 - radius*radius) - radius), 0);
+        // equilateral triangle pointing down
+        float H = radius*2*sqrtf(0.75);         // height from base to tip
+        float up = (H*H - radius*radius)/(2*H); // vertical distance from 2d centroid to base
+        up = (up+H/2.0f)/2.0f;                  // average with vertical midpoint for better aesthetics
+        float down = H - up;                    // vertical distance from center position to tip
+        
+        s_geo[0].vertex = GLvertex3f(-radius, up, 0);
+        s_geo[1].vertex = GLvertex3f(radius, up, 0);
+        s_geo[2].vertex = GLvertex3f(0, -down, 0);
         
         glGenVertexArraysOES(1, &s_vertexArray);
         glBindVertexArrayOES(s_vertexArray);
