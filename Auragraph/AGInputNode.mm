@@ -86,7 +86,9 @@ void AGNodeManager::renderNodeTypeIcon(NodeInfo *type) const
 
 AGNode *AGNodeManager::createNodeType(NodeInfo *type, const GLvertex3f &pos) const
 {
-    return type->createNode(pos);
+    AGNode *node = type->createNode(pos);
+    node->setTitle(type->name);
+    return node;
 }
 
 AGNode *AGNodeManager::createNodeType(const AGDocument::Node &docNode) const
