@@ -124,10 +124,10 @@ void AGUIStandardNodeEditor::update(float t, float dt)
     
     m_modelView = GLKMatrix4Translate(m_modelView, m_node->position().x, m_node->position().y, m_node->position().z);
     
-    float squeezeHeight = AGStyle::open_squeezeHeight;
-    float animTimeX = AGStyle::open_animTimeX;
-    float animTimeY = AGStyle::open_animTimeY;
-    
+//    float squeezeHeight = AGStyle::open_squeezeHeight;
+//    float animTimeX = AGStyle::open_animTimeX;
+//    float animTimeY = AGStyle::open_animTimeY;
+//    
 //    if(m_t < animTimeX)
 //        m_modelView = GLKMatrix4Scale(m_modelView, squeezeHeight+(m_t/animTimeX)*(1-squeezeHeight), squeezeHeight, 1);
 //    else if(m_t < animTimeX+animTimeY)
@@ -144,6 +144,8 @@ void AGUIStandardNodeEditor::update(float t, float dt)
     m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_modelView), NULL);
     
     m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, m_modelView);
+    
+    m_currentDrawlineAlpha.update(dt);
     
     m_t += dt;
 }
@@ -338,14 +340,25 @@ void AGUIStandardNodeEditor::render()
         AGGenericShader::instance().useProgram();
         AGGenericShader::instance().setNormalMatrix(m_normalMatrix);
         AGGenericShader::instance().setMVPMatrix(GLKMatrix4Multiply(proj, AGNode::globalModelViewMatrix()));
-
+        
         // draw traces
         for(std::list<std::vector<GLvertex3f> >::iterator i = m_drawline.begin(); i != m_drawline.end(); i++)
         {
             std::vector<GLvertex3f> geo = *i;
+            std::list<std::vector<GLvertex3f> >::iterator next = i;
+            next++;
+            
             glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo.data());
             glEnableVertexAttribArray(GLKVertexAttribPosition);
-            glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+            if(next == m_drawline.end())
+            {
+                GLcolor4f traceColor = GLcolor4f(1, 1, 1, m_currentDrawlineAlpha);
+                glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &traceColor);
+            }
+            else
+            {
+                glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+            }
             glDisableVertexAttribArray(GLKVertexAttribColor);
             glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
             glDisableVertexAttribArray(GLKVertexAttribNormal);
@@ -460,6 +473,7 @@ void AGUIStandardNodeEditor::touchDown(const GLvertex3f &t, const CGPoint &scree
         {
             if(!m_lastTraceWasRecognized && m_drawline.size())
                 m_drawline.remove(m_drawline.back());
+            m_currentDrawlineAlpha.forceTo(1);
             m_drawline.push_back(std::vector<GLvertex3f>());
             m_currentTrace = LTKTrace();
             
@@ -559,7 +573,9 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                         
                     case AG_FIGURE_PERIOD:
                         if(m_decimal)
+                        {
                             m_lastTraceWasRecognized = false;
+                        }
                         else
                         {
                             m_decimalFactor = 0.1;
@@ -571,6 +587,9 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                     default:
                         m_lastTraceWasRecognized = false;
                 }
+                
+                if(!m_lastTraceWasRecognized)
+                    m_currentDrawlineAlpha.reset(1, 0);
             }
         }
         else

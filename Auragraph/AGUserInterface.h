@@ -105,9 +105,11 @@ private:
     int m_editingPort;
     
     std::list< std::vector<GLvertex3f> > m_drawline;
+//    std::vector<GLvertex3f> m_currentDrawline;
     LTKTrace m_currentTrace;
     float m_currentValue;
     bool m_lastTraceWasRecognized;
+    powcurvef m_currentDrawlineAlpha;
     bool m_decimal;
     float m_decimalFactor;
     
