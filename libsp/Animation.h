@@ -84,6 +84,8 @@ public:
     
     inline void update(float dt) { t += dt*rate; }
     inline void reset() { t = 0; }
+    inline void reset(float _start, float _end) { t = 0; start = _start; end = _end; }
+    inline void finish() { t = 1; }
     
     inline operator const float () const
     {
@@ -102,14 +104,17 @@ public:
         
         return v;
     }
-    
+        
     float t, start, end, rate;
 };
+
 
 class lincurvef : public curvef
 {
 public:
-    lincurvef(float _time = 1, float _start = 0, float _end = 1, float _rate = 1) :
+    lincurvef() : curvef(0, 1, 1), time(1) { }
+
+    lincurvef(float _time, float _start, float _end, float _rate = 1) :
     curvef(_start, _end, _rate), time(_time) { }
     
     virtual float evaluate(float t) const { return t/time; }
@@ -120,7 +125,9 @@ public:
 class powcurvef : public curvef
 {
 public:
-    powcurvef(float _start = 0, float _end = 1, float _k = 2, float _rate = 1) :
+    powcurvef() : curvef(0, 1, 1), k(2) { }
+
+    powcurvef(float _start, float _end, float _k = 2, float _rate = 1) :
     curvef(_start, _end, _rate), k(_k) { }
     
     virtual float evaluate(float t) const { return powf(t, k); }
@@ -131,7 +138,9 @@ public:
 class expcurvef : public curvef
 {
 public:
-    expcurvef(float _start = 0, float _end = 1, float _k = 10, float _rate = 1) :
+    expcurvef() : curvef(0, 1, 1), k(10) { }
+
+    expcurvef(float _start, float _end, float _k = 10, float _rate = 1) :
     curvef(_start, _end, _rate), k(_k) { }
     
     virtual float evaluate(float t) const { return start + (end-start)*(1-powf(k, -t)); }
