@@ -17,6 +17,7 @@
 #include "LTKTypes.h"
 #include "LTKTrace.h"
 
+#include <sstream>
 
 class AGNode;
 class AGAudioNode;
@@ -107,9 +108,13 @@ private:
     std::list< std::vector<GLvertex3f> > m_drawline;
 //    std::vector<GLvertex3f> m_currentDrawline;
     LTKTrace m_currentTrace;
-    float m_currentValue;
     bool m_lastTraceWasRecognized;
     powcurvef m_currentDrawlineAlpha;
+    
+    float m_currentValue;
+    std::stringstream m_currentValueStream;
+    std::string m_currentValueString;
+    
     bool m_decimal;
     float m_decimalFactor;
     
