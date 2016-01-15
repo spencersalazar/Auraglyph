@@ -383,7 +383,7 @@ private:
     GLvertex3f m_touchLast;
     
     bool m_active;
-    powcurvef m_alpha;
+//    powcurvef m_alpha;
     
     // debug
     int m_touchPoint0;
