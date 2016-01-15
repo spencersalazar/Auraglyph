@@ -86,6 +86,7 @@ public:
     inline void reset() { t = 0; }
     inline void reset(float _start, float _end) { t = 0; start = _start; end = _end; }
     inline void finish() { t = 1; }
+    inline void forceTo(float val) { t = 1; start = val; end = val; }
     
     inline operator const float () const
     {

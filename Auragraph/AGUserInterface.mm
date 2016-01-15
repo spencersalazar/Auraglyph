@@ -21,8 +21,6 @@
 #include "GeoGenerator.h"
 #include "spstl.h"
 
-#include <sstream>
-
 
 static const float AGNODESELECTOR_RADIUS = 0.02;
 
@@ -124,10 +122,10 @@ void AGUIStandardNodeEditor::update(float t, float dt)
     
     m_modelView = GLKMatrix4Translate(m_modelView, m_node->position().x, m_node->position().y, m_node->position().z);
     
-    float squeezeHeight = AGStyle::open_squeezeHeight;
-    float animTimeX = AGStyle::open_animTimeX;
-    float animTimeY = AGStyle::open_animTimeY;
-    
+//    float squeezeHeight = AGStyle::open_squeezeHeight;
+//    float animTimeX = AGStyle::open_animTimeX;
+//    float animTimeY = AGStyle::open_animTimeY;
+//    
 //    if(m_t < animTimeX)
 //        m_modelView = GLKMatrix4Scale(m_modelView, squeezeHeight+(m_t/animTimeX)*(1-squeezeHeight), squeezeHeight, 1);
 //    else if(m_t < animTimeX+animTimeY)
@@ -144,6 +142,8 @@ void AGUIStandardNodeEditor::update(float t, float dt)
     m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_modelView), NULL);
     
     m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, m_modelView);
+    
+    m_currentDrawlineAlpha.update(dt);
     
     m_t += dt;
 }
@@ -330,22 +330,44 @@ void AGUIStandardNodeEditor::render()
         
         GLKMatrix4 valueMV = GLKMatrix4Translate(m_modelView, s_radius*0.1, y + s_radius/rowCount*0.1, 0);
         valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
-        std::stringstream ss;
-        ss << m_currentValue;
-        if(m_decimal && floorf(m_currentValue) == m_currentValue) ss << "."; // show decimal point if user has drawn it
-        text->render(ss.str(), GLcolor4f::white, valueMV, proj);
+//        std::stringstream ss;
+//        ss << m_currentValue;
+//        if(m_decimal && floorf(m_currentValue) == m_currentValue)
+//        {
+//            ss << "."; // show decimal point if user has drawn it
+//            // draw extra zeros after decimal
+//            int decimalZeros = (int)(-1-log10f(m_decimalFactor));
+//            for(int i = 0; i < decimalZeros; i++)
+//                ss << "0";
+//        }
+        if(m_currentValueString.length() == 0)
+            // show a 0 if there is no value yet
+            text->render("0", GLcolor4f::white, valueMV, proj);
+        else
+            text->render(m_currentValueString, GLcolor4f::white, valueMV, proj);
         
         AGGenericShader::instance().useProgram();
         AGGenericShader::instance().setNormalMatrix(m_normalMatrix);
         AGGenericShader::instance().setMVPMatrix(GLKMatrix4Multiply(proj, AGNode::globalModelViewMatrix()));
-
+        
         // draw traces
         for(std::list<std::vector<GLvertex3f> >::iterator i = m_drawline.begin(); i != m_drawline.end(); i++)
         {
             std::vector<GLvertex3f> geo = *i;
+            std::list<std::vector<GLvertex3f> >::iterator next = i;
+            next++;
+            
             glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo.data());
             glEnableVertexAttribArray(GLKVertexAttribPosition);
-            glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+            if(next == m_drawline.end())
+            {
+                GLcolor4f traceColor = GLcolor4f(1, 1, 1, m_currentDrawlineAlpha);
+                glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &traceColor);
+            }
+            else
+            {
+                glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+            }
             glDisableVertexAttribArray(GLKVertexAttribColor);
             glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
             glDisableVertexAttribArray(GLKVertexAttribNormal);
@@ -460,6 +482,7 @@ void AGUIStandardNodeEditor::touchDown(const GLvertex3f &t, const CGPoint &scree
         {
             if(!m_lastTraceWasRecognized && m_drawline.size())
                 m_drawline.remove(m_drawline.back());
+            m_currentDrawlineAlpha.forceTo(1);
             m_drawline.push_back(std::vector<GLvertex3f>());
             m_currentTrace = LTKTrace();
             
@@ -534,6 +557,7 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
             {
                 // attempt recognition
                 AGHandwritingRecognizerFigure figure = [[AGHandwritingRecognizer instance] recognizeNumeral:m_currentTrace];
+                int digit = -1;
                 
                 switch(figure)
                 {
@@ -547,22 +571,32 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                     case AG_FIGURE_7:
                     case AG_FIGURE_8:
                     case AG_FIGURE_9:
+                        digit = (figure-'0');
                         if(m_decimal)
                         {
-                            m_currentValue = m_currentValue + (figure-'0')*m_decimalFactor;
+                            m_currentValue = m_currentValue + digit*m_decimalFactor;
                             m_decimalFactor *= 0.1;
+                            m_currentValueStream << digit;
                         }
                         else
-                            m_currentValue = m_currentValue*10 + (figure-'0');
+                        {
+                            m_currentValue = m_currentValue*10 + digit;
+                            m_currentValueStream << digit;
+                        }
                         m_lastTraceWasRecognized = true;
                         break;
                         
                     case AG_FIGURE_PERIOD:
                         if(m_decimal)
+                        {
                             m_lastTraceWasRecognized = false;
+                        }
                         else
                         {
                             m_decimalFactor = 0.1;
+                            if(m_currentValue == 0)
+                                m_currentValueStream << "0"; // prepend 0 to look better
+                            m_currentValueStream << ".";
                             m_lastTraceWasRecognized = true;
                             m_decimal = true;
                         }
@@ -571,6 +605,11 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                     default:
                         m_lastTraceWasRecognized = false;
                 }
+                
+                if(m_lastTraceWasRecognized)
+                    m_currentValueString = m_currentValueStream.str();
+                else
+                    m_currentDrawlineAlpha.reset(1, 0);
             }
         }
         else
@@ -583,6 +622,8 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                 m_editingPort = m_hit;
                 m_hit = -1;
                 m_currentValue = 0;
+                m_currentValueStream.str(std::string()); // clear
+                m_currentValueString = m_currentValueStream.str();
                 m_decimal = false;
                 m_drawline.clear();
                 //m_node->getEditPortValue(m_editingPort, m_currentValue);
