@@ -18,12 +18,15 @@ using namespace std;
 
 class AGGenericShader;
 
+struct AGRenderState;
+
 struct AGRenderInfo
 {
 public:
     AGRenderInfo();
     
     virtual void set() = 0;
+    virtual void set(const AGRenderState &) = 0;
     
     AGGenericShader *shader;
     GLuint numVertex;
@@ -36,7 +39,8 @@ struct AGRenderInfoV : public AGRenderInfo
     AGRenderInfoV();
     
     virtual void set();
-    
+    virtual void set(const AGRenderState &);
+
     GLcolor4f color;
     GLvertex3f *geo;
 };
@@ -44,7 +48,8 @@ struct AGRenderInfoV : public AGRenderInfo
 struct AGRenderInfoVC : public AGRenderInfo
 {
     virtual void set();
-    
+    virtual void set(const AGRenderState &);
+
     GLvcprimf *geo;
 };
 
@@ -53,6 +58,7 @@ struct AGRenderState
     GLKMatrix4 projection;
     GLKMatrix4 modelview;
     GLKMatrix3 normal;
+    float alpha;
 };
 
 class AGRenderObject
