@@ -34,7 +34,8 @@ void AGSliderNode::initialize()
     s_nodeInfo = new AGNodeInfo;
     
 //    float radius = 0.005;
-    float radius = 0.003;
+    float radius = 0.002;
+    float height = 0.003;
     int circleSize = 48;
     s_nodeInfo->iconGeoSize = circleSize;
     s_nodeInfo->iconGeoType = GL_LINE_LOOP;
@@ -42,9 +43,9 @@ void AGSliderNode::initialize()
     
     for(int i = 0; i < circleSize; i++)
     {
-        float y_offset = radius;
+        float y_offset = height;
         if(i >= circleSize/2)
-            y_offset = -radius;
+            y_offset = -height;
         float theta0 = 2*M_PI*((float)i)/((float)(circleSize));
         s_nodeInfo->iconGeo[i] = GLvertex3f(radius*cosf(theta0), radius*sinf(theta0)+y_offset, 0);
     }

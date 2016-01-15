@@ -309,6 +309,8 @@ public:
     virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();
 
+    virtual GLvertex3f relativePositionForOutputPort(int port) const;
+    
     virtual AGDocument::Node serialize();
     
 private:

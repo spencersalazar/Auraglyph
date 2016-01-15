@@ -230,6 +230,7 @@ void AGNode::render()
         
         GLvertex3f portPos = relativePositionForOutputPort(0);
         GLKMatrix4 mvpOutputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, portPos.x, portPos.y, portPos.z);
+        mvpOutputPort = GLKMatrix4Scale(mvpOutputPort, 0.8, 0.8, 0.8);
         shader.setMVPMatrix(mvpOutputPort);
         
         GLcolor4f color;
@@ -251,6 +252,7 @@ void AGNode::render()
         
         GLvertex3f portPos = relativePositionForInputPort(i);
         GLKMatrix4 mvpInputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, portPos.x, portPos.y, portPos.z);
+        mvpInputPort = GLKMatrix4Scale(mvpInputPort, 0.8, 0.8, 0.8);
         shader.setMVPMatrix(mvpInputPort);
         
         GLcolor4f color;
@@ -823,7 +825,7 @@ void AGInputNode::initializeInputNode()
         // generate triangle
         s_geoSize = 3;
         s_geo = new GLvncprimf[s_geoSize];
-        float radius = AGNode::s_sizeFactor/1.25;
+        float radius = AGNode::s_sizeFactor/1.15;
         
         // equilateral triangle pointing down
         float H = radius*2*sqrtf(0.75);         // height from base to tip
@@ -893,6 +895,8 @@ void AGInputNode::render()
     
     glBindVertexArrayOES(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    AGNode::render();
 }
 
 
@@ -916,6 +920,18 @@ AGUIObject *AGInputNode::hitTest(const GLvertex3f &t)
     return NULL;
 }
 
+GLvertex3f AGInputNode::relativePositionForOutputPort(int port) const
+{
+    float radius = AGNode::s_sizeFactor/1.15;
+    
+    // equilateral triangle pointing down
+    float H = radius*2*sqrtf(0.75);         // height from base to tip
+    float up = (H*H - radius*radius)/(2*H); // vertical distance from 2d centroid to base
+    up = (up+H/2.0f)/2.0f;                  // average with vertical midpoint for better aesthetics
+    float down = H - up;                    // vertical distance from center position to tip
+
+    return GLvertex3f(0, -down, 0);
+}
 
 AGDocument::Node AGInputNode::serialize()
 {
