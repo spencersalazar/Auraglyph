@@ -13,7 +13,7 @@
 #include "AGControl.h"
 #include "AGConnection.h"
 #include "AGDocument.h"
-#include "AGUserInterface.h"
+//#include "AGUserInterface.h"
 
 #include "Geometry.h"
 #include "Animation.h"
@@ -31,6 +31,8 @@
 
 using namespace std;
 
+
+class AGUINodeEditor;
 
 
 struct AGPortInfo

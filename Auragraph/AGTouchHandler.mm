@@ -21,8 +21,10 @@
 #import "TexFont.h"
 #import "AGDef.h"
 #import "AGTrainerViewController.h"
-#include "AGNodeSelector.h"
+#import "AGNodeSelector.h"
+#import "AGUINodeEditor.h"
 #import "AGGenericShader.h"
+
 #import "GeoGenerator.h"
 #import "spMath.h"
 
