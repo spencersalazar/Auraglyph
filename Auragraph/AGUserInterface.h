@@ -15,6 +15,7 @@
 #import "AGRenderObject.h"
 
 #include <string>
+#include <vector>
 
 
 /*------------------------------------------------------------------------------
@@ -227,17 +228,13 @@ class AGUITrace : public AGInteractiveObject
 public:
     AGUITrace();
     
-    virtual void update(float t, float dt);
-    virtual void render();
-    
-    virtual void touchDown(const GLvertex3f &t);
-    virtual void touchMove(const GLvertex3f &t);
-    virtual void touchUp(const GLvertex3f &t);
+    void addPoint(const GLvertex3f &);
     
 //    AGHandwritingRecognizerFigure recognizeNumeral();
     
 private:
-    
+    AGRenderInfoVL m_renderInfo;
+    std::vector<GLvertex3f> m_traceGeo;
 };
 
 #endif /* defined(__Auragraph__AGUserInterface__) */

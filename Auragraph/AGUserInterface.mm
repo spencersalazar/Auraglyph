@@ -451,5 +451,28 @@ void AGUITrash::deactivate()
 }
 
 
+/*------------------------------------------------------------------------------
+ - AGUITrace -
+ -----------------------------------------------------------------------------*/
+#pragma mark - AGUITrace
+
+AGUITrace::AGUITrace()
+{
+    m_renderInfo.numVertex = 0;
+    m_renderInfo.geo = m_traceGeo.data();
+    m_renderInfo.geoType = GL_LINE_STRIP;
+    m_renderInfo.geoOffset = 0;
+    m_renderInfo.color = GLcolor4f::white;
+    m_renderInfo.lineWidth = 4.0;
+    
+    m_renderList.push_back(&m_renderInfo);
+}
+
+void AGUITrace::addPoint(const GLvertex3f &v)
+{
+    m_traceGeo.push_back(v);
+    m_renderInfo.numVertex = m_traceGeo.size();
+    m_renderInfo.geo = m_traceGeo.data();
+}
 
 

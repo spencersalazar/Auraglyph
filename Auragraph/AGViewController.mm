@@ -617,24 +617,24 @@ static AGViewController * g_instance = nil;
 //
     
     // render drawing outline
-    glUseProgram(_program);
-
-    glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
-    glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
-    
-    glBindVertexArrayOES(_vertexArray);
-    
-    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::white);
-    
-    glPointSize(4.0f);
-    glLineWidth(4.0f);
-    if(nDrawlineUsed == 1)
-        glDrawArrays(GL_POINTS, 0, nDrawlineUsed);
-    else
-        glDrawArrays(GL_LINE_STRIP, 0, nDrawlineUsed);
-    
-    glBindVertexArrayOES(0);
+//    glUseProgram(_program);
+//
+//    glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
+//    glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
+//    
+//    glBindVertexArrayOES(_vertexArray);
+//    
+//    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+//    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::white);
+//    
+//    glPointSize(4.0f);
+//    glLineWidth(4.0f);
+//    if(nDrawlineUsed == 1)
+//        glDrawArrays(GL_POINTS, 0, nDrawlineUsed);
+//    else
+//        glDrawArrays(GL_LINE_STRIP, 0, nDrawlineUsed);
+//    
+//    glBindVertexArrayOES(0);
     
     [_touchHandler render];
         
@@ -923,7 +923,11 @@ static AGViewController * g_instance = nil;
     _currentTraceSum = GLvertex3f();
     
     [_viewController clearLinePoints];
-    [_viewController addLinePoint:pos];
+//    [_viewController addLinePoint:pos];
+    
+    _trace = new AGUITrace;
+    _trace->addPoint(pos);
+    [_viewController addTopLevelObject:_trace];
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -931,8 +935,9 @@ static AGViewController * g_instance = nil;
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    [_viewController addLinePoint:pos];
-    
+//    [_viewController addLinePoint:pos];
+    _trace->addPoint(pos);
+
     _currentTraceSum = _currentTraceSum + GLvertex3f(p.x, p.y, 0);
     
     floatVector point;
@@ -947,8 +952,10 @@ static AGViewController * g_instance = nil;
     
     AGHandwritingRecognizerFigure figure = [[AGHandwritingRecognizer instance] recognizeShape:_currentTrace];
     
-    GLvertex3f centroid = _currentTraceSum/nDrawlineUsed;
+    GLvertex3f centroid = _currentTraceSum/_currentTrace.getNumberOfPoints();
     GLvertex3f centroidMVP = [_viewController worldCoordinateForScreenCoordinate:CGPointMake(centroid.x, centroid.y)];
+    
+    BOOL animateOut = NO;
     
     if(figure == AG_FIGURE_CIRCLE)
     {
@@ -978,11 +985,14 @@ static AGViewController * g_instance = nil;
     }
     else
     {
+        animateOut = YES;
 //        AGFreeDraw *freeDraw = new AGFreeDraw((GLvncprimf *) drawline, nDrawlineUsed);
 //        
 //        [_viewController addFreeDraw:freeDraw];
 //        [_viewController clearLinePoints];
     }
+    
+    _trace->removeFromTopLevel();
 }
 
 - (void)update:(float)t dt:(float)dt { }
