@@ -15,6 +15,7 @@
 		090354F71A329EAA00F68107 /* bankgthd.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 090354F61A329EAA00F68107 /* bankgthd.ttf */; };
 		091081801A0B63DB0063028B /* AGStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0910817E1A0B63DB0063028B /* AGStyle.mm */; };
 		0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */; };
+		091C70CC1C48A9A600B513C2 /* AGUINodeEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */; };
 		093395671A00FABC009E4802 /* Endzone Tech.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 093395661A00FABC009E4802 /* Endzone Tech.ttf */; };
 		093395691A019D43009E4802 /* Orbitron-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 093395681A019D43009E4802 /* Orbitron-Regular.ttf */; };
 		0933956B1A019E4F009E4802 /* Orbitron-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */; };
@@ -116,6 +117,8 @@
 		0910817F1A0B63DB0063028B /* AGStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGStyle.h; sourceTree = "<group>"; };
 		0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGInputNode.mm; sourceTree = "<group>"; };
 		0927D7DF1ADCE4E000AD8AE5 /* AGInputNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGInputNode.h; sourceTree = "<group>"; };
+		091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGUINodeEditor.mm; sourceTree = "<group>"; };
+		091C70CB1C48A9A600B513C2 /* AGUINodeEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGUINodeEditor.h; sourceTree = "<group>"; };
 		093395661A00FABC009E4802 /* Endzone Tech.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Endzone Tech.ttf"; sourceTree = "<group>"; };
 		093395681A019D43009E4802 /* Orbitron-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Orbitron-Regular.ttf"; sourceTree = "<group>"; };
 		0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Orbitron-Medium.ttf"; sourceTree = "<group>"; };
@@ -407,6 +410,8 @@
 				098740B117BC61410098511A /* AGUserInterface.mm */,
 				093395761A08BFAC009E4802 /* AGNodeSelector.h */,
 				093395751A08BFAC009E4802 /* AGNodeSelector.mm */,
+				091C70CB1C48A9A600B513C2 /* AGUINodeEditor.h */,
+				091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */,
 				09E5EC8118A46F7300B21D97 /* AGControl.h */,
 				09E5EC8018A46F7300B21D97 /* AGControl.mm */,
 				093395791A0A3785009E4802 /* AGAboutBox.h */,
@@ -749,6 +754,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				091C70CC1C48A9A600B513C2 /* AGUINodeEditor.mm in Sources */,
 				095D12D417ACA36C0048A012 /* main.m in Sources */,
 				0933956E1A08799A009E4802 /* AGFormulaNode.mm in Sources */,
 				0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */,

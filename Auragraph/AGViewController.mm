@@ -617,24 +617,24 @@ static AGViewController * g_instance = nil;
 //
     
     // render drawing outline
-    glUseProgram(_program);
-
-    glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
-    glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
-    
-    glBindVertexArrayOES(_vertexArray);
-    
-    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::white);
-    
-    glPointSize(4.0f);
-    glLineWidth(4.0f);
-    if(nDrawlineUsed == 1)
-        glDrawArrays(GL_POINTS, 0, nDrawlineUsed);
-    else
-        glDrawArrays(GL_LINE_STRIP, 0, nDrawlineUsed);
-    
-    glBindVertexArrayOES(0);
+//    glUseProgram(_program);
+//
+//    glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
+//    glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
+//    
+//    glBindVertexArrayOES(_vertexArray);
+//    
+//    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+//    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::white);
+//    
+//    glPointSize(4.0f);
+//    glLineWidth(4.0f);
+//    if(nDrawlineUsed == 1)
+//        glDrawArrays(GL_POINTS, 0, nDrawlineUsed);
+//    else
+//        glDrawArrays(GL_LINE_STRIP, 0, nDrawlineUsed);
+//    
+//    glBindVertexArrayOES(0);
     
     [_touchHandler render];
         
@@ -904,94 +904,5 @@ static AGViewController * g_instance = nil;
 
 
 @end
-
-
-//------------------------------------------------------------------------------
-// ### AGDrawNodeTouchHandler ###
-//------------------------------------------------------------------------------
-#pragma mark -
-#pragma mark AGDrawNodeTouchHandler
-
-@implementation AGDrawNodeTouchHandler
-
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    CGPoint p = [[touches anyObject] locationInView:_viewController.view];
-    GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
-    
-    _currentTrace = LTKTrace();
-    _currentTraceSum = GLvertex3f();
-    
-    [_viewController clearLinePoints];
-    [_viewController addLinePoint:pos];
-}
-
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    CGPoint p = [[touches anyObject] locationInView:_viewController.view];
-    GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
-    
-    [_viewController addLinePoint:pos];
-    
-    _currentTraceSum = _currentTraceSum + GLvertex3f(p.x, p.y, 0);
-    
-    floatVector point;
-    point.push_back(p.x);
-    point.push_back(p.y);
-    _currentTrace.addPoint(point);
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    /* analysis */
-    
-    AGHandwritingRecognizerFigure figure = [[AGHandwritingRecognizer instance] recognizeShape:_currentTrace];
-    
-    GLvertex3f centroid = _currentTraceSum/nDrawlineUsed;
-    GLvertex3f centroidMVP = [_viewController worldCoordinateForScreenCoordinate:CGPointMake(centroid.x, centroid.y)];
-    
-    if(figure == AG_FIGURE_CIRCLE)
-    {
-        AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::audioNodeSelector(centroidMVP);
-        _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
-        [_viewController clearLinePoints];
-    }
-    else if(figure == AG_FIGURE_SQUARE)
-    {
-        AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::controlNodeSelector(centroidMVP);
-        _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
-//        AGControlNode * node = new AGControlTimerNode(centroidMVP);
-//        [_viewController addNode:node];
-        [_viewController clearLinePoints];
-    }
-    else if(figure == AG_FIGURE_TRIANGLE_DOWN)
-    {
-//        AGInputNode * node = new AGInputNode(centroidMVP);
-//        [_viewController addNode:node];
-//        [_viewController clearLinePoints];
-        AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::inputNodeSelector(centroidMVP);
-        _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
-        [_viewController clearLinePoints];
-    }
-    else if(figure == AG_FIGURE_TRIANGLE_UP)
-    {
-        AGOutputNode * node = new AGOutputNode(centroidMVP);
-        [_viewController addNode:node];
-        [_viewController clearLinePoints];
-    }
-    else
-    {
-//        AGFreeDraw *freeDraw = new AGFreeDraw((GLvncprimf *) drawline, nDrawlineUsed);
-//        
-//        [_viewController addFreeDraw:freeDraw];
-//        [_viewController clearLinePoints];
-    }
-}
-
-- (void)update:(float)t dt:(float)dt { }
-- (void)render { }
-
-@end
-
 
 

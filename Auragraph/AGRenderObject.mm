@@ -20,25 +20,101 @@
 //------------------------------------------------------------------------------
 // ### AGRenderInfo ###
 //------------------------------------------------------------------------------
+#pragma mark - AGRenderInfo
+
 AGRenderInfo::AGRenderInfo() :
-shader(&AGGenericShader::instance()), numVertex(0), geoType(GL_LINES), geoOffset(0)
+shader(&AGGenericShader::instance()),
+numVertex(0), geoType(GL_LINES), geoOffset(0)
 { }
 
-AGRenderInfoV::AGRenderInfoV() : color(GLcolor4f::black), geo(NULL) { }
+//------------------------------------------------------------------------------
+// ### AGRenderInfoV ###
+//------------------------------------------------------------------------------
+#pragma mark - AGRenderInfoV
+AGRenderInfoV::AGRenderInfoV() : AGRenderInfo(), color(GLcolor4f::black), geo(NULL) { }
 
 void AGRenderInfoV::set()
 {
-    assert(geo != NULL);
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
-    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo);
+    if(geo && numVertex)
+    {
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
+        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo);
+    }
+}
+
+void AGRenderInfoV::set(const AGRenderState &state)
+{
+    if(geo && numVertex)
+    {
+        GLcolor4f c = color;
+        c.a *= state.alpha;
+        
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &c);
+        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo);
+    }
+}
+
+
+//------------------------------------------------------------------------------
+// ### AGRenderInfoVL ###
+//------------------------------------------------------------------------------
+#pragma mark - AGRenderInfoVL
+
+AGRenderInfoVL::AGRenderInfoVL() : AGRenderInfo(),
+lineWidth(2.0), color(GLcolor4f::black), geo(NULL)
+{ }
+
+void AGRenderInfoVL::set()
+{
+    if(geo && numVertex)
+    {
+        assert(geo != NULL);
+        glLineWidth(lineWidth);
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
+        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo);
+    }
+}
+
+void AGRenderInfoVL::set(const AGRenderState &state)
+{
+    if(geo && numVertex)
+    {
+        GLcolor4f c = color;
+        c.a *= state.alpha;
+        
+        glLineWidth(lineWidth);
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &c);
+        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo);
+    }
+}
+
+//------------------------------------------------------------------------------
+// ### AGRenderInfoVC ###
+//------------------------------------------------------------------------------
+#pragma mark - AGRenderInfoVC
+
+void AGRenderInfoVC::set(const AGRenderState &state)
+{
+    if(geo && numVertex)
+    {
+        glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvcprimf), &geo->color);
+        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvcprimf), &geo->vertex);
+    }
 }
 
 void AGRenderInfoVC::set()
 {
-    glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvcprimf), &geo->color);
-    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvcprimf), &geo->vertex);
+    if(geo && numVertex)
+    {
+        glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvcprimf), &geo->color);
+        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvcprimf), &geo->vertex);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -77,6 +153,9 @@ void AGRenderObject::removeChild(AGRenderObject *child)
 
 void AGRenderObject::update(float t, float dt)
 {
+    m_alpha.update(dt);
+    
+    m_renderState.alpha = m_alpha;
     m_renderState.projection = projectionMatrix();
     if(renderFixed())
         m_renderState.modelview = fixedModelViewMatrix();
@@ -84,7 +163,6 @@ void AGRenderObject::update(float t, float dt)
         m_renderState.modelview = globalModelViewMatrix();
     m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
     
-    m_alpha.update(dt);
     
     updateChildren(t, dt);
 }
@@ -110,7 +188,7 @@ void AGRenderObject::renderPrimitive(AGRenderInfo *info)
     info->shader->setNormalMatrix(m_renderState.normal);
     
     // TODO: need to set alpha in render info
-    info->set();
+    info->set(m_renderState);
     
     glDrawArrays(info->geoType, info->geoOffset, info->numVertex);
 }

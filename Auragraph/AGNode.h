@@ -13,7 +13,7 @@
 #include "AGControl.h"
 #include "AGConnection.h"
 #include "AGDocument.h"
-#include "AGUserInterface.h"
+//#include "AGUserInterface.h"
 
 #include "Geometry.h"
 #include "Animation.h"
@@ -31,6 +31,8 @@
 
 using namespace std;
 
+
+class AGUINodeEditor;
 
 
 struct AGPortInfo
@@ -382,7 +384,7 @@ private:
     GLvertex3f m_touchLast;
     
     bool m_active;
-    powcurvef m_alpha;
+//    powcurvef m_alpha;
     
     // debug
     int m_touchPoint0;

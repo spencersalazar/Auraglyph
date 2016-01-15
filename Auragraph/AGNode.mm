@@ -1050,7 +1050,6 @@ AGDocument::Node AGOutputNode::serialize()
 
 AGFreeDraw::AGFreeDraw(GLvertex3f *points, int nPoints) :
 m_active(true),
-m_alpha(1, 0, 0.5, 2),
 m_uuid(makeUUID())
 {
     m_nPoints = nPoints;
@@ -1059,15 +1058,21 @@ m_uuid(makeUUID())
     m_touchDown = false;
     m_position = GLvertex3f();
     
+    m_alpha = powcurvef(0, 1, 0.5, 2);
+    m_alpha.forceTo(1);
+    
     m_touchPoint0 = -1;
 }
 
 AGFreeDraw::AGFreeDraw(const AGDocument::Freedraw &docFreedraw) :
 m_active(true),
-m_alpha(1, 0, 0.5, 2),
+//m_alpha(1, 0, 0.5, 2),
 m_uuid(docFreedraw.uuid)
 {
     m_nPoints = docFreedraw.points.size()/3;
+    
+    m_alpha = powcurvef(0, 1, 0.5, 2);
+    m_alpha.forceTo(1);
     
     m_points = new GLvertex3f[m_nPoints];
     for(int i = 0; i < m_nPoints; i++)
@@ -1091,11 +1096,12 @@ AGFreeDraw::~AGFreeDraw()
 
 void AGFreeDraw::update(float t, float dt)
 {
+    AGRenderObject::update(t, dt);
     if(!m_active)
     {
-        m_alpha.update(dt);
-        if(m_alpha < 0.01)
-            [[AGViewController instance] removeFreeDraw:this];
+//        m_alpha.update(dt);
+//        if(m_alpha < 0.01)
+//            [[AGViewController instance] removeFreeDraw:this];
     }
 }
 
@@ -1175,7 +1181,8 @@ void AGFreeDraw::touchUp(const GLvertex3f &t)
     if(trash.hitTest(t))
     {
         m_active = false;
-        m_alpha.reset();
+//        m_alpha.reset();
+        removeFromTopLevel();
     }
     
     trash.deactivate();

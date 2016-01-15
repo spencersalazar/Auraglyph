@@ -11,6 +11,7 @@
 #include "AGStyle.h"
 #include "AGHandwritingRecognizer.h"
 #include "AGGenericShader.h"
+#include "AGUINodeEditor.h"
 
 #include "GeoGenerator.h"
 
