@@ -40,7 +40,19 @@ struct AGRenderInfoV : public AGRenderInfo
     
     virtual void set();
     virtual void set(const AGRenderState &);
+    
+    GLcolor4f color;
+    GLvertex3f *geo;
+};
 
+struct AGRenderInfoVL : public AGRenderInfo
+{
+    AGRenderInfoVL();
+    
+    virtual void set();
+    virtual void set(const AGRenderState &);
+    
+    GLfloat lineWidth;
     GLcolor4f color;
     GLvertex3f *geo;
 };
