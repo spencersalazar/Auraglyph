@@ -70,6 +70,12 @@ enum DrawMode
     DRAWMODE_FREEDRAW
 };
 
+enum InterfaceMode
+{
+    INTERFACEMODE_EDIT,
+    INTERFACEMODE_USER,
+};
+
 
 @interface AGViewController ()
 {
@@ -102,6 +108,7 @@ enum DrawMode
 //    std::list<AGConnection *> _connections;
     
     std::list<AGInteractiveObject *> _objects;
+    std::list<AGInteractiveObject *> _interfaceObjects;
     std::list<AGInteractiveObject *> _removeList;
     
 //    AGDocument _defaultDocument;
@@ -111,6 +118,7 @@ enum DrawMode
     map<AGFreeDraw *, string> _freedrawUUID;
     
     DrawMode _drawMode;
+    InterfaceMode _interfaceMode;
     
     TexFont * _font;
     
@@ -130,6 +138,8 @@ enum DrawMode
 - (void)tearDownGL;
 - (void)initUI;
 - (void)updateMatrices;
+- (void)renderEdit;
+- (void)renderUser;
 - (void)save;
 
 @end
@@ -321,6 +331,8 @@ static AGViewController * g_instance = nil;
     [self addTopLevelObject:modeButtonGroup];
     _drawMode = DRAWMODE_NODE;
     
+    _interfaceMode = INTERFACEMODE_USER;
+    
     /* trash */
     AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
 }
@@ -412,6 +424,10 @@ static AGViewController * g_instance = nil;
 {
     _nodes.push_back(node);
     
+    AGInteractiveObject * ui = node->userInterface();
+    if(ui)
+        _interfaceObjects.push_back(ui);
+    
 //    AGDocument::Node docNode = node->serialize();
 //    _defaultDocument.addNode(docNode);
 }
@@ -420,12 +436,20 @@ static AGViewController * g_instance = nil;
 {
 //    _defaultDocument.removeNode(node->uuid());
     
+    AGInteractiveObject * ui = node->userInterface();
+    if(ui)
+        _interfaceObjects.remove(ui);
+    
     _nodeRemoveList.push_back(node);
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object
 {
     _objects.push_back(object);
+    
+    AGInteractiveObject * ui = object->userInterface();
+    if(ui)
+        _interfaceObjects.push_back(ui);
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object over:(AGInteractiveObject *)over
@@ -435,6 +459,10 @@ static AGViewController * g_instance = nil;
         _objects.insert(++ov, object);
     else
         _objects.push_back(object);
+    
+    AGInteractiveObject * ui = object->userInterface();
+    if(ui)
+        _interfaceObjects.push_back(ui);
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object under:(AGInteractiveObject *)under
@@ -444,12 +472,20 @@ static AGViewController * g_instance = nil;
         _objects.insert(un, object);
     else
         _objects.push_front(object);
+    
+    AGInteractiveObject * ui = object->userInterface();
+    if(ui)
+        _interfaceObjects.push_back(ui);
 }
 
 - (void)removeTopLevelObject:(AGInteractiveObject *)object
 {
     if(object == _touchCapture)
         _touchCapture = NULL;
+    
+    AGInteractiveObject * ui = object->userInterface();
+    if(ui)
+        _interfaceObjects.remove(ui);
     
     object->renderOut();
     _removeList.push_back(object);
@@ -502,6 +538,8 @@ static AGViewController * g_instance = nil;
         projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f)/aspect, aspect, 0.1f, 100.0f);
     
     GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z-4.0f);
+    if(_interfaceMode == INTERFACEMODE_USER)
+        baseModelViewMatrix = GLKMatrix4Translate(baseModelViewMatrix, 0, 0, -(G_RATIO-1));
     
     // Compute the model view matrix for the object rendered with GLKit
     GLKMatrix4 modelViewMatrix = GLKMatrix4Identity;
@@ -557,6 +595,8 @@ static AGViewController * g_instance = nil;
         (*i)->update(_t, dt);
     for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
         (*i)->update(_t, dt);
+    for(std::list<AGInteractiveObject *>::iterator i = _interfaceObjects.begin(); i != _interfaceObjects.end(); i++)
+        (*i)->update(_t, dt);    
     
     [_touchHandler update:_t dt:dt];
 
@@ -577,72 +617,21 @@ static AGViewController * g_instance = nil;
         glBindFramebuffer(GL_FRAMEBUFFER, _screenFBO);
     
     //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClearColor(12.0f/255.0f, 16.0f/255.0f, 33.0f/255.0f, 1.0f);
-//    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    if(AG_ENABLE_FBO)
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    else
+        glClearColor(12.0f/255.0f, 16.0f/255.0f, 33.0f/255.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    glEnable(GL_LINE_SMOOTH);
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    // normal blending
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    // additive blending
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    [self renderEdit];
     
-    glEnable(GL_TEXTURE_2D);
-    glUseProgram(0);
-    glBindVertexArrayOES(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
-//    GLKMatrix4 textMV = GLKMatrix4Translate(_fixedModelView, -_font->width("AURAGLYPH")/2, -0.1, 3.89);
-//    _font->render("AURAGLYPH", GLcolor4f::black, textMV, _projection);
-    
-//    GLKMatrix4 textMapMV = GLKMatrix4Translate(_modelView, 0, 0.05, 3.89);
-//    _font->renderTexmap(GLcolor4f::white, textMapMV, _projection);
-    
-    // render trash icon
-    AGUITrash::instance().render();
-    
-    // render nodes
-    for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
-        (*i)->render();
-    
-    // render objects
-    for(std::list<AGInteractiveObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
-        (*i)->render();
-    
-    // render connections
-//    for(std::list<AGConnection *>::iterator i = _connections.begin(); i != _connections.end(); i++)
-//        (*i)->render();
-//
-    
-    // render drawing outline
-//    glUseProgram(_program);
-//
-//    glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
-//    glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
-//    
-//    glBindVertexArrayOES(_vertexArray);
-//    
-//    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-//    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::white);
-//    
-//    glPointSize(4.0f);
-//    glLineWidth(4.0f);
-//    if(nDrawlineUsed == 1)
-//        glDrawArrays(GL_POINTS, 0, nDrawlineUsed);
-//    else
-//        glDrawArrays(GL_LINE_STRIP, 0, nDrawlineUsed);
-//    
-//    glBindVertexArrayOES(0);
-    
-    [_touchHandler render];
-        
     if(AG_ENABLE_FBO)
     {
         /* render screen texture */
         
         glBindFramebuffer(GL_FRAMEBUFFER, sysFBO);
+        
+//        [((GLKView *) self.view) bindDrawable];
         
         //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClearColor(12.0f/255.0f, 16.0f/255.0f, 33.0f/255.0f, 1.0f);
@@ -707,6 +696,67 @@ static AGViewController * g_instance = nil;
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
+    
+    if(_interfaceMode == INTERFACEMODE_USER)
+        [self renderUser];
+}
+
+- (void)renderEdit
+{
+    glEnable(GL_LINE_SMOOTH);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    // normal blending
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // additive blending
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    
+    glEnable(GL_TEXTURE_2D);
+    glUseProgram(0);
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    // render trash icon
+    AGUITrash::instance().render();
+    
+    // render nodes
+    for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
+        (*i)->render();
+    
+    // render objects
+    for(std::list<AGInteractiveObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
+        (*i)->render();
+    
+    [_touchHandler render];
+}
+
+- (void)renderUser
+{
+    CGSize size = self.view.bounds.size;
+    GLvertex3f overlayGeo[4];
+    overlayGeo[0] = [self worldCoordinateForScreenCoordinate:CGPointMake(size.width*0.1, size.width*0.1)];
+    overlayGeo[1] = [self worldCoordinateForScreenCoordinate:CGPointMake(size.width*0.9, size.width*0.1)];
+    overlayGeo[2] = [self worldCoordinateForScreenCoordinate:CGPointMake(size.width*0.1, size.height-size.width*0.1)];
+    overlayGeo[3] = [self worldCoordinateForScreenCoordinate:CGPointMake(size.width*0.9, size.height-size.width*0.1)];
+    GLcolor4f overlayColor = GLcolor4f(12.0f/255.0f, 16.0f/255.0f, 33.0f/255.0f, 0.45);
+//    GLcolor4f overlayColor = GLcolor4f(1.0, 1.0, 1.0, 0.45);
+    
+    AGGenericShader &shader = AGGenericShader::instance();
+    shader.useProgram();
+    shader.setMVPMatrix(_modelViewProjectionMatrix);
+    shader.setNormalMatrix(_normalMatrix);
+    
+    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    glDisableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &overlayColor);
+    glDisableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(0, 3, GL_FLOAT, FALSE, 0, &overlayGeo);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
+    for(std::list<AGInteractiveObject *>::iterator i = _interfaceObjects.begin(); i != _interfaceObjects.end(); i++)
+        (*i)->render();
 }
 
 

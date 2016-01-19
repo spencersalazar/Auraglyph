@@ -73,6 +73,10 @@ struct AGRenderState
     float alpha;
 };
 
+//------------------------------------------------------------------------------
+// ### AGRenderObject ###
+// Base class for objects that are rendered on screen.
+//------------------------------------------------------------------------------
 class AGRenderObject
 {
 public:
@@ -147,6 +151,10 @@ struct AGTouchInfo
 };
 
 
+//------------------------------------------------------------------------------
+// ### AGInteractiveObject ###
+// Base class for objects that support interaction in addition to rendering.
+//------------------------------------------------------------------------------
 class AGInteractiveObject : public AGRenderObject
 {
 public:
@@ -163,6 +171,8 @@ public:
     virtual void touchUp(const AGTouchInfo &t);
     
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
+    
+    virtual AGInteractiveObject *userInterface() { return NULL; }
     
     void removeFromTopLevel();
 };
