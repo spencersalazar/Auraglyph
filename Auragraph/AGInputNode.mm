@@ -16,6 +16,7 @@ class AGSliderNode : public AGInputNode
 {
 public:
     AGSliderNode(const GLvertex3f &pos) : AGInputNode(pos, s_nodeInfo) { }
+    AGSliderNode(const AGDocument::Node &docNode) : AGInputNode(docNode, s_nodeInfo) { }
     
     static void initialize();
     static AGNodeInfo *nodeInfo() { return s_nodeInfo; }
@@ -31,23 +32,30 @@ AGNodeInfo *AGSliderNode::s_nodeInfo;
 
 void AGSliderNode::initialize()
 {
-    s_nodeInfo = new AGNodeInfo;
-    
-//    float radius = 0.005;
-    float radius = 0.002;
-    float height = 0.003;
-    int circleSize = 48;
-    s_nodeInfo->iconGeoSize = circleSize;
-    s_nodeInfo->iconGeoType = GL_LINE_LOOP;
-    s_nodeInfo->iconGeo = new GLvertex3f[s_nodeInfo->iconGeoSize];
-    
-    for(int i = 0; i < circleSize; i++)
+    if(s_nodeInfo == NULL)
     {
-        float y_offset = height;
-        if(i >= circleSize/2)
-            y_offset = -height;
-        float theta0 = 2*M_PI*((float)i)/((float)(circleSize));
-        s_nodeInfo->iconGeo[i] = GLvertex3f(radius*cosf(theta0), radius*sinf(theta0)+y_offset, 0);
+        s_nodeInfo = new AGNodeInfo;
+        
+
+        
+        s_nodeInfo->type = "Slider";
+        
+        //    float radius = 0.005;
+        float radius = 0.002;
+        float height = 0.003;
+        int circleSize = 48;
+        s_nodeInfo->iconGeoSize = circleSize;
+        s_nodeInfo->iconGeoType = GL_LINE_LOOP;
+        s_nodeInfo->iconGeo = new GLvertex3f[s_nodeInfo->iconGeoSize];
+        
+        for(int i = 0; i < circleSize; i++)
+        {
+            float y_offset = height;
+            if(i >= circleSize/2)
+                y_offset = -height;
+            float theta0 = 2*M_PI*((float)i)/((float)(circleSize));
+            s_nodeInfo->iconGeo[i] = GLvertex3f(radius*cosf(theta0), radius*sinf(theta0)+y_offset, 0);
+        }
     }
 }
 
@@ -62,7 +70,7 @@ const AGNodeManager &AGNodeManager::inputNodeManager()
                                                                AGSliderNode::initialize,
                                                                renderNodeIcon<AGSliderNode>,
                                                                createNode<AGSliderNode>,
-                                                               NULL));
+                                                               createNode<AGSliderNode>));
 //        s_inputNodeManager->m_audioNodeTypes.push_back(new NodeInfo("Knob", NULL, NULL, NULL, NULL));
 //        s_inputNodeManager->m_audioNodeTypes.push_back(new NodeInfo("Button", NULL, NULL, NULL, NULL));
         

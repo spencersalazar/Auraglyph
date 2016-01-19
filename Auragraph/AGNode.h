@@ -259,6 +259,7 @@ public:
     static void initializeControlNode();
     
     AGControlNode(GLvertex3f pos = GLvertex3f(), AGNodeInfo *nodeInfo = NULL);
+    AGControlNode(const AGDocument::Node &docNode, AGNodeInfo *nodeInfo);
     virtual ~AGControlNode() { }
     
     virtual void update(float t, float dt);
@@ -299,7 +300,8 @@ public:
     static void initializeInputNode();
     
     AGInputNode(GLvertex3f pos = GLvertex3f(), AGNodeInfo *nodeInfo = NULL);
-    
+    AGInputNode(const AGDocument::Node &docNode, AGNodeInfo *nodeInfo);
+
     virtual void update(float t, float dt);    
     virtual void render();
     virtual void renderUI() { }

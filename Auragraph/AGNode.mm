@@ -724,6 +724,12 @@ AGNode(pos, nodeInfo)
     initializeControlNode();
 }
 
+AGControlNode::AGControlNode(const AGDocument::Node &docNode, AGNodeInfo *nodeInfo) :
+AGNode(docNode, nodeInfo)
+{
+    initializeControlNode();
+}
+
 void AGControlNode::update(float t, float dt)
 {
     AGNode::update(t, dt);
@@ -805,6 +811,13 @@ AGDocument::Node AGControlNode::serialize()
     n.x = position().x;
     n.y = position().y;
     
+    for(int i = 0; i < numEditPorts(); i++)
+    {
+        float v;
+        getEditPortValue(i, v);
+        n.params[editPortInfo(i).name] = AGDocument::ParamValue(v);
+    }
+    
     return n;
 }
 
@@ -857,6 +870,12 @@ void AGInputNode::initializeInputNode()
 
 AGInputNode::AGInputNode(GLvertex3f pos, AGNodeInfo *nodeInfo) :
 AGNode(pos, nodeInfo)
+{
+    initializeInputNode();
+}
+
+AGInputNode::AGInputNode(const AGDocument::Node &docNode, AGNodeInfo *nodeInfo) :
+AGNode(docNode, nodeInfo)
 {
     initializeInputNode();
 }
@@ -941,6 +960,13 @@ AGDocument::Node AGInputNode::serialize()
     n.uuid = uuid();
     n.x = position().x;
     n.y = position().y;
+    
+    for(int i = 0; i < numEditPorts(); i++)
+    {
+        float v;
+        getEditPortValue(i, v);
+        n.params[editPortInfo(i).name] = AGDocument::ParamValue(v);
+    }
     
     return n;
 }

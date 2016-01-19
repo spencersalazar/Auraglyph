@@ -9,6 +9,7 @@
 #include "AGControlNode.h"
 #include "AGArrayNode.h"
 #include "AGTimer.h"
+#include "spstl.h"
 
 //------------------------------------------------------------------------------
 // ### AGControlTimerNode ###
@@ -178,6 +179,24 @@ AGControlNode * AGControlNodeManager::createNodeType(AGControlNodeManager::Contr
 {
     AGControlNode *node = type->createNode(pos);
     node->setTitle(type->name);
+    return node;
+}
+
+AGControlNode * AGControlNodeManager::createNodeType(const AGDocument::Node &docNode) const
+{
+    __block AGControlNode *node = NULL;
+    
+    itmap(m_controlNodeTypes, ^bool (ControlNodeType *const &type){
+        if(type->name == docNode.type)
+        {
+            node = type->createWithDocNode(docNode);
+            node->setTitle(type->name);
+            return false;
+        }
+        
+        return true;
+    });
+    
     return node;
 }
 

@@ -214,10 +214,19 @@ static AGViewController * g_instance = nil;
         defaultDoc.recreate(^(const AGDocument::Node &docNode) {
             AGNode *node = NULL;
             if(docNode._class == AGDocument::Node::AUDIO)
+            {
                 node = AGAudioNodeManager::instance().createNodeType(docNode);
-            if(docNode.type == "Output")
-                // TODO: fix this hacky shit
-                outputNode = dynamic_cast<AGAudioOutputNode *>(node);
+                if(docNode.type == "Output")
+                    // TODO: fix this hacky shit
+                    outputNode = dynamic_cast<AGAudioOutputNode *>(node);
+            }
+            else if(docNode._class == AGDocument::Node::CONTROL)
+                node = AGControlNodeManager::instance().createNodeType(docNode);
+            else if(docNode._class == AGDocument::Node::INPUT)
+                node = AGNodeManager::inputNodeManager().createNodeType(docNode);
+            else if(docNode._class == AGDocument::Node::OUTPUT)
+                node = AGNodeManager::outputNodeManager().createNodeType(docNode);
+            
             if(node != NULL)
             {
                 uuid2node[node->uuid()] = node;
@@ -331,7 +340,8 @@ static AGViewController * g_instance = nil;
     [self addTopLevelObject:modeButtonGroup];
     _drawMode = DRAWMODE_NODE;
     
-    _interfaceMode = INTERFACEMODE_USER;
+//    _interfaceMode = INTERFACEMODE_USER;
+    _interfaceMode = INTERFACEMODE_EDIT;
     
     /* trash */
     AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
@@ -596,7 +606,7 @@ static AGViewController * g_instance = nil;
     for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
         (*i)->update(_t, dt);
     for(std::list<AGInteractiveObject *>::iterator i = _interfaceObjects.begin(); i != _interfaceObjects.end(); i++)
-        (*i)->update(_t, dt);    
+        (*i)->update(_t, dt);
     
     [_touchHandler update:_t dt:dt];
 

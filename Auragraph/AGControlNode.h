@@ -65,11 +65,13 @@ public:
         void (*initialize)();
         void (*renderIcon)();
         AGControlNode *(*createNode)(const GLvertex3f &pos);
+        AGControlNode *(*createWithDocNode)(const AGDocument::Node &docNode);
     };
     
     const std::vector<ControlNodeType *> &nodeTypes() const;
     void renderNodeTypeIcon(ControlNodeType *type) const;
     AGControlNode * createNodeType(ControlNodeType *type, const GLvertex3f &pos) const;
+    AGControlNode * createNodeType(const AGDocument::Node &docNode) const;
     
 private:
     static AGControlNodeManager * s_instance;
