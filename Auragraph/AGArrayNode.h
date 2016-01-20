@@ -23,6 +23,7 @@ public:
     static void initialize();
     
     AGControlArrayNode(const GLvertex3f &pos);
+    AGControlArrayNode(const AGDocument::Node &docNode);
     
     virtual int numOutputPorts() const { return 1; }
     virtual void setEditPortValue(int port, float value);

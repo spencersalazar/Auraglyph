@@ -593,6 +593,8 @@ void AGControlArrayNode::initialize()
 {
     s_nodeInfo = new AGNodeInfo;
     
+    s_nodeInfo->type = "Array";
+    
     float radius = 0.0057;
     int numBoxes = 5;
     float boxWidth = radius*2.0f/((float)numBoxes);
@@ -619,6 +621,12 @@ void AGControlArrayNode::initialize()
 
 AGControlArrayNode::AGControlArrayNode(const GLvertex3f &pos) :
 AGControlNode(pos, s_nodeInfo)
+{
+    m_lastTime = 0;
+    m_position = m_items.begin();
+}
+
+AGControlArrayNode::AGControlArrayNode(const AGDocument::Node &docNode) : AGControlNode(docNode, s_nodeInfo)
 {
     m_lastTime = 0;
     m_position = m_items.begin();

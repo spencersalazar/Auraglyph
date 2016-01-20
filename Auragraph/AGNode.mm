@@ -626,6 +626,8 @@ void AGAudioNode::renderLast(float *output, int nFrames)
 
 AGDocument::Node AGAudioNode::serialize()
 {
+    assert(type().length());
+    
     AGDocument::Node docNode;
     docNode._class = AGDocument::Node::AUDIO;
     docNode.type = type();
@@ -708,13 +710,6 @@ void AGControlNode::initializeControlNode()
 //        AGControlTimerNode::initialize();
         
         // initialize audio nodes
-        const std::vector<AGControlNodeManager::ControlNodeType *> &controlNodeTypes = AGControlNodeManager::instance().nodeTypes();
-        for(std::vector<AGControlNodeManager::ControlNodeType *>::const_iterator type = controlNodeTypes.begin(); type != controlNodeTypes.end(); type++)
-        {
-            if((*type)->initialize)
-                (*type)->initialize();
-        }
-
     }
 }
 
@@ -804,6 +799,8 @@ AGUIObject *AGControlNode::hitTest(const GLvertex3f &t)
 
 AGDocument::Node AGControlNode::serialize()
 {
+    assert(type().length());
+    
     AGDocument::Node n;
     n._class = AGDocument::Node::CONTROL;
     n.type = type();
@@ -954,6 +951,8 @@ GLvertex3f AGInputNode::relativePositionForOutputPort(int port) const
 
 AGDocument::Node AGInputNode::serialize()
 {
+    assert(type().length());
+    
     AGDocument::Node n;
     n._class = AGDocument::Node::INPUT;
     n.type = type();
@@ -1074,6 +1073,8 @@ AGUIObject *AGOutputNode::hitTest(const GLvertex3f &t)
 
 AGDocument::Node AGOutputNode::serialize()
 {
+    assert(type().length());
+    
     AGDocument::Node n;
     n._class = AGDocument::Node::OUTPUT;
     n.type = type();

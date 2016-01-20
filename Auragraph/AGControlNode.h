@@ -21,6 +21,7 @@ public:
     static void initialize();
     
     AGControlTimerNode(const GLvertex3f &pos);
+    AGControlTimerNode(const AGDocument::Node &docNode);
     ~AGControlTimerNode();
     
     virtual int numOutputPorts() const { return 1; }
@@ -54,24 +55,26 @@ public:
     {
         // TODO: make class
         ControlNodeType(std::string _name, void (*_initialize)(), void (*_renderIcon)(),
-                        AGControlNode *(*_createNode)(const GLvertex3f &pos)) :
+                        AGControlNode *(*_createNode)(const GLvertex3f &pos),
+                        AGNode *(*_createNodeWithDocNode)(const AGDocument::Node &docNode)) :
         name(_name),
         initialize(_initialize),
         renderIcon(_renderIcon),
-        createNode(_createNode)
+        createNode(_createNode),
+        createWithDocNode(_createNodeWithDocNode)
         { }
         
         std::string name;
         void (*initialize)();
         void (*renderIcon)();
         AGControlNode *(*createNode)(const GLvertex3f &pos);
-        AGControlNode *(*createWithDocNode)(const AGDocument::Node &docNode);
+        AGNode *(*createWithDocNode)(const AGDocument::Node &docNode);
     };
     
     const std::vector<ControlNodeType *> &nodeTypes() const;
     void renderNodeTypeIcon(ControlNodeType *type) const;
     AGControlNode * createNodeType(ControlNodeType *type, const GLvertex3f &pos) const;
-    AGControlNode * createNodeType(const AGDocument::Node &docNode) const;
+    AGNode * createNodeType(const AGDocument::Node &docNode) const;
     
 private:
     static AGControlNodeManager * s_instance;

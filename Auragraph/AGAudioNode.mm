@@ -404,7 +404,7 @@ void AGAudioSawtoothWaveNode::initialize()
 {
     s_audioNodeInfo = new AGNodeInfo;
     
-    s_audioNodeInfo->type = "SawtoothWave";
+    s_audioNodeInfo->type = "SawWave";
     
     // generate geometry
     s_audioNodeInfo->iconGeoSize = 4;
@@ -541,7 +541,7 @@ void AGAudioTriangleWaveNode::initialize()
 {
     s_audioNodeInfo = new AGNodeInfo;
     
-    s_audioNodeInfo->type = "TriangleWave";
+    s_audioNodeInfo->type = "TriWave";
     
     // generate geometry
     s_audioNodeInfo->iconGeoSize = 4;

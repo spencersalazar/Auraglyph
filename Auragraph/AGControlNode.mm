@@ -22,6 +22,8 @@ void AGControlTimerNode::initialize()
 {
     s_nodeInfo = new AGNodeInfo;
     
+    s_nodeInfo->type = "Timer";
+    
     float radius = 0.005;
     int circleSize = 48;
     s_nodeInfo->iconGeoSize = circleSize*2 + 4;
@@ -54,6 +56,20 @@ void AGControlTimerNode::initialize()
 
 AGControlTimerNode::AGControlTimerNode(const GLvertex3f &pos) :
 AGControlNode(pos, s_nodeInfo)
+{
+    m_interval = 0.5;
+    m_lastFire = 0;
+    m_lastTime = 0;
+    m_control.v = 0;
+    
+    m_timer = new AGTimer(m_interval, ^(AGTimer *) {
+        // flip
+        m_control.v = !m_control.v;
+        pushControl(0, &m_control);
+    });
+}
+
+AGControlTimerNode::AGControlTimerNode(const AGDocument::Node &docNode) : AGControlNode(docNode, s_nodeInfo)
 {
     m_interval = 0.5;
     m_lastFire = 0;
@@ -161,8 +177,21 @@ const AGControlNodeManager &AGControlNodeManager::instance()
 
 AGControlNodeManager::AGControlNodeManager()
 {
-    m_controlNodeTypes.push_back(new ControlNodeType("Timer", AGControlTimerNode::initialize, AGControlTimerNode::renderIcon, AGControlTimerNode::create));
-    m_controlNodeTypes.push_back(new ControlNodeType("Array", AGControlArrayNode::initialize, AGControlArrayNode::renderIcon, AGControlArrayNode::create));
+    m_controlNodeTypes.push_back(new ControlNodeType("Timer",
+                                                     AGControlTimerNode::initialize,
+                                                     AGControlTimerNode::renderIcon,
+                                                     AGControlTimerNode::create,
+                                                     createNode<AGControlTimerNode>));
+    m_controlNodeTypes.push_back(new ControlNodeType("Array",
+                                                     AGControlArrayNode::initialize,
+                                                     AGControlArrayNode::renderIcon,
+                                                     AGControlArrayNode::create,
+                                                     createNode<AGControlArrayNode>));
+    
+    itmap(m_controlNodeTypes, ^(ControlNodeType *&type){
+        if(type->initialize)
+            type->initialize();
+    });
 }
 
 const std::vector<AGControlNodeManager::ControlNodeType *> &AGControlNodeManager::nodeTypes() const
@@ -182,9 +211,9 @@ AGControlNode * AGControlNodeManager::createNodeType(AGControlNodeManager::Contr
     return node;
 }
 
-AGControlNode * AGControlNodeManager::createNodeType(const AGDocument::Node &docNode) const
+AGNode * AGControlNodeManager::createNodeType(const AGDocument::Node &docNode) const
 {
-    __block AGControlNode *node = NULL;
+    __block AGNode *node = NULL;
     
     itmap(m_controlNodeTypes, ^bool (ControlNodeType *const &type){
         if(type->name == docNode.type)
