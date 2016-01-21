@@ -807,6 +807,7 @@ AGDocument::Node AGControlNode::serialize()
     n.uuid = uuid();
     n.x = position().x;
     n.y = position().y;
+    n.z = position().z;
     
     for(int i = 0; i < numEditPorts(); i++)
     {
@@ -959,7 +960,8 @@ AGDocument::Node AGInputNode::serialize()
     n.uuid = uuid();
     n.x = position().x;
     n.y = position().y;
-    
+    n.z = position().z;
+
     for(int i = 0; i < numEditPorts(); i++)
     {
         float v;
@@ -1081,6 +1083,14 @@ AGDocument::Node AGOutputNode::serialize()
     n.uuid = uuid();
     n.x = position().x;
     n.y = position().y;
+    n.z = position().z;
+    
+    for(int i = 0; i < numEditPorts(); i++)
+    {
+        float v;
+        getEditPortValue(i, v);
+        n.params[editPortInfo(i).name] = AGDocument::ParamValue(v);
+    }
     
     return n;
 }
