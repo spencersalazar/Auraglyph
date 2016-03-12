@@ -678,7 +678,7 @@ void AGControlArrayNode::renderIcon()
     glDrawArrays(s_nodeInfo->iconGeoType, 0, s_nodeInfo->iconGeoSize);
 }
 
-AGControlNode *AGControlArrayNode::create(const GLvertex3f &pos)
+AGNode *AGControlArrayNode::create(const GLvertex3f &pos)
 {
     return new AGControlArrayNode(pos);
 }

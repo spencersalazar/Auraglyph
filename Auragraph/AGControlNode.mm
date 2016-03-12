@@ -125,7 +125,125 @@ void AGControlTimerNode::renderIcon()
     glDrawArrays(s_nodeInfo->iconGeoType, 0, s_nodeInfo->iconGeoSize);
 }
 
-AGControlNode *AGControlTimerNode::create(const GLvertex3f &pos)
+AGNode *AGControlTimerNode::create(const GLvertex3f &pos)
+{
+    return new AGControlTimerNode(pos);
+}
+
+
+//------------------------------------------------------------------------------
+// ### AGControlSequencerNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGControlSequencerNode
+
+AGNodeInfo *AGControlSequencerNode::s_nodeInfo = NULL;
+
+void AGControlSequencerNode::initialize()
+{
+    s_nodeInfo = new AGNodeInfo;
+    
+    s_nodeInfo->type = "Sequencer";
+    
+    float radius = 0.005;
+    int gridSize = 5;
+    s_nodeInfo->iconGeoSize = gridSize*4;
+    s_nodeInfo->iconGeoType = GL_LINES;
+    s_nodeInfo->iconGeo = new GLvertex3f[s_nodeInfo->iconGeoSize];
+    
+    // horizontal grid lines
+    for(int i = 0; i < gridSize; i++)
+    {
+        float y = radius*2*i/(gridSize-1);
+        s_nodeInfo->iconGeo[i*2+0] = GLvertex3f(-radius, radius-y, 0);
+        s_nodeInfo->iconGeo[i*2+1] = GLvertex3f( radius, radius-y, 0);
+    }
+    
+    // vertical grid lines
+    for(int i = 0; i < gridSize; i++)
+    {
+        float x = radius*2*i/(gridSize-1);
+        s_nodeInfo->iconGeo[gridSize*2+i*2+0] = GLvertex3f(-radius+x,  radius, 0);
+        s_nodeInfo->iconGeo[gridSize*2+i*2+1] = GLvertex3f(-radius+x, -radius, 0);
+    }
+    
+    // TODO: filled-in grid squares
+    
+    s_nodeInfo->editPortInfo.push_back({ "bpm", true, true });
+    s_nodeInfo->inputPortInfo.push_back({ "bpm", true, true });
+}
+
+AGControlSequencerNode::AGControlSequencerNode(const GLvertex3f &pos) :
+AGControlNode(pos, s_nodeInfo)
+{
+    m_interval = 0.5;
+    m_lastFire = 0;
+    m_lastTime = 0;
+    m_control.v = 0;
+    
+    m_timer = new AGTimer(m_interval, ^(AGTimer *) {
+        // flip
+        m_control.v = !m_control.v;
+        pushControl(0, &m_control);
+    });
+}
+
+AGControlSequencerNode::AGControlSequencerNode(const AGDocument::Node &docNode) : AGControlNode(docNode, s_nodeInfo)
+{
+    m_interval = 0.5;
+    m_lastFire = 0;
+    m_lastTime = 0;
+    m_control.v = 0;
+    
+    m_timer = new AGTimer(m_interval, ^(AGTimer *) {
+        // flip
+        m_control.v = !m_control.v;
+        pushControl(0, &m_control);
+    });
+}
+
+AGControlSequencerNode::~AGControlSequencerNode()
+{
+    delete m_timer;
+    m_timer = NULL;
+}
+
+void AGControlSequencerNode::update(float t, float dt)
+{
+    AGControlNode::update(t, dt);
+}
+
+void AGControlSequencerNode::render()
+{
+    AGControlNode::render();
+}
+
+void AGControlSequencerNode::setEditPortValue(int port, float value)
+{
+    switch(port)
+    {
+        case 0: m_interval = value; m_timer->setInterval(m_interval); break;
+    }
+}
+
+void AGControlSequencerNode::getEditPortValue(int port, float &value) const
+{
+    switch(port)
+    {
+        case 0: value = m_interval; break;
+    }
+}
+
+void AGControlSequencerNode::renderIcon()
+{
+    // render icon
+    glBindVertexArrayOES(0);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_nodeInfo->iconGeo);
+    
+    glLineWidth(2.0);
+    glDrawArrays(s_nodeInfo->iconGeoType, 0, s_nodeInfo->iconGeoSize);
+}
+
+AGNode *AGControlSequencerNode::create(const GLvertex3f &pos)
 {
     return new AGControlTimerNode(pos);
 }
@@ -160,6 +278,11 @@ AGControlNodeManager::AGControlNodeManager()
                                                      AGControlArrayNode::renderIcon,
                                                      AGControlArrayNode::create,
                                                      createNode<AGControlArrayNode>));
+    m_controlNodeTypes.push_back(new ControlNodeType("Sequencer",
+                                                     AGControlSequencerNode::initialize,
+                                                     renderNodeIcon<AGControlSequencerNode>,
+                                                     createNode<AGControlSequencerNode>,
+                                                     createNode<AGControlSequencerNode>));
     
     itmap(m_controlNodeTypes, ^(ControlNodeType *&type){
         if(type->initialize)
@@ -177,9 +300,9 @@ void AGControlNodeManager::renderNodeTypeIcon(ControlNodeType *type) const
     type->renderIcon();
 }
 
-AGControlNode * AGControlNodeManager::createNodeType(AGControlNodeManager::ControlNodeType *type, const GLvertex3f &pos) const
+AGNode * AGControlNodeManager::createNodeType(AGControlNodeManager::ControlNodeType *type, const GLvertex3f &pos) const
 {
-    AGControlNode *node = type->createNode(pos);
+    AGControlNode *node = static_cast<AGControlNode *>(type->createNode(pos));
     node->setTitle(type->name);
     return node;
 }

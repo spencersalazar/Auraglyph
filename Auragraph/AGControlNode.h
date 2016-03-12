@@ -32,7 +32,39 @@ public:
     virtual void render();
     
     static void renderIcon();
-    static AGControlNode *create(const GLvertex3f &pos);
+    static AGNode *create(const GLvertex3f &pos);
+    
+private:
+    static AGNodeInfo *s_nodeInfo;
+    
+    AGTimer *m_timer;
+    
+    AGIntControl m_control;
+    float m_lastTime;
+    float m_lastFire;
+    float m_interval;
+};
+
+
+class AGControlSequencerNode : public AGControlNode
+{
+public:
+    static void initialize();
+    
+    AGControlSequencerNode(const GLvertex3f &pos);
+    AGControlSequencerNode(const AGDocument::Node &docNode);
+    ~AGControlSequencerNode();
+    
+    virtual int numOutputPorts() const { return 1; }
+    virtual void setEditPortValue(int port, float value);
+    virtual void getEditPortValue(int port, float &value) const;
+    
+    virtual void update(float t, float dt);
+    virtual void render();
+    
+    static void renderIcon();
+    static AGNode *create(const GLvertex3f &pos);
+    static AGNodeInfo *nodeInfo() { return s_nodeInfo; }
 
 private:
     static AGNodeInfo *s_nodeInfo;
@@ -55,7 +87,7 @@ public:
     {
         // TODO: make class
         ControlNodeType(std::string _name, void (*_initialize)(), void (*_renderIcon)(),
-                        AGControlNode *(*_createNode)(const GLvertex3f &pos),
+                        AGNode *(*_createNode)(const GLvertex3f &pos),
                         AGNode *(*_createNodeWithDocNode)(const AGDocument::Node &docNode)) :
         name(_name),
         initialize(_initialize),
@@ -67,13 +99,13 @@ public:
         std::string name;
         void (*initialize)();
         void (*renderIcon)();
-        AGControlNode *(*createNode)(const GLvertex3f &pos);
+        AGNode *(*createNode)(const GLvertex3f &pos);
         AGNode *(*createWithDocNode)(const AGDocument::Node &docNode);
     };
     
     const std::vector<ControlNodeType *> &nodeTypes() const;
     void renderNodeTypeIcon(ControlNodeType *type) const;
-    AGControlNode * createNodeType(ControlNodeType *type, const GLvertex3f &pos) const;
+    AGNode * createNodeType(ControlNodeType *type, const GLvertex3f &pos) const;
     AGNode * createNodeType(const AGDocument::Node &docNode) const;
     
 private:
