@@ -218,6 +218,16 @@ bool AGRenderObject::finishedRenderingOut()
     return m_alpha < 0.01;
 }
 
+void AGRenderObject::hide()
+{
+    m_alpha.reset(1, 0);
+}
+
+void AGRenderObject::unhide()
+{
+    m_alpha.reset(0, 1);
+}
+
 void AGRenderObject::debug_renderBounds()
 {
 #if DEBUG_BOUNDS

@@ -96,6 +96,9 @@ public:
     virtual void renderOut();
     virtual bool finishedRenderingOut();
     
+    virtual void hide();
+    virtual void unhide();
+    
     void addChild(AGRenderObject *child);
     void removeChild(AGRenderObject *child);
     
