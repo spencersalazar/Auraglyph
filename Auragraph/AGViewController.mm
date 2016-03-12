@@ -43,8 +43,6 @@ using namespace std;
 // Uniform index.
 enum
 {
-    UNIFORM_MODELVIEWPROJECTION_MATRIX,
-    UNIFORM_NORMAL_MATRIX,
     UNIFORM_SCREEN_MVPMATRIX,
     UNIFORM_SCREEN_TEX,
     UNIFORM_SCREEN_ORDERH,
@@ -54,15 +52,6 @@ enum
 };
 GLint uniforms[NUM_UNIFORMS];
 
-
-struct DrawPoint
-{
-    GLvncprimf geo; // GL geometry
-};
-
-static const int nDrawline = 1024;
-static int nDrawlineUsed = 0;
-static DrawPoint drawline[nDrawline];
 
 enum DrawMode
 {
@@ -79,8 +68,6 @@ enum InterfaceMode
 
 @interface AGViewController ()
 {
-    GLuint _program;
-    
     GLKMatrix4 _modelView;
     GLKMatrix4 _fixedModelView;
     GLKMatrix4 _projection;
@@ -90,9 +77,6 @@ enum InterfaceMode
     
     float _t;
     float _osc;
-    
-    GLuint _vertexArray;
-    GLuint _vertexBuffer;
     
     GLuint _screenTexture;
     GLuint _screenFBO;
@@ -377,13 +361,6 @@ static AGViewController * g_instance = nil;
 - (void)setupGL
 {
     [EAGLContext setCurrentContext:self.context];
-        
-    _program = [ShaderHelper createProgram:@"Shader"
-                            withAttributes:SHADERHELPER_PNC];
-    
-    // Get uniform locations.
-    uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
-    uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program, "normalMatrix");
     
     _screenProgram = [ShaderHelper createProgram:@"Screen" withAttributes:SHADERHELPER_PTC];
     uniforms[UNIFORM_SCREEN_MVPMATRIX] = glGetUniformLocation(_screenProgram, "modelViewProjectionMatrix");
@@ -394,20 +371,6 @@ static AGViewController * g_instance = nil;
     
     glEnable(GL_DEPTH_TEST);
     
-    glGenVertexArraysOES(1, &_vertexArray);
-    glBindVertexArrayOES(_vertexArray);
-    
-    glGenBuffers(1, &_vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(drawline), drawline, GL_DYNAMIC_DRAW);
-    
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(DrawPoint), BUFFER_OFFSET(0));
-    glDisableVertexAttribArray(GLKVertexAttribNormal);
-    glDisableVertexAttribArray(GLKVertexAttribColor);
-    
-    glBindVertexArrayOES(0);
-    
     float scale = [UIScreen mainScreen].scale;
     glGenTextureFromFramebuffer(&_screenTexture, &_screenFBO,
                                 self.view.bounds.size.width*scale,
@@ -417,16 +380,6 @@ static AGViewController * g_instance = nil;
 - (void)tearDownGL
 {
     [EAGLContext setCurrentContext:self.context];
-    
-    glDeleteBuffers(1, &_vertexBuffer);
-    glDeleteVertexArraysOES(1, &_vertexArray);
-    
-    self.effect = nil;
-    
-    if (_program) {
-        glDeleteProgram(_program);
-        _program = 0;
-    }
 }
 
 
@@ -524,18 +477,6 @@ static AGViewController * g_instance = nil;
     _removeList.push_back(freedraw);
 }
 
-- (void)addLinePoint:(GLvertex3f)point
-{
-    drawline[nDrawlineUsed].geo.vertex = point;
-    nDrawlineUsed++;
-}
-
-- (void)clearLinePoints
-{
-    nDrawlineUsed = 0;
-}
-
-
 #pragma mark - GLKView and GLKViewController delegate methods
 
 - (void)updateMatrices
@@ -609,11 +550,6 @@ static AGViewController * g_instance = nil;
         (*i)->update(_t, dt);
     
     [_touchHandler update:_t dt:dt];
-
-    glBindVertexArrayOES(_vertexArray);
-    glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(drawline), drawline, GL_DYNAMIC_DRAW);
-    glBindVertexArrayOES(0);
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
@@ -900,7 +836,6 @@ static AGViewController * g_instance = nil;
         
         _camera = _camera + (pos - pos_1);
         
-        [self clearLinePoints];
         _touchHandler = nil;
 //        _camera.z += (dist - dist_1)*0.005;
     }

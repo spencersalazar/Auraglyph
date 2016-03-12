@@ -72,9 +72,6 @@
     _currentTrace = LTKTrace();
     _currentTraceSum = GLvertex3f();
     
-    [_viewController clearLinePoints];
-    //    [_viewController addLinePoint:pos];
-    
     _trace = new AGUITrace;
     _trace->addPoint(pos);
     [_viewController addTopLevelObject:_trace];
@@ -85,7 +82,6 @@
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    //    [_viewController addLinePoint:pos];
     _trace->addPoint(pos);
     
     _currentTraceSum = _currentTraceSum + GLvertex3f(p.x, p.y, 0);
@@ -111,7 +107,6 @@
     {
         AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::audioNodeSelector(centroidMVP);
         _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
-        [_viewController clearLinePoints];
     }
     else if(figure == AG_FIGURE_SQUARE)
     {
@@ -119,7 +114,6 @@
         _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
         //        AGControlNode * node = new AGControlTimerNode(centroidMVP);
         //        [_viewController addNode:node];
-        [_viewController clearLinePoints];
     }
     else if(figure == AG_FIGURE_TRIANGLE_DOWN)
     {
@@ -128,13 +122,11 @@
         //        [_viewController clearLinePoints];
         AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::inputNodeSelector(centroidMVP);
         _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
-        [_viewController clearLinePoints];
     }
     else if(figure == AG_FIGURE_TRIANGLE_UP)
     {
         AGOutputNode * node = new AGOutputNode(centroidMVP);
         [_viewController addNode:node];
-        [_viewController clearLinePoints];
     }
     else
     {
@@ -660,9 +652,6 @@ private:
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    [_viewController clearLinePoints];
-    //[_viewController addLinePoint:pos];
-    
     _proto = new AGProtoConnection(pos, pos);
     [_viewController addTopLevelObject:_proto];
     
@@ -691,7 +680,6 @@ private:
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    //[_viewController addLinePoint:pos];
     _proto->destPoint() = pos;
     
     AGNode *hitNode;
@@ -882,8 +870,6 @@ private:
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     if(_done) return;
-    
-    [_viewController clearLinePoints];
     
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];

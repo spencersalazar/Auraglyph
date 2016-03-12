@@ -33,9 +33,6 @@ class AGInteractiveObject;
 - (void)addFreeDraw:(AGFreeDraw *)freedraw;
 - (void)removeFreeDraw:(AGFreeDraw *)freedraw;
 
-- (void)addLinePoint:(GLvertex3f)point;
-- (void)clearLinePoints;
-
 - (GLKMatrix4)modelViewMatrix;
 - (GLKMatrix4)fixedModelViewMatrix;
 - (GLKMatrix4)projectionMatrix;
