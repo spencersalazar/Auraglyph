@@ -195,6 +195,11 @@ void AGNode::addOutbound(AGConnection *connection)
 
 void AGNode::removeInbound(AGConnection *connection)
 {
+    // clear m_controlPortBuffer for this connection since it may point to an
+    // AGControl that will continue to be updated
+    // TODO: consider making m_controlPortBuffer single-indirection array
+    // requiring a copy on each push, but making this awkward step unnecessary
+    m_controlPortBuffer[connection->dstPort()] = NULL;
     m_inbound.remove(connection);
 }
 
