@@ -67,6 +67,8 @@ struct AGRenderInfoVC : public AGRenderInfo
 
 struct AGRenderState
 {
+    AGRenderState() : alpha(1) { }
+    
     GLKMatrix4 projection;
     GLKMatrix4 modelview;
     GLKMatrix3 normal;
