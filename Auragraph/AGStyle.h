@@ -30,6 +30,8 @@ public:
     static const float open_squeezeHeight;
     static const float open_animTimeX;
     static const float open_animTimeY;
+    
+    static const GLvertex2f editor_titleInset;
 };
 
 

@@ -14,8 +14,8 @@
 		090354F51A325CCD00F68107 /* Microgramma.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 090354F41A325CCD00F68107 /* Microgramma.ttf */; };
 		090354F71A329EAA00F68107 /* bankgthd.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 090354F61A329EAA00F68107 /* bankgthd.ttf */; };
 		091081801A0B63DB0063028B /* AGStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0910817E1A0B63DB0063028B /* AGStyle.mm */; };
-		0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */; };
 		091C70CC1C48A9A600B513C2 /* AGUINodeEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */; };
+		0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */; };
 		093395671A00FABC009E4802 /* Endzone Tech.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 093395661A00FABC009E4802 /* Endzone Tech.ttf */; };
 		093395691A019D43009E4802 /* Orbitron-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 093395681A019D43009E4802 /* Orbitron-Regular.ttf */; };
 		0933956B1A019E4F009E4802 /* Orbitron-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */; };
@@ -91,6 +91,7 @@
 		099AF12A17D1A6DA000BAB7B /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 099AF12517D1A6DA000BAB7B /* SSZipArchive.m */; };
 		099AF12C17D1A6EE000BAB7B /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 099AF12B17D1A6EE000BAB7B /* libz.dylib */; };
 		099AF12E17D1A892000BAB7B /* projects.zip in Resources */ = {isa = PBXBuildFile; fileRef = 099AF12D17D1A892000BAB7B /* projects.zip */; };
+		09BE8B9B1C952386002097F0 /* AGControlSequencerNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09BE8B991C952386002097F0 /* AGControlSequencerNode.mm */; };
 		09C7C3E618CF2B8E0099CE88 /* Waveform.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 09C7C3E318CF27AC0099CE88 /* Waveform.vsh */; };
 		09C7C3E718CF2B8E0099CE88 /* Waveform.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 09C7C3E218CF27AC0099CE88 /* Waveform.fsh */; };
 		09D8C3FF1A0A4DF2008D788A /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 09D8C3FE1A0A4DF2008D788A /* OFL.txt */; };
@@ -115,10 +116,10 @@
 		09077FD117C0BFFA00DFE42F /* AGDef.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGDef.h; sourceTree = "<group>"; };
 		0910817E1A0B63DB0063028B /* AGStyle.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGStyle.mm; sourceTree = "<group>"; };
 		0910817F1A0B63DB0063028B /* AGStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGStyle.h; sourceTree = "<group>"; };
-		0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGInputNode.mm; sourceTree = "<group>"; };
-		0927D7DF1ADCE4E000AD8AE5 /* AGInputNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGInputNode.h; sourceTree = "<group>"; };
 		091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGUINodeEditor.mm; sourceTree = "<group>"; };
 		091C70CB1C48A9A600B513C2 /* AGUINodeEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGUINodeEditor.h; sourceTree = "<group>"; };
+		0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGInputNode.mm; sourceTree = "<group>"; };
+		0927D7DF1ADCE4E000AD8AE5 /* AGInputNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGInputNode.h; sourceTree = "<group>"; };
 		093395661A00FABC009E4802 /* Endzone Tech.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Endzone Tech.ttf"; sourceTree = "<group>"; };
 		093395681A019D43009E4802 /* Orbitron-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Orbitron-Regular.ttf"; sourceTree = "<group>"; };
 		0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Orbitron-Medium.ttf"; sourceTree = "<group>"; };
@@ -285,6 +286,8 @@
 		099AF12B17D1A6EE000BAB7B /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		099AF12D17D1A892000BAB7B /* projects.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = projects.zip; sourceTree = "<group>"; };
 		09A8BB4019F9E39E00E15BF7 /* spMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spMath.h; sourceTree = "<group>"; };
+		09BE8B991C952386002097F0 /* AGControlSequencerNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGControlSequencerNode.mm; sourceTree = "<group>"; };
+		09BE8B9A1C952386002097F0 /* AGControlSequencerNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGControlSequencerNode.h; sourceTree = "<group>"; };
 		09C7C3E218CF27AC0099CE88 /* Waveform.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Waveform.fsh; path = Shaders/Waveform.fsh; sourceTree = "<group>"; };
 		09C7C3E318CF27AC0099CE88 /* Waveform.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Waveform.vsh; path = Shaders/Waveform.vsh; sourceTree = "<group>"; };
 		09D8C3FE1A0A4DF2008D788A /* OFL.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
@@ -396,16 +399,7 @@
 				0987409A17B98D7C0098511A /* AGNode.mm */,
 				09FC924A1A153A83005D14A3 /* AGConnection.h */,
 				09FC92491A153A83005D14A3 /* AGConnection.mm */,
-				098740AC17BC377E0098511A /* AGAudioNode.h */,
-				098740AB17BC377E0098511A /* AGAudioNode.mm */,
-				093395731A088849009E4802 /* AGControlNode.h */,
-				093395721A088849009E4802 /* AGControlNode.mm */,
-				0927D7DF1ADCE4E000AD8AE5 /* AGInputNode.h */,
-				0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */,
-				0933956D1A08799A009E4802 /* AGFormulaNode.h */,
-				0933956C1A08799A009E4802 /* AGFormulaNode.mm */,
-				093395701A088612009E4802 /* AGArrayNode.h */,
-				0933956F1A088612009E4802 /* AGArrayNode.mm */,
+				09BE8B981C952354002097F0 /* Nodes */,
 				098740B217BC61410098511A /* AGUserInterface.h */,
 				098740B117BC61410098511A /* AGUserInterface.mm */,
 				093395761A08BFAC009E4802 /* AGNodeSelector.h */,
@@ -629,6 +623,25 @@
 			path = minizip;
 			sourceTree = "<group>";
 		};
+		09BE8B981C952354002097F0 /* Nodes */ = {
+			isa = PBXGroup;
+			children = (
+				098740AC17BC377E0098511A /* AGAudioNode.h */,
+				098740AB17BC377E0098511A /* AGAudioNode.mm */,
+				093395731A088849009E4802 /* AGControlNode.h */,
+				093395721A088849009E4802 /* AGControlNode.mm */,
+				0927D7DF1ADCE4E000AD8AE5 /* AGInputNode.h */,
+				0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */,
+				0933956D1A08799A009E4802 /* AGFormulaNode.h */,
+				0933956C1A08799A009E4802 /* AGFormulaNode.mm */,
+				093395701A088612009E4802 /* AGArrayNode.h */,
+				0933956F1A088612009E4802 /* AGArrayNode.mm */,
+				09BE8B9A1C952386002097F0 /* AGControlSequencerNode.h */,
+				09BE8B991C952386002097F0 /* AGControlSequencerNode.mm */,
+			);
+			name = Nodes;
+			sourceTree = "<group>";
+		};
 		09E5EC8318A5A84C00B21D97 /* stk */ = {
 			isa = PBXGroup;
 			children = (
@@ -755,6 +768,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				091C70CC1C48A9A600B513C2 /* AGUINodeEditor.mm in Sources */,
+				09BE8B9B1C952386002097F0 /* AGControlSequencerNode.mm in Sources */,
 				095D12D417ACA36C0048A012 /* main.m in Sources */,
 				0933956E1A08799A009E4802 /* AGFormulaNode.mm in Sources */,
 				0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */,

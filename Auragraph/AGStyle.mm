@@ -11,6 +11,7 @@
 const float AGStyle::open_squeezeHeight = 0.00125;
 const float AGStyle::open_animTimeX = 0.4;
 const float AGStyle::open_animTimeY = 0.15;
+const GLvertex2f AGStyle::editor_titleInset = GLvertex2f(0.002, 0.008);
 
 const string &AGStyle::standardFontPath()
 {
