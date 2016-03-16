@@ -39,6 +39,9 @@ public:
     int numSequences();
     int numSteps();
     
+    void setStepValue(int seq, int step, float value);
+    float getStepValue(int seq, int step);
+    
 private:
     static AGNodeInfo *s_nodeInfo;
     
