@@ -1248,6 +1248,8 @@ void AGFreeDraw::touchUp(const GLvertex3f &t)
 
 AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
 {
+    return NULL;
+    
     if(!m_active)
         return NULL;
     
