@@ -133,9 +133,9 @@ public:
         
         GLKMatrix4 posMV = GLKMatrix4Translate(m_renderState.modelview,
                                                -m_width/2+AGUISequencerEditor_stepSize*0.75f+AGUISequencerEditor_stepSize*step,
-                                               m_height/2-AGUISequencerEditor_stepSize*1.375f-AGUISequencerEditor_stepSize*numSeq/4.0f,
+                                               m_height/2-AGUISequencerEditor_stepSize*1.375f-AGUISequencerEditor_stepSize*(numSeq-1)/2.0f,
                                                0);
-        posMV = GLKMatrix4Scale(posMV, 1, m_node->numSequences(), 1);
+        posMV = GLKMatrix4Scale(posMV, 1, numSeq, 1);
         
         counterInfo.shader->useProgram();
         counterInfo.shader->setMVPMatrix(GLKMatrix4Multiply(m_renderState.projection, posMV));
@@ -379,6 +379,10 @@ AGControlNode(pos, s_nodeInfo)
     m_numSteps = 8;
     // add default sequence
     m_sequence.push_back(std::vector<float>(m_numSteps, 0));
+//    m_sequence.push_back(std::vector<float>(m_numSteps, 0));
+    for(auto i = m_sequence.begin(); i != m_sequence.end(); i++)
+        for(auto j = i->begin(); j != i->end(); j++)
+            *j = Random::unit();
     m_control.v = 0;
     
     m_timer = new AGTimer(60.0/m_bpm, ^(AGTimer *) {
