@@ -164,15 +164,18 @@ public:
     AGInteractiveObject();
     virtual ~AGInteractiveObject();
     
+    // DEPRECATED
     virtual void touchDown(const GLvertex3f &t);
     virtual void touchMove(const GLvertex3f &t);
     virtual void touchUp(const GLvertex3f &t);
     
     // new version
+    // subclasses generally should override these
     virtual void touchDown(const AGTouchInfo &t);
     virtual void touchMove(const AGTouchInfo &t);
     virtual void touchUp(const AGTouchInfo &t);
     
+    // default implementation checks if touch is within this->effectiveBounds()
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
     
     virtual AGInteractiveObject *userInterface() { return NULL; }

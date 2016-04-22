@@ -25,6 +25,7 @@
 #import "AGAboutBox.h"
 #import "AGDocument.h"
 #import "GeoGenerator.h"
+#import "AGSlider.h"
 #import "spstl.h"
 
 #import <list>
@@ -329,6 +330,12 @@ static AGViewController * g_instance = nil;
     
     /* trash */
     AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
+    
+    GLvertex3f vert = [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)];
+    
+    // test slider
+    AGSlider *testSlider = new AGSlider(vert, 1.2);
+    _objects.push_back(testSlider);
 }
 
 - (void)dealloc
@@ -748,6 +755,7 @@ static AGViewController * g_instance = nil;
     {
         if(_touchHandler == nil)
         {
+            UITouch *touch = [touches anyObject];
             CGPoint p = [[touches anyObject] locationInView:self.view];
             GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
             
@@ -780,7 +788,7 @@ static AGViewController * g_instance = nil;
                     if(hit)
                     {
                         _touchCapture = hit;
-                        _touchCapture->touchDown(pos);
+                        _touchCapture->touchDown(AGTouchInfo(pos, p, (TouchID) touch));
                     }
                     else
                     {
@@ -810,7 +818,13 @@ static AGViewController * g_instance = nil;
     if([touches count] == 1)
     {
         if(_touchCapture)
-            _touchCapture->touchMove([self worldCoordinateForScreenCoordinate:[[touches anyObject] locationInView:self.view]]);
+        {
+            UITouch *touch = [touches anyObject];
+            CGPoint p = [touch locationInView:self.view];
+            GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
+            
+            _touchCapture->touchMove(AGTouchInfo(pos, p, (TouchID) touch));
+        }
         else
             [_touchHandler touchesMoved:touches withEvent:event];
     }
@@ -847,7 +861,11 @@ static AGViewController * g_instance = nil;
     {
         if(_touchCapture)
         {
-            _touchCapture->touchUp([self worldCoordinateForScreenCoordinate:[[touches anyObject] locationInView:self.view]]);
+            UITouch *touch = [touches anyObject];
+            CGPoint p = [touch locationInView:self.view];
+            GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
+            
+            _touchCapture->touchUp(AGTouchInfo(pos, p, (TouchID) touch));
             _touchCapture = NULL;
         }
         else
