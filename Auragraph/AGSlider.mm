@@ -51,19 +51,49 @@ void AGSlider::touchDown(const AGTouchInfo &t)
     
     m_firstFinger = t;
     m_lastPosition = t;
-    m_startValue = m_value;
+    m_ytravel = 0;
 }
 
 void AGSlider::touchMove(const AGTouchInfo &t)
 {
     NSLog(@"touchMove %f %f", t.screenPosition.x, t.screenPosition.y);
     
-    float ytravel = m_firstFinger.screenPosition.y - t.screenPosition.y;
+    m_ytravel += m_lastPosition.screenPosition.y - t.screenPosition.y;
     
-    _updateValue(m_startValue * powf(10.0f, (ytravel/100.0f) ));
+    float travelFactor = 0.0;
+    if(m_scale == LINEAR)
+        travelFactor = 12;
+    else if(m_scale == EXPONENTIAL)
+        travelFactor = 4;
+    
+    float amount = floorf(m_ytravel/travelFactor);
+    m_ytravel = fmodf(m_ytravel, travelFactor);
+    
+    double inc;
+    
+    if(m_scale == EXPONENTIAL)
+    {
+        float log = log10f(m_value)-0.1;
+        int oom = (int)floorf(log);
+        inc = powf(10, oom-1);
+        
+        if(m_type == DISCRETE)
+            inc = std::max(1.0, inc);
+    }
+    else
+    {
+        inc = 1;
+    }
+    
+//    fprintf(stderr, "log %f oom %i inc %f ", log, oom, inc);
+//    fprintf(stderr, "ytravel %f ", m_ytravel);
+    
+//    fprintf(stderr, "amount %f m_ytravel' %f\n", amount, m_ytravel);
+    
+    _updateValue(m_value + amount*inc);
     
     // linear
-    // _updateValue(m_startValue + (int)(ytravel/5.0f));
+    // _updateValue(m_value + amount);
     
     m_lastPosition = t;
 }
@@ -95,7 +125,10 @@ void AGSlider::_updateValue(float value)
     m_value = value;
     
     m_valueStream = std::stringstream();
-    m_valueStream << m_value;
+    if(m_type == CONTINUOUS)
+        m_valueStream << m_value;
+    else
+        m_valueStream << (int) m_value;
     
     m_size.x = text->width(m_valueStream.str());
     m_size.y = text->height();

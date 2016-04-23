@@ -33,16 +33,39 @@ public:
     float value() { return m_value; }
     void setValue(float value) { m_value = value; }
 
+    enum Scale
+    {
+        LINEAR,
+        EXPONENTIAL
+    };
+    
+    Scale scale() { return m_scale; }
+    void setScale(Scale scale) { m_scale = scale; }
+    
+    enum Type
+    {
+        DISCRETE,
+        CONTINUOUS
+    };
+    
+    Type type() { return m_type; }
+    void setType(Type type) { m_type = type; }
+    
+    void onUpdate(void (^update)(float value));
+    
 private:
     
     void _updateValue(float value);
     
     GLvertex3f m_position;
     GLvertex2f m_size;
-    float m_value = 0;
-    float m_startValue = 0;
+    
+    double m_value = 0;
+    Scale m_scale = LINEAR;
+    Type m_type = DISCRETE;
     
     std::stringstream m_valueStream;
+    float m_ytravel = 0;
     
     int m_numTouches = 0;
     AGTouchInfo m_firstFinger;
