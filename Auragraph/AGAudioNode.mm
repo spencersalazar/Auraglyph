@@ -13,6 +13,7 @@
 #import "AGGenericShader.h"
 #import "ADSR.h"
 #import "spstl.h"
+#import "FreeVerb.h"
 
 
 template<class NodeClass>
@@ -1092,6 +1093,48 @@ AGAudioNode *AGAudioFilterNode::createBandPass(const GLvertex3f &pos)
 {
     return new AGAudioFilterNode(pos, new Butter2BPF(sampleRate()), s_bandPassNodeInfo);
 }
+
+//------------------------------------------------------------------------------
+// ### AGAudioADSRNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioReverbNode
+
+class AGAudioReverbNode : public AGAudioNode
+{
+public:
+  static void initialize();
+  
+  AGAudioReverbNode(GLvertex3f pos);
+  AGAudioReverbNode(const AGDocument::Node &docNode);
+  
+  virtual int numOutputPorts() const { return 1; }
+  
+  virtual void setEditPortValue(int port, float value);
+  virtual void getEditPortValue(int port, float &value) const;
+  
+  virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
+  virtual void receiveControl(int port, AGControl *control);
+  
+  static void renderIcon();
+  static AGAudioNode *create(const GLvertex3f &pos);
+  
+private:
+  float m_prevTrigger;
+  
+  float m_attack, m_decay, m_sustain, m_release;
+  stk::FreeVerb m_freeverb;
+  
+private:
+  static AGNodeInfo *s_audioNodeInfo;
+};
+
+void AGAudioReverbNode::initialize() {
+  s_audioNodeInfo = new AGNodeInfo;
+  s_audioNodeInfo->type = "Reverb";
+  
+  s_audioNodeInfo;
+}
+
 
 
 //------------------------------------------------------------------------------
