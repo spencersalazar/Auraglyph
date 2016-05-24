@@ -1095,7 +1095,7 @@ AGAudioNode *AGAudioFilterNode::createBandPass(const GLvertex3f &pos)
 }
 
 //------------------------------------------------------------------------------
-// ### AGAudioADSRNode ###
+// ### AGAudioReverbNode ###
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioReverbNode
 
@@ -1108,33 +1108,83 @@ public:
   AGAudioReverbNode(const AGDocument::Node &docNode);
   
   virtual int numOutputPorts() const { return 1; }
-  
-  virtual void setEditPortValue(int port, float value);
-  virtual void getEditPortValue(int port, float &value) const;
+  virtual int numInputPorts() const { return 1; }
   
   virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
-  virtual void receiveControl(int port, AGControl *control);
+  virtual void receiveControl(int port, AGControl *control) {}
   
   static void renderIcon();
   static AGAudioNode *create(const GLvertex3f &pos);
   
 private:
-  float m_prevTrigger;
-  
-  float m_attack, m_decay, m_sustain, m_release;
   stk::FreeVerb m_freeverb;
-  
-private:
   static AGNodeInfo *s_audioNodeInfo;
 };
 
-void AGAudioReverbNode::initialize() {
-  s_audioNodeInfo = new AGNodeInfo;
-  s_audioNodeInfo->type = "Reverb";
+void AGAudioReverbNode::initialize()
+{
+    s_audioNodeInfo = new AGNodeInfo;
+    s_audioNodeInfo->type = "Reverb";
   
-  s_audioNodeInfo;
+    // generate geometry
+    s_audioNodeInfo->iconGeoSize = 5;
+    GLvertex3f * iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
+    s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
+    float radius_x = 0.005;
+    float radius_y = radius_x * 0.66;
+    
+    // ADSR shape
+    iconGeo[0] = GLvertex3f(-radius_x, -radius_y, 0);
+    iconGeo[1] = GLvertex3f(-radius_x*0.75, radius_y, 0);
+    iconGeo[2] = GLvertex3f(-radius_x*0.25, 0, 0);
+    iconGeo[3] = GLvertex3f(radius_x*0.66, 0, 0);
+    iconGeo[4] = GLvertex3f(radius_x, -radius_y, 0);
+    
+    s_audioNodeInfo->iconGeo = iconGeo;
+    
+    s_audioNodeInfo->inputPortInfo.push_back({ "input", true, false });
 }
 
+AGAudioReverbNode::AGAudioReverbNode(GLvertex3f p) : AGAudioNode(p, s_audioNodeInfo)
+{
+    allocatePortBuffers();
+}
+
+AGAudioReverbNode::AGAudioReverbNode(const AGDocument::Node &docNode) : AGAudioNode(docNode, s_audioNodeInfo)
+{
+    loadEditPortValues(docNode);
+    allocatePortBuffers();
+}
+
+void AGAudioReverbNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
+{
+    if(t <= m_lastTime) { renderLast(output, nFrames); }
+    pullInputPorts(t, nFrames);
+  
+    for (int i = 0; i < nFrames; i++)
+    {
+        output[i] = m_freeverb.tick(m_inputPortBuffer[0][i]);
+    }
+  
+    m_lastTime = t;
+}
+
+void AGAudioReverbNode::renderIcon()
+{
+    // render icon
+    glBindVertexArrayOES(0);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_audioNodeInfo->iconGeo);
+    
+    glLineWidth(2.0);
+    glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
+}
+
+AGAudioNode *AGAudioReverbNode::create(const GLvertex3f &pos)
+{
+    return new AGAudioReverbNode(pos);
+}
+
+AGNodeInfo *AGAudioReverbNode::s_audioNodeInfo = NULL;
 
 
 //------------------------------------------------------------------------------
@@ -1201,6 +1251,11 @@ AGAudioNodeManager::AGAudioNodeManager()
                                                  AGAudioOutputNode::renderIcon,
                                                  createAudioNode<AGAudioOutputNode>,
                                                  createAudioNode<AGAudioOutputNode>));
+    m_audioNodeTypes.push_back(new AudioNodeType("Reverb",
+                                                 AGAudioReverbNode::initialize,
+                                                 AGAudioReverbNode::renderIcon,
+                                                 createAudioNode<AGAudioReverbNode>,
+                                                 NULL));
     
     // initialize audio nodes
     for(std::vector<AGAudioNodeManager::AudioNodeType *>::const_iterator type = m_audioNodeTypes.begin(); type != m_audioNodeTypes.end(); type++)
