@@ -1163,7 +1163,8 @@ void AGAudioReverbNode::renderAudio(sampletime t, float *input, float *output, i
   
     for (int i = 0; i < nFrames; i++)
     {
-        output[i] = m_freeverb.tick(m_inputPortBuffer[0][i]);
+        m_outputBuffer[i] = m_freeverb.tick(m_inputPortBuffer[0][i]);
+        output[i] = m_outputBuffer[i];
     }
   
     m_lastTime = t;
