@@ -1256,7 +1256,7 @@ AGAudioNodeManager::AGAudioNodeManager()
                                                  AGAudioReverbNode::initialize,
                                                  AGAudioReverbNode::renderIcon,
                                                  createAudioNode<AGAudioReverbNode>,
-                                                 NULL));
+                                                 createAudioNode<AGAudioReverbNode>));
     
     // initialize audio nodes
     for(std::vector<AGAudioNodeManager::AudioNodeType *>::const_iterator type = m_audioNodeTypes.begin(); type != m_audioNodeTypes.end(); type++)
