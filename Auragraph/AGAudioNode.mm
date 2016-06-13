@@ -1108,7 +1108,10 @@ public:
   AGAudioReverbNode(const AGDocument::Node &docNode);
   
   virtual int numOutputPorts() const { return 1; }
-  virtual int numInputPorts() const { return 1; }
+  virtual int numInputPorts() const { return s_audioNodeInfo->inputPortInfo.size(); }
+  
+  virtual void setEditPortValue(int port, float value);
+  virtual void getEditPortValue(int port, float &value) const;
   
   virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
   virtual void receiveControl(int port, AGControl *control) {}
@@ -1118,6 +1121,7 @@ public:
   
 private:
   stk::FreeVerb m_freeverb;
+  float m_decay;
   static AGNodeInfo *s_audioNodeInfo;
 };
 
@@ -1141,11 +1145,40 @@ void AGAudioReverbNode::initialize()
     iconGeo[4] = GLvertex3f(radius_x, -radius_y, 0);
     
     s_audioNodeInfo->iconGeo = iconGeo;
-    
+  
     s_audioNodeInfo->inputPortInfo.push_back({ "input", true, false });
+    s_audioNodeInfo->inputPortInfo.push_back({ "decay", true, false });
+  
+    s_audioNodeInfo->editPortInfo.push_back({ "decay", false, true });
 }
 
-AGAudioReverbNode::AGAudioReverbNode(GLvertex3f p) : AGAudioNode(p, s_audioNodeInfo)
+void AGAudioReverbNode::setEditPortValue(int port, float value)
+{
+  switch (port) {
+    case 0:
+      if (value >= 0.0 && value <= 1.0) {
+          m_decay = value;
+      }
+      break;
+      
+    default:
+      break;
+  }
+}
+
+void AGAudioReverbNode::getEditPortValue(int port, float &value) const
+{
+  switch (port) {
+    case 0:
+      value = m_decay;
+      break;
+      
+    default:
+      break;
+  }
+}
+
+AGAudioReverbNode::AGAudioReverbNode(GLvertex3f p) : AGAudioNode(p, s_audioNodeInfo), m_decay(0.5)
 {
     allocatePortBuffers();
 }
@@ -1160,6 +1193,7 @@ void AGAudioReverbNode::renderAudio(sampletime t, float *input, float *output, i
 {
     if(t <= m_lastTime) { renderLast(output, nFrames); }
     pullInputPorts(t, nFrames);
+    m_freeverb.setDamping(m_decay);
   
     for (int i = 0; i < nFrames; i++)
     {
