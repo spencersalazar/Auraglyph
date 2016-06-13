@@ -41,7 +41,7 @@ void AGSlider::render()
     GLKMatrix4 valueMV = modelView;
     valueMV = GLKMatrix4Translate(valueMV, position().x, position().y, position().z);
     valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
-    valueMV = GLKMatrix4Translate(valueMV, -m_size.x/2.0f, -m_size.y/2, 0);
+//    valueMV = GLKMatrix4Translate(valueMV, -m_size.x/2.0f, -m_size.y/2, 0);
     text->render(m_valueStream.str(), valueColor, valueMV, proj);
 }
 
