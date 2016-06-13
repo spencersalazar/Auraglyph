@@ -11,6 +11,7 @@
 #import "AGStyle.h"
 #import "AGGenericShader.h"
 #import "AGHandwritingRecognizer.h"
+#import "AGSlider.h"
 
 #import "TexFont.h"
 
@@ -105,6 +106,26 @@ m_lastTraceWasRecognized(true)
     
     m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
     m_yScale = lincurvef(AGStyle::open_animTimeY, AGStyle::open_squeezeHeight, 1);
+    
+    int numEditPorts = m_node->numEditPorts();
+    float rowCount = NODEEDITOR_ROWCOUNT;
+    for(int i = 0; i < numEditPorts; i++)
+    {
+        float v;
+        m_node->getEditPortValue(i, v);
+        
+        float y = s_radius - s_radius*2.0*(i+2)/rowCount;
+        
+        AGSlider *slider = new AGSlider(position()+GLvertex3f(s_radius*0.1, y + s_radius/rowCount*0.1, 0), v);
+        slider->setType(AGSlider::CONTINUOUS);
+        slider->setScale(AGSlider::EXPONENTIAL);
+        m_editSliders.push_back(slider);
+    }
+}
+
+GLvertex3f AGUIStandardNodeEditor::position()
+{
+    return m_node->position();
 }
 
 void AGUIStandardNodeEditor::update(float t, float dt)
@@ -112,7 +133,7 @@ void AGUIStandardNodeEditor::update(float t, float dt)
     m_modelView = AGNode::globalModelViewMatrix();
     GLKMatrix4 projection = AGNode::projectionMatrix();
     
-    m_modelView = GLKMatrix4Translate(m_modelView, m_node->position().x, m_node->position().y, m_node->position().z);
+    m_modelView = GLKMatrix4Translate(m_modelView, position().x, position().y, position().z);
     
     //    float squeezeHeight = AGStyle::open_squeezeHeight;
     //    float animTimeX = AGStyle::open_animTimeX;
@@ -136,6 +157,9 @@ void AGUIStandardNodeEditor::update(float t, float dt)
     m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, m_modelView);
     
     m_currentDrawlineAlpha.update(dt);
+    
+    for(auto slider : m_editSliders)
+        slider->update(t, dt);
     
     m_t += dt;
 }
@@ -234,15 +258,17 @@ void AGUIStandardNodeEditor::render()
         nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
         text->render(m_node->editPortInfo(i).name, nameColor, nameMV, proj);
         
-        GLKMatrix4 valueMV = GLKMatrix4Translate(m_modelView, s_radius*0.1, y + s_radius/rowCount*0.1, 0);
-        valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
-        std::stringstream ss;
-        float v = 0;
-        m_node->getEditPortValue(i, v);
-        ss << v;
-        text->render(ss.str(), valueColor, valueMV, proj);
+//        GLKMatrix4 valueMV = GLKMatrix4Translate(m_modelView, s_radius*0.1, y + s_radius/rowCount*0.1, 0);
+//        valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
+//        std::stringstream ss;
+//        float v = 0;
+//        m_node->getEditPortValue(i, v);
+//        ss << v;
+//        text->render(ss.str(), valueColor, valueMV, proj);
     }
     
+    for(auto slider : m_editSliders)
+        slider->render();
     
     /* draw item editor */
     
@@ -370,7 +396,20 @@ void AGUIStandardNodeEditor::render()
 }
 
 
-int AGUIStandardNodeEditor::hitTest(const GLvertex3f &t, bool *inBbox)
+AGInteractiveObject *AGUIStandardNodeEditor::hitTest(const GLvertex3f &t)
+{
+    for(auto slider : m_editSliders)
+    {
+        AGInteractiveObject *obj = slider->hitTest(t);
+        if(obj != NULL)
+            return obj;
+    }
+    
+    return AGInteractiveObject::hitTest(t);
+}
+
+
+int AGUIStandardNodeEditor::hitTestX(const GLvertex3f &t, bool *inBbox)
 {
     float rowCount = NODEEDITOR_ROWCOUNT;
     
@@ -446,7 +485,7 @@ void AGUIStandardNodeEditor::touchDown(const GLvertex3f &t, const CGPoint &scree
         bool inBBox = false;
         
         // check if in entire bounds
-        m_hit = hitTest(t, &inBBox);
+        m_hit = hitTestX(t, &inBBox);
         
         m_doneEditing = !inBBox;
     }
@@ -458,7 +497,7 @@ void AGUIStandardNodeEditor::touchDown(const GLvertex3f &t, const CGPoint &scree
         m_startedInDiscard = false;
         
         bool inBBox = false;
-        int hit = hitTest(t, &inBBox);
+        int hit = hitTestX(t, &inBBox);
         
         if(hit == 0)
         {
@@ -494,7 +533,7 @@ void AGUIStandardNodeEditor::touchMove(const GLvertex3f &t, const CGPoint &scree
         if(m_editingPort >= 0)
         {
             bool inBBox = false;
-            int hit = hitTest(t, &inBBox);
+            int hit = hitTestX(t, &inBBox);
             
             m_hitAccept = false;
             m_hitDiscard = false;
@@ -519,7 +558,7 @@ void AGUIStandardNodeEditor::touchMove(const GLvertex3f &t, const CGPoint &scree
         else
         {
             bool inBBox = false;
-            m_hit = hitTest(t, &inBBox);
+            m_hit = hitTestX(t, &inBBox);
         }
     }
 }
@@ -607,7 +646,7 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
         else
         {
             bool inBBox = false;
-            m_hit = hitTest(t, &inBBox);
+            m_hit = hitTestX(t, &inBBox);
             
             if(m_hit >= 0)
             {

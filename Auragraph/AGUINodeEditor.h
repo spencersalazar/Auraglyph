@@ -23,6 +23,7 @@
 
 
 class AGNode;
+class AGSlider;
 
 
 /*------------------------------------------------------------------------------
@@ -58,8 +59,12 @@ public:
     virtual void touchMove(const AGTouchInfo &t);
     virtual void touchUp(const AGTouchInfo &t);
     
+    virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
+
     virtual bool doneEditing() { return m_doneEditing; }
     bool shouldRenderDrawline() { return false; }
+    
+    virtual GLvertex3f position();
     
     void renderOut();
     bool finishedRenderingOut();
@@ -91,6 +96,8 @@ private:
     lincurvef m_xScale;
     lincurvef m_yScale;
     
+    std::vector<AGSlider *> m_editSliders;
+    
     int m_hit;
     int m_editingPort;
     
@@ -114,7 +121,7 @@ private:
     
     float m_t;
     
-    int hitTest(const GLvertex3f &t, bool *inBbox);
+    int hitTestX(const GLvertex3f &t, bool *inBbox);
 };
 
 
