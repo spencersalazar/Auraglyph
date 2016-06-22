@@ -97,6 +97,102 @@ AGAudioNode *AGAudioOutputNode::create(const GLvertex3f &pos)
     return new AGAudioOutputNode(pos);
 }
 
+//------------------------------------------------------------------------------
+// ### AGAudioGainNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioGainNode
+class AGAudioGainNode : public AGAudioNode
+{
+public:
+    static void initialize();
+    
+    AGAudioGainNode(GLvertex3f pos);
+    AGAudioGainNode(const AGDocument::Node &docNode);
+    
+//    virtual int numOutputPorts() const { return 1; }
+    virtual int numInputPorts() const { return s_audioNodeInfo->inputPortInfo.size(); }
+//    virtual void setEditPort(int port, float value);
+//    virtual void getEditPortValue(int port, float &value) const;
+    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
+    
+    static void renderIcon();
+    static AGAudioNode *create(const GLvertex3f &pos);
+private:
+//    float m_gain;
+    
+    static AGNodeInfo *s_audioNodeInfo;
+};
+
+AGNodeInfo *AGAudioGainNode::s_audioNodeInfo = nullptr;
+
+void AGAudioGainNode::initialize()
+{
+    s_audioNodeInfo = new AGNodeInfo;
+    s_audioNodeInfo->type = "Gain";
+    
+    s_audioNodeInfo->iconGeoSize = 8;
+    GLvertex3f *iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
+    s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
+    float radius = 0.005;
+    
+    // speaker icon
+    iconGeo[0] = GLvertex3f(-radius*0.5*0.16, radius*0.5, 0);
+    iconGeo[1] = GLvertex3f(-radius*0.5, radius*0.5, 0);
+    iconGeo[2] = GLvertex3f(-radius*0.5, -radius*0.5, 0);
+    iconGeo[3] = GLvertex3f(-radius*0.5*0.16, -radius*0.5, 0);
+    iconGeo[4] = GLvertex3f(radius*0.5, -radius, 0);
+    iconGeo[5] = GLvertex3f(radius*0.5, radius, 0);
+    iconGeo[6] = GLvertex3f(-radius*0.5*0.16, radius*0.5, 0);
+    iconGeo[7] = GLvertex3f(-radius*0.5*0.16, -radius*0.5, 0);
+    
+    s_audioNodeInfo->iconGeo = iconGeo;
+    
+    s_audioNodeInfo->inputPortInfo.push_back({ "input", true, false });
+    s_audioNodeInfo->inputPortInfo.push_back({ "gain", true, false });
+}
+
+
+AGAudioGainNode::AGAudioGainNode(GLvertex3f pos) : AGAudioNode(pos, s_audioNodeInfo)
+{
+//    m_gain = 0.5;
+    allocatePortBuffers();
+}
+
+AGAudioGainNode::AGAudioGainNode(const AGDocument::Node &docNode) : AGAudioNode(docNode, s_audioNodeInfo)
+{
+//    m_gain = 0.5;
+    allocatePortBuffers();
+    loadEditPortValues(docNode);
+}
+
+void AGAudioGainNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
+{
+    if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+    pullInputPorts(t, nFrames);
+    
+    for (int i = 0; i < nFrames; i++)
+    {
+        m_outputBuffer[i] = m_inputPortBuffer[1][i] * m_inputPortBuffer[0][i];
+        output[i] += m_outputBuffer[i];
+    }
+    m_lastTime = t;
+}
+
+void AGAudioGainNode::renderIcon()
+{
+    // render icon
+//    glBindVertexArrayOES(0);
+//    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_audioNodeInfo->iconGeo);
+//    
+//    glLineWidth(2.0);
+//    glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
+}
+
+AGAudioNode* AGAudioGainNode::create(const GLvertex3f &pos)
+{
+    return new AGAudioGainNode(pos);
+}
 
 //------------------------------------------------------------------------------
 // ### AGAudioSineWaveNode ###
@@ -1153,6 +1249,11 @@ AGAudioNodeManager::AGAudioNodeManager()
                                                  AGAudioFilterNode::renderBandPassIcon,
                                                  AGAudioFilterNode::createBandPass,
                                                  NULL));
+    m_audioNodeTypes.push_back(new AudioNodeType("Gain",
+                                                 AGAudioGainNode::initialize,
+                                                 AGAudioGainNode::renderIcon,
+                                                 createAudioNode<AGAudioGainNode>,
+                                                 createAudioNode<AGAudioGainNode>));
     m_audioNodeTypes.push_back(new AudioNodeType("Output",
                                                  AGAudioOutputNode::initialize,
                                                  AGAudioOutputNode::renderIcon,
