@@ -8,6 +8,7 @@
 
 #include "AGInputNode.h"
 #include "spstl.h"
+#include "AGStyle.h"
 
 //------------------------------------------------------------------------------
 // ### AGSliderNode ###
@@ -41,8 +42,8 @@ void AGSliderNode::initialize()
         s_nodeInfo->type = "Slider";
         
         //    float radius = 0.005;
-        float radius = 0.002;
-        float height = 0.003;
+        float radius = 0.002*AGStyle::globalScale;
+        float height = 0.003*AGStyle::globalScale;
         int circleSize = 48;
         s_nodeInfo->iconGeoSize = circleSize;
         s_nodeInfo->iconGeoType = GL_LINE_LOOP;

@@ -13,6 +13,7 @@
 #import "AGAudioNode.h"
 #import "AGControlNode.h"
 #include "sputil.h"
+#include "AGStyle.h"
 
 #import "spstl.h"
 
@@ -48,9 +49,9 @@ float AGOutputNode::s_radius = 0;
 #pragma mark - AGNode
 
 bool AGNode::s_initNode = false;
-const float AGNode::s_sizeFactor = 0.01;
+const float AGNode::s_sizeFactor = 0.01*AGStyle::globalScale;
 
-float AGNode::s_portRadius = 0.01*0.2;
+float AGNode::s_portRadius = 0.01*0.2*AGStyle::globalScale;
 GLvertex3f *AGNode::s_portGeo = NULL;
 GLuint AGNode::s_portGeoSize = 0;
 GLint AGNode::s_portGeoType = 0;
@@ -397,7 +398,7 @@ void AGAudioNode::initializeAudioNode()
         // generate circle
         s_geoSize = 64;
         GLvertex3f *geo = new GLvertex3f[s_geoSize];
-        float radius = 0.01;
+        float radius = 0.01*AGStyle::globalScale;
         for(int i = 0; i < s_geoSize; i++)
         {
             float theta = 2*M_PI*((float)i)/((float)(s_geoSize));
@@ -419,8 +420,8 @@ AGNode(pos, nodeInfo)
     
     m_gain = 1;
     
-    m_radius = 0.01;
-    m_portRadius = 0.01 * 0.2;
+    m_radius = 0.01*AGStyle::globalScale;
+    m_portRadius = 0.01*0.2*AGStyle::globalScale;
     
     m_lastTime = -1;
     m_outputBuffer = new float[bufferSize()];
@@ -435,8 +436,8 @@ AGNode(docNode, nodeInfo)
     
     m_gain = 1;
     
-    m_radius = 0.01;
-    m_portRadius = 0.01 * 0.2;
+    m_radius = 0.01*AGStyle::globalScale;
+    m_portRadius = 0.01*0.2*AGStyle::globalScale;
     
     m_lastTime = -1;
     m_outputBuffer = new float[bufferSize()];
@@ -1254,7 +1255,7 @@ AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
         GLvertex2f p0 = m_points[i].xy() + pos;
         GLvertex2f p1 = m_points[i+1].xy() + pos;
         
-        if(pointOnLine(t, p0, p1, 0.0025))
+        if(pointOnLine(t, p0, p1, 0.0025*AGStyle::globalScale))
         {
             m_touchPoint0 = i;
             return this;

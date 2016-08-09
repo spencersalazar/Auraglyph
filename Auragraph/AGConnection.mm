@@ -15,6 +15,7 @@
 #include "spstl.h"
 #include "GeoGenerator.h"
 #include "sputil.h"
+#include "AGStyle.h"
 
 bool AGConnection::s_init = false;
 GLuint AGConnection::s_flareTex = 0;
@@ -84,7 +85,7 @@ m_stretchPoint(0.25, GLvertex3f()), m_controlVisScale(0.1, 0), m_uuid(makeUUID()
     
     m_break = false;
     
-    float flareSize = 0.004;
+    float flareSize = 0.004*AGStyle::globalScale;
     GeoGen::makeRect(m_flareGeo, flareSize, flareSize);
     GeoGen::makeRectUV(m_flareUV);
 }
@@ -210,9 +211,9 @@ void AGConnection::render()
         // rotate to face direction of source terminal
         modelView = GLKMatrix4Rotate(modelView, vec.xy().angle(), 0, 0, 1);
         // move a to edge of port circle
-        modelView = GLKMatrix4Translate(modelView, 0.002, 0, 0);
+        modelView = GLKMatrix4Translate(modelView, 0.002*AGStyle::globalScale, 0, 0);
         // scale [0,1] to length of connection (minus port circle radius)
-        modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004), 0.001, 1);
+        modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004*AGStyle::globalScale), 0.001, 1);
         
         waveformShader.setProjectionMatrix(projection);
         waveformShader.setModelViewMatrix(modelView);
@@ -304,9 +305,9 @@ void AGConnection::render()
         // rotate to face direction of source terminal
         modelView = GLKMatrix4Rotate(modelView, vec.xy().angle(), 0, 0, 1);
         // move a to edge of port circle
-        modelView = GLKMatrix4Translate(modelView, 0.002, 0, 0);
+        modelView = GLKMatrix4Translate(modelView, 0.002*AGStyle::globalScale, 0, 0);
         // scale x = [0,1] to length of connection (minus port circle radius)
-        modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004), 0.0025, 1);
+        modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004*AGStyle::globalScale), 0.0025, 1);
         // scale height to control activation
         modelView = GLKMatrix4Scale(modelView, 1, powf(10, -2*(1-m_controlVisScale)), 1);
 //        modelView = GLKMatrix4Scale(modelView, 1, 1, 1);
@@ -339,7 +340,7 @@ void AGConnection::touchMove(const GLvertex3f &_t)
     GLvertex2f r = GLvertex2f(m_outTerminal.x - _t.x, m_outTerminal.y - _t.y);
     GLvertex2f normal = GLvertex2f(m_inTerminal.y - m_outTerminal.y, m_outTerminal.x - m_inTerminal.x);
     
-    if(fabsf(normal.normalize().dot(r)) > 0.01)
+    if(fabsf(normal.normalize().dot(r)) > 0.01*AGStyle::globalScale)
     {
         m_break = true;
     }
@@ -376,7 +377,7 @@ AGInteractiveObject *AGConnection::hitTest(const GLvertex3f &_t)
     GLvertex2f p1 = GLvertex2f(m_inTerminal.x, m_inTerminal.y);
     GLvertex2f t = GLvertex2f(_t.x, _t.y);
     
-    if(pointOnLine(t, p0, p1, 0.005))
+    if(pointOnLine(t, p0, p1, 0.005*AGStyle::globalScale))
         return this;
     
     return NULL;

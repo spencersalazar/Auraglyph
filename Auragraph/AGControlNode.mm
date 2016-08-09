@@ -10,6 +10,7 @@
 #include "AGArrayNode.h"
 #include "AGTimer.h"
 #include "spstl.h"
+#include "AGStyle.h"
 
 //------------------------------------------------------------------------------
 // ### AGControlTimerNode ###
@@ -24,7 +25,7 @@ void AGControlTimerNode::initialize()
     
     s_nodeInfo->type = "Timer";
     
-    float radius = 0.005;
+    float radius = 0.005*AGStyle::globalScale;
     int circleSize = 48;
     s_nodeInfo->iconGeoSize = circleSize*2 + 4;
     s_nodeInfo->iconGeoType = GL_LINES;

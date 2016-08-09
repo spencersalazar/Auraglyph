@@ -13,6 +13,7 @@
 #import "AGGenericShader.h"
 #import "ADSR.h"
 #import "spstl.h"
+#include "AGStyle.h"
 
 
 template<class NodeClass>
@@ -56,7 +57,7 @@ void AGAudioOutputNode::initialize()
     s_audioNodeInfo->iconGeoSize = 8;
     GLvertex3f *iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
     s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
-    float radius = 0.005;
+    float radius = 0.005*AGStyle::globalScale;
     
     // speaker icon
     iconGeo[0] = GLvertex3f(-radius*0.5*0.16, radius*0.5, 0);
@@ -141,7 +142,7 @@ void AGAudioSineWaveNode::initialize()
     s_audioNodeInfo->iconGeoSize = 32;
     GLvertex3f *iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
     s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
-    float radius = 0.005;
+    float radius = 0.005*AGStyle::globalScale;
     for(int i = 0; i < s_audioNodeInfo->iconGeoSize; i++)
     {
         float t = ((float)i)/((float)(s_audioNodeInfo->iconGeoSize-1));
@@ -272,7 +273,7 @@ void AGAudioSquareWaveNode::initialize()
     s_audioNodeInfo->iconGeoSize = 6;
     GLvertex3f * iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
     s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
-    float radius_x = 0.005;
+    float radius_x = 0.005*AGStyle::globalScale;
     float radius_y = radius_x * 0.66;
     
     // square wave shape
@@ -410,7 +411,7 @@ void AGAudioSawtoothWaveNode::initialize()
     s_audioNodeInfo->iconGeoSize = 4;
     GLvertex3f * iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
     s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
-    float radius_x = 0.005;
+    float radius_x = 0.005*AGStyle::globalScale;
     float radius_y = radius_x * 0.66;
     
     // sawtooth wave shape
@@ -547,7 +548,7 @@ void AGAudioTriangleWaveNode::initialize()
     s_audioNodeInfo->iconGeoSize = 4;
     GLvertex3f * iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
     s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
-    float radius_x = 0.005;
+    float radius_x = 0.005*AGStyle::globalScale;
     float radius_y = radius_x * 0.66;
     
     // sawtooth wave shape
@@ -690,7 +691,7 @@ void AGAudioADSRNode::initialize()
     s_audioNodeInfo->iconGeoSize = 5;
     GLvertex3f * iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
     s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
-    float radius_x = 0.005;
+    float radius_x = 0.005*AGStyle::globalScale;
     float radius_y = radius_x * 0.66;
     
     // ADSR shape
@@ -879,7 +880,7 @@ void AGAudioFilterNode::initialize()
     s_lowPassNodeInfo->iconGeoSize = 5;
     GLvertex3f * iconGeo = new GLvertex3f[s_lowPassNodeInfo->iconGeoSize];
     s_lowPassNodeInfo->iconGeoType = GL_LINE_STRIP;
-    float radius_x = 0.005;
+    float radius_x = 0.005*AGStyle::globalScale;
     float radius_y = radius_x * 0.66;
     
     // lowpass shape
@@ -908,7 +909,7 @@ void AGAudioFilterNode::initialize()
     s_hiPassNodeInfo->iconGeoSize = 5;
     iconGeo = new GLvertex3f[s_hiPassNodeInfo->iconGeoSize];
     s_hiPassNodeInfo->iconGeoType = GL_LINE_STRIP;
-    radius_x = 0.005;
+    radius_x = 0.005*AGStyle::globalScale;
     radius_y = radius_x * 0.66;
     
     // hipass shape
@@ -937,7 +938,7 @@ void AGAudioFilterNode::initialize()
     s_bandPassNodeInfo->iconGeoSize = 5;
     iconGeo = new GLvertex3f[s_bandPassNodeInfo->iconGeoSize];
     s_bandPassNodeInfo->iconGeoType = GL_LINE_STRIP;
-    radius_x = 0.005;
+    radius_x = 0.005*AGStyle::globalScale;
     radius_y = radius_x * 0.66;
     
     // bandpass shape

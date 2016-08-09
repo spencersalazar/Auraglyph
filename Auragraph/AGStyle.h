@@ -30,6 +30,8 @@ public:
     static const float open_squeezeHeight;
     static const float open_animTimeX;
     static const float open_animTimeY;
+    
+    constexpr static const float globalScale = 5000.0f;
 };
 
 

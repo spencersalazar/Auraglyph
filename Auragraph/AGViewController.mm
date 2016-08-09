@@ -280,7 +280,7 @@ static AGViewController * g_instance = nil;
     AGUIButtonGroup *modeButtonGroup = new AGUIButtonGroup();
     
     /* freedraw button */
-    float freedrawButtonWidth = 0.0095;
+    float freedrawButtonWidth = 0.0095*AGStyle::globalScale;
     GLvertex3f modeButtonStartPos = [self worldCoordinateForScreenCoordinate:CGPointMake(27.5, self.view.bounds.size.height-20)];
     AGRenderInfoV freedrawRenderInfo;
     freedrawRenderInfo.numVertex = 5;

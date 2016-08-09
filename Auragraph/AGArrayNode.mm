@@ -47,7 +47,7 @@ public:
         m_renderList.push_back(&m_boxOuterInfo);
         
         // undo button
-        float buttonSize = 0.0062f;
+        float buttonSize = 0.0062f*AGStyle::globalScale;
         AGRenderInfoV m_undoInfo;
         m_undoInfo.geoType = GL_LINES;
         m_undoInfo.numVertex = 6;
@@ -436,8 +436,8 @@ public:
     m_node(node),
     m_doneEditing(false)
     {
-        m_width = 0.08f;
-        m_height = 0.02f;
+        m_width = 0.08f*AGStyle::globalScale;
+        m_height = 0.02f*AGStyle::globalScale;
         
         GeoGen::makeRect(m_boxGeo, m_width, m_height);
         
@@ -595,7 +595,7 @@ void AGControlArrayNode::initialize()
     
     s_nodeInfo->type = "Array";
     
-    float radius = 0.0057;
+    float radius = 0.0057*AGStyle::globalScale;
     int numBoxes = 5;
     float boxWidth = radius*2.0f/((float)numBoxes);
     float boxHeight = radius/2.5f;
