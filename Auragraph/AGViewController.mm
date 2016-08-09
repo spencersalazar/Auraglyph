@@ -232,7 +232,8 @@ static AGViewController * g_instance = nil;
     }
     else
     {
-        outputNode = new AGAudioOutputNode([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)]);
+//        outputNode = new AGAudioOutputNode([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)]);
+        outputNode = new AGAudioOutputNode(GLvertex3f(0, 0, 0));
         _nodes.push_back(outputNode);
     }
     
@@ -483,12 +484,18 @@ static AGViewController * g_instance = nil;
 {
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     GLKMatrix4 projectionMatrix;
-    if(UIInterfaceOrientationIsLandscape(self.interfaceOrientation))
-        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
-    else
-        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f)/aspect, aspect, 0.1f, 100.0f);
+//    if(UIInterfaceOrientationIsLandscape(self.interfaceOrientation))
+//        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
+//    else
+//        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f)/aspect, aspect, 0.1f, 100.0f);
+//    if(UIInterfaceOrientationIsLandscape(self.interfaceOrientation))
+//    NSLog(@"width %f height %f", self.view.bounds.size.width, self.view.bounds.size.height);
+    projectionMatrix = GLKMatrix4MakeFrustum(-self.view.bounds.size.width/2, self.view.bounds.size.width/2,
+                                             -self.view.bounds.size.height/2, self.view.bounds.size.height/2, 10.0f, 1000.0f);
+//    else
+//        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f)/aspect, aspect, 0.1f, 100.0f);
     
-    GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z-4.0f);
+    GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z-10.0f);
     if(_interfaceMode == INTERFACEMODE_USER)
         baseModelViewMatrix = GLKMatrix4Translate(baseModelViewMatrix, 0, 0, -(G_RATIO-1));
     
@@ -500,12 +507,25 @@ static AGViewController * g_instance = nil;
     
     _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
     _modelView = modelViewMatrix;
-    _fixedModelView = GLKMatrix4MakeTranslation(0, 0, -4.0f);
+    _fixedModelView = GLKMatrix4MakeTranslation(0, 0, -10.0f);
     _projection = projectionMatrix;
     
     AGRenderObject::setProjectionMatrix(projectionMatrix);
     AGRenderObject::setGlobalModelViewMatrix(modelViewMatrix);
     AGRenderObject::setFixedModelViewMatrix(_fixedModelView);
+}
+
+- (GLvertex3f)worldCoordinateForScreenCoordinate:(CGPoint)p
+{
+    int viewport[] = { (int)self.view.bounds.origin.x, (int)(self.view.bounds.origin.y),
+        (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
+    bool success;
+    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, 0.0f),
+                                      _modelView, _projection, viewport, &success);
+    
+    //    vec = GLKMatrix4MultiplyVector3(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z), vec);
+    
+    return GLvertex3f(vec.x, vec.y, vec.z);
 }
 
 - (void)update
@@ -705,19 +725,6 @@ static AGViewController * g_instance = nil;
         (*i)->render();
 }
 
-
-- (GLvertex3f)worldCoordinateForScreenCoordinate:(CGPoint)p
-{
-    int viewport[] = { (int)self.view.bounds.origin.x, (int)self.view.bounds.origin.y,
-        (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
-    bool success;
-    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, 0.01),
-                                      _modelView, _projection, viewport, &success);
-    
-//    vec = GLKMatrix4MultiplyVector3(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z), vec);
-    
-    return GLvertex3f(vec.x, vec.y, vec.z);
-}
 
 - (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)node port:(int *)port
 {
