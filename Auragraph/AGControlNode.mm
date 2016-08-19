@@ -25,7 +25,7 @@ void AGControlTimerNode::initialize()
     
     s_nodeInfo->type = "Timer";
     
-    float radius = 0.005*AGStyle::globalScale;
+    float radius = 0.005*AGStyle::oldGlobalScale;
     int circleSize = 48;
     s_nodeInfo->iconGeoSize = circleSize*2 + 4;
     s_nodeInfo->iconGeoType = GL_LINES;

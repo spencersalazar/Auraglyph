@@ -28,6 +28,8 @@
 #import "GeoGenerator.h"
 #import "spMath.h"
 
+#include "AGStyle.h"
+
 
 //------------------------------------------------------------------------------
 // ### AGTouchHandler ###
@@ -83,6 +85,7 @@
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
     _trace->addPoint(pos);
+//    NSLog(@"trace: %f %f %f", pos.x, pos.y, pos.z);
     
     _currentTraceSum = _currentTraceSum + GLvertex3f(p.x, p.y, 0);
     
@@ -375,8 +378,8 @@ public:
         float textHeight = s_texFont->height()*textScale;
         m_textOriginOffset = GLvertex3f(-textWidth/2.0, -textHeight/2, 0);
         
-        float radius = 0.00275;
-        float margin = 0.001;
+        float radius = 0.00275*AGStyle::oldGlobalScale;
+        float margin = 0.001*AGStyle::oldGlobalScale;
         switch(m_textPosition)
         {
             case TEXTPOSITION_LEFT:
@@ -417,7 +420,7 @@ public:
         
         GLvertex3f position = lerp(m_posLerp, m_node->position(), m_position);
         m_renderState.modelview = GLKMatrix4Multiply(baseModelView, GLKMatrix4MakeTranslation(position.x, position.y, position.z));
-        float radius = 0.00275;
+        float radius = 0.00275*AGStyle::oldGlobalScale;
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeScale(radius, radius, radius));
         
         GLvertex3f textPosition = lerp(m_textPosLerp, position+m_textOriginOffset, position+m_textOffset);
@@ -485,7 +488,7 @@ public:
     AGPortBrowser(AGNode *node) : m_node(node), m_scale(0.2), m_alpha(0.1, 1),
     m_selectedPort(-1)
     {
-        float radius = 0.0125f;
+        float radius = 0.0125f*AGStyle::oldGlobalScale;
         
         m_strokeInfo.shader = &AGGenericShader::instance();
         m_strokeInfo.geo = &(GeoGen::circle64())[1];
@@ -508,7 +511,7 @@ public:
         int numPorts = node->numInputPorts();
         m_ports.reserve(numPorts);
         float angle = 3.0f*M_PI/4.0f;
-        float portRadius = radius * 0.62;
+        float portRadius = radius*0.62;
         for(int i = 0; i < numPorts; i++)
         {
             float _cos = cosf(angle);
@@ -547,7 +550,7 @@ public:
         
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeTranslation(m_node->position().x, m_node->position().y, m_node->position().z));
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeScale(m_scale, m_scale, m_scale));
-        float radius = 0.0125f;
+        float radius = 0.0125f*AGStyle::oldGlobalScale;
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeScale(radius, radius, radius));
     }
     
@@ -583,7 +586,7 @@ public:
             // squared-distance from center
             float rho_sq = relativeLocation.magnitudeSquared();
             // central dead-zone
-            float radius = 0.0125f * 0.1f;
+            float radius = 0.0125f*0.1f*AGStyle::oldGlobalScale;
             // too close to dead-zone!
             if(rho_sq < radius*radius)
                 return -1;

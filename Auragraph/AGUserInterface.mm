@@ -42,7 +42,7 @@ m_action(nil)
     m_geo[2] = GLvertex3f(size.x, size.y, 0);
     m_geo[3] = GLvertex3f(0, size.y, 0);
     
-    float stripeInset = 0.0002*AGStyle::globalScale;
+    float stripeInset = 0.0002*AGStyle::oldGlobalScale;
     
     m_geo[4] = GLvertex3f(stripeInset, stripeInset, 0);
     m_geo[5] = GLvertex3f(size.x-stripeInset, stripeInset, 0);
@@ -349,7 +349,7 @@ AGUITrash::AGUITrash()
 {
     m_tex = loadOrRetrieveTexture(@"trash.png");
     
-    m_radius = 0.005*AGStyle::globalScale;
+    m_radius = 0.005*AGStyle::oldGlobalScale;
     m_geo[0] = GLvertex3f(-m_radius, -m_radius, 0);
     m_geo[1] = GLvertex3f( m_radius, -m_radius, 0);
     m_geo[2] = GLvertex3f(-m_radius,  m_radius, 0);

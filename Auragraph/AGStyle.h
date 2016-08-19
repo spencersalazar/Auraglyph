@@ -31,7 +31,7 @@ public:
     static const float open_animTimeX;
     static const float open_animTimeY;
     
-    constexpr static const float globalScale = 5000.0f;
+    constexpr static const float oldGlobalScale = 5000.0f;
 };
 
 

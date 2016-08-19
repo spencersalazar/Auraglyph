@@ -12,7 +12,7 @@
 #include "AGStyle.h"
 #include "AGGenericShader.h"
 
-static const float AGNODESELECTOR_RADIUS = 0.02*AGStyle::globalScale;
+static const float AGNODESELECTOR_RADIUS = 0.02*AGStyle::oldGlobalScale;
 
 
 template<class NodeType, class ManagerType>

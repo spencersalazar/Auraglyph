@@ -14,7 +14,7 @@
 
 #import "TexFont.h"
 
-static const float AGNODESELECTOR_RADIUS = 0.02*AGStyle::globalScale;
+static const float AGNODESELECTOR_RADIUS = 0.02*AGStyle::oldGlobalScale;
 
 
 //------------------------------------------------------------------------------
