@@ -432,6 +432,7 @@ class AGNodeManager
 {
 public:
     static const AGNodeManager &audioNodeManager();
+    static const AGNodeManager &controlNodeManager();
     static const AGNodeManager &inputNodeManager();
     static const AGNodeManager &outputNodeManager();
     
@@ -470,6 +471,7 @@ public:
     
 private:
     static AGNodeManager *s_audioNodeManager;
+    static AGNodeManager *s_controlNodeManager;
     static AGNodeManager *s_inputNodeManager;
     static AGNodeManager *s_outputNodeManager;
     
@@ -479,3 +481,5 @@ private:
 };
 
 #endif /* defined(__Auragraph__AGNode__) */
+
+

@@ -71,7 +71,7 @@ AGUIMetaNodeSelector *AGUIMetaNodeSelector::audioNodeSelector(const GLvertex3f &
 
 AGUIMetaNodeSelector *AGUIMetaNodeSelector::controlNodeSelector(const GLvertex3f &pos)
 {
-    AGUIMetaNodeSelector *nodeSelector = new AGUINodeSelector<AGControlNode, AGControlNodeManager>(AGControlNodeManager::instance(), pos);
+    AGUIMetaNodeSelector *nodeSelector = new AGUINodeSelector<AGControlNode, AGNodeManager>(AGNodeManager::controlNodeManager(), pos);
     nodeSelector->init();
     return nodeSelector;
 }

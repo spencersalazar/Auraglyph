@@ -7,6 +7,7 @@
 //
 
 #include "AGControlNode.h"
+#include "AGNode.h"
 #include "AGArrayNode.h"
 #include "AGTimer.h"
 #include "spstl.h"
@@ -16,6 +17,37 @@
 // ### AGControlTimerNode ###
 //------------------------------------------------------------------------------
 #pragma mark - AGControlTimerNode
+
+class AGControlTimerNode : public AGControlNode
+{
+public:
+    static void initialize();
+    
+    AGControlTimerNode(const GLvertex3f &pos);
+    AGControlTimerNode(const AGDocument::Node &docNode);
+    ~AGControlTimerNode();
+    
+    virtual int numOutputPorts() const { return 1; }
+    virtual void setEditPortValue(int port, float value);
+    virtual void getEditPortValue(int port, float &value) const;
+    
+    virtual void update(float t, float dt);
+    virtual void render();
+    
+    static AGNodeInfo *nodeInfo() { return s_nodeInfo; }
+    static void renderIcon();
+    static AGNode *create(const GLvertex3f &pos);
+    
+private:
+    static AGNodeInfo *s_nodeInfo;
+    
+    AGTimer *m_timer;
+    
+    AGIntControl m_control;
+    float m_lastTime;
+    float m_lastFire;
+    float m_interval;
+};
 
 AGNodeInfo *AGControlTimerNode::s_nodeInfo = NULL;
 
@@ -153,7 +185,7 @@ void AGControlTimerNode::renderIcon()
     glDrawArrays(s_nodeInfo->iconGeoType, 0, s_nodeInfo->iconGeoSize);
 }
 
-AGControlNode *AGControlTimerNode::create(const GLvertex3f &pos)
+AGNode *AGControlTimerNode::create(const GLvertex3f &pos)
 {
     AGControlNode *node = new AGControlTimerNode(pos);
     node->init();
@@ -162,75 +194,37 @@ AGControlNode *AGControlTimerNode::create(const GLvertex3f &pos)
 
 
 //------------------------------------------------------------------------------
-// ### AGControlNodeManager ###
+// ### AGNodeManager ###
 //------------------------------------------------------------------------------
-#pragma mark - AGControlNodeManager
+#pragma mark AGNodeManager -
 
-AGControlNodeManager *AGControlNodeManager::s_instance = NULL;
-
-const AGControlNodeManager &AGControlNodeManager::instance()
+const AGNodeManager &AGNodeManager::controlNodeManager()
 {
-    if(s_instance == NULL)
+    if(s_controlNodeManager == NULL)
     {
-        s_instance = new AGControlNodeManager();
+        s_controlNodeManager = new AGNodeManager();
+        
+        // s_audioNodeManager->m_nodeTypes.push_back(makeNodeInfo<AGSliderNode>("Slider"));
+        
+        s_controlNodeManager->m_nodeTypes.push_back(new NodeInfo("Timer",
+                                                                 AGControlTimerNode::initialize,
+                                                                 AGControlTimerNode::renderIcon,
+                                                                 AGControlTimerNode::create,
+                                                                 createNode<AGControlTimerNode>));
+        s_controlNodeManager->m_nodeTypes.push_back(new NodeInfo("Array",
+                                                                 AGControlArrayNode::initialize,
+                                                                 AGControlArrayNode::renderIcon,
+                                                                 AGControlArrayNode::create,
+                                                                 createNode<AGControlArrayNode>));
+        
+        itmap(s_controlNodeManager->m_nodeTypes, ^bool (NodeInfo *const &type){
+            if(type->initialize)
+                type->initialize();
+            return true;
+        });
     }
     
-    return *s_instance;
+    return *s_controlNodeManager;
 }
-
-AGControlNodeManager::AGControlNodeManager()
-{
-    m_controlNodeTypes.push_back(new ControlNodeType("Timer",
-                                                     AGControlTimerNode::initialize,
-                                                     AGControlTimerNode::renderIcon,
-                                                     AGControlTimerNode::create,
-                                                     createNode<AGControlTimerNode>));
-    m_controlNodeTypes.push_back(new ControlNodeType("Array",
-                                                     AGControlArrayNode::initialize,
-                                                     AGControlArrayNode::renderIcon,
-                                                     AGControlArrayNode::create,
-                                                     createNode<AGControlArrayNode>));
-    
-    itmap(m_controlNodeTypes, ^(ControlNodeType *&type){
-        if(type->initialize)
-            type->initialize();
-    });
-}
-
-const std::vector<AGControlNodeManager::ControlNodeType *> &AGControlNodeManager::nodeTypes() const
-{
-    return m_controlNodeTypes;
-}
-
-void AGControlNodeManager::renderNodeTypeIcon(ControlNodeType *type) const
-{
-    type->renderIcon();
-}
-
-AGControlNode * AGControlNodeManager::createNodeType(AGControlNodeManager::ControlNodeType *type, const GLvertex3f &pos) const
-{
-    AGControlNode *node = type->createNode(pos);
-    node->setTitle(type->name);
-    return node;
-}
-
-AGNode * AGControlNodeManager::createNodeType(const AGDocument::Node &docNode) const
-{
-    __block AGNode *node = NULL;
-    
-    itmap(m_controlNodeTypes, ^bool (ControlNodeType *const &type){
-        if(type->name == docNode.type)
-        {
-            node = type->createWithDocNode(docNode);
-            node->setTitle(type->name);
-            return false;
-        }
-        
-        return true;
-    });
-    
-    return node;
-}
-
 
 

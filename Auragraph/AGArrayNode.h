@@ -33,8 +33,9 @@ public:
     
     virtual void receiveControl(int port, AGControl *control);
     
+    static AGNodeInfo *nodeInfo() { return s_nodeInfo; }
     static void renderIcon();
-    static AGControlNode *create(const GLvertex3f &pos);
+    static AGNode *create(const GLvertex3f &pos);
         
 private:
     static AGNodeInfo *s_nodeInfo;

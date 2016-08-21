@@ -203,7 +203,7 @@ static AGViewController * g_instance = nil;
                     outputNode = dynamic_cast<AGAudioOutputNode *>(node);
             }
             else if(docNode._class == AGDocument::Node::CONTROL)
-                node = AGControlNodeManager::instance().createNodeType(docNode);
+                node = AGNodeManager::controlNodeManager().createNodeType(docNode);
             else if(docNode._class == AGDocument::Node::INPUT)
                 node = AGNodeManager::inputNodeManager().createNodeType(docNode);
             else if(docNode._class == AGDocument::Node::OUTPUT)
