@@ -61,6 +61,11 @@ void AGSliderNode::initialize()
 }
 
 
+//------------------------------------------------------------------------------
+// ### AGNodeManager ###
+//------------------------------------------------------------------------------
+#pragma mark AGNodeManager -
+
 const AGNodeManager &AGNodeManager::inputNodeManager()
 {
     if(s_inputNodeManager == NULL)

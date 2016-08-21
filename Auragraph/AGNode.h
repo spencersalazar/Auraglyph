@@ -431,6 +431,7 @@ static void renderNodeIcon()
 class AGNodeManager
 {
 public:
+    static const AGNodeManager &audioNodeManager();
     static const AGNodeManager &inputNodeManager();
     static const AGNodeManager &outputNodeManager();
     
@@ -468,6 +469,7 @@ public:
     }
     
 private:
+    static AGNodeManager *s_audioNodeManager;
     static AGNodeManager *s_inputNodeManager;
     static AGNodeManager *s_outputNodeManager;
     

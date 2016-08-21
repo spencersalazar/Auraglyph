@@ -1292,6 +1292,7 @@ AGDocument::Freedraw AGFreeDraw::serialize()
 //------------------------------------------------------------------------------
 #pragma mark AGNodeManager - 
 
+AGNodeManager *AGNodeManager::s_audioNodeManager = NULL;
 AGNodeManager *AGNodeManager::s_inputNodeManager = NULL;
 AGNodeManager *AGNodeManager::s_outputNodeManager = NULL;
 

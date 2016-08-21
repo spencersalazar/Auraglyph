@@ -174,8 +174,6 @@ static AGViewController * g_instance = nil;
     
     /* preload hw recognizer */
     (void) [AGHandwritingRecognizer instance];
-    /* preload audio node manager */
-    (void) AGAudioNodeManager::instance();
     
 //    _testButton = new AGUIButton("Trainer", [self worldCoordinateForScreenCoordinate:CGPointMake(10, self.view.bounds.size.height-10)], GLvertex2f(0.028, 0.007));
 //    _testButton->setAction(^{
@@ -199,7 +197,7 @@ static AGViewController * g_instance = nil;
             AGNode *node = NULL;
             if(docNode._class == AGDocument::Node::AUDIO)
             {
-                node = AGAudioNodeManager::instance().createNodeType(docNode);
+                node = AGNodeManager::audioNodeManager().createNodeType(docNode);
                 if(docNode.type == "Output")
                     // TODO: fix this hacky shit
                     outputNode = dynamic_cast<AGAudioOutputNode *>(node);
