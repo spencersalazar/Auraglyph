@@ -1404,8 +1404,6 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
     {
         s_audioNodeManager = new AGNodeManager();
         
-        // s_audioNodeManager->m_nodeTypes.push_back(makeNodeInfo<AGSliderNode>("Slider"));
-        
         s_audioNodeManager->m_nodeTypes.push_back(makeNodeInfo<AGAudioSineWaveNode>("SineWave"));
         s_audioNodeManager->m_nodeTypes.push_back(makeNodeInfo<AGAudioSquareWaveNode>("SquareWave"));
         s_audioNodeManager->m_nodeTypes.push_back(makeNodeInfo<AGAudioSawtoothWaveNode>("SawtoothWave"));
@@ -1426,11 +1424,7 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
                                                                AGAudioFilterNode::renderBandPassIcon,
                                                                AGAudioFilterNode::createBandPass,
                                                                NULL));
-        s_audioNodeManager->m_nodeTypes.push_back(new NodeInfo("Output",
-                                                               AGAudioOutputNode::initialize,
-                                                               AGAudioOutputNode::renderIcon,
-                                                               createAudioNode<AGAudioOutputNode>,
-                                                               createAudioNode<AGAudioOutputNode>));
+        s_audioNodeManager->m_nodeTypes.push_back(makeNodeInfo<AGAudioOutputNode>("Output"));
         
         itmap(s_audioNodeManager->m_nodeTypes, ^bool (NodeInfo *const &type){
             if(type->initialize)
