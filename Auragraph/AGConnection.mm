@@ -213,7 +213,7 @@ void AGConnection::render()
         // move a to edge of port circle
         modelView = GLKMatrix4Translate(modelView, 0.002*AGStyle::oldGlobalScale, 0, 0);
         // scale [0,1] to length of connection (minus port circle radius)
-        modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004*AGStyle::oldGlobalScale), 0.001, 1);
+        modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004*AGStyle::oldGlobalScale), 0.001*AGStyle::oldGlobalScale, 1);
         
         waveformShader.setProjectionMatrix(projection);
         waveformShader.setModelViewMatrix(modelView);
