@@ -445,13 +445,17 @@ private:
 template<class NodeClass>
 static AGNode *createNode(const AGDocument::Node &docNode)
 {
-    return new NodeClass(docNode);
+    NodeClass *node = new NodeClass(docNode);
+    node->init();
+    return node;
 }
 
 template<class NodeClass>
 static AGNode *createNode(const GLvertex3f &pos)
 {
-    return new NodeClass(pos);
+    NodeClass *node = new NodeClass(pos);
+    node->init();
+    return node;
 }
 
 template<class NodeClass>

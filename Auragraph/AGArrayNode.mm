@@ -61,6 +61,7 @@ public:
         AGUIButton *undoButton = new AGUIIconButton(GLvertex3f(-size.x, size.y, 0)*0.5f+GLvertex3f(buttonSize/2, -buttonSize/2, 0),
                                                     GLvertex2f(buttonSize, buttonSize),
                                                     m_undoInfo);
+        undoButton->init();
         undoButton->setAction(^{ undo(); });
         addChild(undoButton);
         
@@ -76,6 +77,7 @@ public:
         AGUIButton *cancelButton = new AGUIIconButton(size*0.5f+GLvertex3f(-buttonSize/2 -buttonSize*1.25, -buttonSize/2, 0),
                                                       GLvertex2f(buttonSize, buttonSize),
                                                       m_cancelInfo);
+        cancelButton->init();
         cancelButton->setAction(^{ cancel(); });
         addChild(cancelButton);
         
@@ -90,6 +92,7 @@ public:
         AGUIButton *okButton = new AGUIIconButton(size*0.5f+GLvertex3f(-buttonSize/2, -buttonSize/2, 0),
                                                   GLvertex2f(buttonSize, buttonSize),
                                                   m_okInfo);
+        okButton->init();
         okButton->setAction(^{ accept(); });
         addChild(okButton);
         
@@ -368,6 +371,7 @@ public:
                 // open number editor
                 GLvertex2f size(m_size.x*2, m_size.y*G_RATIO);
                 m_numInput = new AGUINumberInput(m_arrayEditor->position()+m_pos, size);
+                m_numInput->init();
                 m_numInput->setAction(^(bool accepted, float value) { numberInputAction(accepted, value); });
                 addChild(m_numInput);
             }
@@ -463,6 +467,7 @@ public:
                 
                 int len = m_node->m_items.size();
                 m_ghostElement = new Element(this, GLvertex3f(-m_width/3.0f + m_width/3.0*len, 0.0f, 0.0f), GLvertex2f(m_width/3.0f, m_height));
+                m_ghostElement->init();
                 m_ghostElement->setValueRef(NULL);
                 m_ghostElement->setEditAction(m_editAction);
                 addChild(m_ghostElement);
@@ -473,6 +478,7 @@ public:
         for(list<float>::iterator i = m_node->m_items.begin(); i != m_node->m_items.end(); i++)
         {
             Element *e = new Element(this, GLvertex3f(-m_width/3.0f + m_width/3.0*j, 0.0f, 0.0f), GLvertex2f(m_width/3.0f, m_height));
+            e->init();
             e->setValueRef(&*i);
             e->setEditAction(m_editAction);
             addChild(e);
@@ -480,6 +486,7 @@ public:
         }
         
         m_ghostElement = new Element(this, GLvertex3f(-m_width/3.0f + m_width/3.0*j, 0.0f, 0.0f), GLvertex2f(m_width/3.0f, m_height));
+        m_ghostElement->init();
         m_ghostElement->setValueRef(NULL);
         m_ghostElement->setEditAction(m_editAction);
         addChild(m_ghostElement);
@@ -648,7 +655,9 @@ void AGControlArrayNode::getEditPortValue(int port, float &value) const
 
 AGUINodeEditor *AGControlArrayNode::createCustomEditor()
 {
-    return new AGUIArrayEditor(this);
+    AGUIArrayEditor *editor = new AGUIArrayEditor(this);
+    editor->init();
+    return editor;
 }
 
 void AGControlArrayNode::receiveControl(int port, AGControl *control)
@@ -680,6 +689,8 @@ void AGControlArrayNode::renderIcon()
 
 AGControlNode *AGControlArrayNode::create(const GLvertex3f &pos)
 {
-    return new AGControlArrayNode(pos);
+    AGControlArrayNode *node = new AGControlArrayNode(pos);
+    node->init();
+    return node;
 }
 

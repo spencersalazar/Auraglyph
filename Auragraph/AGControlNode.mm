@@ -155,7 +155,9 @@ void AGControlTimerNode::renderIcon()
 
 AGControlNode *AGControlTimerNode::create(const GLvertex3f &pos)
 {
-    return new AGControlTimerNode(pos);
+    AGControlNode *node = new AGControlTimerNode(pos);
+    node->init();
+    return node;
 }
 
 

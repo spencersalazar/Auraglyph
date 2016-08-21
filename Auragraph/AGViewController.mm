@@ -223,10 +223,12 @@ static AGViewController * g_instance = nil;
                 AGNode *dstNode = uuid2node[docConnection.dstUuid];
                 assert(docConnection.dstPort >= 0 && docConnection.dstPort < dstNode->numInputPorts());
                 AGConnection *conn = new AGConnection(srcNode, dstNode, docConnection.dstPort);
+                conn->init();
                 [self addConnection:conn];
             }
         }, ^(const AGDocument::Freedraw &docFreedraw) {
             AGFreeDraw *freedraw = new AGFreeDraw(docFreedraw);
+            freedraw->init();
             [self addTopLevelObject:freedraw];
         });
     }
@@ -234,6 +236,7 @@ static AGViewController * g_instance = nil;
     {
 //        outputNode = new AGAudioOutputNode([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)]);
         outputNode = new AGAudioOutputNode(GLvertex3f(0, 0, 0));
+        outputNode->init();
         _nodes.push_back(outputNode);
     }
     
@@ -269,6 +272,7 @@ static AGViewController * g_instance = nil;
     AGUIButton *saveButton = new AGUIButton("Save",
                                             GLvertex3f(0, -aboutButtonHeight/2, 0) + [self worldCoordinateForScreenCoordinate:CGPointMake(10, 10)],
                                             GLvertex2f(saveButtonWidth, saveButtonHeight));
+    saveButton->init();
     saveButton->setAction(^{
         //        AGViewController *strongSelf = weakSelf;
         //        if(strongSelf)
@@ -278,6 +282,7 @@ static AGViewController * g_instance = nil;
     [self addTopLevelObject:saveButton];
     
     AGUIButtonGroup *modeButtonGroup = new AGUIButtonGroup();
+    modeButtonGroup->init();
     
     /* freedraw button */
     float freedrawButtonWidth = 0.0095*AGStyle::oldGlobalScale;
@@ -297,6 +302,7 @@ static AGViewController * g_instance = nil;
     AGUIIconButton *freedrawButton = new AGUIIconButton(modeButtonStartPos,
                                                         GLvertex2f(freedrawButtonWidth, freedrawButtonWidth),
                                                         freedrawRenderInfo);
+    freedrawButton->init();
     freedrawButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
     freedrawButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
     modeButtonGroup->addButton(freedrawButton, ^{
@@ -315,6 +321,7 @@ static AGViewController * g_instance = nil;
     AGUIIconButton *nodeButton = new AGUIIconButton(modeButtonStartPos + GLvertex3f(0, nodeButtonWidth*1.25, 0),
                                                     GLvertex2f(nodeButtonWidth, nodeButtonWidth),
                                                     nodeRenderInfo);
+    nodeButton->init();
     nodeButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
     nodeButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
     modeButtonGroup->addButton(nodeButton, ^{

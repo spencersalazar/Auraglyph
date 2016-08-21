@@ -19,13 +19,17 @@
 template<class NodeClass>
 static AGAudioNode *createAudioNode(const AGDocument::Node &docNode)
 {
-    return new NodeClass(docNode);
+    NodeClass *node = new NodeClass(docNode);
+    node->init();
+    return node;
 }
 
 template<class NodeClass>
 static AGAudioNode *createAudioNode(const GLvertex3f &pos)
 {
-    return new NodeClass(pos);
+    NodeClass *node = new NodeClass(pos);
+    node->init();
+    return node;
 }
 
 
@@ -95,7 +99,9 @@ void AGAudioOutputNode::renderIcon()
 
 AGAudioNode *AGAudioOutputNode::create(const GLvertex3f &pos)
 {
-    return new AGAudioOutputNode(pos);
+    AGAudioOutputNode *node = new AGAudioOutputNode(pos);
+    node->init();
+    return node;
 }
 
 
@@ -227,7 +233,9 @@ void AGAudioSineWaveNode::renderIcon()
 
 AGAudioNode *AGAudioSineWaveNode::create(const GLvertex3f &pos)
 {
-    return new AGAudioSineWaveNode(pos);
+    AGAudioSineWaveNode *node = new AGAudioSineWaveNode(pos);
+    node->init();
+    return node;
 }
 
 //------------------------------------------------------------------------------
@@ -364,7 +372,9 @@ void AGAudioSquareWaveNode::renderIcon()
 
 AGAudioNode *AGAudioSquareWaveNode::create(const GLvertex3f &pos)
 {
-    return new AGAudioSquareWaveNode(pos);
+    AGAudioNode *node = new AGAudioSquareWaveNode(pos);
+    node->init();
+    return node;
 }
 
 
@@ -500,7 +510,9 @@ void AGAudioSawtoothWaveNode::renderIcon()
 
 AGAudioNode *AGAudioSawtoothWaveNode::create(const GLvertex3f &pos)
 {
-    return new AGAudioSawtoothWaveNode(pos);
+    AGAudioNode *node = new AGAudioSawtoothWaveNode(pos);
+    node->init();
+    return node;
 }
 
 
@@ -641,7 +653,9 @@ void AGAudioTriangleWaveNode::renderIcon()
 
 AGAudioNode *AGAudioTriangleWaveNode::create(const GLvertex3f &pos)
 {
-    return new AGAudioTriangleWaveNode(pos);
+    AGAudioNode *node = new AGAudioTriangleWaveNode(pos);
+    node->init();
+    return node;
 }
 
 
@@ -823,7 +837,9 @@ void AGAudioADSRNode::renderIcon()
 
 AGAudioNode *AGAudioADSRNode::create(const GLvertex3f &pos)
 {
-    return new AGAudioADSRNode(pos);
+    AGAudioNode *node = new AGAudioADSRNode(pos);
+    node->init();
+    return node;
 }
 
 
@@ -1057,7 +1073,9 @@ void AGAudioFilterNode::renderLowPassIcon()
 
 AGAudioNode *AGAudioFilterNode::createLowPass(const GLvertex3f &pos)
 {
-    return new AGAudioFilterNode(pos, new Butter2RLPF(sampleRate()), s_lowPassNodeInfo);
+    AGAudioNode *node = new AGAudioFilterNode(pos, new Butter2RLPF(sampleRate()), s_lowPassNodeInfo);
+    node->init();
+    return node;
 }
 
 
@@ -1074,7 +1092,9 @@ void AGAudioFilterNode::renderHiPassIcon()
 
 AGAudioNode *AGAudioFilterNode::createHiPass(const GLvertex3f &pos)
 {
-    return new AGAudioFilterNode(pos, new Butter2RHPF(sampleRate()), s_hiPassNodeInfo);
+    AGAudioNode *node = new AGAudioFilterNode(pos, new Butter2RHPF(sampleRate()), s_hiPassNodeInfo);
+    node->init();
+    return node;
 }
 
 
@@ -1091,7 +1111,9 @@ void AGAudioFilterNode::renderBandPassIcon()
 
 AGAudioNode *AGAudioFilterNode::createBandPass(const GLvertex3f &pos)
 {
-    return new AGAudioFilterNode(pos, new Butter2BPF(sampleRate()), s_bandPassNodeInfo);
+    AGAudioNode *node = new AGAudioFilterNode(pos, new Butter2BPF(sampleRate()), s_bandPassNodeInfo);
+    node->init();
+    return node;
 }
 
 

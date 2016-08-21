@@ -75,6 +75,7 @@
     _currentTraceSum = GLvertex3f();
     
     _trace = new AGUITrace;
+    _trace->init();
     _trace->addPoint(pos);
     [_viewController addTopLevelObject:_trace];
 }
@@ -115,20 +116,16 @@
     {
         AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::controlNodeSelector(centroidMVP);
         _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
-        //        AGControlNode * node = new AGControlTimerNode(centroidMVP);
-        //        [_viewController addNode:node];
     }
     else if(figure == AG_FIGURE_TRIANGLE_DOWN)
     {
-        //        AGInputNode * node = new AGInputNode(centroidMVP);
-        //        [_viewController addNode:node];
-        //        [_viewController clearLinePoints];
         AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::inputNodeSelector(centroidMVP);
         _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
     }
     else if(figure == AG_FIGURE_TRIANGLE_UP)
     {
         AGOutputNode * node = new AGOutputNode(centroidMVP);
+        node->init();
         [_viewController addNode:node];
     }
     else
@@ -181,6 +178,7 @@
     if(_linePoints.size() > 1)
     {
         AGFreeDraw *freeDraw = new AGFreeDraw(&_linePoints[0], _linePoints.size());
+        freeDraw->init();
         [_viewController addFreeDraw:freeDraw];
     }
 }
@@ -531,6 +529,7 @@ public:
             
             GLvertex3f pos = m_node->position() + GLvertex3f(portRadius*_cos, portRadius*_sin, 0);
             AGPortBrowserPort *port = new AGPortBrowserPort(m_node, i, pos, textPos);
+            port->init();
             addChild(port);
             m_ports.push_back(port);
             
@@ -656,6 +655,7 @@ private:
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
     _proto = new AGProtoConnection(pos, pos);
+    _proto->init();
     [_viewController addTopLevelObject:_proto];
     
     AGNode *hitNode;
@@ -696,6 +696,7 @@ private:
         if(hitNode)
         {
             _browser = new AGPortBrowser(hitNode);
+            _browser->init();
             [_viewController addTopLevelObject:_browser under:_proto];
         }
         else
@@ -742,6 +743,7 @@ private:
         if(port != -1)
         {
             AGConnection * connection = new AGConnection(_originalHit, _currentHit, port);
+            connection->init();
             
             [_viewController addConnection:connection];
         }
@@ -858,7 +860,10 @@ private:
         _touchCapture = NULL;
         _nodeEditor = node->createCustomEditor();
         if(_nodeEditor == NULL)
+        {
             _nodeEditor = new AGUIStandardNodeEditor(node);
+            _nodeEditor->init();
+        }
     }
     
     return self;
