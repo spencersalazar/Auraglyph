@@ -9,6 +9,9 @@
 #include "AGNodeSelector.h"
 #include "AGAudioNode.h"
 #include "AGControlNode.h"
+#include "AGInputNode.h"
+#include "AGOutputNode.h"
+#include "AGControlNode.h"
 #include "AGStyle.h"
 #include "AGGenericShader.h"
 

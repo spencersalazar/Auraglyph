@@ -9,7 +9,7 @@
 #ifndef __Auragraph__AGFormulaNode__
 #define __Auragraph__AGFormulaNode__
 
-#include "AGNode.h"
+#include "AGAudioNode.h"
 
 using namespace std;
 

@@ -9,6 +9,168 @@
 #include "AGInputNode.h"
 #include "spstl.h"
 #include "AGStyle.h"
+#include "AGGenericShader.h"
+
+
+//------------------------------------------------------------------------------
+// ### AGInputNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGInputNode
+
+bool AGInputNode::s_init = false;
+GLuint AGInputNode::s_vertexArray = 0;
+GLuint AGInputNode::s_vertexBuffer = 0;
+GLvncprimf *AGInputNode::s_geo = NULL;
+GLuint AGInputNode::s_geoSize = 0;
+float AGInputNode::s_radius = 0;
+
+void AGInputNode::initializeInputNode()
+{
+    initalizeNode();
+    
+    if(!s_init)
+    {
+        s_init = true;
+        
+        // generate triangle
+        s_geoSize = 3;
+        s_geo = new GLvncprimf[s_geoSize];
+        float radius = AGNode::s_sizeFactor/1.15;
+        
+        // equilateral triangle pointing down
+        float H = radius*2*sqrtf(0.75);         // height from base to tip
+        float up = (H*H - radius*radius)/(2*H); // vertical distance from 2d centroid to base
+        up = (up+H/2.0f)/2.0f;                  // average with vertical midpoint for better aesthetics
+        float down = H - up;                    // vertical distance from center position to tip
+        
+        s_geo[0].vertex = GLvertex3f(-radius, up, 0);
+        s_geo[1].vertex = GLvertex3f(radius, up, 0);
+        s_geo[2].vertex = GLvertex3f(0, -down, 0);
+        
+        glGenVertexArraysOES(1, &s_vertexArray);
+        glBindVertexArrayOES(s_vertexArray);
+        
+        glGenBuffers(1, &s_vertexBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, s_vertexBuffer);
+        glBufferData(GL_ARRAY_BUFFER, s_geoSize*sizeof(GLvncprimf), s_geo, GL_STATIC_DRAW);
+        
+        glEnableVertexAttribArray(GLKVertexAttribPosition);
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(0));
+        glEnableVertexAttribArray(GLKVertexAttribNormal);
+        glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(sizeof(GLvertex3f)));
+        glEnableVertexAttribArray(GLKVertexAttribColor);
+        glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(2*sizeof(GLvertex3f)));
+        
+        glBindVertexArrayOES(0);
+    }
+}
+
+AGInputNode::AGInputNode(GLvertex3f pos, AGNodeInfo *nodeInfo) :
+AGNode(pos, nodeInfo)
+{
+    initializeInputNode();
+}
+
+AGInputNode::AGInputNode(const AGDocument::Node &docNode, AGNodeInfo *nodeInfo) :
+AGNode(docNode, nodeInfo)
+{
+    initializeInputNode();
+}
+
+void AGInputNode::update(float t, float dt)
+{
+    AGNode::update(t, dt);
+    
+    GLKMatrix4 projection = projectionMatrix();
+    GLKMatrix4 modelView = globalModelViewMatrix();
+    
+    modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
+    
+    m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
+    
+    m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, modelView);
+}
+
+void AGInputNode::render()
+{
+    glBindVertexArrayOES(s_vertexArray);
+    
+    GLcolor4f color = GLcolor4f::white;
+    color.a = m_fadeOut;
+    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &color);
+    glDisableVertexAttribArray(GLKVertexAttribColor);
+    
+    // TODO
+    AGGenericShader &shader = AGGenericShader::instance();
+    shader.useProgram();
+    shader.setMVPMatrix(m_modelViewProjectionMatrix);
+    shader.setNormalMatrix(m_normalMatrix);
+    
+    glLineWidth(4.0f);
+    glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
+    
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    AGNode::render();
+}
+
+
+AGNode::HitTestResult AGInputNode::hit(const GLvertex3f &hit)
+{
+    return HIT_NONE;
+}
+
+void AGInputNode::unhit()
+{
+    
+}
+
+AGUIObject *AGInputNode::hitTest(const GLvertex3f &t)
+{
+    GLvertex2f posxy = m_pos.xy();
+    if(pointInTriangle(t.xy(), s_geo[0].vertex.xy()+posxy,
+                       s_geo[1].vertex.xy()+posxy,
+                       s_geo[2].vertex.xy()+posxy))
+        return this;
+    return NULL;
+}
+
+GLvertex3f AGInputNode::relativePositionForOutputPort(int port) const
+{
+    float radius = AGNode::s_sizeFactor/1.15;
+    
+    // equilateral triangle pointing down
+    float H = radius*2*sqrtf(0.75);         // height from base to tip
+    float up = (H*H - radius*radius)/(2*H); // vertical distance from 2d centroid to base
+    up = (up+H/2.0f)/2.0f;                  // average with vertical midpoint for better aesthetics
+    float down = H - up;                    // vertical distance from center position to tip
+    
+    return GLvertex3f(0, -down, 0);
+}
+
+AGDocument::Node AGInputNode::serialize()
+{
+    assert(type().length());
+    
+    AGDocument::Node n;
+    n._class = AGDocument::Node::INPUT;
+    n.type = type();
+    n.uuid = uuid();
+    n.x = position().x;
+    n.y = position().y;
+    n.z = position().z;
+    
+    for(int i = 0; i < numEditPorts(); i++)
+    {
+        float v;
+        getEditPortValue(i, v);
+        n.params[editPortInfo(i).name] = AGDocument::ParamValue(v);
+    }
+    
+    return n;
+}
+
 
 //------------------------------------------------------------------------------
 // ### AGSliderNode ###
@@ -27,9 +189,7 @@ private:
 
 };
 
-
 AGNodeInfo *AGSliderNode::s_nodeInfo;
-
 
 void AGSliderNode::initialize()
 {

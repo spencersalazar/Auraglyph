@@ -33,6 +33,277 @@ static AGNode *createAudioNode(const GLvertex3f &pos)
 }
 
 
+//------------------------------------------------------------------------------
+// ### AGAudioNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioNode
+
+bool AGAudioNode::s_init = false;
+GLuint AGAudioNode::s_vertexArray = 0;
+GLuint AGAudioNode::s_vertexBuffer = 0;
+GLuint AGAudioNode::s_geoSize = 0;
+int AGAudioNode::s_sampleRate = 44100;
+
+void AGAudioNode::initializeAudioNode()
+{
+    initalizeNode();
+    
+    if(!s_init)
+    {
+        s_init = true;
+        
+        // generate circle
+        s_geoSize = 64;
+        GLvertex3f *geo = new GLvertex3f[s_geoSize];
+        float radius = 0.01*AGStyle::oldGlobalScale;
+        for(int i = 0; i < s_geoSize; i++)
+        {
+            float theta = 2*M_PI*((float)i)/((float)(s_geoSize));
+            geo[i] = GLvertex3f(radius*cosf(theta), radius*sinf(theta), 0);
+        }
+        
+        genVertexArrayAndBuffer(s_geoSize, geo, s_vertexArray, s_vertexBuffer);
+        
+        delete[] geo;
+        geo = NULL;
+    }
+}
+
+
+AGAudioNode::AGAudioNode(GLvertex3f pos, AGNodeInfo *nodeInfo) :
+AGNode(pos, nodeInfo)
+{
+    initializeAudioNode();
+    
+    m_gain = 1;
+    
+    m_radius = 0.01*AGStyle::oldGlobalScale;
+    m_portRadius = 0.01*0.2*AGStyle::oldGlobalScale;
+    
+    m_lastTime = -1;
+    m_outputBuffer = new float[bufferSize()];
+    memset(m_outputBuffer, 0, sizeof(float)*bufferSize());
+    m_inputPortBuffer = NULL;
+}
+
+AGAudioNode::AGAudioNode(const AGDocument::Node &docNode, AGNodeInfo *nodeInfo) :
+AGNode(docNode, nodeInfo)
+{
+    initializeAudioNode();
+    
+    m_gain = 1;
+    
+    m_radius = 0.01*AGStyle::oldGlobalScale;
+    m_portRadius = 0.01*0.2*AGStyle::oldGlobalScale;
+    
+    m_lastTime = -1;
+    m_outputBuffer = new float[bufferSize()];
+    memset(m_outputBuffer, 0, sizeof(float)*bufferSize());
+    m_inputPortBuffer = NULL;
+}
+
+
+
+AGAudioNode::~AGAudioNode()
+{
+    if(m_inputPortBuffer)
+    {
+        for(int i = 0; i < numInputPorts(); i++)
+        {
+            if(m_inputPortBuffer[i])
+            {
+                delete[] m_inputPortBuffer[i];
+                m_inputPortBuffer[i] = NULL;
+            }
+        }
+        
+        delete[] m_inputPortBuffer;
+        m_inputPortBuffer = NULL;
+    }
+    
+    SAFE_DELETE_ARRAY(m_outputBuffer);
+}
+
+//void AGAudioNode::renderAudio(float *input, float *output, int nFrames)
+//{
+//}
+
+void AGAudioNode::update(float t, float dt)
+{
+    AGNode::update(t, dt);
+    
+    GLKMatrix4 projection = projectionMatrix();
+    GLKMatrix4 modelView = globalModelViewMatrix();
+    
+    modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
+    
+    m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
+    m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, modelView);
+}
+
+void AGAudioNode::render()
+{
+    GLcolor4f color = GLcolor4f::white;
+    
+    // draw base outline
+    glBindVertexArrayOES(s_vertexArray);
+    
+    color.a = m_fadeOut;
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
+    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    
+    AGGenericShader &shader = AGGenericShader::instance();
+    shader.useProgram();
+    shader.setNormalMatrix(m_normalMatrix);
+    
+    if(m_activation)
+    {
+        float scale = 0.975;
+        
+        GLKMatrix4 projection = projectionMatrix();
+        GLKMatrix4 modelView = globalModelViewMatrix();
+        
+        modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
+        GLKMatrix4 modelViewInner = GLKMatrix4Scale(modelView, scale, scale, scale);
+        GLKMatrix4 mvp = GLKMatrix4Multiply(projection, modelViewInner);
+        shader.setMVPMatrix(mvp);
+        
+        glLineWidth(4.0f);
+        glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
+        
+        GLKMatrix4 modelViewOuter = GLKMatrix4Scale(modelView, 1.0/scale, 1.0/scale, 1.0/scale);
+        mvp = GLKMatrix4Multiply(projection, modelViewOuter);
+        shader.setMVPMatrix(mvp);
+        
+        glLineWidth(4.0f);
+        glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
+    }
+    else
+    {
+        shader.setMVPMatrix(m_modelViewProjectionMatrix);
+        shader.setNormalMatrix(m_normalMatrix);
+        
+        glLineWidth(4.0f);
+        glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
+    }
+    
+    glBindVertexArrayOES(0);
+    
+    AGNode::render();
+}
+
+AGUIObject *AGAudioNode::hitTest(const GLvertex3f &t)
+{
+    if(pointInCircle(t.xy(), m_pos.xy(), m_radius))
+        return this;
+    return NULL;
+}
+
+GLvertex3f AGAudioNode::relativePositionForInputPort(int port) const
+{
+    int numIn = numInputPorts();
+    // compute placement to pack ports side by side on left side
+    // thetaI - inner angle of the big circle traversed by 1/2 of the port
+    float thetaI = acosf((2*m_radius*m_radius - s_portRadius*s_portRadius) / (2*m_radius*m_radius));
+    // thetaStart - position of first port
+    float thetaStart = (numIn-1)*thetaI;
+    // theta - position of this port
+    float theta = thetaStart - 2*thetaI*port;
+    // flip horizontally to place on left side
+    return GLvertex3f(-m_radius*cosf(theta), m_radius*sinf(theta), 0);
+}
+
+GLvertex3f AGAudioNode::relativePositionForOutputPort(int port) const
+{
+    return GLvertex3f(m_radius, 0, 0);
+}
+
+void AGAudioNode::allocatePortBuffers()
+{
+    if(numInputPorts() > 0)
+    {
+        m_inputPortBuffer = new float*[numInputPorts()];
+        m_controlPortBuffer = new AGControl *[numInputPorts()];
+        for(int i = 0; i < numInputPorts(); i++)
+        {
+            if(m_nodeInfo->inputPortInfo[i].canConnect)
+            {
+                m_inputPortBuffer[i] = new float[bufferSize()];
+                memset(m_inputPortBuffer[i], 0, sizeof(float)*bufferSize());
+            }
+            else
+            {
+                m_inputPortBuffer[i] = NULL;
+            }
+            
+            m_controlPortBuffer[i] = NULL;
+        }
+    }
+    else
+    {
+        m_inputPortBuffer = NULL;
+    }
+}
+
+void AGAudioNode::pullInputPorts(sampletime t, int nFrames)
+{
+    if(t <= m_lastTime) return;
+    
+    this->lock();
+    
+    if(m_inputPortBuffer != NULL)
+    {
+        for(int i = 0; i < numInputPorts(); i++)
+        {
+            if(m_inputPortBuffer[i] != NULL)
+                memset(m_inputPortBuffer[i], 0, nFrames*sizeof(float));
+        }
+    }
+    
+    for(std::list<AGConnection *>::iterator c = m_inbound.begin(); c != m_inbound.end(); c++)
+    {
+        AGConnection *conn = *c;
+        
+        assert(m_inputPortBuffer && m_inputPortBuffer[conn->dstPort()]);
+        
+        if(conn->rate() == RATE_AUDIO)
+        {
+            conn->src()->renderAudio(t, NULL, m_inputPortBuffer[conn->dstPort()], nFrames);
+        }
+    }
+    
+    this->unlock();
+}
+
+
+void AGAudioNode::renderLast(float *output, int nFrames)
+{
+    for(int i = 0; i < nFrames; i++) output[i] += m_outputBuffer[i];
+}
+
+
+AGDocument::Node AGAudioNode::serialize()
+{
+    assert(type().length());
+    
+    AGDocument::Node docNode;
+    docNode._class = AGDocument::Node::AUDIO;
+    docNode.type = type();
+    docNode.uuid = uuid();
+    docNode.x = position().x;
+    docNode.y = position().y;
+    docNode.z = position().z;
+    
+    for(int i = 0; i < numEditPorts(); i++)
+    {
+        float v;
+        getEditPortValue(i, v);
+        docNode.params[editPortInfo(i).name] = AGDocument::ParamValue(v);
+    }
+    
+    return docNode;
+}
+
 
 //------------------------------------------------------------------------------
 // ### AGAudioOutputNode ###

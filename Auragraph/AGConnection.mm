@@ -7,7 +7,7 @@
 //
 
 #include "AGConnection.h"
-#include "AGNode.h"
+#include "AGAudioNode.h"
 #include "AGViewController.h"
 #include "AGGenericShader.h"
 

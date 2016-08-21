@@ -9,7 +9,7 @@
 #ifndef __Auragraph__AGArrayNode__
 #define __Auragraph__AGArrayNode__
 
-#include "AGNode.h"
+#include "AGControlNode.h"
 #include "AGControl.h"
 #include <list>
 

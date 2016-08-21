@@ -15,8 +15,6 @@
 #import "ES2Render.h"
 #import "AGHandwritingRecognizer.h"
 #import "AGNode.h"
-#import "AGAudioNode.h"
-#import "AGAudioManager.h"
 #import "AGUserInterface.h"
 #import "TexFont.h"
 #import "AGDef.h"
@@ -124,9 +122,8 @@
     }
     else if(figure == AG_FIGURE_TRIANGLE_UP)
     {
-        AGOutputNode * node = new AGOutputNode(centroidMVP);
-        node->init();
-        [_viewController addNode:node];
+        AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::outputNodeSelector(centroidMVP);
+        _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
     }
     else
     {
