@@ -21,8 +21,8 @@ class AGControlNode : public AGNode
 public:
     static void initializeControlNode();
     
-    AGControlNode(GLvertex3f pos = GLvertex3f(), AGNodeInfo *nodeInfo = NULL);
-    AGControlNode(const AGDocument::Node &docNode, AGNodeInfo *nodeInfo);
+    AGControlNode(const AGNodeManifest *mf, GLvertex3f pos = GLvertex3f());
+    AGControlNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
     virtual ~AGControlNode() { }
     
     virtual void update(float t, float dt);

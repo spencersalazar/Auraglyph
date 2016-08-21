@@ -626,14 +626,15 @@ void AGControlArrayNode::initialize()
     s_nodeInfo->inputPortInfo.push_back({ "iterate", true, true });
 }
 
-AGControlArrayNode::AGControlArrayNode(const GLvertex3f &pos) :
-AGControlNode(pos, s_nodeInfo)
+AGControlArrayNode::AGControlArrayNode(const AGNodeManifest *mf, const GLvertex3f &pos) :
+AGControlNode(mf, pos)
 {
     m_lastTime = 0;
     m_position = m_items.begin();
 }
 
-AGControlArrayNode::AGControlArrayNode(const AGDocument::Node &docNode) : AGControlNode(docNode, s_nodeInfo)
+AGControlArrayNode::AGControlArrayNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
+AGControlNode(mf, docNode)
 {
     m_lastTime = 0;
     m_position = m_items.begin();
@@ -685,12 +686,5 @@ void AGControlArrayNode::renderIcon()
     
     glLineWidth(2.0);
     glDrawArrays(s_nodeInfo->iconGeoType, 0, s_nodeInfo->iconGeoSize);
-}
-
-AGNode *AGControlArrayNode::create(const GLvertex3f &pos)
-{
-    AGControlArrayNode *node = new AGControlArrayNode(pos);
-    node->init();
-    return node;
 }
 

@@ -35,8 +35,8 @@ public:
     
     static void initializeAudioNode();
     
-    AGAudioNode(GLvertex3f pos = GLvertex3f(), AGNodeInfo *nodeInfo = NULL);
-    AGAudioNode(const AGDocument::Node &docNode, AGNodeInfo *nodeInfo);
+    AGAudioNode(const AGNodeManifest *mf, GLvertex3f pos = GLvertex3f());
+    AGAudioNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
     virtual ~AGAudioNode();
     
     virtual void update(float t, float dt);
@@ -95,8 +95,8 @@ class AGAudioOutputNode : public AGAudioNode
 public:
     static void initialize();
     
-    AGAudioOutputNode(GLvertex3f pos);
-    AGAudioOutputNode(const AGDocument::Node &docNode);
+    AGAudioOutputNode(const AGNodeManifest *mf, GLvertex3f pos);
+    AGAudioOutputNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
     void init();
     ~AGAudioOutputNode();
     
@@ -105,9 +105,8 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
-    static AGNodeInfo *nodeInfo() { return s_audioNodeInfo; }
+    static AGNodeInfo *nodeInfo() { initialize(); return s_audioNodeInfo; }
     static void renderIcon();
-    static AGAudioNode *create(const GLvertex3f &pos);
     
 private:
     static AGNodeInfo *s_audioNodeInfo;

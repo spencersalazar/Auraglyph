@@ -56,8 +56,8 @@ void AGOutputNode::initializeOutputNode()
     }
 }
 
-AGOutputNode::AGOutputNode(GLvertex3f pos) :
-AGNode(pos)
+AGOutputNode::AGOutputNode(const AGNodeManifest *mf, GLvertex3f pos) :
+AGNode(mf, pos)
 {
     initializeOutputNode();
 }

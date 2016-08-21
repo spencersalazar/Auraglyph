@@ -228,7 +228,7 @@ static AGViewController * g_instance = nil;
     else
     {
 //        outputNode = new AGAudioOutputNode([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)]);
-        outputNode = new AGAudioOutputNode(GLvertex3f(0, 0, 0));
+        outputNode = new AGAudioOutputNode(NULL, GLvertex3f(0, 0, 0));
         outputNode->init();
         _nodes.push_back(outputNode);
     }

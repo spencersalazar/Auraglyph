@@ -63,14 +63,14 @@ void AGControlNode::initializeControlNode()
     }
 }
 
-AGControlNode::AGControlNode(GLvertex3f pos, AGNodeInfo *nodeInfo) :
-AGNode(pos, nodeInfo)
+AGControlNode::AGControlNode(const AGNodeManifest *mf, GLvertex3f pos) :
+AGNode(mf, pos)
 {
     initializeControlNode();
 }
 
-AGControlNode::AGControlNode(const AGDocument::Node &docNode, AGNodeInfo *nodeInfo) :
-AGNode(docNode, nodeInfo)
+AGControlNode::AGControlNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
+AGNode(mf, docNode)
 {
     initializeControlNode();
 }
@@ -180,8 +180,8 @@ class AGControlTimerNode : public AGControlNode
 public:
     static void initialize();
     
-    AGControlTimerNode(const GLvertex3f &pos);
-    AGControlTimerNode(const AGDocument::Node &docNode);
+    AGControlTimerNode(const AGNodeManifest *mf, const GLvertex3f &pos);
+    AGControlTimerNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
     ~AGControlTimerNode();
     
     virtual int numOutputPorts() const { return 1; }
@@ -191,9 +191,8 @@ public:
     virtual void update(float t, float dt);
     virtual void render();
     
-    static AGNodeInfo *nodeInfo() { return s_nodeInfo; }
+    static AGNodeInfo *nodeInfo() { initialize(); return s_nodeInfo; }
     static void renderIcon();
-    static AGNode *create(const GLvertex3f &pos);
     
 private:
     static AGNodeInfo *s_nodeInfo;
@@ -244,8 +243,8 @@ void AGControlTimerNode::initialize()
     s_nodeInfo->inputPortInfo.push_back({ "interval", true, true });
 }
 
-AGControlTimerNode::AGControlTimerNode(const GLvertex3f &pos) :
-AGControlNode(pos, s_nodeInfo)
+AGControlTimerNode::AGControlTimerNode(const AGNodeManifest *mf, const GLvertex3f &pos) :
+AGControlNode(mf, pos)
 {
     m_interval = 0.5;
     m_lastFire = 0;
@@ -259,7 +258,8 @@ AGControlNode(pos, s_nodeInfo)
     });
 }
 
-AGControlTimerNode::AGControlTimerNode(const AGDocument::Node &docNode) : AGControlNode(docNode, s_nodeInfo)
+AGControlTimerNode::AGControlTimerNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
+AGControlNode(mf, docNode)
 {
     m_interval = 0.5;
     m_lastFire = 0;
@@ -342,13 +342,6 @@ void AGControlTimerNode::renderIcon()
     glDrawArrays(s_nodeInfo->iconGeoType, 0, s_nodeInfo->iconGeoSize);
 }
 
-AGNode *AGControlTimerNode::create(const GLvertex3f &pos)
-{
-    AGControlNode *node = new AGControlTimerNode(pos);
-    node->init();
-    return node;
-}
-
 
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
@@ -360,25 +353,14 @@ const AGNodeManager &AGNodeManager::controlNodeManager()
     if(s_controlNodeManager == NULL)
     {
         s_controlNodeManager = new AGNodeManager();
+
+        vector<const AGNodeManifest *> &nodeTypes = s_controlNodeManager->m_nodeTypes;
         
-        // s_audioNodeManager->m_nodeTypes.push_back(makeNodeInfo<AGSliderNode>("Slider"));
+        nodeTypes.push_back(AGTransitionalNodeManifest::make<AGControlTimerNode>("Timer", AGControlTimerNode::nodeInfo()));
+        nodeTypes.push_back(AGTransitionalNodeManifest::make<AGControlArrayNode>("Array", AGControlArrayNode::nodeInfo()));
         
-        s_controlNodeManager->m_nodeTypes.push_back(new NodeInfo("Timer",
-                                                                 AGControlTimerNode::initialize,
-                                                                 AGControlTimerNode::renderIcon,
-                                                                 AGControlTimerNode::create,
-                                                                 createNode<AGControlTimerNode>));
-        s_controlNodeManager->m_nodeTypes.push_back(new NodeInfo("Array",
-                                                                 AGControlArrayNode::initialize,
-                                                                 AGControlArrayNode::renderIcon,
-                                                                 AGControlArrayNode::create,
-                                                                 createNode<AGControlArrayNode>));
-        
-        itmap(s_controlNodeManager->m_nodeTypes, ^bool (NodeInfo *const &type){
-            if(type->initialize)
-                type->initialize();
-            return true;
-        });
+        for(const AGNodeManifest *const &mf : nodeTypes)
+            mf->initialize();
     }
     
     return *s_controlNodeManager;

@@ -72,9 +72,9 @@ void AGNode::initalizeNode()
 }
 
 
-AGNode::AGNode(GLvertex3f pos, AGNodeInfo *nodeInfo) :
+AGNode::AGNode(const AGNodeManifest *mf, GLvertex3f pos) :
 m_pos(pos),
-m_nodeInfo(nodeInfo),
+m_manifest(mf),
 m_active(true),
 m_fadeOut(1, 0, 0.5, 2),
 m_uuid(makeUUID())
@@ -94,9 +94,9 @@ m_uuid(makeUUID())
     }
 }
 
-AGNode::AGNode(const AGDocument::Node &docNode, AGNodeInfo *nodeInfo) :
+AGNode::AGNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
 m_pos(GLvertex3f(docNode.x, docNode.y, docNode.z)),
-m_nodeInfo(nodeInfo),
+m_manifest(mf),
 m_active(true),
 m_fadeOut(1, 0, 0.5, 2),
 m_uuid(docNode.uuid)
@@ -241,22 +241,26 @@ void AGNode::render()
         glLineWidth(2.0f);
         glDrawArrays(s_portGeoType, 0, s_portGeoSize);
     }
+    
+    _renderIcon();
+}
 
-    if(m_nodeInfo)
+void AGNode::_renderIcon()
+{
+    if(m_manifest)
     {
+        AGGenericShader &shader = AGGenericShader::instance();
+        shader.useProgram();
+        
         shader.setMVPMatrix(m_modelViewProjectionMatrix);
         shader.setNormalMatrix(m_normalMatrix);
-        
-        glBindVertexArrayOES(0);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_nodeInfo->iconGeo);
         
         GLcolor4f color = GLcolor4f::white;
         color.a = m_fadeOut;
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
         glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
         
-        glLineWidth(2.0f);
-        glDrawArrays(m_nodeInfo->iconGeoType, 0, m_nodeInfo->iconGeoSize);
+        m_manifest->renderIcon();
     }
 }
 
@@ -565,20 +569,20 @@ AGNodeManager::AGNodeManager()
 {
 }
 
-const std::vector<AGNodeManager::NodeInfo *> &AGNodeManager::nodeTypes() const
+const std::vector<const AGNodeManifest *> &AGNodeManager::nodeTypes() const
 {
     return m_nodeTypes;
 }
 
-void AGNodeManager::renderNodeTypeIcon(NodeInfo *type) const
+void AGNodeManager::renderNodeTypeIcon(const AGNodeManifest *type) const
 {
     type->renderIcon();
 }
 
-AGNode *AGNodeManager::createNodeType(NodeInfo *type, const GLvertex3f &pos) const
+AGNode *AGNodeManager::createNodeType(const AGNodeManifest *mf, const GLvertex3f &pos) const
 {
-    AGNode *node = type->createNode(pos);
-    node->setTitle(type->name);
+    AGNode *node = mf->createNode(pos);
+    node->setTitle(mf->name());
     return node;
 }
 
@@ -586,11 +590,11 @@ AGNode *AGNodeManager::createNodeType(const AGDocument::Node &docNode) const
 {
     __block AGNode *node = NULL;
     
-    itmap(m_nodeTypes, ^bool (NodeInfo *const &type){
-        if(type->name == docNode.type)
+    itmap(m_nodeTypes, ^bool (const AGNodeManifest *const &mf){
+        if(mf->type() == docNode.type)
         {
-            node = type->createWithDocNode(docNode);
-            node->setTitle(type->name);
+            node = mf->createNode(docNode);
+            node->setTitle(mf->name());
             return false;
         }
         

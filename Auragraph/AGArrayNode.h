@@ -22,8 +22,8 @@ class AGControlArrayNode : public AGControlNode
 public:
     static void initialize();
     
-    AGControlArrayNode(const GLvertex3f &pos);
-    AGControlArrayNode(const AGDocument::Node &docNode);
+    AGControlArrayNode(const AGNodeManifest *mf, const GLvertex3f &pos);
+    AGControlArrayNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
     
     virtual int numOutputPorts() const { return 1; }
     virtual void setEditPortValue(int port, float value);
@@ -33,9 +33,8 @@ public:
     
     virtual void receiveControl(int port, AGControl *control);
     
-    static AGNodeInfo *nodeInfo() { return s_nodeInfo; }
+    static AGNodeInfo *nodeInfo() { initialize(); return s_nodeInfo; }
     static void renderIcon();
-    static AGNode *create(const GLvertex3f &pos);
         
 private:
     static AGNodeInfo *s_nodeInfo;

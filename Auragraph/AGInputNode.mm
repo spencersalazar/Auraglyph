@@ -65,14 +65,14 @@ void AGInputNode::initializeInputNode()
     }
 }
 
-AGInputNode::AGInputNode(GLvertex3f pos, AGNodeInfo *nodeInfo) :
-AGNode(pos, nodeInfo)
+AGInputNode::AGInputNode(const AGNodeManifest *mf, GLvertex3f pos) :
+AGNode(mf, pos)
 {
     initializeInputNode();
 }
 
-AGInputNode::AGInputNode(const AGDocument::Node &docNode, AGNodeInfo *nodeInfo) :
-AGNode(docNode, nodeInfo)
+AGInputNode::AGInputNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
+AGNode(mf, docNode)
 {
     initializeInputNode();
 }
@@ -175,18 +175,29 @@ AGDocument::Node AGInputNode::serialize()
 //------------------------------------------------------------------------------
 // ### AGSliderNode ###
 //------------------------------------------------------------------------------
+
 class AGSliderNode : public AGInputNode
 {
 public:
-    AGSliderNode(const GLvertex3f &pos) : AGInputNode(pos, s_nodeInfo) { }
-    AGSliderNode(const AGDocument::Node &docNode) : AGInputNode(docNode, s_nodeInfo) { }
+    class Manifest : AGStandardNodeManifest<AGSliderNode>
+    {
+    public:
+        string _type() override { return "Slider"; };
+        string _name() override { return "Slider"; };
+        vector<AGPortInfo> _inputPortInfo() override { return {}; };
+        vector<AGPortInfo> _editPortInfo() override { return {}; };
+        vector<GLvertex3f> iconGeo() override { return {}; };
+        GLuint iconGeoType() override { return GL_LINES; };
+    };
+    
+    AGSliderNode(const AGNodeManifest *mf, const GLvertex3f &pos) : AGInputNode(mf, pos) { }
+    AGSliderNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) : AGInputNode(mf, docNode) { }
     
     static void initialize();
-    static AGNodeInfo *nodeInfo() { return s_nodeInfo; }
+    static AGNodeInfo *nodeInfo() { initialize(); return s_nodeInfo; }
     
 private:
     static AGNodeInfo *s_nodeInfo;
-
 };
 
 AGNodeInfo *AGSliderNode::s_nodeInfo;
@@ -232,14 +243,14 @@ const AGNodeManager &AGNodeManager::inputNodeManager()
     {
         s_inputNodeManager = new AGNodeManager();
         
-        s_inputNodeManager->m_nodeTypes.push_back(makeNodeInfo<AGSliderNode>("Slider"));
+        vector<const AGNodeManifest *> &nodeTypes = s_inputNodeManager->m_nodeTypes;
+        
+        nodeTypes.push_back(AGTransitionalNodeManifest::make<AGSliderNode>("Slider", AGSliderNode::nodeInfo()));
 //        s_inputNodeManager->m_audioNodeTypes.push_back(new NodeInfo("Knob", NULL, NULL, NULL, NULL));
 //        s_inputNodeManager->m_audioNodeTypes.push_back(new NodeInfo("Button", NULL, NULL, NULL, NULL));
         
-        itmap(s_inputNodeManager->m_nodeTypes, ^bool (NodeInfo *const &type){
-            type->initialize();
-            return true;
-        });
+        for(const AGNodeManifest *const &mf : nodeTypes)
+            mf->initialize();
     }
     
     return *s_inputNodeManager;

@@ -27,7 +27,6 @@ public:
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
     static void renderIcon();
-    static AGAudioNode *create(const GLvertex3f &pos);
     
 private:
     static AGNodeInfo *s_audioNodeInfo;

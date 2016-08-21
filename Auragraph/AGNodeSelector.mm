@@ -103,7 +103,7 @@ template<class NodeType, class ManagerType>
 AGUINodeSelector<NodeType, ManagerType>::AGUINodeSelector(const ManagerType &manager, const GLvertex3f &pos) :
 AGUIMetaNodeSelector(pos),
 m_pos(pos),
-m_node(new NodeType(pos)),
+m_node(new NodeType(AGNodeManifest::defaultManifest(), pos)),
 m_hit(-1),
 m_done(false),
 m_manager(manager)

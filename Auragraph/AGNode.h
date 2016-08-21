@@ -32,6 +32,7 @@
 using namespace std;
 
 
+class AGNode;
 class AGUINodeEditor;
 
 
@@ -58,6 +59,23 @@ struct AGNodeInfo
 };
 
 
+class AGNodeManifest
+{
+public:
+    virtual const string &type() const = 0;
+    virtual const string &name() const = 0;
+    virtual void initialize() const = 0;
+    virtual void renderIcon() const = 0;
+    virtual AGNode *createNode(const GLvertex3f &pos) const = 0;
+    virtual AGNode *createNode(const AGDocument::Node &docNode) const = 0;
+    
+    virtual const vector<AGPortInfo> &inputPortInfo() const = 0;
+    virtual const vector<AGPortInfo> &editPortInfo() const = 0;
+    
+    static const AGNodeManifest *defaultManifest() { return NULL; }
+};
+
+
 class AGNode : public AGUIObject
 {
 public:
@@ -67,11 +85,11 @@ public:
     static void connect(AGConnection * connection);
     static void disconnect(AGConnection * connection);
     
-    AGNode(GLvertex3f pos = GLvertex3f(), AGNodeInfo *nodeInfo = NULL);
-    AGNode(const AGDocument::Node &docNode, AGNodeInfo *nodeInfo);
+    AGNode(const AGNodeManifest *mf, GLvertex3f pos = GLvertex3f());
+    AGNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
     virtual ~AGNode();
     
-    const string &type() { return m_nodeInfo->type; }
+    virtual const string &type() { return m_manifest->type(); }
     const string &uuid() { return m_uuid; }
     void setTitle(const string &title) { m_title = title; }
     const string &title() const { return m_title; }
@@ -114,10 +132,10 @@ public:
     void activate(int type) { m_activation = type; }
     
     virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { if(m_nodeInfo) return m_nodeInfo->inputPortInfo.size(); else return 0; }
-    virtual int numEditPorts() const { if(m_nodeInfo) return m_nodeInfo->editPortInfo.size(); else return 0; }
-    const AGPortInfo &inputPortInfo(int port) { return m_nodeInfo->inputPortInfo[port]; }
-    const AGPortInfo &editPortInfo(int port) { return m_nodeInfo->editPortInfo[port]; }
+    virtual int numInputPorts() const { if(m_manifest) return m_manifest->inputPortInfo().size(); else return 0; }
+    virtual int numEditPorts() const { if(m_manifest) return m_manifest->editPortInfo().size(); else return 0; }
+    virtual const AGPortInfo &inputPortInfo(int port) { return m_manifest->inputPortInfo()[port]; }
+    virtual const AGPortInfo &editPortInfo(int port) { return m_manifest->editPortInfo()[port]; }
     
     virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const { return m_pos + relativePositionForInboundConnection(connection); }
     virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const { return m_pos + relativePositionForOutboundConnection(connection); }
@@ -170,7 +188,10 @@ protected:
     virtual void removeInbound(AGConnection *connection);
     virtual void removeOutbound(AGConnection *connection);
     
-    AGNodeInfo *m_nodeInfo;
+    virtual void _renderIcon();
+    
+    const AGNodeManifest *m_manifest;
+//    AGNodeInfo *m_nodeInfo;
     string m_title;
     string m_uuid; // TODO: const
     
@@ -196,6 +217,11 @@ protected:
     powcurvef m_fadeOut;
 };
 
+
+//------------------------------------------------------------------------------
+// ### AGFreeDraw ###
+//------------------------------------------------------------------------------
+#pragma mark - AGFreeDraw
 
 class AGFreeDraw : public AGUIObject
 {
@@ -237,17 +263,17 @@ private:
 // ### utility functions ###
 //------------------------------------------------------------------------------
 template<class NodeClass>
-static AGNode *createNode(const AGDocument::Node &docNode)
+static AGNode *createNode(const AGNodeManifest *mf, const AGDocument::Node &docNode)
 {
-    NodeClass *node = new NodeClass(docNode);
+    NodeClass *node = new NodeClass(mf, docNode);
     node->init();
     return node;
 }
 
 template<class NodeClass>
-static AGNode *createNode(const GLvertex3f &pos)
+static AGNode *createNode(const AGNodeManifest *mf, const GLvertex3f &pos)
 {
-    NodeClass *node = new NodeClass(pos);
+    NodeClass *node = new NodeClass(mf, pos);
     node->init();
     return node;
 }
@@ -280,8 +306,8 @@ public:
         NodeInfo(std::string _name,
                  void (*_initialize)(),
                  void (*_renderIcon)(),
-                 AGNode *(*_createNode)(const GLvertex3f &pos),
-                 AGNode *(*_createNodeWithDocNode)(const AGDocument::Node &docNode)) :
+                 AGNode *(*_createNode)(const AGNodeManifest *mf, const GLvertex3f &pos),
+                 AGNode *(*_createNodeWithDocNode)(const AGNodeManifest *mf, const AGDocument::Node &docNode)) :
         name(_name),
         initialize(_initialize),
         renderIcon(_renderIcon),
@@ -292,13 +318,13 @@ public:
         std::string name;
         void (*initialize)();
         void (*renderIcon)();
-        AGNode *(*createNode)(const GLvertex3f &pos);
-        AGNode *(*createWithDocNode)(const AGDocument::Node &docNode);
+        AGNode *(*createNode)(const AGNodeManifest *mf, const GLvertex3f &pos);
+        AGNode *(*createWithDocNode)(const AGNodeManifest *mf, const AGDocument::Node &docNode);
     };
     
-    const std::vector<NodeInfo *> &nodeTypes() const;
-    void renderNodeTypeIcon(NodeInfo *type) const;
-    AGNode *createNodeType(NodeInfo *type, const GLvertex3f &pos) const;
+    const std::vector<const AGNodeManifest *> &nodeTypes() const;
+    void renderNodeTypeIcon(const AGNodeManifest *mf) const;
+    AGNode *createNodeType(const AGNodeManifest *mf, const GLvertex3f &pos) const;
     AGNode *createNodeType(const AGDocument::Node &docNode) const;
     
     template<class NodeClass>
@@ -314,10 +340,134 @@ private:
     static AGNodeManager *s_inputNodeManager;
     static AGNodeManager *s_outputNodeManager;
     
-    std::vector<NodeInfo *> m_nodeTypes;
+    std::vector<const AGNodeManifest *> m_nodeTypes;
     
     AGNodeManager();
 };
+
+
+class AGTransitionalNodeManifest : public AGNodeManifest
+{
+public:
+    AGTransitionalNodeManifest(const AGNodeInfo *_nodeInfo, const AGNodeManager::NodeInfo *_mgrNodeInfo) :
+    nodeInfo(_nodeInfo),
+    mgrNodeInfo(_mgrNodeInfo)
+    { }
+    
+    virtual const string &name() const { return mgrNodeInfo->name; }
+    virtual const string &type() const { return nodeInfo->type; }
+    virtual void initialize() const { if(mgrNodeInfo->initialize) mgrNodeInfo->initialize(); }
+    virtual void renderIcon() const { mgrNodeInfo->renderIcon(); }
+    virtual AGNode *createNode(const GLvertex3f &pos) const { return mgrNodeInfo->createNode(this, pos); }
+    virtual AGNode *createNode(const AGDocument::Node &docNode) const { return mgrNodeInfo->createWithDocNode(this, docNode); }
+    
+    virtual const vector<AGPortInfo> &inputPortInfo() const { return nodeInfo->inputPortInfo; }
+    virtual const vector<AGPortInfo> &editPortInfo() const { return nodeInfo->editPortInfo; }
+    
+    template<class NodeClass>
+    static AGTransitionalNodeManifest *make(const std::string &name, const AGNodeInfo *info)
+    {
+        return new AGTransitionalNodeManifest(info, AGNodeManager::makeNodeInfo<NodeClass>(name));
+    }
+    
+    static AGTransitionalNodeManifest *make(const AGNodeInfo *info, const AGNodeManager::NodeInfo *mgrInfo)
+    {
+        return new AGTransitionalNodeManifest(info, mgrInfo);
+    }
+    
+private:
+    const AGNodeInfo *nodeInfo;
+    const AGNodeManager::NodeInfo *mgrNodeInfo;
+};
+
+
+template<class NodeClass>
+class AGStandardNodeManifest : public AGNodeManifest
+{
+public:
+    AGStandardNodeManifest() : m_needsLoad(true) { }
+    
+    virtual void initialize()
+    {
+        load();
+    }
+    
+    virtual const string &type()
+    {
+        load();
+        return m_type;
+    }
+    
+    virtual const string &name()
+    {
+        load();
+        return m_type;
+    }
+    
+    virtual const vector<AGPortInfo> &inputPortInfo()
+    {
+        load();
+        return m_inputPortInfo;
+    }
+    
+    virtual const vector<AGPortInfo> &editPortInfo()
+    {
+        load();
+        return m_editPortInfo;
+    }
+    
+    virtual void renderIcon()
+    {
+        load();
+        
+        glBindVertexArrayOES(0);
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), iconGeo());
+        
+        glLineWidth(2.0);
+        glDrawArrays(iconGeoType(), 0, iconGeo().size());
+    }
+    
+    virtual AGNode *createNode(const GLvertex3f &pos)
+    {
+        return new NodeClass(this, pos);
+    }
+    
+    virtual AGNode *createNode(const AGDocument::Node &docNode)
+    {
+        return new NodeClass(this, docNode);
+    }
+    
+    
+protected:
+    virtual string _type() = 0;
+    virtual string _name() = 0;
+    virtual vector<AGPortInfo> _inputPortInfo() = 0;
+    virtual vector<AGPortInfo> _editPortInfo() = 0;
+    virtual vector<GLvertex3f> iconGeo() = 0;
+    virtual GLuint iconGeoType() = 0;
+    
+private:
+    void load()
+    {
+        if(m_needsLoad)
+        {
+            m_needsLoad = true;
+            m_type = _type();
+            m_name = _name();
+            m_iconGeo = iconGeo();
+            m_inputPortInfo = _inputPortInfo();
+            m_editPortInfo = _editPortInfo();
+        }
+    }
+    
+    bool m_needsLoad;
+    string m_type;
+    string m_name;
+    vector<GLvertex3f> m_iconGeo;
+    vector<AGPortInfo> m_inputPortInfo;
+    vector<AGPortInfo> m_editPortInfo;
+};
+
 
 #endif /* defined(__Auragraph__AGNode__) */
 

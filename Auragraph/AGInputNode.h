@@ -22,8 +22,8 @@ public:
     
     static void initializeInputNode();
     
-    AGInputNode(GLvertex3f pos = GLvertex3f(), AGNodeInfo *nodeInfo = NULL);
-    AGInputNode(const AGDocument::Node &docNode, AGNodeInfo *nodeInfo);
+    AGInputNode(const AGNodeManifest *mf, GLvertex3f pos = GLvertex3f());
+    AGInputNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
     
     virtual void update(float t, float dt);
     virtual void render();
