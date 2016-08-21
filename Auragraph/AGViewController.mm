@@ -196,12 +196,7 @@ static AGViewController * g_instance = nil;
         defaultDoc.recreate(^(const AGDocument::Node &docNode) {
             AGNode *node = NULL;
             if(docNode._class == AGDocument::Node::AUDIO)
-            {
                 node = AGNodeManager::audioNodeManager().createNodeType(docNode);
-                if(docNode.type == "Output")
-                    // TODO: fix this hacky shit
-                    outputNode = dynamic_cast<AGAudioOutputNode *>(node);
-            }
             else if(docNode._class == AGDocument::Node::CONTROL)
                 node = AGNodeManager::controlNodeManager().createNodeType(docNode);
             else if(docNode._class == AGDocument::Node::INPUT)

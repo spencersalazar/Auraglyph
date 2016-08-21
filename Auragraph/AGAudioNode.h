@@ -97,6 +97,8 @@ public:
     
     AGAudioOutputNode(GLvertex3f pos);
     AGAudioOutputNode(const AGDocument::Node &docNode);
+    void init();
+    ~AGAudioOutputNode();
     
     virtual int numOutputPorts() const { return 0; }
     virtual int numInputPorts() const { return 1; }

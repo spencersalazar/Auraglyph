@@ -23,6 +23,8 @@ static float g_audio_buf[1024];
 {
     sampletime t;
     
+    list<AGAudioNode *> _renderers;
+    Mutex _renderersMutex;
     list<AGTimer *> _timers;
     Mutex _timersMutex;
 }
@@ -31,12 +33,14 @@ static float g_audio_buf[1024];
 
 @end
 
+
 void audio_cb( Float32 * buffer, UInt32 numFrames, void * userData )
 {
     [(__bridge AGAudioManager *)userData renderAudio:buffer numFrames:numFrames];
 }
 
 static AGAudioManager *g_audioManager;
+
 
 @implementation AGAudioManager
 
@@ -63,6 +67,20 @@ static AGAudioManager *g_audioManager;
     }
     
     return self;
+}
+
+- (void)addRenderer:(AGAudioNode *)renderer
+{
+    _renderersMutex.lock();
+    _renderers.push_back(renderer);
+    _renderersMutex.unlock();
+}
+
+- (void)removeRenderer:(AGAudioNode *)renderer
+{
+    _renderersMutex.lock();
+    _renderers.remove(renderer);
+    _renderersMutex.unlock();
 }
 
 - (void)addTimer:(AGTimer *)timer
@@ -92,10 +110,10 @@ static AGAudioManager *g_audioManager;
     });
     _timersMutex.unlock();
     
-    if(self.outputNode)
-    {
-        self.outputNode->renderAudio(t, NULL, g_audio_buf, numFrames);
-    }
+    _renderersMutex.lock();
+    for(AGAudioNode *renderer : _renderers)
+        renderer->renderAudio(t, NULL, g_audio_buf, numFrames);
+    _renderersMutex.unlock();
     
     for(int i = 0; i < numFrames; i++)
     {

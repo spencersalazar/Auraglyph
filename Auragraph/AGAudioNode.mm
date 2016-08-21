@@ -11,6 +11,7 @@
 #import "SPFilter.h"
 #import "AGDef.h"
 #import "AGGenericShader.h"
+#import "AGAudioManager.h"
 #import "ADSR.h"
 #import "spstl.h"
 #include "AGStyle.h"
@@ -320,6 +321,16 @@ AGAudioOutputNode::AGAudioOutputNode(GLvertex3f pos) : AGAudioNode(pos, s_audioN
 AGAudioOutputNode::AGAudioOutputNode(const AGDocument::Node &docNode) : AGAudioNode(docNode, s_audioNodeInfo)
 {
     m_nodeInfo = s_audioNodeInfo;
+}
+
+void AGAudioOutputNode::init()
+{
+    [[AGAudioManager instance] addRenderer:this];
+}
+
+AGAudioOutputNode::~AGAudioOutputNode()
+{
+    [[AGAudioManager instance] removeRenderer:this];
 }
 
 void AGAudioOutputNode::initialize()
