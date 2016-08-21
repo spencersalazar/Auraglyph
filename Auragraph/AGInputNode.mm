@@ -67,11 +67,7 @@ const AGNodeManager &AGNodeManager::inputNodeManager()
     {
         s_inputNodeManager = new AGNodeManager();
         
-        s_inputNodeManager->m_nodeTypes.push_back(new NodeInfo("Slider",
-                                                               AGSliderNode::initialize,
-                                                               renderNodeIcon<AGSliderNode>,
-                                                               createNode<AGSliderNode>,
-                                                               createNode<AGSliderNode>));
+        s_inputNodeManager->m_nodeTypes.push_back(makeNodeInfo<AGSliderNode>("Slider"));
 //        s_inputNodeManager->m_audioNodeTypes.push_back(new NodeInfo("Knob", NULL, NULL, NULL, NULL));
 //        s_inputNodeManager->m_audioNodeTypes.push_back(new NodeInfo("Button", NULL, NULL, NULL, NULL));
         
@@ -83,39 +79,3 @@ const AGNodeManager &AGNodeManager::inputNodeManager()
     
     return *s_inputNodeManager;
 }
-
-const std::vector<AGNodeManager::NodeInfo *> &AGNodeManager::nodeTypes() const
-{
-    return m_nodeTypes;
-}
-
-void AGNodeManager::renderNodeTypeIcon(NodeInfo *type) const
-{
-    type->renderIcon();
-}
-
-AGNode *AGNodeManager::createNodeType(NodeInfo *type, const GLvertex3f &pos) const
-{
-    AGNode *node = type->createNode(pos);
-    node->setTitle(type->name);
-    return node;
-}
-
-AGNode *AGNodeManager::createNodeType(const AGDocument::Node &docNode) const
-{
-    __block AGNode *node = NULL;
-    
-    itmap(m_nodeTypes, ^bool (NodeInfo *const &type){
-        if(type->name == docNode.type)
-        {
-            node = type->createWithDocNode(docNode);
-            node->setTitle(type->name);
-            return false;
-        }
-        
-        return true;
-    });
-    
-    return node;
-}
-

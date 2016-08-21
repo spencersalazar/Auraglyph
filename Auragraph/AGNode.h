@@ -394,6 +394,36 @@ private:
     int m_touchPoint0;
 };
 
+//------------------------------------------------------------------------------
+// ### utility functions ###
+//------------------------------------------------------------------------------
+template<class NodeClass>
+static AGNode *createNode(const AGDocument::Node &docNode)
+{
+    NodeClass *node = new NodeClass(docNode);
+    node->init();
+    return node;
+}
+
+template<class NodeClass>
+static AGNode *createNode(const GLvertex3f &pos)
+{
+    NodeClass *node = new NodeClass(pos);
+    node->init();
+    return node;
+}
+
+template<class NodeClass>
+static void renderNodeIcon()
+{
+    AGNodeInfo *nodeInfo = NodeClass::nodeInfo();
+    
+    glBindVertexArrayOES(0);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), nodeInfo->iconGeo);
+    
+    glLineWidth(2.0);
+    glDrawArrays(nodeInfo->iconGeoType, 0, nodeInfo->iconGeoSize);
+}
 
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
@@ -430,6 +460,13 @@ public:
     AGNode *createNodeType(NodeInfo *type, const GLvertex3f &pos) const;
     AGNode *createNodeType(const AGDocument::Node &docNode) const;
     
+    template<class NodeClass>
+    static AGNodeManager::NodeInfo *makeNodeInfo(const std::string &name)
+    {
+        return new NodeInfo(name, NodeClass::initialize, renderNodeIcon<NodeClass>,
+                            createNode<NodeClass>, createNode<NodeClass>);
+    }
+    
 private:
     static AGNodeManager *s_inputNodeManager;
     static AGNodeManager *s_outputNodeManager;
@@ -438,38 +475,5 @@ private:
     
     AGNodeManager();
 };
-
-//------------------------------------------------------------------------------
-// ### utility functions ###
-//------------------------------------------------------------------------------
-template<class NodeClass>
-static AGNode *createNode(const AGDocument::Node &docNode)
-{
-    NodeClass *node = new NodeClass(docNode);
-    node->init();
-    return node;
-}
-
-template<class NodeClass>
-static AGNode *createNode(const GLvertex3f &pos)
-{
-    NodeClass *node = new NodeClass(pos);
-    node->init();
-    return node;
-}
-
-template<class NodeClass>
-static void renderNodeIcon()
-{
-    AGNodeInfo *nodeInfo = NodeClass::nodeInfo();
-    
-    glBindVertexArrayOES(0);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), nodeInfo->iconGeo);
-    
-    glLineWidth(2.0);
-    glDrawArrays(nodeInfo->iconGeoType, 0, nodeInfo->iconGeoSize);
-}
-
-
 
 #endif /* defined(__Auragraph__AGNode__) */
