@@ -409,7 +409,6 @@ public:
     
     static AGNodeInfo *nodeInfo() { return s_audioNodeInfo; }
     static void renderIcon();
-    static AGAudioNode *create(const GLvertex3f &pos);
     
 private:
     float m_freq;
@@ -512,13 +511,6 @@ void AGAudioSineWaveNode::renderIcon()
     
     glLineWidth(2.0);
     glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
-}
-
-AGAudioNode *AGAudioSineWaveNode::create(const GLvertex3f &pos)
-{
-    AGAudioSineWaveNode *node = new AGAudioSineWaveNode(pos);
-    node->init();
-    return node;
 }
 
 //------------------------------------------------------------------------------
