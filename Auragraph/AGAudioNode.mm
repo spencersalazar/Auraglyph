@@ -125,6 +125,7 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
+    static AGNodeInfo *nodeInfo() { return s_audioNodeInfo; }
     static void renderIcon();
     static AGAudioNode *create(const GLvertex3f &pos);
     
@@ -258,6 +259,7 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
+    static AGNodeInfo *nodeInfo() { return s_audioNodeInfo; }
     static void renderIcon();
     static AGAudioNode *create(const GLvertex3f &pos);
     
@@ -398,6 +400,7 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
+    static AGNodeInfo *nodeInfo() { return s_audioNodeInfo; }
     static void renderIcon();
     static AGAudioNode *create(const GLvertex3f &pos);
     
@@ -537,6 +540,7 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
+    static AGNodeInfo *nodeInfo() { return s_audioNodeInfo; }
     static void renderIcon();
     static AGAudioNode *create(const GLvertex3f &pos);
     
@@ -680,6 +684,7 @@ public:
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     virtual void receiveControl(int port, AGControl *control);
     
+    static AGNodeInfo *nodeInfo() { return s_audioNodeInfo; }
     static void renderIcon();
     static AGAudioNode *create(const GLvertex3f &pos);
     
@@ -1130,31 +1135,11 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         
         // s_audioNodeManager->m_nodeTypes.push_back(makeNodeInfo<AGSliderNode>("Slider"));
         
-        s_audioNodeManager->m_nodeTypes.push_back(new NodeInfo("SineWave",
-                                                               AGAudioSineWaveNode::initialize,
-                                                               AGAudioSineWaveNode::renderIcon,
-                                                               createAudioNode<AGAudioSineWaveNode>,
-                                                               createAudioNode<AGAudioSineWaveNode>));
-        s_audioNodeManager->m_nodeTypes.push_back(new NodeInfo("SquareWave",
-                                                               AGAudioSquareWaveNode::initialize,
-                                                               AGAudioSquareWaveNode::renderIcon,
-                                                               createAudioNode<AGAudioSquareWaveNode>,
-                                                               createAudioNode<AGAudioSquareWaveNode>));
-        s_audioNodeManager->m_nodeTypes.push_back(new NodeInfo("SawtoothWave",
-                                                               AGAudioSawtoothWaveNode::initialize,
-                                                               AGAudioSawtoothWaveNode::renderIcon,
-                                                               createAudioNode<AGAudioSawtoothWaveNode>,
-                                                               createAudioNode<AGAudioSawtoothWaveNode>));
-        s_audioNodeManager->m_nodeTypes.push_back(new NodeInfo("TriangleWave",
-                                                               AGAudioTriangleWaveNode::initialize,
-                                                               AGAudioTriangleWaveNode::renderIcon,
-                                                               createAudioNode<AGAudioTriangleWaveNode>,
-                                                               createAudioNode<AGAudioTriangleWaveNode>));
-        s_audioNodeManager->m_nodeTypes.push_back(new NodeInfo("ADSR",
-                                                               AGAudioADSRNode::initialize,
-                                                               AGAudioADSRNode::renderIcon,
-                                                               createAudioNode<AGAudioADSRNode>,
-                                                               createAudioNode<AGAudioADSRNode>));
+        s_audioNodeManager->m_nodeTypes.push_back(makeNodeInfo<AGAudioSineWaveNode>("SineWave"));
+        s_audioNodeManager->m_nodeTypes.push_back(makeNodeInfo<AGAudioSquareWaveNode>("SquareWave"));
+        s_audioNodeManager->m_nodeTypes.push_back(makeNodeInfo<AGAudioSawtoothWaveNode>("SawtoothWave"));
+        s_audioNodeManager->m_nodeTypes.push_back(makeNodeInfo<AGAudioTriangleWaveNode>("TriangleWave"));
+        s_audioNodeManager->m_nodeTypes.push_back(makeNodeInfo<AGAudioADSRNode>("ADSR"));
         s_audioNodeManager->m_nodeTypes.push_back(new NodeInfo("LowPass",
                                                                AGAudioFilterNode::initialize,
                                                                AGAudioFilterNode::renderLowPassIcon,
