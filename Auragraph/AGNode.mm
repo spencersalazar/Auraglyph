@@ -78,21 +78,7 @@ m_manifest(mf),
 m_active(true),
 m_fadeOut(1, 0, 0.5, 2),
 m_uuid(makeUUID())
-{
-    m_inputActivation = m_outputActivation = 0;
-    m_activation = 0;
-    
-    if(numInputPorts() > 0)
-    {
-        m_controlPortBuffer = new AGControl *[numInputPorts()];
-        for(int i = 0; i < numInputPorts(); i++)
-            m_controlPortBuffer[i] = NULL;
-    }
-    else
-    {
-        m_controlPortBuffer = NULL;
-    }
-}
+{ }
 
 AGNode::AGNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
 m_pos(GLvertex3f(docNode.x, docNode.y, docNode.z)),
@@ -100,7 +86,12 @@ m_manifest(mf),
 m_active(true),
 m_fadeOut(1, 0, 0.5, 2),
 m_uuid(docNode.uuid)
+{ }
+
+void AGNode::init()
 {
+    AGRenderObject::init();
+    
     m_inputActivation = m_outputActivation = 0;
     m_activation = 0;
     
@@ -114,6 +105,15 @@ m_uuid(docNode.uuid)
     {
         m_controlPortBuffer = NULL;
     }
+    
+    setDefaultPortValues();
+}
+
+void AGNode::init(const AGDocument::Node &docNode)
+{
+    AGNode::init();
+    
+    loadEditPortValues(docNode);
 }
 
 void AGNode::loadEditPortValues(const AGDocument::Node &docNode)

@@ -87,6 +87,8 @@ public:
     
     AGNode(const AGNodeManifest *mf, GLvertex3f pos = GLvertex3f());
     AGNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
+    virtual void init();
+    virtual void init(const AGDocument::Node &docNode);
     virtual ~AGNode();
     
     virtual const string &type() { return m_manifest->type(); }
@@ -152,7 +154,7 @@ public:
     
     void loadEditPortValues(const AGDocument::Node &docNode);
     
-    /* overridden by final subclass */
+    /* overridden by final subclass (if needed) */
     virtual AGUINodeEditor *createCustomEditor() { return NULL; }
 
     /* overridden by direct subclass */
@@ -188,7 +190,10 @@ protected:
     virtual void removeInbound(AGConnection *connection);
     virtual void removeOutbound(AGConnection *connection);
     
-    virtual void _renderIcon();
+    /* overridden by final subclass */
+    virtual void setDefaultPortValues() { }
+    
+    void _renderIcon();
     
     const AGNodeManifest *m_manifest;
 //    AGNodeInfo *m_nodeInfo;
@@ -266,7 +271,7 @@ template<class NodeClass>
 static AGNode *createNode(const AGNodeManifest *mf, const AGDocument::Node &docNode)
 {
     NodeClass *node = new NodeClass(mf, docNode);
-    node->init();
+    node->init(docNode);
     return node;
 }
 
@@ -429,12 +434,16 @@ public:
     
     virtual AGNode *createNode(const GLvertex3f &pos) const override
     {
-        return new NodeClass(this, pos);
+        NodeClass *node = new NodeClass(this, pos);
+        node->init();
+        return node;
     }
     
     virtual AGNode *createNode(const AGDocument::Node &docNode) const override
     {
-        return new NodeClass(this, docNode);
+        NodeClass *node = new NodeClass(this, docNode);
+        node->init(docNode);
+        return node;
     }
     
     
@@ -451,7 +460,7 @@ private:
     {
         if(m_needsLoad)
         {
-            m_needsLoad = true;
+            m_needsLoad = false;
             m_type = _type();
             m_name = _name();
             m_iconGeo = _iconGeo();

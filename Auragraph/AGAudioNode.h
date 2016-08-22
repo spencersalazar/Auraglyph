@@ -37,10 +37,12 @@ public:
     
     AGAudioNode(const AGNodeManifest *mf, GLvertex3f pos = GLvertex3f());
     AGAudioNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
+    virtual void init() override;
+    virtual void init(const AGDocument::Node &docNode) override;
     virtual ~AGAudioNode();
     
-    virtual void update(float t, float dt);
-    virtual void render();
+    virtual void update(float t, float dt) override;
+    virtual void render() override;
     
     virtual AGUIObject *hitTest(const GLvertex3f &t);
     
@@ -95,9 +97,10 @@ class AGAudioOutputNode : public AGAudioNode
 public:
     static void initialize();
     
-    AGAudioOutputNode(const AGNodeManifest *mf, GLvertex3f pos);
-    AGAudioOutputNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
-    void init();
+    using AGAudioNode::AGAudioNode;
+    
+    void init() override;
+    void init(const AGDocument::Node &docNode) override;
     ~AGAudioOutputNode();
     
     virtual int numOutputPorts() const { return 0; }

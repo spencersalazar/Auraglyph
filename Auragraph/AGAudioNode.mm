@@ -17,23 +17,6 @@
 #include "AGStyle.h"
 
 
-template<class NodeClass>
-static AGNode *createAudioNode(const AGDocument::Node &docNode)
-{
-    NodeClass *node = new NodeClass(docNode);
-    node->init();
-    return node;
-}
-
-template<class NodeClass>
-static AGNode *createAudioNode(const GLvertex3f &pos)
-{
-    NodeClass *node = new NodeClass(pos);
-    node->init();
-    return node;
-}
-
-
 //------------------------------------------------------------------------------
 // ### AGAudioNode ###
 //------------------------------------------------------------------------------
@@ -70,26 +53,18 @@ void AGAudioNode::initializeAudioNode()
     }
 }
 
-
 AGAudioNode::AGAudioNode(const AGNodeManifest *mf, GLvertex3f pos) :
 AGNode(mf, pos)
-{
-    initializeAudioNode();
-    
-    m_gain = 1;
-    
-    m_radius = 0.01*AGStyle::oldGlobalScale;
-    m_portRadius = 0.01*0.2*AGStyle::oldGlobalScale;
-    
-    m_lastTime = -1;
-    m_outputBuffer = new float[bufferSize()];
-    memset(m_outputBuffer, 0, sizeof(float)*bufferSize());
-    m_inputPortBuffer = NULL;
-}
+{ }
 
 AGAudioNode::AGAudioNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
 AGNode(mf, docNode)
+{ }
+
+void AGAudioNode::init()
 {
+    AGNode::init();
+    
     initializeAudioNode();
     
     m_gain = 1;
@@ -101,9 +76,28 @@ AGNode(mf, docNode)
     m_outputBuffer = new float[bufferSize()];
     memset(m_outputBuffer, 0, sizeof(float)*bufferSize());
     m_inputPortBuffer = NULL;
+    
+    allocatePortBuffers();
 }
 
-
+void AGAudioNode::init(const AGDocument::Node &docNode)
+{
+    AGNode::init(docNode);
+    
+    initializeAudioNode();
+    
+    m_gain = 1;
+    
+    m_radius = 0.01*AGStyle::oldGlobalScale;
+    m_portRadius = 0.01*0.2*AGStyle::oldGlobalScale;
+    
+    m_lastTime = -1;
+    m_outputBuffer = new float[bufferSize()];
+    memset(m_outputBuffer, 0, sizeof(float)*bufferSize());
+    m_inputPortBuffer = NULL;
+    
+    allocatePortBuffers();
+}
 
 AGAudioNode::~AGAudioNode()
 {
@@ -313,16 +307,17 @@ AGDocument::Node AGAudioNode::serialize()
 
 AGNodeInfo *AGAudioOutputNode::s_audioNodeInfo = NULL;
 
-AGAudioOutputNode::AGAudioOutputNode(const AGNodeManifest *mf, GLvertex3f pos) :
-AGAudioNode(mf, pos)
-{ }
-
-AGAudioOutputNode::AGAudioOutputNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
-AGAudioNode(mf, docNode)
-{ }
-
 void AGAudioOutputNode::init()
 {
+    AGAudioNode::init();
+    
+    [[AGAudioManager instance] addRenderer:this];
+}
+
+void AGAudioOutputNode::init(const AGDocument::Node &docNode)
+{
+    AGAudioNode::init(docNode);
+    
     [[AGAudioManager instance] addRenderer:this];
 }
 
@@ -431,39 +426,25 @@ public:
         GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
     };
     
-    AGAudioSineWaveNode(const AGNodeManifest *mf, GLvertex3f pos);
-    AGAudioSineWaveNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
+    using AGAudioNode::AGAudioNode;
     
-    virtual int numOutputPorts() const { return 1; }
+    void setDefaultPortValues() override
+    {
+        m_freq = 220;
+        m_phase = 0;
+    }
     
-    virtual void setEditPortValue(int port, float value);
-    virtual void getEditPortValue(int port, float &value) const;
+    virtual int numOutputPorts() const override { return 1; }
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
+    virtual void setEditPortValue(int port, float value) override;
+    virtual void getEditPortValue(int port, float &value) const override;
+    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
     
 private:
     float m_freq;
     float m_phase;
 };
-
-AGAudioSineWaveNode::AGAudioSineWaveNode(const AGNodeManifest *mf, GLvertex3f pos) :
-AGAudioNode(mf, pos)
-{
-    m_freq = 220;
-    m_phase = 0;
-    
-    allocatePortBuffers();
-}
-
-AGAudioSineWaveNode::AGAudioSineWaveNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
-AGAudioNode(mf, docNode)
-{
-    m_freq = 220;
-    m_phase = 0;
-    
-    loadEditPortValues(docNode);
-    allocatePortBuffers();
-}
 
 void AGAudioSineWaveNode::setEditPortValue(int port, float value)
 {
