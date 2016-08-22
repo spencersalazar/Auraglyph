@@ -387,85 +387,85 @@ class AGStandardNodeManifest : public AGNodeManifest
 public:
     AGStandardNodeManifest() : m_needsLoad(true) { }
     
-    virtual void initialize()
+    virtual void initialize() const override
     {
         load();
     }
     
-    virtual const string &type()
-    {
-        load();
-        return m_type;
-    }
-    
-    virtual const string &name()
+    virtual const string &type() const override
     {
         load();
         return m_type;
     }
     
-    virtual const vector<AGPortInfo> &inputPortInfo()
+    virtual const string &name() const override
+    {
+        load();
+        return m_type;
+    }
+    
+    virtual const vector<AGPortInfo> &inputPortInfo() const override
     {
         load();
         return m_inputPortInfo;
     }
     
-    virtual const vector<AGPortInfo> &editPortInfo()
+    virtual const vector<AGPortInfo> &editPortInfo() const override
     {
         load();
         return m_editPortInfo;
     }
     
-    virtual void renderIcon()
+    virtual void renderIcon() const override
     {
         load();
         
         glBindVertexArrayOES(0);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), iconGeo());
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), _iconGeo().data());
         
         glLineWidth(2.0);
-        glDrawArrays(iconGeoType(), 0, iconGeo().size());
+        glDrawArrays(_iconGeoType(), 0, _iconGeo().size());
     }
     
-    virtual AGNode *createNode(const GLvertex3f &pos)
+    virtual AGNode *createNode(const GLvertex3f &pos) const override
     {
         return new NodeClass(this, pos);
     }
     
-    virtual AGNode *createNode(const AGDocument::Node &docNode)
+    virtual AGNode *createNode(const AGDocument::Node &docNode) const override
     {
         return new NodeClass(this, docNode);
     }
     
     
 protected:
-    virtual string _type() = 0;
-    virtual string _name() = 0;
-    virtual vector<AGPortInfo> _inputPortInfo() = 0;
-    virtual vector<AGPortInfo> _editPortInfo() = 0;
-    virtual vector<GLvertex3f> iconGeo() = 0;
-    virtual GLuint iconGeoType() = 0;
+    virtual string _type() const = 0;
+    virtual string _name() const = 0;
+    virtual vector<AGPortInfo> _inputPortInfo() const = 0;
+    virtual vector<AGPortInfo> _editPortInfo() const = 0;
+    virtual vector<GLvertex3f> _iconGeo() const = 0;
+    virtual GLuint _iconGeoType() const = 0;
     
 private:
-    void load()
+    void load() const
     {
         if(m_needsLoad)
         {
             m_needsLoad = true;
             m_type = _type();
             m_name = _name();
-            m_iconGeo = iconGeo();
+            m_iconGeo = _iconGeo();
             m_inputPortInfo = _inputPortInfo();
             m_editPortInfo = _editPortInfo();
         }
     }
     
-    bool m_needsLoad;
-    string m_type;
-    string m_name;
-    vector<GLvertex3f> m_iconGeo;
-    vector<AGPortInfo> m_inputPortInfo;
-    vector<AGPortInfo> m_editPortInfo;
+    mutable bool m_needsLoad;
+    mutable string m_type;
+    mutable string m_name;
+    mutable vector<GLvertex3f> m_iconGeo;
+    mutable vector<AGPortInfo> m_inputPortInfo;
+    mutable vector<AGPortInfo> m_editPortInfo;
 };
 
 
