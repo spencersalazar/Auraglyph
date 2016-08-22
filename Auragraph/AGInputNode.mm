@@ -179,57 +179,41 @@ AGDocument::Node AGInputNode::serialize()
 class AGSliderNode : public AGInputNode
 {
 public:
-    class Manifest : AGStandardNodeManifest<AGSliderNode>
+    class Manifest : public AGStandardNodeManifest<AGSliderNode>
     {
     public:
-        string _type() override { return "Slider"; };
-        string _name() override { return "Slider"; };
-        vector<AGPortInfo> _inputPortInfo() override { return {}; };
-        vector<AGPortInfo> _editPortInfo() override { return {}; };
-        vector<GLvertex3f> iconGeo() override { return {}; };
-        GLuint iconGeoType() override { return GL_LINES; };
+        string _type() const override { return "Slider"; };
+        string _name() const override { return "Slider"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override { return {}; };
+        
+        vector<AGPortInfo> _editPortInfo() const override { return {}; };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius = 0.002*AGStyle::oldGlobalScale;
+            float height = 0.003*AGStyle::oldGlobalScale;
+            int circleSize = 48;
+            vector<GLvertex3f> iconGeo(circleSize);
+            
+            for(int i = 0; i < circleSize; i++)
+            {
+                float y_offset = height;
+                if(i >= circleSize/2)
+                    y_offset = -height;
+                float theta0 = 2*M_PI*((float)i)/((float)(circleSize));
+                iconGeo[i] = GLvertex3f(radius*cosf(theta0), radius*sinf(theta0)+y_offset, 0);
+            }
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINE_LOOP; };
     };
     
     AGSliderNode(const AGNodeManifest *mf, const GLvertex3f &pos) : AGInputNode(mf, pos) { }
     AGSliderNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) : AGInputNode(mf, docNode) { }
-    
-    static void initialize();
-    static AGNodeInfo *nodeInfo() { initialize(); return s_nodeInfo; }
-    
-private:
-    static AGNodeInfo *s_nodeInfo;
 };
-
-AGNodeInfo *AGSliderNode::s_nodeInfo;
-
-void AGSliderNode::initialize()
-{
-    if(s_nodeInfo == NULL)
-    {
-        s_nodeInfo = new AGNodeInfo;
-        
-
-        
-        s_nodeInfo->type = "Slider";
-        
-        //    float radius = 0.005;
-        float radius = 0.002*AGStyle::oldGlobalScale;
-        float height = 0.003*AGStyle::oldGlobalScale;
-        int circleSize = 48;
-        s_nodeInfo->iconGeoSize = circleSize;
-        s_nodeInfo->iconGeoType = GL_LINE_LOOP;
-        s_nodeInfo->iconGeo = new GLvertex3f[s_nodeInfo->iconGeoSize];
-        
-        for(int i = 0; i < circleSize; i++)
-        {
-            float y_offset = height;
-            if(i >= circleSize/2)
-                y_offset = -height;
-            float theta0 = 2*M_PI*((float)i)/((float)(circleSize));
-            s_nodeInfo->iconGeo[i] = GLvertex3f(radius*cosf(theta0), radius*sinf(theta0)+y_offset, 0);
-        }
-    }
-}
 
 
 //------------------------------------------------------------------------------
@@ -245,7 +229,7 @@ const AGNodeManager &AGNodeManager::inputNodeManager()
         
         vector<const AGNodeManifest *> &nodeTypes = s_inputNodeManager->m_nodeTypes;
         
-        nodeTypes.push_back(AGTransitionalNodeManifest::make<AGSliderNode>("Slider", AGSliderNode::nodeInfo()));
+        nodeTypes.push_back(new AGSliderNode::Manifest);
 //        s_inputNodeManager->m_audioNodeTypes.push_back(new NodeInfo("Knob", NULL, NULL, NULL, NULL));
 //        s_inputNodeManager->m_audioNodeTypes.push_back(new NodeInfo("Button", NULL, NULL, NULL, NULL));
         

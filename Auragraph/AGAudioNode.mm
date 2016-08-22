@@ -383,10 +383,53 @@ void AGAudioOutputNode::renderIcon()
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioSineWaveNode
 
+
 class AGAudioSineWaveNode : public AGAudioNode
 {
 public:
-    static void initialize();
+    
+    class Manifest : public AGStandardNodeManifest<AGAudioSineWaveNode>
+    {
+    public:
+        string _type() const override { return "SineWave"; };
+        string _name() const override { return "SineWave"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { "freq", true, true },
+                { "gain", true, true }
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { "freq", true, true },
+                { "gain", true, true }
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            int NUM_PTS = 32;
+            vector<GLvertex3f> geo(NUM_PTS);
+            
+            float radius = 0.005*AGStyle::oldGlobalScale;
+            for(int i = 0; i < NUM_PTS; i++)
+            {
+                float t = ((float)i)/((float)(NUM_PTS-1));
+                float x = (t*2-1) * radius;
+                float y = radius*0.66*sinf(t*M_PI*2);
+                
+                geo[i] = GLvertex3f(x, y, 0);
+            }
+            
+            return geo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+    };
     
     AGAudioSineWaveNode(const AGNodeManifest *mf, GLvertex3f pos);
     AGAudioSineWaveNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
@@ -398,46 +441,10 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
-    static AGNodeInfo *nodeInfo() { initialize(); return s_audioNodeInfo; }
-    static void renderIcon();
-    
 private:
     float m_freq;
     float m_phase;
-    
-private:
-    static AGNodeInfo *s_audioNodeInfo;
 };
-
-AGNodeInfo *AGAudioSineWaveNode::s_audioNodeInfo = NULL;
-
-void AGAudioSineWaveNode::initialize()
-{
-    s_audioNodeInfo = new AGNodeInfo;
-    
-    s_audioNodeInfo->type = "SineWave";
-    
-    // generate geometry
-    s_audioNodeInfo->iconGeoSize = 32;
-    GLvertex3f *iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
-    s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
-    float radius = 0.005*AGStyle::oldGlobalScale;
-    for(int i = 0; i < s_audioNodeInfo->iconGeoSize; i++)
-    {
-        float t = ((float)i)/((float)(s_audioNodeInfo->iconGeoSize-1));
-        float x = (t*2-1) * radius;
-        float y = radius*0.66*sinf(t*M_PI*2);
-        
-        iconGeo[i] = GLvertex3f(x, y, 0);
-    }
-    
-    s_audioNodeInfo->iconGeo = iconGeo;
-    
-    s_audioNodeInfo->inputPortInfo.push_back({ "freq", true, true });
-    s_audioNodeInfo->inputPortInfo.push_back({ "gain", true, true });
-    s_audioNodeInfo->editPortInfo.push_back({ "freq", true, true });
-    s_audioNodeInfo->editPortInfo.push_back({ "gain", true, true });
-}
 
 AGAudioSineWaveNode::AGAudioSineWaveNode(const AGNodeManifest *mf, GLvertex3f pos) :
 AGAudioNode(mf, pos)
@@ -494,16 +501,6 @@ void AGAudioSineWaveNode::renderAudio(sampletime t, float *input, float *output,
     }
     
     m_lastTime = t;
-}
-
-void AGAudioSineWaveNode::renderIcon()
-{
-    // render icon
-    glBindVertexArrayOES(0);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_audioNodeInfo->iconGeo);
-    
-    glLineWidth(2.0);
-    glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
 }
 
 //------------------------------------------------------------------------------
@@ -1376,12 +1373,11 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         
         vector<const AGNodeManifest *> &nodeTypes = s_audioNodeManager->m_nodeTypes;
         
-        nodeTypes.push_back(AGTransitionalNodeManifest::make<AGAudioSineWaveNode>("SineWave", AGAudioSineWaveNode::nodeInfo()));
+        nodeTypes.push_back(new AGAudioSineWaveNode::Manifest);
         nodeTypes.push_back(AGTransitionalNodeManifest::make<AGAudioSquareWaveNode>("SquareWave", AGAudioSquareWaveNode::nodeInfo()));
         nodeTypes.push_back(AGTransitionalNodeManifest::make<AGAudioSawtoothWaveNode>("SawtoothWave", AGAudioSawtoothWaveNode::nodeInfo()));
         nodeTypes.push_back(AGTransitionalNodeManifest::make<AGAudioTriangleWaveNode>("TriangleWave", AGAudioTriangleWaveNode::nodeInfo()));
-        nodeTypes.push_back(AGTransitionalNodeManifest::make<AGAudioADSRNode>("SineWave", AGAudioADSRNode::nodeInfo()));
-        nodeTypes.push_back(AGTransitionalNodeManifest::make<AGAudioSineWaveNode>("ADSR", AGAudioSineWaveNode::nodeInfo()));
+        nodeTypes.push_back(AGTransitionalNodeManifest::make<AGAudioADSRNode>("ADSR", AGAudioADSRNode::nodeInfo()));
 
         AGAudioFilterNode::initialize();
         nodeTypes.push_back(AGTransitionalNodeManifest::make(AGAudioFilterNode::s_lowPassNodeInfo,
