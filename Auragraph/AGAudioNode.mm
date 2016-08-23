@@ -53,14 +53,6 @@ void AGAudioNode::initializeAudioNode()
     }
 }
 
-AGAudioNode::AGAudioNode(const AGNodeManifest *mf, GLvertex3f pos) :
-AGNode(mf, pos)
-{ }
-
-AGAudioNode::AGAudioNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
-AGNode(mf, docNode)
-{ }
-
 void AGAudioNode::init()
 {
     AGNode::init();
@@ -305,8 +297,6 @@ AGDocument::Node AGAudioNode::serialize()
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioOutputNode
 
-AGNodeInfo *AGAudioOutputNode::s_audioNodeInfo = NULL;
-
 void AGAudioOutputNode::init()
 {
     AGAudioNode::init();
@@ -326,34 +316,6 @@ AGAudioOutputNode::~AGAudioOutputNode()
     [[AGAudioManager instance] removeRenderer:this];
 }
 
-void AGAudioOutputNode::initialize()
-{
-    s_audioNodeInfo = new AGNodeInfo;
-    // s_initAudioOutputNode = true;
-    
-    s_audioNodeInfo->type = "Output";
-    
-    s_audioNodeInfo->iconGeoSize = 8;
-    GLvertex3f *iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
-    s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
-    float radius = 0.005*AGStyle::oldGlobalScale;
-    
-    // speaker icon
-    iconGeo[0] = GLvertex3f(-radius*0.5*0.16, radius*0.5, 0);
-    iconGeo[1] = GLvertex3f(-radius*0.5, radius*0.5, 0);
-    iconGeo[2] = GLvertex3f(-radius*0.5, -radius*0.5, 0);
-    iconGeo[3] = GLvertex3f(-radius*0.5*0.16, -radius*0.5, 0);
-    iconGeo[4] = GLvertex3f(radius*0.5, -radius, 0);
-    iconGeo[5] = GLvertex3f(radius*0.5, radius, 0);
-    iconGeo[6] = GLvertex3f(-radius*0.5*0.16, radius*0.5, 0);
-    iconGeo[7] = GLvertex3f(-radius*0.5*0.16, -radius*0.5, 0);
-    
-    s_audioNodeInfo->iconGeo = iconGeo;
-    
-    s_audioNodeInfo->inputPortInfo.push_back({ "input", true, false });
-}
-
-
 void AGAudioOutputNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
     for(std::list<AGConnection *>::iterator i = m_inbound.begin(); i != m_inbound.end(); i++)
@@ -361,17 +323,6 @@ void AGAudioOutputNode::renderAudio(sampletime t, float *input, float *output, i
         ((AGAudioNode *)(*i)->src())->renderAudio(t, input, output, nFrames);
     }
 }
-
-void AGAudioOutputNode::renderIcon()
-{
-    // render icon
-    glBindVertexArrayOES(0);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_audioNodeInfo->iconGeo);
-    
-    glLineWidth(2.0);
-    glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
-}
-
 
 //------------------------------------------------------------------------------
 // ### AGAudioSineWaveNode ###
@@ -408,7 +359,7 @@ public:
         vector<GLvertex3f> _iconGeo() const override
         {
             int NUM_PTS = 32;
-            vector<GLvertex3f> geo(NUM_PTS);
+            vector<GLvertex3f> iconGeo(NUM_PTS);
             
             float radius = 0.005*AGStyle::oldGlobalScale;
             for(int i = 0; i < NUM_PTS; i++)
@@ -417,10 +368,10 @@ public:
                 float x = (t*2-1) * radius;
                 float y = radius*0.66*sinf(t*M_PI*2);
                 
-                geo[i] = GLvertex3f(x, y, 0);
+                iconGeo[i] = GLvertex3f(x, y, 0);
             }
             
-            return geo;
+            return iconGeo;
         };
         
         GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
@@ -492,82 +443,68 @@ void AGAudioSineWaveNode::renderAudio(sampletime t, float *input, float *output,
 class AGAudioSquareWaveNode : public AGAudioNode
 {
 public:
-    static void initialize();
-    
-    AGAudioSquareWaveNode(const AGNodeManifest *mf, GLvertex3f pos);
-    AGAudioSquareWaveNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
+    class Manifest : public AGStandardNodeManifest<AGAudioSquareWaveNode>
+    {
+    public:
+        string _type() const override { return "SquareWave"; };
+        string _name() const override { return "SquareWave"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { "freq", true, true },
+                { "gain", true, true }
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { "freq", true, true },
+                { "gain", true, true }
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x * 0.66;
 
-    virtual int numOutputPorts() const { return 1; }
+            // square wave shape
+            vector<GLvertex3f> iconGeo = {
+                { -radius_x, 0, 0 },
+                { -radius_x, radius_y, 0 },
+                { 0, radius_y, 0 },
+                { 0, -radius_y, 0 },
+                { radius_x, -radius_y, 0 },
+                { radius_x, 0, 0 },
+            };
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+    };
     
-    virtual void setEditPortValue(int port, float value);
-    virtual void getEditPortValue(int port, float &value) const;
+    using AGAudioNode::AGAudioNode;
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
+    void setDefaultPortValues() override
+    {
+        m_freq = 220;
+        m_phase = 0;
+    }
     
-    static AGNodeInfo *nodeInfo() { initialize(); return s_audioNodeInfo; }
-    static void renderIcon();
+    virtual int numOutputPorts() const override { return 1; }
+    
+    virtual void setEditPortValue(int port, float value) override;
+    virtual void getEditPortValue(int port, float &value) const override;
+    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
     
 private:
     float m_freq;
     float m_phase;
-    
-private:
-    static AGNodeInfo *s_audioNodeInfo;
 };
-
-AGNodeInfo *AGAudioSquareWaveNode::s_audioNodeInfo = NULL;
-
-void AGAudioSquareWaveNode::initialize()
-{
-    s_audioNodeInfo = new AGNodeInfo;
-    
-    s_audioNodeInfo->type = "SquareWave";
-    
-    // generate geometry
-    s_audioNodeInfo->iconGeoSize = 6;
-    GLvertex3f * iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
-    s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
-    float radius_x = 0.005*AGStyle::oldGlobalScale;
-    float radius_y = radius_x * 0.66;
-    
-    // square wave shape
-    iconGeo[0] = GLvertex3f(-radius_x, 0, 0);
-    iconGeo[1] = GLvertex3f(-radius_x, radius_y, 0);
-    iconGeo[2] = GLvertex3f(0, radius_y, 0);
-    iconGeo[3] = GLvertex3f(0, -radius_y, 0);
-    iconGeo[4] = GLvertex3f(radius_x, -radius_y, 0);
-    iconGeo[5] = GLvertex3f(radius_x, 0, 0);
-    
-    s_audioNodeInfo->iconGeo = iconGeo;
-    
-    s_audioNodeInfo->inputPortInfo.push_back({ "freq", true, true });
-    s_audioNodeInfo->inputPortInfo.push_back({ "gain", true, true });
-    s_audioNodeInfo->editPortInfo.push_back({ "freq", true, true });
-    s_audioNodeInfo->editPortInfo.push_back({ "gain", true, true });
-}
-
-AGAudioSquareWaveNode::AGAudioSquareWaveNode(const AGNodeManifest *mf, GLvertex3f pos) :
-AGAudioNode(mf, pos)
-{
-//    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
-//    m_nodeInfo = s_audioNodeInfo;
-    
-    m_freq = 220;
-    m_phase = 0;
-    
-    allocatePortBuffers();
-}
-
-AGAudioSquareWaveNode::AGAudioSquareWaveNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
-AGAudioNode(mf, docNode)
-{
-    m_freq = 220;
-    m_phase = 0;
-    
-    loadEditPortValues(docNode);
-    allocatePortBuffers();
-}
-
 
 void AGAudioSquareWaveNode::setEditPortValue(int port, float value)
 {
@@ -608,17 +545,6 @@ void AGAudioSquareWaveNode::renderAudio(sampletime t, float *input, float *outpu
 }
 
 
-void AGAudioSquareWaveNode::renderIcon()
-{
-    // render icon
-    glBindVertexArrayOES(0);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_audioNodeInfo->iconGeo);
-    
-    glLineWidth(2.0);
-    glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
-}
-
-
 //------------------------------------------------------------------------------
 // ### AGAudioSawtoothWaveNode ###
 //------------------------------------------------------------------------------
@@ -627,80 +553,66 @@ void AGAudioSquareWaveNode::renderIcon()
 class AGAudioSawtoothWaveNode : public AGAudioNode
 {
 public:
-    static void initialize();
-    
-    AGAudioSawtoothWaveNode(const AGNodeManifest *mf, GLvertex3f pos);
-    AGAudioSawtoothWaveNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
+    class Manifest : public AGStandardNodeManifest<AGAudioSawtoothWaveNode>
+    {
+    public:
+        string _type() const override { return "SawWave"; };
+        string _name() const override { return "SawWave"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { "freq", true, true },
+                { "gain", true, true }
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { "freq", true, true },
+                { "gain", true, true }
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_x = 0.005f*AGStyle::oldGlobalScale;
+            float radius_y = radius_x * 0.66f;
+            
+            // sawtooth wave shape
+            vector<GLvertex3f> iconGeo = {
+                { -radius_x, 0, 0 },
+                { -radius_x, radius_y, 0 },
+                { radius_x, -radius_y, 0 },
+                { radius_x, 0, 0 },
+            };
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+    };
 
-    virtual int numOutputPorts() const { return 1; }
+    using AGAudioNode::AGAudioNode;
     
-    virtual void setEditPortValue(int port, float value);
-    virtual void getEditPortValue(int port, float &value) const;
+    void setDefaultPortValues() override
+    {
+        m_freq = 220;
+        m_phase = 0;
+    }
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
+    virtual int numOutputPorts() const override { return 1; }
     
-    static AGNodeInfo *nodeInfo() { initialize(); return s_audioNodeInfo; }
-    static void renderIcon();
+    virtual void setEditPortValue(int port, float value) override;
+    virtual void getEditPortValue(int port, float &value) const override;
+    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
     
 private:
     float m_freq;
     float m_phase;
-    
-private:
-    static AGNodeInfo *s_audioNodeInfo;
 };
-
-AGNodeInfo *AGAudioSawtoothWaveNode::s_audioNodeInfo = NULL;
-
-void AGAudioSawtoothWaveNode::initialize()
-{
-    s_audioNodeInfo = new AGNodeInfo;
-    
-    s_audioNodeInfo->type = "SawWave";
-    
-    // generate geometry
-    s_audioNodeInfo->iconGeoSize = 4;
-    GLvertex3f * iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
-    s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
-    float radius_x = 0.005*AGStyle::oldGlobalScale;
-    float radius_y = radius_x * 0.66;
-    
-    // sawtooth wave shape
-    iconGeo[0] = GLvertex3f(-radius_x, 0, 0);
-    iconGeo[1] = GLvertex3f(-radius_x, radius_y, 0);
-    iconGeo[2] = GLvertex3f(radius_x, -radius_y, 0);
-    iconGeo[3] = GLvertex3f(radius_x, 0, 0);
-    
-    s_audioNodeInfo->iconGeo = iconGeo;
-    
-    s_audioNodeInfo->inputPortInfo.push_back({ "freq", true, true });
-    s_audioNodeInfo->inputPortInfo.push_back({ "gain", true, true });
-    s_audioNodeInfo->editPortInfo.push_back({ "freq", true, true });
-    s_audioNodeInfo->editPortInfo.push_back({ "gain", true, true });
-}
-
-AGAudioSawtoothWaveNode::AGAudioSawtoothWaveNode(const AGNodeManifest *mf, GLvertex3f pos) :
-AGAudioNode(mf, pos)
-{
-//    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
-//    m_nodeInfo = s_audioNodeInfo;
-    
-    m_freq = 220;
-    m_phase = 0;
-    
-    allocatePortBuffers();
-}
-
-AGAudioSawtoothWaveNode::AGAudioSawtoothWaveNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
-AGAudioNode(mf, docNode)
-{
-    m_freq = 220;
-    m_phase = 0;
-    
-    loadEditPortValues(docNode);
-    allocatePortBuffers();
-}
-
 
 void AGAudioSawtoothWaveNode::setEditPortValue(int port, float value)
 {
@@ -741,17 +653,6 @@ void AGAudioSawtoothWaveNode::renderAudio(sampletime t, float *input, float *out
 }
 
 
-void AGAudioSawtoothWaveNode::renderIcon()
-{
-    // render icon
-    glBindVertexArrayOES(0);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_audioNodeInfo->iconGeo);
-    
-    glLineWidth(2.0);
-    glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
-}
-
-
 //------------------------------------------------------------------------------
 // ### AGAudioTriangleWaveNode ###
 //------------------------------------------------------------------------------
@@ -760,81 +661,67 @@ void AGAudioSawtoothWaveNode::renderIcon()
 class AGAudioTriangleWaveNode : public AGAudioNode
 {
 public:
-    static void initialize();
+    class Manifest : public AGStandardNodeManifest<AGAudioTriangleWaveNode>
+    {
+    public:
+        string _type() const override { return "TriWave"; };
+        string _name() const override { return "TriWave"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { "freq", true, true },
+                { "gain", true, true }
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { "freq", true, true },
+                { "gain", true, true }
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x * 0.66;
+            
+            // sawtooth wave shape
+            vector<GLvertex3f> iconGeo = {
+                { -radius_x, 0, 0 },
+                { -radius_x*0.5f, radius_y, 0 },
+                { radius_x*0.5f, -radius_y, 0 },
+                { radius_x, 0, 0 },
+            };
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+    };
     
-    AGAudioTriangleWaveNode(const AGNodeManifest *mf, GLvertex3f pos);
-    AGAudioTriangleWaveNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
+    using AGAudioNode::AGAudioNode;
+    
+    void setDefaultPortValues() override
+    {
+        m_freq = 220;
+        m_phase = 0;
+    }
 
-    virtual int numOutputPorts() const { return 1; }
-    virtual int numInputPorts() const { return 2; }
+    virtual int numOutputPorts() const override { return 1; }
+    virtual int numInputPorts() const override { return 2; }
     
-    virtual void setEditPortValue(int port, float value);
-    virtual void getEditPortValue(int port, float &value) const;
+    virtual void setEditPortValue(int port, float value) override;
+    virtual void getEditPortValue(int port, float &value) const override;
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
-    
-    static AGNodeInfo *nodeInfo() { initialize(); return s_audioNodeInfo; }
-    static void renderIcon();
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
     
 private:
     float m_freq;
     float m_phase;
-    
-private:
-    static AGNodeInfo *s_audioNodeInfo;
 };
-
-AGNodeInfo *AGAudioTriangleWaveNode::s_audioNodeInfo = NULL;
-
-void AGAudioTriangleWaveNode::initialize()
-{
-    s_audioNodeInfo = new AGNodeInfo;
-    
-    s_audioNodeInfo->type = "TriWave";
-    
-    // generate geometry
-    s_audioNodeInfo->iconGeoSize = 4;
-    GLvertex3f * iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
-    s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
-    float radius_x = 0.005*AGStyle::oldGlobalScale;
-    float radius_y = radius_x * 0.66;
-    
-    // sawtooth wave shape
-    iconGeo[0] = GLvertex3f(-radius_x, 0, 0);
-    iconGeo[1] = GLvertex3f(-radius_x*0.5, radius_y, 0);
-    iconGeo[2] = GLvertex3f(radius_x*0.5, -radius_y, 0);
-    iconGeo[3] = GLvertex3f(radius_x, 0, 0);
-    
-    s_audioNodeInfo->iconGeo = iconGeo;
-    
-    s_audioNodeInfo->inputPortInfo.push_back({ "freq", true, true });
-    s_audioNodeInfo->inputPortInfo.push_back({ "gain", true, true });
-    s_audioNodeInfo->editPortInfo.push_back({ "freq", true, true });
-    s_audioNodeInfo->editPortInfo.push_back({ "gain", true, true });
-}
-
-AGAudioTriangleWaveNode::AGAudioTriangleWaveNode(const AGNodeManifest *mf, GLvertex3f pos) :
-AGAudioNode(mf, pos)
-{
-//    m_inputPortInfo = &s_audioNodeInfo->portInfo[0];
-//    m_nodeInfo = s_audioNodeInfo;
-    
-    m_freq = 220;
-    m_phase = 0;
-    
-    allocatePortBuffers();
-}
-
-AGAudioTriangleWaveNode::AGAudioTriangleWaveNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
-AGAudioNode(mf, docNode)
-{
-    m_freq = 220;
-    m_phase = 0;
-    
-    loadEditPortValues(docNode);
-    allocatePortBuffers();
-}
-
 
 void AGAudioTriangleWaveNode::setEditPortValue(int port, float value)
 {
@@ -878,17 +765,6 @@ void AGAudioTriangleWaveNode::renderAudio(sampletime t, float *input, float *out
 }
 
 
-void AGAudioTriangleWaveNode::renderIcon()
-{
-    // render icon
-    glBindVertexArrayOES(0);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_audioNodeInfo->iconGeo);
-    
-    glLineWidth(2.0);
-    glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
-}
-
-
 //------------------------------------------------------------------------------
 // ### AGAudioADSRNode ###
 //------------------------------------------------------------------------------
@@ -897,95 +773,78 @@ void AGAudioTriangleWaveNode::renderIcon()
 class AGAudioADSRNode : public AGAudioNode
 {
 public:
-    static void initialize();
+    class Manifest : public AGStandardNodeManifest<AGAudioADSRNode>
+    {
+    public:
+        string _type() const override { return "ADSR"; };
+        string _name() const override { return "ADSR"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { "input", true, false },
+                { "gain", true, true },
+                { "trigger", true, false },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { "gain", true, true },
+                { "attack", true, true },
+                { "decay", true, true },
+                { "sustain", true, true },
+                { "release", true, true },
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x * 0.66;
+            
+            // ADSR shape
+            vector<GLvertex3f> iconGeo = {
+                { -radius_x, -radius_y, 0 },
+                { -radius_x*0.75f, radius_y, 0 },
+                { -radius_x*0.25f, 0, 0 },
+                { radius_x*0.66f, 0, 0 },
+                { radius_x, -radius_y, 0 },
+            };
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+    };
     
-    AGAudioADSRNode(const AGNodeManifest *mf, GLvertex3f pos);
-    AGAudioADSRNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
+    using AGAudioNode::AGAudioNode;
 
-    virtual int numOutputPorts() const { return 1; }
+    void setDefaultPortValues() override
+    {
+        m_prevTrigger = FLT_MAX;
+        m_attack = 0.01;
+        m_decay = 0.01;
+        m_sustain = 0.5;
+        m_release = 0.1;
+        m_adsr.setAllTimes(m_attack, m_decay, m_sustain, m_release);
+    }
     
-    virtual void setEditPortValue(int port, float value);
-    virtual void getEditPortValue(int port, float &value) const;
+    virtual int numOutputPorts() const override { return 1; }
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
-    virtual void receiveControl(int port, AGControl *control);
+    virtual void setEditPortValue(int port, float value) override;
+    virtual void getEditPortValue(int port, float &value) const override;
     
-    static AGNodeInfo *nodeInfo() { initialize(); return s_audioNodeInfo; }
-    static void renderIcon();
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
+    virtual void receiveControl(int port, AGControl *control) override;
     
 private:
     float m_prevTrigger;
     
     float m_attack, m_decay, m_sustain, m_release;
     stk::ADSR m_adsr;
-    
-private:
-    static AGNodeInfo *s_audioNodeInfo;
 };
-
-AGNodeInfo *AGAudioADSRNode::s_audioNodeInfo = NULL;
-
-void AGAudioADSRNode::initialize()
-{
-    s_audioNodeInfo = new AGNodeInfo;
-    
-    s_audioNodeInfo->type = "ADSR";
-    
-    // generate geometry
-    s_audioNodeInfo->iconGeoSize = 5;
-    GLvertex3f * iconGeo = new GLvertex3f[s_audioNodeInfo->iconGeoSize];
-    s_audioNodeInfo->iconGeoType = GL_LINE_STRIP;
-    float radius_x = 0.005*AGStyle::oldGlobalScale;
-    float radius_y = radius_x * 0.66;
-    
-    // ADSR shape
-    iconGeo[0] = GLvertex3f(-radius_x, -radius_y, 0);
-    iconGeo[1] = GLvertex3f(-radius_x*0.75, radius_y, 0);
-    iconGeo[2] = GLvertex3f(-radius_x*0.25, 0, 0);
-    iconGeo[3] = GLvertex3f(radius_x*0.66, 0, 0);
-    iconGeo[4] = GLvertex3f(radius_x, -radius_y, 0);
-    
-    s_audioNodeInfo->iconGeo = iconGeo;
-    
-    s_audioNodeInfo->inputPortInfo.push_back({ "input", true, false });
-    s_audioNodeInfo->inputPortInfo.push_back({ "gain", true, true });
-    s_audioNodeInfo->inputPortInfo.push_back({ "trigger", true, false });
-    
-    s_audioNodeInfo->editPortInfo.push_back({ "gain", true, true });
-    s_audioNodeInfo->editPortInfo.push_back({ "attack", true, true });
-    s_audioNodeInfo->editPortInfo.push_back({ "decay", true, true });
-    s_audioNodeInfo->editPortInfo.push_back({ "sustain", true, true });
-    s_audioNodeInfo->editPortInfo.push_back({ "release", true, true });
-}
-
-
-AGAudioADSRNode::AGAudioADSRNode(const AGNodeManifest *mf, GLvertex3f pos) :
-AGAudioNode(mf, pos)
-{
-    allocatePortBuffers();
-    
-    m_prevTrigger = FLT_MAX;
-    m_attack = 0.01;
-    m_decay = 0.01;
-    m_sustain = 0.5;
-    m_release = 0.1;
-    m_adsr.setAllTimes(m_attack, m_decay, m_sustain, m_release);
-}
-
-AGAudioADSRNode::AGAudioADSRNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
-AGAudioNode(mf, docNode)
-{
-    m_prevTrigger = FLT_MAX;
-    m_attack = 0.01;
-    m_decay = 0.01;
-    m_sustain = 0.5;
-    m_release = 0.1;
-    m_adsr.setAllTimes(m_attack, m_decay, m_sustain, m_release);
-    
-    loadEditPortValues(docNode);
-    allocatePortBuffers();
-}
-
 
 void AGAudioADSRNode::setEditPortValue(int port, float value)
 {
@@ -1056,184 +915,190 @@ void AGAudioADSRNode::receiveControl(int port, AGControl *control)
     }
 }
 
-void AGAudioADSRNode::renderIcon()
-{
-    // render icon
-    glBindVertexArrayOES(0);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_audioNodeInfo->iconGeo);
-    
-    glLineWidth(2.0);
-    glDrawArrays(s_audioNodeInfo->iconGeoType, 0, s_audioNodeInfo->iconGeoSize);
-}
-
 
 //------------------------------------------------------------------------------
 // ### AGAudioFilterNode ###
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioFilterNode
 
-class AGAudioFilterNode : AGAudioNode
+template<class Filter>
+class AGAudioFilterFQNode : public AGAudioNode
 {
 public:
-    static void initialize();
     
-    AGAudioFilterNode(const AGNodeManifest *mf, GLvertex3f pos, Butter2Filter *filter);
-    AGAudioFilterNode(const AGNodeManifest *mf, const AGDocument::Node &docNode, Butter2Filter *filter);
-    ~AGAudioFilterNode();
+    class ManifestLPF : public AGStandardNodeManifest<AGAudioFilterFQNode<Butter2RLPF>>
+    {
+    public:
+        string _type() const override { return "LowPass"; };
+        string _name() const override { return "LowPass"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { "input", true, false },
+                { "gain", true, true },
+                { "freq", true, true },
+                { "Q", true, true },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { "gain", true, true },
+                { "freq", true, true },
+                { "Q", true, true },
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x * 0.66;
+            
+            // lowpass shape
+            vector<GLvertex3f> iconGeo = {
+                {       -radius_x,  radius_y*0.33f, 0 },
+                { -radius_x*0.33f,  radius_y*0.33f, 0 },
+                {               0,        radius_y, 0 },
+                {  radius_x*0.33f, -radius_y*0.66f, 0 },
+                {        radius_x, -radius_y*0.66f, 0 },
+            };
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+    };
     
-    virtual int numOutputPorts() const { return 1; }
+    class ManifestHPF : public AGStandardNodeManifest<AGAudioFilterFQNode<Butter2RHPF>>
+    {
+    public:
+        string _type() const override { return "HiPass"; };
+        string _name() const override { return "HiPass"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { "input", true, false },
+                { "gain", true, true },
+                { "freq", true, true },
+                { "Q", true, true },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { "gain", true, true },
+                { "freq", true, true },
+                { "Q", true, true },
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x * 0.66;
+            
+            // hipass shape
+            vector<GLvertex3f> iconGeo = {
+                {       -radius_x, -radius_y*0.66f, 0 },
+                { -radius_x*0.33f, -radius_y*0.66f, 0 },
+                {               0,        radius_y, 0 },
+                {  radius_x*0.33f,  radius_y*0.33f, 0 },
+                {        radius_x,  radius_y*0.33f, 0 },
+            };
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+    };
     
-    virtual void setEditPortValue(int port, float value);
-    virtual void getEditPortValue(int port, float &value) const;
+    class ManifestBPF : public AGStandardNodeManifest<AGAudioFilterFQNode<Butter2BPF>>
+    {
+    public:
+        string _type() const override { return "BandPass"; };
+        string _name() const override { return "BandPass"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { "input", true, false },
+                { "gain", true, true },
+                { "freq", true, true },
+                { "Q", true, true },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { "gain", true, true },
+                { "freq", true, true },
+                { "Q", true, true },
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x * 0.66;
+            
+            // bandpass shape
+            vector<GLvertex3f> iconGeo = {
+                {       -radius_x, -radius_y*0.50f, 0 },
+                { -radius_x*0.33f, -radius_y*0.50f, 0 },
+                {               0,        radius_y, 0 },
+                {  radius_x*0.33f, -radius_y*0.50f, 0 },
+                {        radius_x, -radius_y*0.50f, 0 },
+            };
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+    };
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
+    using AGAudioNode::AGAudioNode;
     
-    static void renderLowPassIcon();
-    static AGNode *createLowPass(const AGNodeManifest *mf, const GLvertex3f &pos);
+    void init() override
+    {
+        m_filter = new Filter(sampleRate());
+        
+        AGAudioNode::init();
+    }
     
-    static void renderHiPassIcon();
-    static AGNode *createHiPass(const AGNodeManifest *mf, const GLvertex3f &pos);
+    void init(const AGDocument::Node &docNode) override
+    {
+        m_filter = new Filter(sampleRate());
+        
+        AGAudioNode::init(docNode);
+    }
     
-    static void renderBandPassIcon();
-    static AGNode *createBandPass(const AGNodeManifest *mf, const GLvertex3f &pos);
+    void setDefaultPortValues() override
+    {
+        m_freq = 220;
+        m_Q = 1;
+        
+        m_filter->set(m_freq, m_Q);
+    }
     
-    static AGNodeInfo *s_lowPassNodeInfo;
-    static AGNodeInfo *s_hiPassNodeInfo;
-    static AGNodeInfo *s_bandPassNodeInfo;
-
+    virtual int numOutputPorts() const override { return 1; }
+    
+    virtual void setEditPortValue(int port, float value) override;
+    virtual void getEditPortValue(int port, float &value) const override;
+    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
+    
 private:
-    Butter2Filter *m_filter;
+    Filter *m_filter;
     float m_freq, m_Q;
 };
 
-AGNodeInfo *AGAudioFilterNode::s_lowPassNodeInfo = NULL;
-AGNodeInfo *AGAudioFilterNode::s_hiPassNodeInfo = NULL;
-AGNodeInfo *AGAudioFilterNode::s_bandPassNodeInfo = NULL;
-
-void AGAudioFilterNode::initialize()
-{
-    /* lowpass node info */
-    s_lowPassNodeInfo = new AGNodeInfo;
-    s_lowPassNodeInfo->type = "LowPass";
-    
-    // generate geometry
-    s_lowPassNodeInfo->iconGeoSize = 5;
-    GLvertex3f * iconGeo = new GLvertex3f[s_lowPassNodeInfo->iconGeoSize];
-    s_lowPassNodeInfo->iconGeoType = GL_LINE_STRIP;
-    float radius_x = 0.005*AGStyle::oldGlobalScale;
-    float radius_y = radius_x * 0.66;
-    
-    // lowpass shape
-    iconGeo[0] = GLvertex3f(     -radius_x,  radius_y*0.33, 0);
-    iconGeo[1] = GLvertex3f(-radius_x*0.33,  radius_y*0.33, 0);
-    iconGeo[2] = GLvertex3f(             0,       radius_y, 0);
-    iconGeo[3] = GLvertex3f( radius_x*0.33, -radius_y*0.66, 0);
-    iconGeo[4] = GLvertex3f(      radius_x, -radius_y*0.66, 0);
-    
-    s_lowPassNodeInfo->iconGeo = iconGeo;
-    
-    s_lowPassNodeInfo->inputPortInfo.push_back({ "input", true, false });
-    s_lowPassNodeInfo->inputPortInfo.push_back({ "gain", true, true });
-    s_lowPassNodeInfo->inputPortInfo.push_back({ "freq", true, true });
-    s_lowPassNodeInfo->inputPortInfo.push_back({ "Q", true, true });
-    
-    s_lowPassNodeInfo->editPortInfo.push_back({ "gain", true, true });
-    s_lowPassNodeInfo->editPortInfo.push_back({ "freq", true, true });
-    s_lowPassNodeInfo->editPortInfo.push_back({ "Q", true, true });
-    
-    /* hipass node info */
-    s_hiPassNodeInfo = new AGNodeInfo;
-    s_hiPassNodeInfo->type = "HiPass";
-    
-    // generate geometry
-    s_hiPassNodeInfo->iconGeoSize = 5;
-    iconGeo = new GLvertex3f[s_hiPassNodeInfo->iconGeoSize];
-    s_hiPassNodeInfo->iconGeoType = GL_LINE_STRIP;
-    radius_x = 0.005*AGStyle::oldGlobalScale;
-    radius_y = radius_x * 0.66;
-    
-    // hipass shape
-    iconGeo[0] = GLvertex3f(     -radius_x, -radius_y*0.66, 0);
-    iconGeo[1] = GLvertex3f(-radius_x*0.33, -radius_y*0.66, 0);
-    iconGeo[2] = GLvertex3f(             0,       radius_y, 0);
-    iconGeo[3] = GLvertex3f( radius_x*0.33,  radius_y*0.33, 0);
-    iconGeo[4] = GLvertex3f(      radius_x,  radius_y*0.33, 0);
-    
-    s_hiPassNodeInfo->iconGeo = iconGeo;
-    
-    s_hiPassNodeInfo->inputPortInfo.push_back({ "input", true, false });
-    s_hiPassNodeInfo->inputPortInfo.push_back({ "gain", true, true });
-    s_hiPassNodeInfo->inputPortInfo.push_back({ "freq", true, true });
-    s_hiPassNodeInfo->inputPortInfo.push_back({ "Q", true, true });
-    
-    s_hiPassNodeInfo->editPortInfo.push_back({ "gain", true, true });
-    s_hiPassNodeInfo->editPortInfo.push_back({ "freq", true, true });
-    s_hiPassNodeInfo->editPortInfo.push_back({ "Q", true, true });
-    
-    /* bandpass node info */
-    s_bandPassNodeInfo = new AGNodeInfo;
-    s_bandPassNodeInfo->type = "BandPass";
-    
-    // generate geometry
-    s_bandPassNodeInfo->iconGeoSize = 5;
-    iconGeo = new GLvertex3f[s_bandPassNodeInfo->iconGeoSize];
-    s_bandPassNodeInfo->iconGeoType = GL_LINE_STRIP;
-    radius_x = 0.005*AGStyle::oldGlobalScale;
-    radius_y = radius_x * 0.66;
-    
-    // bandpass shape
-    iconGeo[0] = GLvertex3f(     -radius_x, -radius_y*0.50, 0);
-    iconGeo[1] = GLvertex3f(-radius_x*0.33, -radius_y*0.50, 0);
-    iconGeo[2] = GLvertex3f(             0,       radius_y, 0);
-    iconGeo[3] = GLvertex3f( radius_x*0.33, -radius_y*0.50, 0);
-    iconGeo[4] = GLvertex3f(      radius_x, -radius_y*0.50, 0);
-    
-    s_bandPassNodeInfo->iconGeo = iconGeo;
-    
-    s_bandPassNodeInfo->inputPortInfo.push_back({ "input", true, false });
-    s_bandPassNodeInfo->inputPortInfo.push_back({ "gain", true, true });
-    s_bandPassNodeInfo->inputPortInfo.push_back({ "freq", true, true });
-    s_bandPassNodeInfo->inputPortInfo.push_back({ "Q", true, true });
-    
-    s_bandPassNodeInfo->editPortInfo.push_back({ "gain", true, true });
-    s_bandPassNodeInfo->editPortInfo.push_back({ "freq", true, true });
-    s_bandPassNodeInfo->editPortInfo.push_back({ "Q", true, true });
-}
-
-
-AGAudioFilterNode::AGAudioFilterNode(const AGNodeManifest *mf, GLvertex3f pos, Butter2Filter *filter) :
-AGAudioNode(mf, pos),
-m_filter(filter)
-{
-    allocatePortBuffers();
-    
-    m_freq = 220;
-    m_Q = 1;
-    
-    filter->set(m_freq, m_Q);
-}
-
-AGAudioFilterNode::AGAudioFilterNode(const AGNodeManifest *mf, const AGDocument::Node &docNode, Butter2Filter *filter) :
-AGAudioNode(mf, docNode),
-m_filter(filter)
-{
-    m_freq = 220;
-    m_Q = 1;
-    
-    filter->set(m_freq, m_Q);
-    
-    loadEditPortValues(docNode);
-    allocatePortBuffers();
-}
-
-
-AGAudioFilterNode::~AGAudioFilterNode()
-{
-    SAFE_DELETE(m_filter);
-}
-
-
-void AGAudioFilterNode::setEditPortValue(int port, float value)
+template<class Filter>
+void AGAudioFilterFQNode<Filter>::setEditPortValue(int port, float value)
 {
     bool set = false;
     
@@ -1247,7 +1112,8 @@ void AGAudioFilterNode::setEditPortValue(int port, float value)
     if(set) m_filter->set(m_freq, m_Q);
 }
 
-void AGAudioFilterNode::getEditPortValue(int port, float &value) const
+template<class Filter>
+void AGAudioFilterFQNode<Filter>::getEditPortValue(int port, float &value) const
 {
     switch(port)
     {
@@ -1257,7 +1123,8 @@ void AGAudioFilterNode::getEditPortValue(int port, float &value) const
     }
 }
 
-void AGAudioFilterNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
+template<class Filter>
+void AGAudioFilterFQNode<Filter>::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
@@ -1284,63 +1151,6 @@ void AGAudioFilterNode::renderAudio(sampletime t, float *input, float *output, i
 }
 
 
-void AGAudioFilterNode::renderLowPassIcon()
-{
-    // render icon
-    glBindVertexArrayOES(0);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_lowPassNodeInfo->iconGeo);
-    
-    glLineWidth(2.0);
-    glDrawArrays(s_lowPassNodeInfo->iconGeoType, 0, s_lowPassNodeInfo->iconGeoSize);
-}
-
-
-AGNode *AGAudioFilterNode::createLowPass(const AGNodeManifest *mf, const GLvertex3f &pos)
-{
-    AGAudioNode *node = new AGAudioFilterNode(mf, pos, new Butter2RLPF(sampleRate()));
-    node->init();
-    return node;
-}
-
-
-void AGAudioFilterNode::renderHiPassIcon()
-{
-    // render icon
-    glBindVertexArrayOES(0);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_hiPassNodeInfo->iconGeo);
-    
-    glLineWidth(2.0);
-    glDrawArrays(s_hiPassNodeInfo->iconGeoType, 0, s_hiPassNodeInfo->iconGeoSize);
-}
-
-
-AGNode *AGAudioFilterNode::createHiPass(const AGNodeManifest *mf, const GLvertex3f &pos)
-{
-    AGAudioNode *node = new AGAudioFilterNode(mf, pos, new Butter2RHPF(sampleRate()));
-    node->init();
-    return node;
-}
-
-
-void AGAudioFilterNode::renderBandPassIcon()
-{
-    // render icon
-    glBindVertexArrayOES(0);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_bandPassNodeInfo->iconGeo);
-    
-    glLineWidth(2.0);
-    glDrawArrays(s_bandPassNodeInfo->iconGeoType, 0, s_bandPassNodeInfo->iconGeoSize);
-}
-
-
-AGNode *AGAudioFilterNode::createBandPass(const AGNodeManifest *mf, const GLvertex3f &pos)
-{
-    AGAudioNode *node = new AGAudioFilterNode(mf, pos, new Butter2BPF(sampleRate()));
-    node->init();
-    return node;
-}
-
-
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
 //------------------------------------------------------------------------------
@@ -1355,31 +1165,14 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         vector<const AGNodeManifest *> &nodeTypes = s_audioNodeManager->m_nodeTypes;
         
         nodeTypes.push_back(new AGAudioSineWaveNode::Manifest);
-        nodeTypes.push_back(AGTransitionalNodeManifest::make<AGAudioSquareWaveNode>("SquareWave", AGAudioSquareWaveNode::nodeInfo()));
-        nodeTypes.push_back(AGTransitionalNodeManifest::make<AGAudioSawtoothWaveNode>("SawtoothWave", AGAudioSawtoothWaveNode::nodeInfo()));
-        nodeTypes.push_back(AGTransitionalNodeManifest::make<AGAudioTriangleWaveNode>("TriangleWave", AGAudioTriangleWaveNode::nodeInfo()));
-        nodeTypes.push_back(AGTransitionalNodeManifest::make<AGAudioADSRNode>("ADSR", AGAudioADSRNode::nodeInfo()));
-
-        AGAudioFilterNode::initialize();
-        nodeTypes.push_back(AGTransitionalNodeManifest::make(AGAudioFilterNode::s_lowPassNodeInfo,
-                                                             new NodeInfo("LowPass",
-                                                                          AGAudioFilterNode::initialize,
-                                                                          AGAudioFilterNode::renderLowPassIcon,
-                                                                          AGAudioFilterNode::createLowPass,
-                                                                          NULL)));
-        nodeTypes.push_back(AGTransitionalNodeManifest::make(AGAudioFilterNode::s_hiPassNodeInfo,
-                                                             new NodeInfo("HiPass",
-                                                                          NULL,
-                                                                          AGAudioFilterNode::renderHiPassIcon,
-                                                                          AGAudioFilterNode::createHiPass,
-                                                                          NULL)));
-        nodeTypes.push_back(AGTransitionalNodeManifest::make(AGAudioFilterNode::s_bandPassNodeInfo,
-                                                             new NodeInfo("BandPass",
-                                                                          NULL,
-                                                                          AGAudioFilterNode::renderBandPassIcon,
-                                                                          AGAudioFilterNode::createBandPass,
-                                                                          NULL)));
-        nodeTypes.push_back(AGTransitionalNodeManifest::make<AGAudioOutputNode>("Output", AGAudioOutputNode::nodeInfo()));
+        nodeTypes.push_back(new AGAudioSquareWaveNode::Manifest);
+        nodeTypes.push_back(new AGAudioSawtoothWaveNode::Manifest);
+        nodeTypes.push_back(new AGAudioTriangleWaveNode::Manifest);
+        nodeTypes.push_back(new AGAudioADSRNode::Manifest);
+        nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RLPF>::ManifestLPF);
+        nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RHPF>::ManifestHPF);
+        nodeTypes.push_back(new AGAudioFilterFQNode<Butter2BPF>::ManifestBPF);
+        nodeTypes.push_back(new AGAudioOutputNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();

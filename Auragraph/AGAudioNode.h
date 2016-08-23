@@ -13,6 +13,7 @@
 
 #import "Geometry.h"
 #import "ShaderHelper.h"
+#import "AGStyle.h"
 
 #import <GLKit/GLKit.h>
 #import <Foundation/Foundation.h>
@@ -35,8 +36,7 @@ public:
     
     static void initializeAudioNode();
     
-    AGAudioNode(const AGNodeManifest *mf, GLvertex3f pos = GLvertex3f());
-    AGAudioNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
+    using AGNode::AGNode;
     virtual void init() override;
     virtual void init(const AGDocument::Node &docNode) override;
     virtual ~AGAudioNode();
@@ -44,12 +44,12 @@ public:
     virtual void update(float t, float dt) override;
     virtual void render() override;
     
-    virtual AGUIObject *hitTest(const GLvertex3f &t);
+    virtual AGUIObject *hitTest(const GLvertex3f &t) override;
     
-    virtual GLvertex3f relativePositionForInputPort(int port) const;
-    virtual GLvertex3f relativePositionForOutputPort(int port) const;
+    virtual GLvertex3f relativePositionForInputPort(int port) const override;
+    virtual GLvertex3f relativePositionForOutputPort(int port) const override;
     
-    virtual AGRate rate() { return RATE_AUDIO; }
+    virtual AGRate rate() override { return RATE_AUDIO; }
     inline float gain() { return m_gain; }
     
     const float *lastOutputBuffer() const { return m_outputBuffer; }
@@ -57,7 +57,7 @@ public:
     static int sampleRate() { return s_sampleRate; }
     static int bufferSize() { return 1024; }
     
-    virtual AGDocument::Node serialize();
+    virtual AGDocument::Node serialize() override;
     //    template<class NodeClass>
     //    static AGAudioNode *createFromDocNode(const AGDocument::Node &docNode);
     
@@ -95,7 +95,43 @@ protected:
 class AGAudioOutputNode : public AGAudioNode
 {
 public:
-    static void initialize();
+    
+    class Manifest : public AGStandardNodeManifest<AGAudioOutputNode>
+    {
+    public:
+        string _type() const override { return "Output"; };
+        string _name() const override { return "Output"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { "input", true, false }
+            };
+        }
+        
+        vector<AGPortInfo> _editPortInfo() const override { return { }; }
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius = 0.005*AGStyle::oldGlobalScale;
+            
+            // speaker icon
+            vector<GLvertex3f> iconGeo = {
+                { -radius*0.5f*0.16f, radius*0.5f, 0 },
+                { -radius*0.5f, radius*0.5f, 0 },
+                { -radius*0.5f, -radius*0.5f, 0 },
+                { -radius*0.5f*0.16f, -radius*0.5f, 0 },
+                { radius*0.5f, -radius, 0 },
+                { radius*0.5f, radius, 0 },
+                { -radius*0.5f*0.16f, radius*0.5f, 0 },
+                { -radius*0.5f*0.16f, -radius*0.5f, 0 },
+            };
+            
+            return iconGeo;
+        }
+        
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; }
+    };
     
     using AGAudioNode::AGAudioNode;
     
@@ -103,16 +139,10 @@ public:
     void init(const AGDocument::Node &docNode) override;
     ~AGAudioOutputNode();
     
-    virtual int numOutputPorts() const { return 0; }
-    virtual int numInputPorts() const { return 1; }
+    virtual int numOutputPorts() const override { return 0; }
+    virtual int numInputPorts() const override { return 1; }
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
-    
-    static AGNodeInfo *nodeInfo() { initialize(); return s_audioNodeInfo; }
-    static void renderIcon();
-    
-private:
-    static AGNodeInfo *s_audioNodeInfo;
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;    
 };
 
 
