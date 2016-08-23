@@ -183,8 +183,6 @@ static AGViewController * g_instance = nil;
     
     [self initUI];
     
-    __block AGAudioOutputNode * outputNode = NULL;
-    
     /* load default program */
     if(!AG_RESET_DOCUMENT && AGDocument::existsForTitle(AG_DEFAULT_FILENAME))
     {
@@ -227,13 +225,10 @@ static AGViewController * g_instance = nil;
     }
     else
     {
-//        outputNode = new AGAudioOutputNode([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)]);
-        outputNode = new AGAudioOutputNode(NULL, GLvertex3f(0, 0, 0));
-        outputNode->init();
-        _nodes.push_back(outputNode);
+        // just create output node by itself
+        AGNode *output = AGNodeManager::audioNodeManager().createNodeOfType("Output", GLvertex3f(0, 0, 0));
+        _nodes.push_back(output);
     }
-    
-    self.audioManager.outputNode = outputNode;
     
     g_instance = self;
     

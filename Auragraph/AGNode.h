@@ -264,40 +264,12 @@ private:
     int m_touchPoint0;
 };
 
-//------------------------------------------------------------------------------
-// ### utility functions ###
-//------------------------------------------------------------------------------
-template<class NodeClass>
-static AGNode *createNode(const AGNodeManifest *mf, const AGDocument::Node &docNode)
-{
-    NodeClass *node = new NodeClass(mf, docNode);
-    node->init(docNode);
-    return node;
-}
-
-template<class NodeClass>
-static AGNode *createNode(const AGNodeManifest *mf, const GLvertex3f &pos)
-{
-    NodeClass *node = new NodeClass(mf, pos);
-    node->init();
-    return node;
-}
-
-template<class NodeClass>
-static void renderNodeIcon()
-{
-    AGNodeInfo *nodeInfo = NodeClass::nodeInfo();
-    
-    glBindVertexArrayOES(0);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), nodeInfo->iconGeo);
-    
-    glLineWidth(2.0);
-    glDrawArrays(nodeInfo->iconGeoType, 0, nodeInfo->iconGeoSize);
-}
 
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
 //------------------------------------------------------------------------------
+#pragma mark - AGNodeManager
+
 class AGNodeManager
 {
 public:
@@ -306,38 +278,11 @@ public:
     static const AGNodeManager &inputNodeManager();
     static const AGNodeManager &outputNodeManager();
     
-    struct NodeInfo
-    {
-        NodeInfo(std::string _name,
-                 void (*_initialize)(),
-                 void (*_renderIcon)(),
-                 AGNode *(*_createNode)(const AGNodeManifest *mf, const GLvertex3f &pos),
-                 AGNode *(*_createNodeWithDocNode)(const AGNodeManifest *mf, const AGDocument::Node &docNode)) :
-        name(_name),
-        initialize(_initialize),
-        renderIcon(_renderIcon),
-        createNode(_createNode),
-        createWithDocNode(_createNodeWithDocNode)
-        { }
-        
-        std::string name;
-        void (*initialize)();
-        void (*renderIcon)();
-        AGNode *(*createNode)(const AGNodeManifest *mf, const GLvertex3f &pos);
-        AGNode *(*createWithDocNode)(const AGNodeManifest *mf, const AGDocument::Node &docNode);
-    };
-    
     const std::vector<const AGNodeManifest *> &nodeTypes() const;
     void renderNodeTypeIcon(const AGNodeManifest *mf) const;
     AGNode *createNodeType(const AGNodeManifest *mf, const GLvertex3f &pos) const;
     AGNode *createNodeType(const AGDocument::Node &docNode) const;
-    
-    template<class NodeClass>
-    static AGNodeManager::NodeInfo *makeNodeInfo(const std::string &name)
-    {
-        return new NodeInfo(name, NodeClass::initialize, renderNodeIcon<NodeClass>,
-                            createNode<NodeClass>, createNode<NodeClass>);
-    }
+    AGNode *createNodeOfType(const string &type, const GLvertex3f &pos) const;
     
 private:
     static AGNodeManager *s_audioNodeManager;
@@ -350,6 +295,10 @@ private:
     AGNodeManager();
 };
 
+//------------------------------------------------------------------------------
+// ### AGStandardNodeManifest ###
+//------------------------------------------------------------------------------
+#pragma mark - AGStandardNodeManifest
 
 template<class NodeClass>
 class AGStandardNodeManifest : public AGNodeManifest

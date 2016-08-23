@@ -565,9 +565,7 @@ const AGNodeManager &AGNodeManager::outputNodeManager()
     return *s_outputNodeManager;
 }
 
-AGNodeManager::AGNodeManager()
-{
-}
+AGNodeManager::AGNodeManager() { }
 
 const std::vector<const AGNodeManifest *> &AGNodeManager::nodeTypes() const
 {
@@ -588,20 +586,34 @@ AGNode *AGNodeManager::createNodeType(const AGNodeManifest *mf, const GLvertex3f
 
 AGNode *AGNodeManager::createNodeType(const AGDocument::Node &docNode) const
 {
-    __block AGNode *node = NULL;
+    AGNode *node = NULL;
     
-    itmap(m_nodeTypes, ^bool (const AGNodeManifest *const &mf){
+    for(const AGNodeManifest *const &mf : m_nodeTypes)
+    {
         if(mf->type() == docNode.type)
         {
             node = mf->createNode(docNode);
             node->setTitle(mf->name());
-            return false;
+            break;
         }
-        
-        return true;
-    });
+    }
     
     return node;
+}
+
+AGNode *AGNodeManager::createNodeOfType(const string &type, const GLvertex3f &pos) const
+{
+    for(const AGNodeManifest *const &mf : m_nodeTypes)
+    {
+        if(mf->type() == type)
+        {
+            AGNode *node = mf->createNode(pos);
+            node->setTitle(mf->name());
+            return node;
+        }
+    }
+    
+    return NULL;
 }
 
 
