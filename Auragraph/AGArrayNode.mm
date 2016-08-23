@@ -594,47 +594,46 @@ private:
 //------------------------------------------------------------------------------
 #pragma mark - AGControlArrayNode
 
-AGNodeInfo *AGControlArrayNode::s_nodeInfo = NULL;
-
-void AGControlArrayNode::initialize()
+string AGControlArrayNode::Manifest::_type() const { return "Array"; };
+string AGControlArrayNode::Manifest::_name() const { return "Array"; };
+    
+vector<AGPortInfo> AGControlArrayNode::Manifest::_inputPortInfo() const
 {
-    s_nodeInfo = new AGNodeInfo;
-    
-    s_nodeInfo->type = "Array";
-    
+    return {
+        { "iterate", true, true }
+    };
+};
+
+vector<AGPortInfo> AGControlArrayNode::Manifest::_editPortInfo() const { return { }; };
+
+vector<GLvertex3f> AGControlArrayNode::Manifest::_iconGeo() const
+{
     float radius = 0.0057*AGStyle::oldGlobalScale;
     int numBoxes = 5;
     float boxWidth = radius*2.0f/((float)numBoxes);
     float boxHeight = radius/2.5f;
-    s_nodeInfo->iconGeoSize = (numBoxes*3+1)*2;
-    s_nodeInfo->iconGeoType = GL_LINES;
-    s_nodeInfo->iconGeo = new GLvertex3f[s_nodeInfo->iconGeoSize];
+    int GEO_SIZE = (numBoxes*3+1)*2;
+    vector<GLvertex3f> iconGeo = vector<GLvertex3f>(GEO_SIZE);
     
     for(int i = 0; i < numBoxes; i++)
     {
-        s_nodeInfo->iconGeo[i*6+0] = GLvertex3f(-radius+i*boxWidth,  boxHeight, 0);
-        s_nodeInfo->iconGeo[i*6+1] = GLvertex3f(-radius+i*boxWidth, -boxHeight, 0);
-        s_nodeInfo->iconGeo[i*6+2] = GLvertex3f(-radius+i*boxWidth,  boxHeight, 0);
-        s_nodeInfo->iconGeo[i*6+3] = GLvertex3f(-radius+i*boxWidth+boxWidth,  boxHeight, 0);
-        s_nodeInfo->iconGeo[i*6+4] = GLvertex3f(-radius+i*boxWidth, -boxHeight, 0);
-        s_nodeInfo->iconGeo[i*6+5] = GLvertex3f(-radius+i*boxWidth+boxWidth, -boxHeight, 0);
+        iconGeo[i*6+0] = GLvertex3f(-radius+i*boxWidth,  boxHeight, 0);
+        iconGeo[i*6+1] = GLvertex3f(-radius+i*boxWidth, -boxHeight, 0);
+        iconGeo[i*6+2] = GLvertex3f(-radius+i*boxWidth,  boxHeight, 0);
+        iconGeo[i*6+3] = GLvertex3f(-radius+i*boxWidth+boxWidth,  boxHeight, 0);
+        iconGeo[i*6+4] = GLvertex3f(-radius+i*boxWidth, -boxHeight, 0);
+        iconGeo[i*6+5] = GLvertex3f(-radius+i*boxWidth+boxWidth, -boxHeight, 0);
     }
     
-    s_nodeInfo->iconGeo[numBoxes*6+0] = GLvertex3f(-radius+numBoxes*boxWidth, -boxHeight, 0);
-    s_nodeInfo->iconGeo[numBoxes*6+1] = GLvertex3f(-radius+numBoxes*boxWidth,  boxHeight, 0);
+    iconGeo[numBoxes*6+0] = GLvertex3f(-radius+numBoxes*boxWidth, -boxHeight, 0);
+    iconGeo[numBoxes*6+1] = GLvertex3f(-radius+numBoxes*boxWidth,  boxHeight, 0);
     
-    s_nodeInfo->inputPortInfo.push_back({ "iterate", true, true });
-}
+    return iconGeo;
+};
 
-AGControlArrayNode::AGControlArrayNode(const AGNodeManifest *mf, const GLvertex3f &pos) :
-AGControlNode(mf, pos)
-{
-    m_lastTime = 0;
-    m_position = m_items.begin();
-}
+GLuint AGControlArrayNode::Manifest::_iconGeoType() const { return GL_LINES; };
 
-AGControlArrayNode::AGControlArrayNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
-AGControlNode(mf, docNode)
+void AGControlArrayNode::setDefaultPortValues()
 {
     m_lastTime = 0;
     m_position = m_items.begin();
@@ -676,15 +675,5 @@ void AGControlArrayNode::receiveControl(int port, AGControl *control)
             }
             break;
     }
-}
-
-void AGControlArrayNode::renderIcon()
-{
-    // render icon
-    glBindVertexArrayOES(0);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_nodeInfo->iconGeo);
-    
-    glLineWidth(2.0);
-    glDrawArrays(s_nodeInfo->iconGeoType, 0, s_nodeInfo->iconGeoSize);
 }
 

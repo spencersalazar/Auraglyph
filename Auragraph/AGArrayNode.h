@@ -20,22 +20,30 @@ class AGControlArrayNode : public AGControlNode
     friend class AGUIArrayEditor;
     
 public:
-    static void initialize();
     
-    AGControlArrayNode(const AGNodeManifest *mf, const GLvertex3f &pos);
-    AGControlArrayNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
+    class Manifest : public AGStandardNodeManifest<AGControlArrayNode>
+    {
+    public:
+        string _type() const override;
+        string _name() const override;
+        vector<AGPortInfo> _inputPortInfo() const override;
+        vector<AGPortInfo> _editPortInfo() const override;
+        vector<GLvertex3f> _iconGeo() const override;
+        GLuint _iconGeoType() const override;
+    };
     
-    virtual int numOutputPorts() const { return 1; }
-    virtual void setEditPortValue(int port, float value);
-    virtual void getEditPortValue(int port, float &value) const;
+    using AGControlNode::AGControlNode;
     
-    virtual AGUINodeEditor *createCustomEditor();
+    void setDefaultPortValues() override;
     
-    virtual void receiveControl(int port, AGControl *control);
+    virtual int numOutputPorts() const override { return 1; }
+    virtual void setEditPortValue(int port, float value) override;
+    virtual void getEditPortValue(int port, float &value) const override;
     
-    static AGNodeInfo *nodeInfo() { initialize(); return s_nodeInfo; }
-    static void renderIcon();
-        
+    virtual AGUINodeEditor *createCustomEditor() override;
+    
+    virtual void receiveControl(int port, AGControl *control) override;
+    
 private:
     static AGNodeInfo *s_nodeInfo;
     

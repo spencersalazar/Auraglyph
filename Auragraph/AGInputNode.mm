@@ -186,7 +186,6 @@ public:
         string _name() const override { return "Slider"; };
         
         vector<AGPortInfo> _inputPortInfo() const override { return {}; };
-        
         vector<AGPortInfo> _editPortInfo() const override { return {}; };
         
         vector<GLvertex3f> _iconGeo() const override
@@ -211,8 +210,7 @@ public:
         GLuint _iconGeoType() const override { return GL_LINE_LOOP; };
     };
     
-    AGSliderNode(const AGNodeManifest *mf, const GLvertex3f &pos) : AGInputNode(mf, pos) { }
-    AGSliderNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) : AGInputNode(mf, docNode) { }
+    using AGInputNode::AGInputNode;
 };
 
 
@@ -230,8 +228,6 @@ const AGNodeManager &AGNodeManager::inputNodeManager()
         vector<const AGNodeManifest *> &nodeTypes = s_inputNodeManager->m_nodeTypes;
         
         nodeTypes.push_back(new AGSliderNode::Manifest);
-//        s_inputNodeManager->m_audioNodeTypes.push_back(new NodeInfo("Knob", NULL, NULL, NULL, NULL));
-//        s_inputNodeManager->m_audioNodeTypes.push_back(new NodeInfo("Button", NULL, NULL, NULL, NULL));
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();
