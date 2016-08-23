@@ -351,41 +351,6 @@ private:
 };
 
 
-class AGTransitionalNodeManifest : public AGNodeManifest
-{
-public:
-    AGTransitionalNodeManifest(const AGNodeInfo *_nodeInfo, const AGNodeManager::NodeInfo *_mgrNodeInfo) :
-    nodeInfo(_nodeInfo),
-    mgrNodeInfo(_mgrNodeInfo)
-    { }
-    
-    virtual const string &name() const { return mgrNodeInfo->name; }
-    virtual const string &type() const { return nodeInfo->type; }
-    virtual void initialize() const { if(mgrNodeInfo->initialize) mgrNodeInfo->initialize(); }
-    virtual void renderIcon() const { mgrNodeInfo->renderIcon(); }
-    virtual AGNode *createNode(const GLvertex3f &pos) const { return mgrNodeInfo->createNode(this, pos); }
-    virtual AGNode *createNode(const AGDocument::Node &docNode) const { return mgrNodeInfo->createWithDocNode(this, docNode); }
-    
-    virtual const vector<AGPortInfo> &inputPortInfo() const { return nodeInfo->inputPortInfo; }
-    virtual const vector<AGPortInfo> &editPortInfo() const { return nodeInfo->editPortInfo; }
-    
-    template<class NodeClass>
-    static AGTransitionalNodeManifest *make(const std::string &name, const AGNodeInfo *info)
-    {
-        return new AGTransitionalNodeManifest(info, AGNodeManager::makeNodeInfo<NodeClass>(name));
-    }
-    
-    static AGTransitionalNodeManifest *make(const AGNodeInfo *info, const AGNodeManager::NodeInfo *mgrInfo)
-    {
-        return new AGTransitionalNodeManifest(info, mgrInfo);
-    }
-    
-private:
-    const AGNodeInfo *nodeInfo;
-    const AGNodeManager::NodeInfo *mgrNodeInfo;
-};
-
-
 template<class NodeClass>
 class AGStandardNodeManifest : public AGNodeManifest
 {
