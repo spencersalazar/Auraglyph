@@ -12,6 +12,14 @@ class AGAudioOutputNode;
 class AGAudioNode;
 class AGTimer;
 
+
+class AGAudioCapturer
+{
+public:
+    virtual void captureAudio(float *input, int numFrames) = 0;
+};
+
+
 @interface AGAudioManager : NSObject
 
 @property (nonatomic) AGAudioOutputNode * outputNode;
@@ -20,6 +28,8 @@ class AGTimer;
 
 - (void)addRenderer:(AGAudioNode *)renderer;
 - (void)removeRenderer:(AGAudioNode *)renderer;
+- (void)addCapturer:(AGAudioCapturer *)capturer;
+- (void)removeCapturer:(AGAudioCapturer *)capturer;
 - (void)addTimer:(AGTimer *)timer;
 - (void)removeTimer:(AGTimer *)timer;
 

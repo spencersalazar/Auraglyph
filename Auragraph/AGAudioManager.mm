@@ -25,8 +25,12 @@ static float g_audio_buf[1024];
     
     list<AGAudioNode *> _renderers;
     Mutex _renderersMutex;
+    list<AGAudioCapturer *> _capturers;
+    Mutex _capturersMutex;
     list<AGTimer *> _timers;
     Mutex _timersMutex;
+    
+    float _inputBuffer[1024];
 }
 
 - (void)renderAudio:(Float32 *)buffer numFrames:(UInt32)numFrames;
@@ -61,6 +65,7 @@ static AGAudioManager *g_audioManager;
         self.outputNode = NULL;
         
         memset(g_audio_buf, 0, sizeof(float)*1024);
+        memset(_inputBuffer, 0, sizeof(float)*1024);
         
         MoAudio::init(AGAudioNode::sampleRate(), AGAudioNode::bufferSize(), 2);
         MoAudio::start(audio_cb, (__bridge void *) self);
@@ -83,6 +88,20 @@ static AGAudioManager *g_audioManager;
     _renderersMutex.unlock();
 }
 
+- (void)addCapturer:(AGAudioCapturer *)capturer
+{
+    _capturersMutex.lock();
+    _capturers.push_back(capturer);
+    _capturersMutex.unlock();
+}
+
+- (void)removeCapturer:(AGAudioCapturer *)capturer
+{
+    _capturersMutex.lock();
+    _capturers.remove(capturer);
+    _capturersMutex.unlock();
+}
+
 - (void)addTimer:(AGTimer *)timer
 {
     _timersMutex.lock();
@@ -103,12 +122,23 @@ static AGAudioManager *g_audioManager;
     memset(g_audio_buf, 0, sizeof(float)*1024);
     
     _timersMutex.lock();
-    itmap(_timers, ^(AGTimer *&timer){
+    for(AGTimer *timer : _timers )
+    {
         float tf = ((float)t)/((float)AGAudioNode::sampleRate());
         float dtf = ((float)numFrames)/((float)AGAudioNode::sampleRate());
         timer->checkTimer(tf, dtf);
-    });
+    };
     _timersMutex.unlock();
+    
+    for(int i = 0; i < numFrames; i++)
+    {
+        _inputBuffer[i] = buffer[i*2];
+    }
+    
+    _capturersMutex.lock();
+    for(AGAudioCapturer *capturer : _capturers)
+        capturer->captureAudio(_inputBuffer, numFrames);
+    _capturersMutex.unlock();
     
     _renderersMutex.lock();
     for(AGAudioNode *renderer : _renderers)
