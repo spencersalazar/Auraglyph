@@ -307,7 +307,7 @@ void AGConnection::render()
         // move a to edge of port circle
         modelView = GLKMatrix4Translate(modelView, 0.002*AGStyle::oldGlobalScale, 0, 0);
         // scale x = [0,1] to length of connection (minus port circle radius)
-        modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004*AGStyle::oldGlobalScale), 0.0025, 1);
+        modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004*AGStyle::oldGlobalScale), 0.0025*AGStyle::oldGlobalScale, 1);
         // scale height to control activation
         modelView = GLKMatrix4Scale(modelView, 1, powf(10, -2*(1-m_controlVisScale)), 1);
 //        modelView = GLKMatrix4Scale(modelView, 1, 1, 1);
