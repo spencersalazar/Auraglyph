@@ -407,10 +407,7 @@
 				0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */,
 				09F6E8791D6A3758006DBC9E /* AGOutputNode.h */,
 				09F6E8781D6A3758006DBC9E /* AGOutputNode.mm */,
-				0933956D1A08799A009E4802 /* AGFormulaNode.h */,
-				0933956C1A08799A009E4802 /* AGFormulaNode.mm */,
-				093395701A088612009E4802 /* AGArrayNode.h */,
-				0933956F1A088612009E4802 /* AGArrayNode.mm */,
+				09B674411D6D9D6500F84E09 /* Nodes */,
 				098740B217BC61410098511A /* AGUserInterface.h */,
 				098740B117BC61410098511A /* AGUserInterface.mm */,
 				093395761A08BFAC009E4802 /* AGNodeSelector.h */,
@@ -632,6 +629,17 @@
 				099AF12317D1A6DA000BAB7B /* zip.h */,
 			);
 			path = minizip;
+			sourceTree = "<group>";
+		};
+		09B674411D6D9D6500F84E09 /* Nodes */ = {
+			isa = PBXGroup;
+			children = (
+				0933956D1A08799A009E4802 /* AGFormulaNode.h */,
+				0933956C1A08799A009E4802 /* AGFormulaNode.mm */,
+				093395701A088612009E4802 /* AGArrayNode.h */,
+				0933956F1A088612009E4802 /* AGArrayNode.mm */,
+			);
+			path = Nodes;
 			sourceTree = "<group>";
 		};
 		09E5EC8318A5A84C00B21D97 /* stk */ = {
