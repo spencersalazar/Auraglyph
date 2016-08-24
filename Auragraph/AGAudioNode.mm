@@ -55,11 +55,11 @@ void AGAudioNode::initializeAudioNode()
 
 void AGAudioNode::init()
 {
+    m_gain = 1;
+    
     AGNode::init();
     
     initializeAudioNode();
-    
-    m_gain = 1;
     
     m_radius = 0.01*AGStyle::oldGlobalScale;
     m_portRadius = 0.01*0.2*AGStyle::oldGlobalScale;
@@ -74,11 +74,11 @@ void AGAudioNode::init()
 
 void AGAudioNode::init(const AGDocument::Node &docNode)
 {
+    m_gain = 1;
+    
     AGNode::init(docNode);
     
     initializeAudioNode();
-    
-    m_gain = 1;
     
     m_radius = 0.01*AGStyle::oldGlobalScale;
     m_portRadius = 0.01*0.2*AGStyle::oldGlobalScale;
