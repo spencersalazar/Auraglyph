@@ -14,6 +14,7 @@
 #import "AGAudioManager.h"
 #import "ADSR.h"
 #import "spstl.h"
+#import "AGAudioCapturer.h"
 #include "AGStyle.h"
 
 

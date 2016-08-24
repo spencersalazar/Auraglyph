@@ -22,7 +22,7 @@
 #include "Mutex.h"
 
 #import <GLKit/GLKit.h>
-#import <Foundation/Foundation.h>
+//#import <Foundation/Foundation.h>
 
 #include <list>
 #include <string>
