@@ -217,7 +217,7 @@ public:
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
 //------------------------------------------------------------------------------
-#pragma mark AGNodeManager -
+#pragma mark - AGNodeManager
 
 const AGNodeManager &AGNodeManager::inputNodeManager()
 {

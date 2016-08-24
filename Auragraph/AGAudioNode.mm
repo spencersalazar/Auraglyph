@@ -1154,7 +1154,7 @@ void AGAudioFilterFQNode<Filter>::renderAudio(sampletime t, float *input, float 
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
 //------------------------------------------------------------------------------
-#pragma mark AGNodeManager -
+#pragma mark - AGNodeManager
 
 const AGNodeManager &AGNodeManager::audioNodeManager()
 {

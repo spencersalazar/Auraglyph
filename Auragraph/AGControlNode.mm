@@ -281,7 +281,7 @@ void AGControlTimerNode::getEditPortValue(int port, float &value) const
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
 //------------------------------------------------------------------------------
-#pragma mark AGNodeManager -
+#pragma mark - AGNodeManager
 
 const AGNodeManager &AGNodeManager::controlNodeManager()
 {
