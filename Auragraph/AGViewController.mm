@@ -395,11 +395,17 @@ static AGViewController * g_instance = nil;
 {
 //    _defaultDocument.removeNode(node->uuid());
     
-    AGInteractiveObject * ui = node->userInterface();
-    if(ui)
-        _interfaceObjects.remove(ui);
+    // only process for removal if it is part of the node list in the first place
+    bool has = (std::find(_nodes.begin(), _nodes.end(), node) != _nodes.end());
     
-    _nodeRemoveList.push_back(node);
+    if(has)
+    {
+        AGInteractiveObject * ui = node->userInterface();
+        if(ui)
+            _interfaceObjects.remove(ui);
+        
+        _nodeRemoveList.push_back(node);
+    }
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object
