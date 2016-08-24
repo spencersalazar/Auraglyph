@@ -291,7 +291,6 @@ AGDocument::Node AGAudioNode::serialize()
     return docNode;
 }
 
-
 //------------------------------------------------------------------------------
 // ### AGAudioOutputNode ###
 //------------------------------------------------------------------------------
@@ -404,6 +403,120 @@ void AGAudioOutputNode::renderAudio(sampletime t, float *input, float *output, i
     for(int i = 0; i < nFrames; i++)
         output[i] *= m_gain;
 }
+
+//------------------------------------------------------------------------------
+// ### AGAudioInputNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioInputNode
+
+class AGAudioInputNode : public AGAudioNode, public AGAudioCapturer
+{
+public:
+    
+    class Manifest : public AGStandardNodeManifest<AGAudioInputNode>
+    {
+    public:
+        string _type() const override { return "Input"; };
+        string _name() const override { return "Input"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override { return { }; }
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { "gain", false, true }
+            };
+        }
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius = 0.005*AGStyle::oldGlobalScale;
+            
+            // speaker icon
+            vector<GLvertex3f> iconGeo = {
+                { -radius*0.62f,  radius, 0 },
+                {  radius*0.62f,       0, 0 },
+                { -radius*0.62f, -radius, 0 },
+                {             0,       0, 0 },
+            };
+            
+            return iconGeo;
+        }
+        
+        GLuint _iconGeoType() const override { return GL_LINE_LOOP; }
+    };
+    
+    using AGAudioNode::AGAudioNode;
+    
+    void init() override
+    {
+        AGAudioNode::init();
+        
+        [[AGAudioManager instance] addCapturer:this];
+    }
+    
+    void init(const AGDocument::Node &docNode) override
+    {
+        AGAudioNode::init();
+        
+        [[AGAudioManager instance] addCapturer:this];
+    }
+    
+    virtual ~AGAudioInputNode()
+    {
+        [[AGAudioManager instance] removeCapturer:this];
+    }
+    
+    void setDefaultPortValues() override
+    {
+        m_gain = 1;
+        
+        m_inputSize = 0;
+        m_input = NULL;
+    }
+    
+    void setEditPortValue(int port, float value) override
+    {
+        switch(port)
+        {
+            case 0: m_gain = value; break;
+        }
+    }
+    
+    void getEditPortValue(int port, float &value) const override
+    {
+        switch(port)
+        {
+            case 0: value = m_gain; break;
+        }
+    }
+    
+    int numOutputPorts() const override { return 1; }
+    int numInputPorts() const override { return 0; }
+    
+    void renderAudio(sampletime t, float *input, float *output, int nFrames) override
+    {
+        if(m_inputSize && m_input)
+        {
+            float *_input = m_input;
+            int mn = min(nFrames, m_inputSize);
+            for(int i = 0; i < mn; i++)
+                *output++ += (*_input++)*m_gain;
+        }
+    }
+    
+    void captureAudio(float *input, int numFrames) override
+    {
+        // pretty hacky
+        // TODO: maybe copy this
+        m_input = input;
+        m_inputSize = numFrames;
+    }
+    
+private:
+    int m_inputSize;
+    float *m_input;
+};
 
 //------------------------------------------------------------------------------
 // ### AGAudioSineWaveNode ###
@@ -1253,6 +1366,7 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RLPF>::ManifestLPF);
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RHPF>::ManifestHPF);
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2BPF>::ManifestBPF);
+        nodeTypes.push_back(new AGAudioInputNode::Manifest);
         nodeTypes.push_back(new AGAudioOutputNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
