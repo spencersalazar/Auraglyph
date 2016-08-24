@@ -22,7 +22,7 @@ public:
     
     static void initializeOutputNode();
     
-    AGOutputNode(const AGNodeManifest *mf, GLvertex3f pos = GLvertex3f());
+    AGOutputNode(const AGNodeManifest *mf, const GLvertex3f &pos = GLvertex3f());
     
     virtual void update(float t, float dt);
     virtual void render();

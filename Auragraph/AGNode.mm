@@ -72,7 +72,7 @@ void AGNode::initalizeNode()
 }
 
 
-AGNode::AGNode(const AGNodeManifest *mf, GLvertex3f pos) :
+AGNode::AGNode(const AGNodeManifest *mf, const GLvertex3f &pos) :
 m_pos(pos),
 m_manifest(mf),
 m_active(true),
@@ -336,6 +336,10 @@ void AGNode::touchUp(const GLvertex3f &t)
 void AGNode::pushControl(int port, AGControl *control)
 {
     this->lock();
+    
+    float f;
+    control->mapTo(f);
+    dbgprint_off("pushControl %i:%f from %0lx\n", port, f, (unsigned long)this);
     
     itmap(m_outbound, ^(AGConnection *&conn) {
         if(conn->rate() == RATE_CONTROL)

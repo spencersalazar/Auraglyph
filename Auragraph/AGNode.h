@@ -85,7 +85,7 @@ public:
     static void connect(AGConnection * connection);
     static void disconnect(AGConnection * connection);
     
-    AGNode(const AGNodeManifest *mf, GLvertex3f pos = GLvertex3f());
+    AGNode(const AGNodeManifest *mf, const GLvertex3f &pos = GLvertex3f());
     AGNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
     virtual void init();
     virtual void init(const AGDocument::Node &docNode);

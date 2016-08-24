@@ -133,6 +133,7 @@ m_manager(manager)
 template<class NodeType, class ManagerType>
 AGUINodeSelector<NodeType, ManagerType>::~AGUINodeSelector()
 {
+    dbgprint_off("AGUINodeSelector::~AGUINodeSelector()");
     SAFE_DELETE(m_node);
 }
 

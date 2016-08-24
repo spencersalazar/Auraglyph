@@ -63,7 +63,7 @@ void AGControlNode::initializeControlNode()
     }
 }
 
-AGControlNode::AGControlNode(const AGNodeManifest *mf, GLvertex3f pos) :
+AGControlNode::AGControlNode(const AGNodeManifest *mf, const GLvertex3f &pos) :
 AGNode(mf, pos)
 {
     initializeControlNode();
@@ -231,9 +231,8 @@ public:
         GLuint _iconGeoType() const override { return GL_LINES; };
     };
     
-    AGControlTimerNode(const AGNodeManifest *mf, const GLvertex3f &pos);
-    AGControlTimerNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
-    virtual ~AGControlTimerNode() { }
+    using AGControlNode::AGControlNode;
+    virtual ~AGControlTimerNode() { dbgprint_off("AGControlTimerNode::~AGControlTimerNode()\n"); }
     
     void setDefaultPortValues() override
     {
@@ -241,6 +240,12 @@ public:
         m_lastFire = 0;
         m_lastTime = 0;
         m_control.v = 0;
+        
+        m_timer = AGTimer(m_interval, ^(AGTimer *) {
+            // flip
+            m_control.v = !m_control.v;
+            pushControl(0, &m_control);
+        });
     }
     
     virtual int numOutputPorts() const override { return 1; }
@@ -255,26 +260,6 @@ private:
     float m_lastFire;
     float m_interval;
 };
-
-AGControlTimerNode::AGControlTimerNode(const AGNodeManifest *mf, const GLvertex3f &pos) :
-AGControlNode(mf, pos)
-{
-    m_timer = AGTimer(m_interval, ^(AGTimer *) {
-        // flip
-        m_control.v = !m_control.v;
-        pushControl(0, &m_control);
-    });
-}
-
-AGControlTimerNode::AGControlTimerNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
-AGControlNode(mf, docNode)
-{
-    m_timer = AGTimer(m_interval, ^(AGTimer *) {
-        // flip
-        m_control.v = !m_control.v;
-        pushControl(0, &m_control);
-    });
-}
 
 void AGControlTimerNode::setEditPortValue(int port, float value)
 {

@@ -21,9 +21,9 @@ class AGControlNode : public AGNode
 public:
     static void initializeControlNode();
     
-    AGControlNode(const AGNodeManifest *mf, GLvertex3f pos = GLvertex3f());
+    AGControlNode(const AGNodeManifest *mf, const GLvertex3f &pos = GLvertex3f());
     AGControlNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
-    virtual ~AGControlNode() { }
+    virtual ~AGControlNode() { dbgprint_off("AGControlNode::~AGControlNode()\n"); }
     
     virtual void update(float t, float dt);
     virtual void render();
@@ -47,11 +47,6 @@ private:
     
     static GLvncprimf *s_geo;
     static GLuint s_geoSize;
-    
-protected:
-    GLvertex3f *m_iconGeo;
-    GLuint m_geoSize;
-    GLuint m_geoType;
 };
 
 #endif /* defined(__Auragraph__AGControlNode__) */

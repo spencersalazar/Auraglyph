@@ -65,7 +65,7 @@ void AGInputNode::initializeInputNode()
     }
 }
 
-AGInputNode::AGInputNode(const AGNodeManifest *mf, GLvertex3f pos) :
+AGInputNode::AGInputNode(const AGNodeManifest *mf, const GLvertex3f &pos) :
 AGNode(mf, pos)
 {
     initializeInputNode();
