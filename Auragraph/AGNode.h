@@ -340,10 +340,10 @@ public:
         load();
         
         glBindVertexArrayOES(0);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), _iconGeo().data());
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_iconGeo.data());
         
         glLineWidth(2.0);
-        glDrawArrays(_iconGeoType(), 0, _iconGeo().size());
+        glDrawArrays(m_iconGeoType, 0, m_iconGeo.size());
     }
     
     virtual AGNode *createNode(const GLvertex3f &pos) const override
@@ -378,6 +378,7 @@ private:
             m_type = _type();
             m_name = _name();
             m_iconGeo = _iconGeo();
+            m_iconGeoType = _iconGeoType();
             m_inputPortInfo = _inputPortInfo();
             m_editPortInfo = _editPortInfo();
         }
@@ -389,6 +390,7 @@ private:
     mutable vector<GLvertex3f> m_iconGeo;
     mutable vector<AGPortInfo> m_inputPortInfo;
     mutable vector<AGPortInfo> m_editPortInfo;
+    mutable GLuint m_iconGeoType;
 };
 
 

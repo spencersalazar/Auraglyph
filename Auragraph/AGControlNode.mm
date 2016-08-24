@@ -35,7 +35,7 @@ void AGControlNode::initializeControlNode()
     {
         s_init = true;
         
-        // generate circle
+        // generate square
         s_geoSize = 4;
         s_geo = new GLvncprimf[s_geoSize];
         s_radius = AGNode::s_sizeFactor/(sqrt(sqrtf(2)));
