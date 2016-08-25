@@ -27,6 +27,7 @@
 #include <list>
 #include <string>
 #include <vector>
+#include <set>
 
 
 using namespace std;
@@ -143,6 +144,8 @@ public:
     virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const { return m_pos + relativePositionForOutboundConnection(connection); }
     virtual GLvertex3f relativePositionForInboundConnection(AGConnection * connection) const { return relativePositionForInputPort(connection->dstPort()); }
     virtual GLvertex3f relativePositionForOutboundConnection(AGConnection * connection) const { return relativePositionForOutputPort(0); }
+    
+    void trimConnectionsToNodes(const set<AGNode *> &nodes);
     
     /*** Subclassing note: the following public functions should be overridden ***/
     

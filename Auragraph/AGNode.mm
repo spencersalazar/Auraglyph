@@ -179,6 +179,29 @@ void AGNode::removeOutbound(AGConnection *connection)
     m_outbound.remove(connection);
 }
 
+void AGNode::trimConnectionsToNodes(const set<AGNode *> &nodes)
+{
+    list<AGConnection *> removeList;
+    
+    for(auto i = m_inbound.begin(); i != m_inbound.end(); )
+    {
+        auto j = i++;
+        if(!nodes.count((*j)->src()))
+            (*j)->removeFromTopLevel();
+        // TODO: better way of this
+        [[AGViewController instance] resignConnection:*j];
+    }
+    
+    for(auto i = m_outbound.begin(); i != m_outbound.end(); )
+    {
+        auto j = i++;
+        if(!nodes.count((*j)->src()))
+            (*j)->removeFromTopLevel();
+        // TODO: better way of this
+        [[AGViewController instance] resignConnection:*j];
+    }
+}
+
 void AGNode::update(float t, float dt)
 {
     if(!m_active)

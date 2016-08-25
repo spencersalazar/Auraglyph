@@ -15,6 +15,7 @@
 #import "ES2Render.h"
 #import "AGHandwritingRecognizer.h"
 #import "AGNode.h"
+#import "AGCompositeNode.h"
 #import "AGUserInterface.h"
 #import "TexFont.h"
 #import "AGDef.h"
@@ -27,6 +28,8 @@
 #import "spMath.h"
 
 #include "AGStyle.h"
+
+#import <set>
 
 
 //------------------------------------------------------------------------------
@@ -61,6 +64,17 @@
 //------------------------------------------------------------------------------
 #pragma mark -
 #pragma mark AGDrawNodeTouchHandler
+
+@interface AGDrawNodeTouchHandler ()
+{
+    LTKTrace _currentTrace;
+    GLvertex3f _currentTraceSum;
+    AGUITrace *_trace;
+}
+
+- (void)coalesceComposite:(AGAudioCompositeNode *)node;
+
+@end
 
 @implementation AGDrawNodeTouchHandler
 
@@ -107,8 +121,30 @@
     
     if(figure == AG_FIGURE_CIRCLE)
     {
-        AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::audioNodeSelector(centroidMVP);
-        _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
+        // first check average polar length
+        float sumPolarLength = 0;
+        floatVector v;
+        for(int i = 0; i < _currentTrace.getNumberOfPoints(); i++)
+        {
+            _currentTrace.getPointAt(i, v);
+            sumPolarLength += sqrtf(v[0]*v[0] + v[1]*v[1]);
+        }
+        
+        float avgPolarLength = sumPolarLength/_currentTrace.getNumberOfPoints();
+        dbgprint("avgPolarLength: %f\n", avgPolarLength);
+        
+        if(avgPolarLength > 180.0f)
+        {
+            // treat as composite
+            AGAudioCompositeNode *compositeNode = static_cast<AGAudioCompositeNode *>(AGNodeManager::audioNodeManager().createNodeOfType("Composite", centroidMVP));
+            [self coalesceComposite:compositeNode];
+            [_viewController addNode:compositeNode];
+        }
+        else
+        {
+            AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::audioNodeSelector(centroidMVP);
+            _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
+        }
     }
     else if(figure == AG_FIGURE_SQUARE)
     {
@@ -135,6 +171,35 @@
 
 - (void)update:(float)t dt:(float)dt { }
 - (void)render { }
+
+- (void)coalesceComposite:(AGAudioCompositeNode *)compositeNode
+{
+    float sumPolarLength = 0;
+    floatVector v;
+    for(int i = 0; i < _currentTrace.getNumberOfPoints(); i++)
+    {
+        _currentTrace.getPointAt(i, v);
+        sumPolarLength += sqrtf(v[0]*v[0] + v[1]*v[1]);
+    }
+    
+    float avgPolarLength = sumPolarLength/_currentTrace.getNumberOfPoints();
+    
+    set<AGNode *> subnodes;
+    
+    // collect all nodes within avg polar length
+    for(AGNode *node : [_viewController nodes])
+    {
+        float dist = (compositeNode->position()-node->position()).magnitude();
+        if(dist < avgPolarLength)
+            subnodes.insert(node);
+    }
+    
+    for(AGNode *node : subnodes)
+    {
+        node->trimConnectionsToNodes(subnodes);
+        [_viewController resignNode:node];
+    }
+}
 
 @end
 

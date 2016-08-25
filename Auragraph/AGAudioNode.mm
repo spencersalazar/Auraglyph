@@ -15,6 +15,7 @@
 #import "ADSR.h"
 #import "spstl.h"
 #import "AGAudioCapturer.h"
+#import "AGCompositeNode.h"
 #include "AGStyle.h"
 
 
@@ -1369,6 +1370,7 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2BPF>::ManifestBPF);
         nodeTypes.push_back(new AGAudioInputNode::Manifest);
         nodeTypes.push_back(new AGAudioOutputNode::Manifest);
+        nodeTypes.push_back(new AGAudioCompositeNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();
