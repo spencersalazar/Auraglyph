@@ -393,12 +393,12 @@ static AGViewController * g_instance = nil;
 
 - (void)removeNode:(AGNode *)node
 {
-//    _defaultDocument.removeNode(node->uuid());
+    //    _defaultDocument.removeNode(node->uuid());
     
     // only process for removal if it is part of the node list in the first place
-    bool has = (std::find(_nodes.begin(), _nodes.end(), node) != _nodes.end());
+    bool hasNode = (std::find(_nodes.begin(), _nodes.end(), node) != _nodes.end());
     
-    if(has)
+    if(hasNode)
     {
         AGInteractiveObject * ui = node->userInterface();
         if(ui)
@@ -406,6 +406,31 @@ static AGViewController * g_instance = nil;
         
         _nodeRemoveList.push_back(node);
     }
+}
+
+- (void)resignNode:(AGNode *)node
+{
+    // remove without fading out or destroying
+    
+    // only process for removal if it is part of the node list in the first place
+    bool hasNode = (std::find(_nodes.begin(), _nodes.end(), node) != _nodes.end());
+    
+    if(hasNode)
+    {
+        if(node == _touchCapture)
+            _touchCapture = NULL;
+        
+        AGInteractiveObject * ui = node->userInterface();
+        if(ui)
+            _interfaceObjects.remove(ui);
+        
+        _nodes.remove(node);
+    }
+}
+
+- (const list<AGNode *> &)nodes
+{
+    return _nodes;
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object
@@ -459,6 +484,14 @@ static AGViewController * g_instance = nil;
 - (void)addConnection:(AGConnection *)connection
 {
     _objects.push_back(connection);
+}
+
+- (void)resignConnection:(AGConnection *)connection
+{
+    if(connection == _touchCapture)
+        _touchCapture = NULL;
+    
+    _objects.remove(connection);
 }
 
 - (void)removeConnection:(AGConnection *)connection
