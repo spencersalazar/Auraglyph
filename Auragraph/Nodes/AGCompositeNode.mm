@@ -8,14 +8,16 @@
 
 #include "AGCompositeNode.h"
 
-void AGAudioCompositeNode::addOutputNode(AGAudioNode *outputNode)
+void AGAudioCompositeNode::addOutput(AGAudioRenderer *output)
 {
-    m_outputNodes.push_back(outputNode);
+    auto scope = m_outputsMutex.inScope();
+    m_outputs.push_back(output);
 }
 
-void AGAudioCompositeNode::addInputNode(AGAudioCapturer *inputNode)
+void AGAudioCompositeNode::removeOutput(AGAudioRenderer *output)
 {
-    m_inputNodes.push_back(inputNode);
+    auto scope = m_outputsMutex.inScope();
+    m_outputs.push_back(output);
 }
 
 void AGAudioCompositeNode::setEditPortValue(int port, float value)
@@ -36,21 +38,24 @@ void AGAudioCompositeNode::getEditPortValue(int port, float &value) const
 
 void AGAudioCompositeNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
-    assert(m_buffer);
-    
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
+    
+    memset(m_outputBuffer, 0, bufferSize()*sizeof(float));
     
     // feed input audio to input port(s)
     for(AGAudioCapturer *capturer : m_inputNodes)
         capturer->captureAudio(m_inputPortBuffer[0], nFrames);
     
     // render internal audio
-    for(AGAudioNode *outputNode : m_outputNodes)
-        outputNode->renderAudio(t, input, m_buffer, nFrames);
+    {
+        Mutex::Scope scope = m_outputsMutex.inScope();
+        for(AGAudioRenderer *outputNode : m_outputs)
+            outputNode->renderAudio(t, input, m_outputBuffer, nFrames);
+    }
     
     for(int i = 0; i < nFrames; i++)
-        output[i] *= m_buffer[i]*m_gain;
+        output[i] += m_outputBuffer[i]*m_gain;
     
     m_lastTime = t;
 }

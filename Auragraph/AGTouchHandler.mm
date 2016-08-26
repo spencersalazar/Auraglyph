@@ -125,11 +125,11 @@
     {
         // first check average polar length
         float sumPolarLength = 0;
-        floatVector v;
-        for(int i = 0; i < _currentTrace.getNumberOfPoints(); i++)
+        // compute centroid
+        for(GLvertex3f point : _trace->points())
         {
-            _currentTrace.getPointAt(i, v);
-            sumPolarLength += sqrtf(v[0]*v[0] + v[1]*v[1]);
+            float dx = point.x-centroidMVP.x, dy = point.y-centroidMVP.y;
+            sumPolarLength += sqrtf(dx*dx+dy*dy);
         }
         
         float avgPolarLength = sumPolarLength/_currentTrace.getNumberOfPoints();
@@ -177,11 +177,13 @@
 - (void)coalesceComposite:(AGAudioCompositeNode *)compositeNode
 {
     float sumPolarLength = 0;
-    floatVector v;
-    for(int i = 0; i < _currentTrace.getNumberOfPoints(); i++)
+    // compute centroid
+    GLvertex3f centroid = _currentTraceSum/_currentTrace.getNumberOfPoints();
+    centroid = [_viewController worldCoordinateForScreenCoordinate:CGPointMake(centroid.x, centroid.y)];
+    for(GLvertex3f point : _trace->points())
     {
-        _currentTrace.getPointAt(i, v);
-        sumPolarLength += sqrtf(v[0]*v[0] + v[1]*v[1]);
+        float dx = point.x-centroid.x, dy = point.y-centroid.y;
+        sumPolarLength += sqrtf(dx*dx+dy*dy);
     }
     
     float avgPolarLength = sumPolarLength/_currentTrace.getNumberOfPoints();
@@ -202,9 +204,13 @@
         [_viewController resignNode:node];
         
         if(node->type() == "Output")
-            compositeNode->addOutputNode(dynamic_cast<AGAudioNode *>(node));
-        if(node->type() == "Input")
-            compositeNode->addInputNode(dynamic_cast<AGAudioCapturer *>(node));
+        {
+            AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
+            outputNode->setOutputDestination(compositeNode);
+        }
+            
+//        if(node->type() == "Input")
+//            compositeNode->addInputNode(dynamic_cast<AGAudioCapturer *>(node));
     }
 }
 

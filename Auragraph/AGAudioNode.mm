@@ -341,6 +341,7 @@ void AGAudioOutputNode::renderAudio(sampletime t, float *input, float *output, i
             ((AGAudioNode *)(*i)->src())->renderAudio(t, input, output, nFrames);
     }
     
+    // TODO: apply gain only to internal render
     for(int i = 0; i < nFrames; i++)
         output[i] *= m_gain;
 }

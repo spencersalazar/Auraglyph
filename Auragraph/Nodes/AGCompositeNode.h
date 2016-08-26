@@ -12,6 +12,7 @@
 
 #include "AGAudioNode.h"
 #include "AGAudioCapturer.h"
+#include "AGAudioOutputDestination.h"
 #include <list>
 
 using namespace std;
@@ -23,7 +24,7 @@ using namespace std;
 #pragma mark - AGAudioCompositeNode
 
 
-class AGAudioCompositeNode : public AGAudioNode
+class AGAudioCompositeNode : public AGAudioNode, public AGAudioOutputDestination
 {
 public:
     
@@ -72,8 +73,6 @@ public:
     void setDefaultPortValues() override
     {
         m_gain = 1;
-        SAFE_DELETE(m_buffer);
-        m_buffer = new float[1024];
     }
     
     virtual int numOutputPorts() const override { return 1; }
@@ -83,13 +82,17 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
     
-    void addOutputNode(AGAudioNode *outputNode);
-    void addInputNode(AGAudioCapturer *inputNode);
+//    void addOutputNode(AGAudioNode *outputNode);
+//    void addInputNode(AGAudioCapturer *inputNode);
     
+    void addOutput(AGAudioRenderer *renderer) override;
+    void removeOutput(AGAudioRenderer *renderer) override;
+
 private:
     
-    float *m_buffer = NULL;
-    list<AGAudioNode *> m_outputNodes;
+    Mutex m_outputsMutex;
+    list<AGAudioRenderer *> m_outputs;
+    Mutex m_inputsMutex;
     list<AGAudioCapturer *> m_inputNodes;
 };
 
