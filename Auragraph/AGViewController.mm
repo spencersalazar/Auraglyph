@@ -206,6 +206,13 @@ static AGViewController * g_instance = nil;
             {
                 uuid2node[node->uuid()] = node;
                 [self addNode:node];
+                
+                
+                if(node->type() == "Output")
+                {
+                    AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
+                    outputNode->setOutputDestination([AGAudioManager instance].masterOut);
+                }
             }
         }, ^(const AGDocument::Connection &docConnection) {
             if(uuid2node.count(docConnection.srcUuid) && uuid2node.count(docConnection.dstUuid))

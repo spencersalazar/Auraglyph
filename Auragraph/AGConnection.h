@@ -32,9 +32,6 @@ enum AGRate
     RATE_AUDIO,
 };
 
-typedef long long sampletime;
-
-
 class AGConnection : public AGInteractiveObject
 {
 public:

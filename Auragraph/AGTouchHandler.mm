@@ -16,6 +16,8 @@
 #import "AGHandwritingRecognizer.h"
 #import "AGNode.h"
 #import "AGCompositeNode.h"
+#import "AGAudioCapturer.h"
+#import "AGAudioManager.h"
 #import "AGUserInterface.h"
 #import "TexFont.h"
 #import "AGDef.h"
@@ -198,6 +200,11 @@
     {
         node->trimConnectionsToNodes(subnodes);
         [_viewController resignNode:node];
+        
+        if(node->type() == "Output")
+            compositeNode->addOutputNode(dynamic_cast<AGAudioNode *>(node));
+        if(node->type() == "Input")
+            compositeNode->addInputNode(dynamic_cast<AGAudioCapturer *>(node));
     }
 }
 
@@ -876,7 +883,15 @@ private:
     
     AGNode * newNode = _nodeSelector->createNode();
     if(newNode)
+    {
         [_viewController addNode:newNode];
+        
+        if(newNode->type() == "Output")
+        {
+            AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(newNode);
+            outputNode->setOutputDestination([AGAudioManager instance].masterOut);
+        }
+    }
     
     if(!_nodeSelector->done())
         _nextHandler = self;

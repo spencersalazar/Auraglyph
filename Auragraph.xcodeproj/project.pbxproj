@@ -308,6 +308,8 @@
 		09F3C50B18A5A8E000E499AF /* Generator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Generator.h; sourceTree = "<group>"; };
 		09F6E8781D6A3758006DBC9E /* AGOutputNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGOutputNode.mm; sourceTree = "<group>"; };
 		09F6E8791D6A3758006DBC9E /* AGOutputNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGOutputNode.h; sourceTree = "<group>"; };
+		09F700B41D6FA75900294BDD /* AGAudioOutputDestination.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGAudioOutputDestination.h; sourceTree = "<group>"; };
+		09F700B51D6FA79B00294BDD /* AGAudioRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGAudioRenderer.h; sourceTree = "<group>"; };
 		09FC92451A14F55D005D14A3 /* AGTimer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGTimer.mm; sourceTree = "<group>"; };
 		09FC92461A14F55D005D14A3 /* AGTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGTimer.h; sourceTree = "<group>"; };
 		09FC92481A14F915005D14A3 /* spstl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spstl.h; sourceTree = "<group>"; };
@@ -397,7 +399,9 @@
 				095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */,
 				098740A117BA2EA70098511A /* AGAudioManager.h */,
 				098740A217BA2EA70098511A /* AGAudioManager.mm */,
+				09F700B51D6FA79B00294BDD /* AGAudioRenderer.h */,
 				09B674461D6DA2B200F84E09 /* AGAudioCapturer.h */,
+				09F700B41D6FA75900294BDD /* AGAudioOutputDestination.h */,
 				098F9B3919EE49BA00CE2F24 /* AGRenderObject.h */,
 				098F9B3819EE49BA00CE2F24 /* AGRenderObject.mm */,
 				0987409B17B98D7C0098511A /* AGNode.h */,

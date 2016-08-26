@@ -12,6 +12,8 @@
 class AGAudioCapturer
 {
 public:
+    virtual ~AGAudioCapturer() { }
+    
     virtual void captureAudio(float *input, int numFrames) = 0;
 };
 

@@ -8,6 +8,16 @@
 
 #include "AGCompositeNode.h"
 
+void AGAudioCompositeNode::addOutputNode(AGAudioNode *outputNode)
+{
+    m_outputNodes.push_back(outputNode);
+}
+
+void AGAudioCompositeNode::addInputNode(AGAudioCapturer *inputNode)
+{
+    m_inputNodes.push_back(inputNode);
+}
+
 void AGAudioCompositeNode::setEditPortValue(int port, float value)
 {
     switch(port)

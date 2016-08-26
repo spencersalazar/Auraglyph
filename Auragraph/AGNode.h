@@ -101,8 +101,6 @@ public:
     // graphics
     virtual void update(float t, float dt);
     virtual void render();
-    // audio
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) { assert(0); }
     // control
     void pushControl(int port, AGControl *control);
     virtual void receiveControl(int port, AGControl *control) { }
