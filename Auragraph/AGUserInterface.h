@@ -229,6 +229,7 @@ public:
     AGUITrace();
     
     void addPoint(const GLvertex3f &);
+    const vector<GLvertex3f> points() const;
     
 //    AGHandwritingRecognizerFigure recognizeNumeral();
     
