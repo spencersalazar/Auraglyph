@@ -356,7 +356,7 @@ wn_PnPoly( GLvertex3f P, const GLvertex3f* V, int n )
 
 static inline bool pointInPolygon(GLvertex3f p, const GLvertex3f *poly, int N)
 {
-    return wn_PnPoly(p, poly, N) > 0;
+    return wn_PnPoly(p, poly, N) != 0;
 }
 
 
