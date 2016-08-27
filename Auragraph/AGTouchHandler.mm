@@ -121,8 +121,6 @@
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    _trace->removeFromTopLevel();
-    
     /* analysis */
     
     GLvertex3f centroid = _currentTraceSum/_currentTrace.getNumberOfPoints();
@@ -154,6 +152,8 @@
             AGAudioCompositeNode *compositeNode = static_cast<AGAudioCompositeNode *>(node);
             [self coalesceComposite:compositeNode withNodes:subnodes];
             [_viewController addNode:compositeNode];
+            
+            _trace->removeFromTopLevel();
             
             return;
         }
@@ -209,6 +209,8 @@
     {
         animateOut = YES;
     }
+    
+    _trace->removeFromTopLevel();
 }
 
 - (void)update:(float)t dt:(float)dt { }
