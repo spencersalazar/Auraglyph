@@ -195,11 +195,21 @@ void AGNode::trimConnectionsToNodes(const set<AGNode *> &nodes)
     for(auto i = m_outbound.begin(); i != m_outbound.end(); )
     {
         auto j = i++;
-        if(!nodes.count((*j)->src()))
+        if(!nodes.count((*j)->dst()))
             (*j)->removeFromTopLevel();
         // TODO: better way of this
         [[AGViewController instance] resignConnection:*j];
     }
+}
+
+const std::list<AGConnection *> AGNode::outbound() const
+{
+    return m_outbound;
+}
+
+const std::list<AGConnection *> AGNode::inbound() const
+{
+    return m_inbound;
 }
 
 void AGNode::update(float t, float dt)

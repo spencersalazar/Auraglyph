@@ -218,10 +218,43 @@
 
 - (void)coalesceComposite:(AGAudioCompositeNode *)compositeNode withNodes:(const set<AGNode *> &)subnodes
 {
+    // save broken input/output connections
+    list<tuple<AGNode *, AGNode *, int>> inbound;
+    list<tuple<AGNode *, AGNode *, int>> outbound;
+    
     for(AGNode *node : subnodes)
     {
-        node->trimConnectionsToNodes(subnodes);
+        // trim connections
+        const list<AGConnection *> &nodeInbound = node->inbound();
+        const list<AGConnection *> &nodeOutbound = node->outbound();
+        
+        for(auto i = nodeInbound.begin(); i != nodeInbound.end(); )
+        {
+            auto j = i++;
+            if(!subnodes.count((*j)->src()))
+            {
+                outbound.push_back(std::make_tuple((*j)->src(), node, (*j)->dstPort()));
+                (*j)->removeFromTopLevel();
+            }
+            // TODO: better way of this
+            [[AGViewController instance] resignConnection:*j];
+        }
+        
+        for(auto i = nodeOutbound.begin(); i != nodeOutbound.end(); )
+        {
+            auto j = i++;
+            if(!subnodes.count((*j)->dst()))
+            {
+                outbound.push_back(std::make_tuple(node, (*j)->dst(), (*j)->dstPort()));
+                (*j)->removeFromTopLevel();
+            }
+            // TODO: better way of this
+            [[AGViewController instance] resignConnection:*j];
+        }
+        
         [_viewController resignNode:node];
+        
+        compositeNode->addSubnode(node);
         
         if(node->type() == "Output")
         {
@@ -231,6 +264,28 @@
             
 //        if(node->type() == "Input")
 //            compositeNode->addInputNode(dynamic_cast<AGAudioCapturer *>(node));
+    }
+    
+    // relink broken connections across composite boundary
+    // TODO: multiple outbound connections
+    if(outbound.size() && compositeNode->numOutputPorts() == 0)
+    {
+        AGNode *src = std::get<0>(outbound.front());
+        AGNode *dst = std::get<1>(outbound.front());
+        int port = std::get<2>(outbound.front());
+        
+        // create output within composite
+        AGNode *newNode = AGNodeManager::audioNodeManager().createNodeOfType("Output", dst->position());
+        AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(newNode);
+        outputNode->setOutputDestination(compositeNode);
+        
+        // make connection within composite
+        AGConnection *internalConnection = new AGConnection(src, newNode, 0);
+        internalConnection->init();
+        // make connection outside composite
+        AGConnection *externalConnection = new AGConnection(compositeNode, dst, port);
+        externalConnection->init();
+        [_viewController addConnection:externalConnection];
     }
 }
 

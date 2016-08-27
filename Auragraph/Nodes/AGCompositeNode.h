@@ -75,7 +75,7 @@ public:
         m_gain = 1;
     }
     
-    virtual int numOutputPorts() const override { return 1; }
+    virtual int numOutputPorts() const override;
     
     virtual void setEditPortValue(int port, float value) override;
     virtual void getEditPortValue(int port, float &value) const override;
@@ -84,6 +84,9 @@ public:
     
 //    void addOutputNode(AGAudioNode *outputNode);
 //    void addInputNode(AGAudioCapturer *inputNode);
+    
+    void addSubnode(AGNode *subnode);
+    void removeSubnode(AGNode *subnode);
     
     void addOutput(AGAudioRenderer *renderer) override;
     void removeOutput(AGAudioRenderer *renderer) override;
@@ -94,6 +97,8 @@ private:
     list<AGAudioRenderer *> m_outputs;
     Mutex m_inputsMutex;
     list<AGAudioCapturer *> m_inputNodes;
+    
+    list<AGNode *> m_subnodes;
 };
 
 

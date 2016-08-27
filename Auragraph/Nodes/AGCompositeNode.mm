@@ -20,6 +20,21 @@ void AGAudioCompositeNode::removeOutput(AGAudioRenderer *output)
     m_outputs.push_back(output);
 }
 
+void AGAudioCompositeNode::addSubnode(AGNode *subnode)
+{
+    m_subnodes.push_back(subnode);
+}
+
+void AGAudioCompositeNode::removeSubnode(AGNode *subnode)
+{
+    m_subnodes.remove(subnode);
+}
+
+int AGAudioCompositeNode::numOutputPorts() const
+{
+    return m_outputs.size();
+}
+
 void AGAudioCompositeNode::setEditPortValue(int port, float value)
 {
     switch(port)

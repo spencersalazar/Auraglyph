@@ -144,6 +144,8 @@ public:
     virtual GLvertex3f relativePositionForOutboundConnection(AGConnection * connection) const { return relativePositionForOutputPort(0); }
     
     void trimConnectionsToNodes(const set<AGNode *> &nodes);
+    const std::list<AGConnection *> outbound() const;
+    const std::list<AGConnection *> inbound() const;
     
     /*** Subclassing note: the following public functions should be overridden ***/
     
