@@ -72,9 +72,11 @@
     LTKTrace _currentTrace;
     GLvertex3f _currentTraceSum;
     AGUITrace *_trace;
+    
+    GLvertex2f _traceBottomLeft, _traceTopRight;
 }
 
-- (void)coalesceComposite:(AGAudioCompositeNode *)node;
+- (void)coalesceComposite:(AGAudioCompositeNode *)compositeNode withNodes:(const set<AGNode *> &)subnodes;
 
 @end
 
@@ -87,6 +89,8 @@
     
     _currentTrace = LTKTrace();
     _currentTraceSum = GLvertex3f();
+    _traceBottomLeft = pos.xy();
+    _traceTopRight = pos.xy();
     
     _trace = new AGUITrace;
     _trace->init();
@@ -104,6 +108,11 @@
     
     _currentTraceSum = _currentTraceSum + GLvertex3f(p.x, p.y, 0);
     
+    if(pos.x < _traceBottomLeft.x) _traceBottomLeft.x = pos.x;
+    if(pos.y < _traceBottomLeft.y) _traceBottomLeft.y = pos.y;
+    if(pos.x > _traceTopRight.x) _traceTopRight.x = pos.x;
+    if(pos.y > _traceTopRight.y) _traceTopRight.y = pos.y;
+    
     floatVector point;
     point.push_back(p.x);
     point.push_back(p.y);
@@ -112,37 +121,70 @@
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    /* analysis */
+    _trace->removeFromTopLevel();
     
-    AGHandwritingRecognizerFigure figure = [[AGHandwritingRecognizer instance] recognizeShape:_currentTrace];
+    /* analysis */
     
     GLvertex3f centroid = _currentTraceSum/_currentTrace.getNumberOfPoints();
     GLvertex3f centroidMVP = [_viewController worldCoordinateForScreenCoordinate:CGPointMake(centroid.x, centroid.y)];
+    
+    float traceArea = area(_trace->points().data(), _trace->points().size());
+    dbgprint("trace area: %f\n", traceArea);
+    if(traceArea > 15000)
+    {
+        // treat as composite if nodes are inside
+        
+        // check if nodes are inside
+        set<AGNode *> subnodes;
+        for(AGNode *node : [_viewController nodes])
+        {
+            // first check square bounding box
+            if(pointInRectangle(node->position().xy(), _traceBottomLeft, _traceTopRight) &&
+               // check entire polygon
+               pointInPolygon(node->position(), _trace->points().data(), _trace->points().size()))
+            {
+                subnodes.insert(node);
+            }
+        }
+        
+        if(subnodes.size())
+        {
+            // treat as composite
+            AGNode *node = AGNodeManager::audioNodeManager().createNodeOfType("Composite", centroidMVP);
+            AGAudioCompositeNode *compositeNode = static_cast<AGAudioCompositeNode *>(node);
+            [self coalesceComposite:compositeNode withNodes:subnodes];
+            [_viewController addNode:compositeNode];
+            
+            return;
+        }
+    }
+    
+    AGHandwritingRecognizerFigure figure = [[AGHandwritingRecognizer instance] recognizeShape:_currentTrace];
     
     BOOL animateOut = NO;
     
     if(figure == AG_FIGURE_CIRCLE)
     {
-        // first check average polar length
-        float sumPolarLength = 0;
-        // compute centroid
-        for(GLvertex3f point : _trace->points())
-        {
-            float dx = point.x-centroidMVP.x, dy = point.y-centroidMVP.y;
-            sumPolarLength += sqrtf(dx*dx+dy*dy);
-        }
-        
-        float avgPolarLength = sumPolarLength/_currentTrace.getNumberOfPoints();
-        dbgprint("avgPolarLength: %f\n", avgPolarLength);
-        
-        if(avgPolarLength > 180.0f)
-        {
-            // treat as composite
-            AGAudioCompositeNode *compositeNode = static_cast<AGAudioCompositeNode *>(AGNodeManager::audioNodeManager().createNodeOfType("Composite", centroidMVP));
-            [self coalesceComposite:compositeNode];
-            [_viewController addNode:compositeNode];
-        }
-        else
+//        // first check average polar length
+//        float sumPolarLength = 0;
+//        // compute centroid
+//        for(GLvertex3f point : _trace->points())
+//        {
+//            float dx = point.x-centroidMVP.x, dy = point.y-centroidMVP.y;
+//            sumPolarLength += sqrtf(dx*dx+dy*dy);
+//        }
+//        
+//        float avgPolarLength = sumPolarLength/_currentTrace.getNumberOfPoints();
+//        dbgprint("avgPolarLength: %f\n", avgPolarLength);
+//        
+//        if(avgPolarLength > 180.0f)
+//        {
+//            // treat as composite
+//            AGAudioCompositeNode *compositeNode = static_cast<AGAudioCompositeNode *>(AGNodeManager::audioNodeManager().createNodeOfType("Composite", centroidMVP));
+//            [self coalesceComposite:compositeNode];
+//            [_viewController addNode:compositeNode];
+//        }
+//        else
         {
             AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::audioNodeSelector(centroidMVP);
             _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
@@ -167,37 +209,13 @@
     {
         animateOut = YES;
     }
-    
-    _trace->removeFromTopLevel();
 }
 
 - (void)update:(float)t dt:(float)dt { }
 - (void)render { }
 
-- (void)coalesceComposite:(AGAudioCompositeNode *)compositeNode
+- (void)coalesceComposite:(AGAudioCompositeNode *)compositeNode withNodes:(const set<AGNode *> &)subnodes
 {
-    float sumPolarLength = 0;
-    // compute centroid
-    GLvertex3f centroid = _currentTraceSum/_currentTrace.getNumberOfPoints();
-    centroid = [_viewController worldCoordinateForScreenCoordinate:CGPointMake(centroid.x, centroid.y)];
-    for(GLvertex3f point : _trace->points())
-    {
-        float dx = point.x-centroid.x, dy = point.y-centroid.y;
-        sumPolarLength += sqrtf(dx*dx+dy*dy);
-    }
-    
-    float avgPolarLength = sumPolarLength/_currentTrace.getNumberOfPoints();
-    
-    set<AGNode *> subnodes;
-    
-    // collect all nodes within avg polar length
-    for(AGNode *node : [_viewController nodes])
-    {
-        float dist = (compositeNode->position()-node->position()).magnitude();
-        if(dist < avgPolarLength)
-            subnodes.insert(node);
-    }
-    
     for(AGNode *node : subnodes)
     {
         node->trimConnectionsToNodes(subnodes);
