@@ -322,24 +322,32 @@ public:
         
         vector<GLvertex3f> _iconGeo() const override
         {
-            float radius = 0.005*AGStyle::oldGlobalScale;
+            float radius = 0.0066*AGStyle::oldGlobalScale;
             
             // speaker icon
+//            vector<GLvertex3f> iconGeo = {
+//                { -radius*0.5f*0.16f, radius*0.5f, 0 },
+//                { -radius*0.5f, radius*0.5f, 0 },
+//                { -radius*0.5f, -radius*0.5f, 0 },
+//                { -radius*0.5f*0.16f, -radius*0.5f, 0 },
+//                { radius*0.5f, -radius, 0 },
+//                { radius*0.5f, radius, 0 },
+//                { -radius*0.5f*0.16f, radius*0.5f, 0 },
+//                { -radius*0.5f*0.16f, -radius*0.5f, 0 },
+//            };
+            
+            // arrow/chevron
             vector<GLvertex3f> iconGeo = {
-                { -radius*0.5f*0.16f, radius*0.5f, 0 },
-                { -radius*0.5f, radius*0.5f, 0 },
-                { -radius*0.5f, -radius*0.5f, 0 },
-                { -radius*0.5f*0.16f, -radius*0.5f, 0 },
-                { radius*0.5f, -radius, 0 },
-                { radius*0.5f, radius, 0 },
-                { -radius*0.5f*0.16f, radius*0.5f, 0 },
-                { -radius*0.5f*0.16f, -radius*0.5f, 0 },
+                {  radius*0.3f,  radius, 0 },
+                { -radius*0.5f,       0, 0 },
+                {  radius*0.3f, -radius, 0 },
+                { -radius*0.1f,       0, 0 },
             };
             
             return iconGeo;
         }
         
-        GLuint _iconGeoType() const override { return GL_LINE_STRIP; }
+        GLuint _iconGeoType() const override { return GL_LINE_LOOP; }
     };
     
     using AGAudioNode::AGAudioNode;
@@ -430,14 +438,14 @@ public:
         
         vector<GLvertex3f> _iconGeo() const override
         {
-            float radius = 0.005*AGStyle::oldGlobalScale;
+            float radius = 0.0066*AGStyle::oldGlobalScale;
             
-            // speaker icon
+            // arrow/chevron
             vector<GLvertex3f> iconGeo = {
-                { -radius*0.62f,  radius, 0 },
-                {  radius*0.62f,       0, 0 },
-                { -radius*0.62f, -radius, 0 },
-                {             0,       0, 0 },
+                { -radius*0.3f,  radius, 0 },
+                {  radius*0.5f,       0, 0 },
+                { -radius*0.3f, -radius, 0 },
+                {  radius*0.1f,       0, 0 },
             };
             
             return iconGeo;
