@@ -41,7 +41,7 @@ void AGAudioCompositeNode::renderAudio(sampletime t, float *input, float *output
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
     
-    memset(m_outputBuffer, 0, bufferSize()*sizeof(float));
+    m_outputBuffer.clear();
     
     // feed input audio to input port(s)
     for(AGAudioCapturer *capturer : m_inputNodes)

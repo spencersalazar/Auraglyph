@@ -15,6 +15,7 @@
 #import "ShaderHelper.h"
 #import "AGStyle.h"
 #include "AGAudioRenderer.h"
+#include "Buffers.h"
 
 #import <GLKit/GLKit.h>
 #import <Foundation/Foundation.h>
@@ -79,7 +80,7 @@ private:
 protected:
     
     sampletime m_lastTime;
-    float * m_outputBuffer;
+    Buffer<float> m_outputBuffer;
     float ** m_inputPortBuffer;
     
     float m_gain;

@@ -67,8 +67,8 @@ void AGAudioNode::init()
     m_portRadius = 0.01*0.2*AGStyle::oldGlobalScale;
     
     m_lastTime = -1;
-    m_outputBuffer = new float[bufferSize()];
-    memset(m_outputBuffer, 0, sizeof(float)*bufferSize());
+    m_outputBuffer.resize(bufferSize());
+    m_outputBuffer.clear();
     m_inputPortBuffer = NULL;
     
     allocatePortBuffers();
@@ -86,8 +86,8 @@ void AGAudioNode::init(const AGDocument::Node &docNode)
     m_portRadius = 0.01*0.2*AGStyle::oldGlobalScale;
     
     m_lastTime = -1;
-    m_outputBuffer = new float[bufferSize()];
-    memset(m_outputBuffer, 0, sizeof(float)*bufferSize());
+    m_outputBuffer.resize(bufferSize());
+    m_outputBuffer.clear();
     m_inputPortBuffer = NULL;
     
     allocatePortBuffers();
@@ -109,8 +109,6 @@ AGAudioNode::~AGAudioNode()
         delete[] m_inputPortBuffer;
         m_inputPortBuffer = NULL;
     }
-    
-    SAFE_DELETE_ARRAY(m_outputBuffer);
 }
 
 //void AGAudioNode::renderAudio(float *input, float *output, int nFrames)
@@ -335,15 +333,17 @@ void AGAudioOutputNode::getEditPortValue(int port, float &value) const
 
 void AGAudioOutputNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
+    m_outputBuffer.clear();
+    
     for(std::list<AGConnection *>::iterator i = m_inbound.begin(); i != m_inbound.end(); i++)
     {
         if((*i)->rate() == RATE_AUDIO)
-            ((AGAudioNode *)(*i)->src())->renderAudio(t, input, output, nFrames);
+            ((AGAudioNode *)(*i)->src())->renderAudio(t, input, m_outputBuffer, nFrames);
     }
     
     // TODO: apply gain only to internal render
     for(int i = 0; i < nFrames; i++)
-        output[i] *= m_gain;
+        output[i] = m_outputBuffer[i]*m_gain;
 }
 
 //------------------------------------------------------------------------------
