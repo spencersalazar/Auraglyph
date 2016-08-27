@@ -149,7 +149,7 @@ public:
             return iconGeo;
         }
         
-        GLuint _iconGeoType() const override { return GL_LINE_STRIP; }
+        GLuint _iconGeoType() const override { return GL_LINE_LOOP; }
     };
     
     using AGAudioNode::AGAudioNode;
