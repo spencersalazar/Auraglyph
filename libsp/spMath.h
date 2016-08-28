@@ -17,9 +17,12 @@
  */
 float normAngle(float th)
 {
-    while(th > M_PI*2) th -= M_PI*2;
-    while(th <= 0) th += M_PI*2;
-    return th;
+    if(th == INFINITY || th == -INFINITY || th == NAN)
+        return th;
+    
+    // fmodf(x,y) is negative if x is negative
+    // so add 2pi if its negative
+    return fmodf(th, 2.0f*M_PI) + (th<0)*2.0f*M_PI;
 }
 
 
