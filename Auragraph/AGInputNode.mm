@@ -126,14 +126,14 @@ void AGInputNode::unhit()
     
 }
 
-AGUIObject *AGInputNode::hitTest(const GLvertex3f &t)
+AGInteractiveObject *AGInputNode::hitTest(const GLvertex3f &t)
 {
     GLvertex2f posxy = m_pos.xy();
     if(pointInTriangle(t.xy(), s_geo[0].vertex.xy()+posxy,
                        s_geo[1].vertex.xy()+posxy,
                        s_geo[2].vertex.xy()+posxy))
         return this;
-    return NULL;
+    return _hitTestConnections(t);
 }
 
 GLvertex3f AGInputNode::relativePositionForOutputPort(int port) const

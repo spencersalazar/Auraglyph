@@ -115,6 +115,7 @@ public:
     
     HitTestResult hit(const GLvertex3f &hit, int *port);
     void unhit();
+    AGInteractiveObject *hitTest(const GLvertex3f &t);
     
     void setPosition(const GLvertex3f &pos) { m_pos = pos; }
     const GLvertex3f &position() const { return m_pos; }
@@ -195,11 +196,16 @@ protected:
     
     /* overridden by final subclass */
     virtual void setDefaultPortValues() { }
+    /* overridden by direct subclass */
+//    virtual AGDocument::Node::Class nodeClass() const = 0;
+
+    AGInteractiveObject *_hitTestConnections(const GLvertex3f &t);
+    void _updateConnections(float t, float dt);
+    void _renderConnections();
     
     void _renderIcon();
     
     const AGNodeManifest *m_manifest;
-//    AGNodeInfo *m_nodeInfo;
     string m_title;
     string m_uuid; // TODO: const
     

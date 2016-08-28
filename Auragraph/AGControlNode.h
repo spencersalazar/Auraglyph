@@ -28,7 +28,7 @@ public:
     virtual void update(float t, float dt);
     virtual void render();
     
-    virtual AGUIObject *hitTest(const GLvertex3f &t);
+    virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
     
     //    virtual HitTestResult hit(const GLvertex3f &hit);
     //    virtual void unhit();

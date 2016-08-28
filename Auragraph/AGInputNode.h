@@ -29,7 +29,7 @@ public:
     virtual void render();
     virtual void renderUI() { }
     
-    virtual AGUIObject *hitTest(const GLvertex3f &t);
+    virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
     
     virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();

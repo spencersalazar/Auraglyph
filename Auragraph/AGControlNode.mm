@@ -137,13 +137,14 @@ void AGControlNode::render()
     AGNode::render();
 }
 
-AGUIObject *AGControlNode::hitTest(const GLvertex3f &t)
+AGInteractiveObject *AGControlNode::hitTest(const GLvertex3f &t)
 {
     if(pointInRectangle(t.xy(),
                         m_pos.xy() + GLvertex2f(-s_radius, -s_radius),
                         m_pos.xy() + GLvertex2f(s_radius, s_radius)))
         return this;
-    return NULL;
+    
+    return _hitTestConnections(t);
 }
 
 

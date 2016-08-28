@@ -490,23 +490,23 @@ static AGViewController * g_instance = nil;
 
 - (void)addConnection:(AGConnection *)connection
 {
-    _objects.push_back(connection);
+//    _objects.push_back(connection);
 }
 
 - (void)resignConnection:(AGConnection *)connection
 {
-    if(connection == _touchCapture)
-        _touchCapture = NULL;
-    
-    _objects.remove(connection);
+//    if(connection == _touchCapture)
+//        _touchCapture = NULL;
+//    
+//    _objects.remove(connection);
 }
 
 - (void)removeConnection:(AGConnection *)connection
 {
-    if(connection == _touchCapture)
-        _touchCapture = NULL;
-    
-    _removeList.push_back(connection);
+//    if(connection == _touchCapture)
+//        _touchCapture = NULL;
+//    
+//    _removeList.push_back(connection);
 }
 
 - (void)addFreeDraw:(AGFreeDraw *)freedraw
@@ -767,23 +767,23 @@ static AGViewController * g_instance = nil;
 }
 
 
-- (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)node port:(int *)port
+- (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)hitNode port:(int *)port
 {
     AGNode::HitTestResult hit;
     
-    for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
+    for(AGNode *node : _nodes)
     {
-        hit = (*i)->hit(pos, port);
+        hit = node->hit(pos, port);
         if(hit != AGNode::HIT_NONE)
         {
             if(node)
-                *node = *i;
+                *hitNode = node;
             return hit;
         }
     }
     
-    if(node)
-        *node = NULL;
+    if(hitNode)
+        *hitNode = NULL;
     return AGNode::HIT_NONE;
 }
 
@@ -818,11 +818,23 @@ static AGViewController * g_instance = nil;
                 {
                     AGInteractiveObject *hit = NULL;
                     
-                    for(std::list<AGInteractiveObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
+                    // check nodes for other possible hits
+                    for(AGNode *node : _nodes)
                     {
-                        hit = (*i)->hitTest(pos);
+                        hit = node->hitTest(pos);
                         if(hit != NULL)
                             break;
+                    }
+                    
+                    // check objects for hits
+                    if(hit == NULL)
+                    {
+                        for(AGInteractiveObject *object : _objects)
+                        {
+                            hit = object->hitTest(pos);
+                            if(hit != NULL)
+                                break;
+                        }
                     }
                     
                     if(hit)

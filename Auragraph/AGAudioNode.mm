@@ -179,11 +179,12 @@ void AGAudioNode::render()
     AGNode::render();
 }
 
-AGUIObject *AGAudioNode::hitTest(const GLvertex3f &t)
+AGInteractiveObject *AGAudioNode::hitTest(const GLvertex3f &t)
 {
     if(pointInCircle(t.xy(), m_pos.xy(), m_radius))
         return this;
-    return NULL;
+    
+    return _hitTestConnections(t);
 }
 
 GLvertex3f AGAudioNode::relativePositionForInputPort(int port) const

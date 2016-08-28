@@ -212,6 +212,35 @@ const std::list<AGConnection *> AGNode::inbound() const
     return m_inbound;
 }
 
+AGInteractiveObject *AGNode::_hitTestConnections(const GLvertex3f &t)
+{
+    AGInteractiveObject *hit = NULL;
+    
+    // a node is only responsible for hittest/update/rendering inbound connections
+    for(AGConnection *connection : m_inbound)
+    {
+        hit = connection->hitTest(t);
+        if(hit != NULL)
+            break;
+    }
+    
+    return hit;
+}
+
+void AGNode::_updateConnections(float t, float dt)
+{
+    // a node is only responsible for hittest/update/rendering inbound connections
+    for(AGConnection *connection : m_inbound)
+        connection->update(t, dt);
+}
+
+void AGNode::_renderConnections()
+{
+    // a node is only responsible for hittest/update/rendering inbound connections
+    for(AGConnection *connection : m_inbound)
+        connection->render();
+}
+
 void AGNode::update(float t, float dt)
 {
     if(!m_active)
@@ -220,6 +249,8 @@ void AGNode::update(float t, float dt)
         if(m_fadeOut < 0.01)
             [[AGViewController instance] removeNode:this];
     }
+    
+    _updateConnections(t, dt);
 }
 
 void AGNode::render()
@@ -276,6 +307,7 @@ void AGNode::render()
     }
     
     _renderIcon();
+    _renderConnections();
 }
 
 void AGNode::_renderIcon()
@@ -334,6 +366,11 @@ AGNode::HitTestResult AGNode::hit(const GLvertex3f &hit, int *port)
 void AGNode::unhit()
 {
     
+}
+
+AGInteractiveObject *AGNode::hitTest(const GLvertex3f &t)
+{
+    return _hitTestConnections(t);
 }
 
 void AGNode::touchDown(const GLvertex3f &t)
@@ -585,7 +622,7 @@ AGDocument::Freedraw AGFreeDraw::serialize()
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
 //------------------------------------------------------------------------------
-#pragma mark AGNodeManager - 
+#pragma mark - AGNodeManager
 
 AGNodeManager *AGNodeManager::s_audioNodeManager = NULL;
 AGNodeManager *AGNodeManager::s_controlNodeManager = NULL;

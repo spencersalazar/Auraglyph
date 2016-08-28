@@ -48,7 +48,7 @@ public:
     // audio
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override { assert(0); }
     
-    virtual AGUIObject *hitTest(const GLvertex3f &t) override;
+    virtual AGInteractiveObject *hitTest(const GLvertex3f &t) override;
     
     virtual GLvertex3f relativePositionForInputPort(int port) const override;
     virtual GLvertex3f relativePositionForOutputPort(int port) const override;
