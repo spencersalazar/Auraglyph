@@ -43,6 +43,13 @@ namespace GeoGen
      */
     void makeRect(GLvertex3f *points, float width, float height);
     
+    /* makeRect()
+     - Generate vertices for rect centered at (x,y,0) and with specified width/height
+     - points must have sufficient space for 4 GLvertex3f's
+     - Draw as stroke with GL_LINE_LOOP or fill with GL_TRIANGLE_FAN
+     */
+    void makeRect(GLvertex3f *points, float x, float y, float width, float height);
+    
     /* makeRectUV()
      - Generate standard square tex UVs for the rect above.
      */
