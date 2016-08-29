@@ -40,6 +40,14 @@ public:
         list<float> fa;
     };
     
+    struct Connection
+    {
+        string uuid;
+        string srcUuid;
+        string dstUuid;
+        int dstPort;
+    };
+    
     struct Node
     {
         enum Class { AUDIO, CONTROL, INPUT, OUTPUT, };
@@ -47,15 +55,9 @@ public:
         string type;
         string uuid;
         float x, y, z;
+        list<Connection> inbound;
+        list<Connection> outbound;
         map<string, ParamValue> params;
-    };
-    
-    struct Connection
-    {
-        string uuid;
-        string srcUuid;
-        string dstUuid;
-        int dstPort;
     };
     
     struct Freedraw

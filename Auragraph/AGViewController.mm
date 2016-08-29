@@ -220,9 +220,7 @@ static AGViewController * g_instance = nil;
                 AGNode *srcNode = uuid2node[docConnection.srcUuid];
                 AGNode *dstNode = uuid2node[docConnection.dstUuid];
                 assert(docConnection.dstPort >= 0 && docConnection.dstPort < dstNode->numInputPorts());
-                AGConnection *conn = new AGConnection(srcNode, dstNode, docConnection.dstPort);
-                conn->init();
-                [self addConnection:conn];
+                AGConnection::connect(srcNode, dstNode, docConnection.dstPort);
             }
         }, ^(const AGDocument::Freedraw &docFreedraw) {
             AGFreeDraw *freedraw = new AGFreeDraw(docFreedraw);
@@ -488,27 +486,6 @@ static AGViewController * g_instance = nil;
     _removeList.push_back(object);
     
     _objects.remove(object);
-}
-
-- (void)addConnection:(AGConnection *)connection
-{
-//    _objects.push_back(connection);
-}
-
-- (void)resignConnection:(AGConnection *)connection
-{
-//    if(connection == _touchCapture)
-//        _touchCapture = NULL;
-//    
-//    _objects.remove(connection);
-}
-
-- (void)removeConnection:(AGConnection *)connection
-{
-//    if(connection == _touchCapture)
-//        _touchCapture = NULL;
-//    
-//    _removeList.push_back(connection);
 }
 
 - (void)addFreeDraw:(AGFreeDraw *)freedraw

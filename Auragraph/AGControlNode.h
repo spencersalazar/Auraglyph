@@ -25,6 +25,8 @@ public:
     AGControlNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
     virtual ~AGControlNode() { dbgprint_off("AGControlNode::~AGControlNode()\n"); }
     
+    AGDocument::Node::Class nodeClass() const override { return AGDocument::Node::CONTROL; }
+    
     virtual void update(float t, float dt);
     virtual void render();
     
@@ -35,9 +37,7 @@ public:
     
     virtual GLvertex3f relativePositionForInputPort(int port) const { return GLvertex3f(-s_radius, 0, 0); }
     virtual GLvertex3f relativePositionForOutputPort(int port) const { return GLvertex3f(s_radius, 0, 0); }
-    
-    virtual AGDocument::Node serialize();
-    
+        
 private:
     
     static bool s_init;

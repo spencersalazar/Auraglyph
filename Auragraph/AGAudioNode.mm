@@ -271,28 +271,6 @@ void AGAudioNode::renderLast(float *output, int nFrames)
 }
 
 
-AGDocument::Node AGAudioNode::serialize()
-{
-    assert(type().length());
-    
-    AGDocument::Node docNode;
-    docNode._class = AGDocument::Node::AUDIO;
-    docNode.type = type();
-    docNode.uuid = uuid();
-    docNode.x = position().x;
-    docNode.y = position().y;
-    docNode.z = position().z;
-    
-    for(int i = 0; i < numEditPorts(); i++)
-    {
-        float v;
-        getEditPortValue(i, v);
-        docNode.params[editPortInfo(i).name] = AGDocument::ParamValue(v);
-    }
-    
-    return docNode;
-}
-
 //------------------------------------------------------------------------------
 // ### AGAudioOutputNode ###
 //------------------------------------------------------------------------------

@@ -30,10 +30,6 @@ class AGInteractiveObject;
 - (void)addTopLevelObject:(AGInteractiveObject *)object under:(AGInteractiveObject *)under;
 - (void)fadeOutAndDelete:(AGInteractiveObject *)object;
 
-- (void)addConnection:(AGConnection *)connection;
-- (void)resignConnection:(AGConnection *)connection;
-- (void)removeConnection:(AGConnection *)connection;
-
 - (void)addFreeDraw:(AGFreeDraw *)freedraw;
 - (void)removeFreeDraw:(AGFreeDraw *)freedraw;
 

@@ -36,6 +36,8 @@ class AGConnection : public AGInteractiveObject
 {
 public:
     
+    static AGConnection *connect(AGNode *src, AGNode *dst, int dstPort);
+    
     AGConnection(AGNode * src, AGNode * dst, int dstPort);
     ~AGConnection();
     
@@ -48,6 +50,7 @@ public:
     
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
     
+    const string &uuid() const { return m_uuid; }
     AGNode * src() const { return m_src; }
     AGNode * dst() const { return m_dst; }
     int dstPort() const { return m_dstPort; }

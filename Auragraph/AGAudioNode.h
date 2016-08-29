@@ -43,6 +43,8 @@ public:
     virtual void init(const AGDocument::Node &docNode) override;
     virtual ~AGAudioNode();
     
+    AGDocument::Node::Class nodeClass() const override { return AGDocument::Node::AUDIO; }
+    
     virtual void update(float t, float dt) override;
     virtual void render() override;
     // audio
@@ -60,8 +62,6 @@ public:
     
     static int sampleRate() { return s_sampleRate; }
     static int bufferSize() { return 1024; }
-    
-    virtual AGDocument::Node serialize() override;
     //    template<class NodeClass>
     //    static AGAudioNode *createFromDocNode(const AGDocument::Node &docNode);
     
@@ -153,7 +153,6 @@ public:
     };
     
     using AGAudioNode::AGAudioNode;
-    
     ~AGAudioOutputNode();
     
     void setOutputDestination(AGAudioOutputDestination *destination);

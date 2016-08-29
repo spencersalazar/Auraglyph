@@ -173,7 +173,7 @@ public:
     virtual void renderOut();
     
     /* serialization - overridden by direct subclass */
-    virtual AGDocument::Node serialize() = 0;
+    virtual AGDocument::Node serialize();
     
 private:
     static bool s_initNode;
@@ -197,7 +197,7 @@ protected:
     /* overridden by final subclass */
     virtual void setDefaultPortValues() { }
     /* overridden by direct subclass */
-//    virtual AGDocument::Node::Class nodeClass() const = 0;
+    virtual AGDocument::Node::Class nodeClass() const = 0;
 
     AGInteractiveObject *_hitTestConnections(const GLvertex3f &t);
     void _updateConnections(float t, float dt);

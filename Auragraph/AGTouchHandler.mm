@@ -236,8 +236,6 @@
                 outbound.push_back(std::make_tuple((*j)->src(), node, (*j)->dstPort()));
                 (*j)->removeFromTopLevel();
             }
-            // TODO: better way of this
-            [[AGViewController instance] resignConnection:*j];
         }
         
         for(auto i = nodeOutbound.begin(); i != nodeOutbound.end(); )
@@ -248,8 +246,6 @@
                 outbound.push_back(std::make_tuple(node, (*j)->dst(), (*j)->dstPort()));
                 (*j)->removeFromTopLevel();
             }
-            // TODO: better way of this
-            [[AGViewController instance] resignConnection:*j];
         }
         
         [_viewController resignNode:node];
@@ -285,7 +281,6 @@
         // make connection outside composite
         AGConnection *externalConnection = new AGConnection(compositeNode, dst, port);
         externalConnection->init();
-        [_viewController addConnection:externalConnection];
     }
 }
 
@@ -892,10 +887,7 @@ private:
         int port = _browser->selectedPort();
         if(port != -1)
         {
-            AGConnection * connection = new AGConnection(_originalHit, _currentHit, port);
-            connection->init();
-            
-            [_viewController addConnection:connection];
+            AGConnection::connect(_originalHit, _currentHit, port);
         }
     }
     

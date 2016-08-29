@@ -24,16 +24,16 @@ public:
     
     AGOutputNode(const AGNodeManifest *mf, const GLvertex3f &pos = GLvertex3f());
     
-    virtual void update(float t, float dt);
-    virtual void render();
+    AGDocument::Node::Class nodeClass() const override { return AGDocument::Node::OUTPUT; }
+
+    virtual void update(float t, float dt) override;
+    virtual void render() override;
     
-    virtual AGUIObject *hitTest(const GLvertex3f &t);
+    virtual AGUIObject *hitTest(const GLvertex3f &t) override;
     
     virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();
-    
-    virtual AGDocument::Node serialize();
-    
+        
 private:
     
     static bool s_init;

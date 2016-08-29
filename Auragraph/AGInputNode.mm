@@ -149,28 +149,6 @@ GLvertex3f AGInputNode::relativePositionForOutputPort(int port) const
     return GLvertex3f(0, -down, 0);
 }
 
-AGDocument::Node AGInputNode::serialize()
-{
-    assert(type().length());
-    
-    AGDocument::Node n;
-    n._class = AGDocument::Node::INPUT;
-    n.type = type();
-    n.uuid = uuid();
-    n.x = position().x;
-    n.y = position().y;
-    n.z = position().z;
-    
-    for(int i = 0; i < numEditPorts(); i++)
-    {
-        float v;
-        getEditPortValue(i, v);
-        n.params[editPortInfo(i).name] = AGDocument::ParamValue(v);
-    }
-    
-    return n;
-}
-
 
 //------------------------------------------------------------------------------
 // ### AGSliderNode ###

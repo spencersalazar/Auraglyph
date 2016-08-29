@@ -188,8 +188,6 @@ void AGNode::trimConnectionsToNodes(const set<AGNode *> &nodes)
         auto j = i++;
         if(!nodes.count((*j)->src()))
             (*j)->removeFromTopLevel();
-        // TODO: better way of this
-        [[AGViewController instance] resignConnection:*j];
     }
     
     for(auto i = m_outbound.begin(); i != m_outbound.end(); )
@@ -197,8 +195,6 @@ void AGNode::trimConnectionsToNodes(const set<AGNode *> &nodes)
         auto j = i++;
         if(!nodes.count((*j)->dst()))
             (*j)->removeFromTopLevel();
-        // TODO: better way of this
-        [[AGViewController instance] resignConnection:*j];
     }
 }
 
@@ -426,6 +422,48 @@ void AGNode::receiveControl_internal(int port, AGControl *control)
 {
     m_controlPortBuffer[port] = control;
     receiveControl(port, control);
+}
+
+AGDocument::Node AGNode::serialize()
+{
+    assert(type().length());
+    
+    AGDocument::Node docNode;
+    docNode._class = nodeClass();
+    docNode.type = type();
+    docNode.uuid = uuid();
+    docNode.x = position().x;
+    docNode.y = position().y;
+    docNode.z = position().z;
+    
+    for(int i = 0; i < numEditPorts(); i++)
+    {
+        float v;
+        getEditPortValue(i, v);
+        docNode.params[editPortInfo(i).name] = AGDocument::ParamValue(v);
+    }
+    
+    for(const AGConnection *conn : m_inbound)
+    {
+        docNode.inbound.push_back({
+            conn->uuid(),
+            conn->src()->uuid(),
+            conn->dst()->uuid(),
+            conn->dstPort()
+        });
+    }
+    
+    for(const AGConnection *conn : m_outbound)
+    {
+        docNode.outbound.push_back({
+            conn->uuid(),
+            conn->src()->uuid(),
+            conn->dst()->uuid(),
+            conn->dstPort()
+        });
+    }
+    
+    return docNode;
 }
 
 
