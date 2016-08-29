@@ -27,4 +27,7 @@
 #define dbgprint(...) do { if (ENABLE_DEBUG_PRINT) fprintf(stderr, ##__VA_ARGS__); } while (0)
 #define dbgprint_off(...) do { if (0) fprintf(stderr, ##__VA_ARGS__); } while (0)
 
+typedef long long sampletime;
+#define AUDIO_BUFFER_MAX (1024)
+
 #endif

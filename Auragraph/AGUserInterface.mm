@@ -475,4 +475,9 @@ void AGUITrace::addPoint(const GLvertex3f &v)
     m_renderInfo.geo = m_traceGeo.data();
 }
 
+const vector<GLvertex3f> AGUITrace::points() const
+{
+    return m_traceGeo;
+}
+
 

@@ -116,27 +116,4 @@ AGUIObject *AGOutputNode::hitTest(const GLvertex3f &t)
 }
 
 
-AGDocument::Node AGOutputNode::serialize()
-{
-    assert(type().length());
-    
-    AGDocument::Node n;
-    n._class = AGDocument::Node::OUTPUT;
-    n.type = type();
-    n.uuid = uuid();
-    n.x = position().x;
-    n.y = position().y;
-    n.z = position().z;
-    
-    for(int i = 0; i < numEditPorts(); i++)
-    {
-        float v;
-        getEditPortValue(i, v);
-        n.params[editPortInfo(i).name] = AGDocument::ParamValue(v);
-    }
-    
-    return n;
-}
-
-
 

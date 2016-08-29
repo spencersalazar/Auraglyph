@@ -17,13 +17,37 @@
 #import "spstl.h"
 
 
+
+class AGAudioManagerOutputDestination : public AGAudioOutputDestination
+{
+public:
+    
+    AGAudioManagerOutputDestination(AGAudioManager *manager) :
+    m_manager(manager)
+    { }
+    
+    void addOutput(AGAudioRenderer *renderer) override
+    {
+        [m_manager addRenderer:renderer];
+    }
+    
+    virtual void removeOutput(AGAudioRenderer *renderer) override
+    {
+        [m_manager removeRenderer:renderer];
+    }
+    
+private:
+    AGAudioManager *m_manager;
+};
+
+
 static float g_audio_buf[1024];
 
 @interface AGAudioManager ()
 {
     sampletime t;
     
-    list<AGAudioNode *> _renderers;
+    list<AGAudioRenderer *> _renderers;
     Mutex _renderersMutex;
     list<AGAudioCapturer *> _capturers;
     Mutex _capturersMutex;
@@ -48,9 +72,7 @@ static AGAudioManager *g_audioManager;
 
 @implementation AGAudioManager
 
-@synthesize outputNode;
-
-+ (id)instance
++ (instancetype)instance
 {
     return g_audioManager;
 }
@@ -61,8 +83,9 @@ static AGAudioManager *g_audioManager;
     {
         g_audioManager = self;
         
+        self.masterOut = new AGAudioManagerOutputDestination(self);
+        
         t = 0;
-        self.outputNode = NULL;
         
         memset(g_audio_buf, 0, sizeof(float)*1024);
         memset(_inputBuffer, 0, sizeof(float)*1024);
@@ -74,14 +97,19 @@ static AGAudioManager *g_audioManager;
     return self;
 }
 
-- (void)addRenderer:(AGAudioNode *)renderer
+- (void)dealloc
+{
+    SAFE_DELETE(self.masterOut);
+}
+
+- (void)addRenderer:(AGAudioRenderer *)renderer
 {
     _renderersMutex.lock();
     _renderers.push_back(renderer);
     _renderersMutex.unlock();
 }
 
-- (void)removeRenderer:(AGAudioNode *)renderer
+- (void)removeRenderer:(AGAudioRenderer *)renderer
 {
     _renderersMutex.lock();
     _renderers.remove(renderer);
@@ -141,7 +169,7 @@ static AGAudioManager *g_audioManager;
     _capturersMutex.unlock();
     
     _renderersMutex.lock();
-    for(AGAudioNode *renderer : _renderers)
+    for(AGAudioRenderer *renderer : _renderers)
         renderer->renderAudio(t, NULL, g_audio_buf, numFrames);
     _renderersMutex.unlock();
     

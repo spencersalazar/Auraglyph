@@ -25,19 +25,19 @@ public:
     AGInputNode(const AGNodeManifest *mf, const GLvertex3f &pos = GLvertex3f());
     AGInputNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
     
+    AGDocument::Node::Class nodeClass() const override { return AGDocument::Node::INPUT; }
+    
     virtual void update(float t, float dt);
     virtual void render();
     virtual void renderUI() { }
     
-    virtual AGUIObject *hitTest(const GLvertex3f &t);
+    virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
     
     virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();
     
     virtual GLvertex3f relativePositionForOutputPort(int port) const;
-    
-    virtual AGDocument::Node serialize();
-    
+        
 private:
     
     static bool s_init;

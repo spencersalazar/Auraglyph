@@ -137,36 +137,14 @@ void AGControlNode::render()
     AGNode::render();
 }
 
-AGUIObject *AGControlNode::hitTest(const GLvertex3f &t)
+AGInteractiveObject *AGControlNode::hitTest(const GLvertex3f &t)
 {
     if(pointInRectangle(t.xy(),
                         m_pos.xy() + GLvertex2f(-s_radius, -s_radius),
                         m_pos.xy() + GLvertex2f(s_radius, s_radius)))
         return this;
-    return NULL;
-}
-
-
-AGDocument::Node AGControlNode::serialize()
-{
-    assert(type().length());
     
-    AGDocument::Node n;
-    n._class = AGDocument::Node::CONTROL;
-    n.type = type();
-    n.uuid = uuid();
-    n.x = position().x;
-    n.y = position().y;
-    n.z = position().z;
-    
-    for(int i = 0; i < numEditPorts(); i++)
-    {
-        float v;
-        getEditPortValue(i, v);
-        n.params[editPortInfo(i).name] = AGDocument::ParamValue(v);
-    }
-    
-    return n;
+    return _hitTestConnections(t);
 }
 
 

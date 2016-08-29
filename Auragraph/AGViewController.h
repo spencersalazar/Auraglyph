@@ -10,6 +10,7 @@
 #import <GLKit/GLKit.h>
 #import "Geometry.h"
 #import "AGNode.h"
+#import <list>
 
 class AGConnection;
 class AGFreeDraw;
@@ -21,14 +22,13 @@ class AGInteractiveObject;
 
 - (void)addNode:(AGNode *)node;
 - (void)removeNode:(AGNode *)node;
+- (void)resignNode:(AGNode *)node;
+- (const list<AGNode *> &)nodes;
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object;
 - (void)addTopLevelObject:(AGInteractiveObject *)object over:(AGInteractiveObject *)over;
 - (void)addTopLevelObject:(AGInteractiveObject *)object under:(AGInteractiveObject *)under;
-- (void)removeTopLevelObject:(AGInteractiveObject *)object;
-
-- (void)addConnection:(AGConnection *)connection;
-- (void)removeConnection:(AGConnection *)connection;
+- (void)fadeOutAndDelete:(AGInteractiveObject *)object;
 
 - (void)addFreeDraw:(AGFreeDraw *)freedraw;
 - (void)removeFreeDraw:(AGFreeDraw *)freedraw;

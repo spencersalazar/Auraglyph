@@ -62,6 +62,13 @@ void AGConnection::initalize()
     }
 }
 
+AGConnection *AGConnection::connect(AGNode *src, AGNode *dst, int dstPort)
+{
+    AGConnection *conn = new AGConnection(src, dst, dstPort);
+    conn->init();
+    return conn;
+}
+
 AGConnection::AGConnection(AGNode * src, AGNode * dst, int dstPort) :
 m_src(src), m_dst(dst), m_dstPort(dstPort),
 m_rate((src->rate() == RATE_AUDIO && dst->rate() == RATE_AUDIO) ? RATE_AUDIO : RATE_CONTROL),

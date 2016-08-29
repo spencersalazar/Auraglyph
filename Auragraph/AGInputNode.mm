@@ -126,14 +126,14 @@ void AGInputNode::unhit()
     
 }
 
-AGUIObject *AGInputNode::hitTest(const GLvertex3f &t)
+AGInteractiveObject *AGInputNode::hitTest(const GLvertex3f &t)
 {
     GLvertex2f posxy = m_pos.xy();
     if(pointInTriangle(t.xy(), s_geo[0].vertex.xy()+posxy,
                        s_geo[1].vertex.xy()+posxy,
                        s_geo[2].vertex.xy()+posxy))
         return this;
-    return NULL;
+    return _hitTestConnections(t);
 }
 
 GLvertex3f AGInputNode::relativePositionForOutputPort(int port) const
@@ -147,28 +147,6 @@ GLvertex3f AGInputNode::relativePositionForOutputPort(int port) const
     float down = H - up;                    // vertical distance from center position to tip
     
     return GLvertex3f(0, -down, 0);
-}
-
-AGDocument::Node AGInputNode::serialize()
-{
-    assert(type().length());
-    
-    AGDocument::Node n;
-    n._class = AGDocument::Node::INPUT;
-    n.type = type();
-    n.uuid = uuid();
-    n.x = position().x;
-    n.y = position().y;
-    n.z = position().z;
-    
-    for(int i = 0; i < numEditPorts(); i++)
-    {
-        float v;
-        getEditPortValue(i, v);
-        n.params[editPortInfo(i).name] = AGDocument::ParamValue(v);
-    }
-    
-    return n;
 }
 
 

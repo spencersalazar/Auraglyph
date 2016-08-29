@@ -207,6 +207,13 @@ static AGViewController * g_instance = nil;
             {
                 uuid2node[node->uuid()] = node;
                 [self addNode:node];
+                
+                
+                if(node->type() == "Output")
+                {
+                    AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
+                    outputNode->setOutputDestination([AGAudioManager instance].masterOut);
+                }
             }
         }, ^(const AGDocument::Connection &docConnection) {
             if(uuid2node.count(docConnection.srcUuid) && uuid2node.count(docConnection.dstUuid))
@@ -214,9 +221,7 @@ static AGViewController * g_instance = nil;
                 AGNode *srcNode = uuid2node[docConnection.srcUuid];
                 AGNode *dstNode = uuid2node[docConnection.dstUuid];
                 assert(docConnection.dstPort >= 0 && docConnection.dstPort < dstNode->numInputPorts());
-                AGConnection *conn = new AGConnection(srcNode, dstNode, docConnection.dstPort);
-                conn->init();
-                [self addConnection:conn];
+                AGConnection::connect(srcNode, dstNode, docConnection.dstPort);
             }
         }, ^(const AGDocument::Freedraw &docFreedraw) {
             AGFreeDraw *freedraw = new AGFreeDraw(docFreedraw);
@@ -400,12 +405,12 @@ static AGViewController * g_instance = nil;
 
 - (void)removeNode:(AGNode *)node
 {
-//    _defaultDocument.removeNode(node->uuid());
+    //    _defaultDocument.removeNode(node->uuid());
     
     // only process for removal if it is part of the node list in the first place
-    bool has = (std::find(_nodes.begin(), _nodes.end(), node) != _nodes.end());
+    bool hasNode = (std::find(_nodes.begin(), _nodes.end(), node) != _nodes.end());
     
-    if(has)
+    if(hasNode)
     {
         AGInteractiveObject * ui = node->userInterface();
         if(ui)
@@ -413,6 +418,31 @@ static AGViewController * g_instance = nil;
         
         _nodeRemoveList.push_back(node);
     }
+}
+
+- (void)resignNode:(AGNode *)node
+{
+    // remove without fading out or destroying
+    
+    // only process for removal if it is part of the node list in the first place
+    bool hasNode = (std::find(_nodes.begin(), _nodes.end(), node) != _nodes.end());
+    
+    if(hasNode)
+    {
+        if(node == _touchCapture)
+            _touchCapture = NULL;
+        
+        AGInteractiveObject * ui = node->userInterface();
+        if(ui)
+            _interfaceObjects.remove(ui);
+        
+        _nodes.remove(node);
+    }
+}
+
+- (const list<AGNode *> &)nodes
+{
+    return _nodes;
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object
@@ -450,7 +480,7 @@ static AGViewController * g_instance = nil;
         _interfaceObjects.push_back(ui);
 }
 
-- (void)removeTopLevelObject:(AGInteractiveObject *)object
+- (void)fadeOutAndDelete:(AGInteractiveObject *)object
 {
     if(object == _touchCapture)
         _touchCapture = NULL;
@@ -461,19 +491,8 @@ static AGViewController * g_instance = nil;
     
     object->renderOut();
     _removeList.push_back(object);
-}
-
-- (void)addConnection:(AGConnection *)connection
-{
-    _objects.push_back(connection);
-}
-
-- (void)removeConnection:(AGConnection *)connection
-{
-    if(connection == _touchCapture)
-        _touchCapture = NULL;
     
-    _removeList.push_back(connection);
+    _objects.remove(object);
 }
 
 - (void)addFreeDraw:(AGFreeDraw *)freedraw
@@ -556,7 +575,6 @@ static AGViewController * g_instance = nil;
             
             if((*j)->finishedRenderingOut())
             {
-                _objects.remove(*j);
                 delete *j;
                 _removeList.erase(j);
             }
@@ -570,12 +588,14 @@ static AGViewController * g_instance = nil;
     _t += dt;
     
     AGUITrash::instance().update(_t, dt);
-    for(std::list<AGInteractiveObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
-        (*i)->update(_t, dt);
-    for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
-        (*i)->update(_t, dt);
-    for(std::list<AGInteractiveObject *>::iterator i = _interfaceObjects.begin(); i != _interfaceObjects.end(); i++)
-        (*i)->update(_t, dt);
+    for(AGInteractiveObject *object : _objects)
+        object->update(_t, dt);
+    for(AGInteractiveObject *removeObject : _removeList)
+        removeObject->update(_t, dt);
+    for(AGNode *node : _nodes)
+        node->update(_t, dt);
+    for(AGInteractiveObject *interfaceObject : _interfaceObjects)
+        interfaceObject->update(_t, dt);
     
     [_touchHandler update:_t dt:dt];
 }
@@ -694,12 +714,14 @@ static AGViewController * g_instance = nil;
     AGUITrash::instance().render();
     
     // render nodes
-    for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
-        (*i)->render();
-    
+    for(AGNode *node : _nodes)
+        node->render();
     // render objects
-    for(std::list<AGInteractiveObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
-        (*i)->render();
+    for(AGInteractiveObject *object : _objects)
+        object->render();
+    // render removeList
+    for(AGInteractiveObject *removeObject : _removeList)
+        removeObject->render();
     
     [_touchHandler render];
 }
@@ -734,23 +756,23 @@ static AGViewController * g_instance = nil;
 }
 
 
-- (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)node port:(int *)port
+- (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)hitNode port:(int *)port
 {
     AGNode::HitTestResult hit;
     
-    for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
+    for(AGNode *node : _nodes)
     {
-        hit = (*i)->hit(pos, port);
+        hit = node->hit(pos, port);
         if(hit != AGNode::HIT_NONE)
         {
             if(node)
-                *node = *i;
+                *hitNode = node;
             return hit;
         }
     }
     
-    if(node)
-        *node = NULL;
+    if(hitNode)
+        *hitNode = NULL;
     return AGNode::HIT_NONE;
 }
 
@@ -786,11 +808,23 @@ static AGViewController * g_instance = nil;
                 {
                     AGInteractiveObject *hit = NULL;
                     
-                    for(std::list<AGInteractiveObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
+                    // check nodes for other possible hits
+                    for(AGNode *node : _nodes)
                     {
-                        hit = (*i)->hitTest(pos);
+                        hit = node->hitTest(pos);
                         if(hit != NULL)
                             break;
+                    }
+                    
+                    // check objects for hits
+                    if(hit == NULL)
+                    {
+                        for(AGInteractiveObject *object : _objects)
+                        {
+                            hit = object->hitTest(pos);
+                            if(hit != NULL)
+                                break;
+                        }
                     }
                     
                     if(hit)
@@ -903,14 +937,7 @@ static AGViewController * g_instance = nil;
     });
     
     itmap(_objects, ^(AGInteractiveObject *&obj){
-        AGConnection *connection;
         AGFreeDraw *freedraw;
-        
-        if((connection = dynamic_cast<AGConnection *>(obj)) != NULL)
-        {
-            AGDocument::Connection docConnection = connection->serialize();
-            doc.addConnection(docConnection);
-        }
         
         if((freedraw = dynamic_cast<AGFreeDraw *>(obj)) != NULL)
         {

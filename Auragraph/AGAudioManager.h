@@ -7,27 +7,22 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "AGAudioCapturer.h"
+#import "AGAudioOutputDestination.h"
 
 class AGAudioOutputNode;
 class AGAudioNode;
 class AGTimer;
 
 
-class AGAudioCapturer
-{
-public:
-    virtual void captureAudio(float *input, int numFrames) = 0;
-};
-
-
 @interface AGAudioManager : NSObject
 
-@property (nonatomic) AGAudioOutputNode * outputNode;
+@property (nonatomic) AGAudioOutputDestination *masterOut;
 
-+ (id)instance;
++ (instancetype)instance;
 
-- (void)addRenderer:(AGAudioNode *)renderer;
-- (void)removeRenderer:(AGAudioNode *)renderer;
+- (void)addRenderer:(AGAudioRenderer *)renderer;
+- (void)removeRenderer:(AGAudioRenderer *)renderer;
 - (void)addCapturer:(AGAudioCapturer *)capturer;
 - (void)removeCapturer:(AGAudioCapturer *)capturer;
 - (void)addTimer:(AGTimer *)timer;

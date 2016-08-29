@@ -89,6 +89,7 @@
 		099AF12A17D1A6DA000BAB7B /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 099AF12517D1A6DA000BAB7B /* SSZipArchive.m */; };
 		099AF12C17D1A6EE000BAB7B /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 099AF12B17D1A6EE000BAB7B /* libz.dylib */; };
 		099AF12E17D1A892000BAB7B /* projects.zip in Resources */ = {isa = PBXBuildFile; fileRef = 099AF12D17D1A892000BAB7B /* projects.zip */; };
+		09B674441D6D9E8700F84E09 /* AGCompositeNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */; };
 		09C7C3E618CF2B8E0099CE88 /* Waveform.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 09C7C3E318CF27AC0099CE88 /* Waveform.vsh */; };
 		09C7C3E718CF2B8E0099CE88 /* Waveform.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 09C7C3E218CF27AC0099CE88 /* Waveform.fsh */; };
 		09D8C3FF1A0A4DF2008D788A /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 09D8C3FE1A0A4DF2008D788A /* OFL.txt */; };
@@ -101,6 +102,7 @@
 		09F29DAF1CCA086200502C01 /* AGSlider.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09F29DAD1CCA086200502C01 /* AGSlider.mm */; };
 		09F3C50818A5A8C300E499AF /* Stk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F3C50718A5A8C300E499AF /* Stk.cpp */; };
 		09F6E87A1D6A3758006DBC9E /* AGOutputNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09F6E8781D6A3758006DBC9E /* AGOutputNode.mm */; };
+		09F700B81D71046300294BDD /* Buffers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F700B61D71046300294BDD /* Buffers.cpp */; };
 		09FC92471A14F55D005D14A3 /* AGTimer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09FC92451A14F55D005D14A3 /* AGTimer.mm */; };
 		09FC924B1A153A83005D14A3 /* AGConnection.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09FC92491A153A83005D14A3 /* AGConnection.mm */; };
 		09FC924D1A153C0A005D14A3 /* flare.png in Resources */ = {isa = PBXBuildFile; fileRef = 09FC924C1A153C0A005D14A3 /* flare.png */; };
@@ -287,6 +289,9 @@
 		099AF12B17D1A6EE000BAB7B /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		099AF12D17D1A892000BAB7B /* projects.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = projects.zip; sourceTree = "<group>"; };
 		09A8BB4019F9E39E00E15BF7 /* spMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spMath.h; sourceTree = "<group>"; };
+		09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGCompositeNode.mm; sourceTree = "<group>"; };
+		09B674431D6D9E8700F84E09 /* AGCompositeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGCompositeNode.h; sourceTree = "<group>"; };
+		09B674461D6DA2B200F84E09 /* AGAudioCapturer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAudioCapturer.h; sourceTree = "<group>"; };
 		09C7C3E218CF27AC0099CE88 /* Waveform.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Waveform.fsh; path = Shaders/Waveform.fsh; sourceTree = "<group>"; };
 		09C7C3E318CF27AC0099CE88 /* Waveform.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Waveform.vsh; path = Shaders/Waveform.vsh; sourceTree = "<group>"; };
 		09D8C3FE1A0A4DF2008D788A /* OFL.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
@@ -307,6 +312,10 @@
 		09F3C50B18A5A8E000E499AF /* Generator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Generator.h; sourceTree = "<group>"; };
 		09F6E8781D6A3758006DBC9E /* AGOutputNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGOutputNode.mm; sourceTree = "<group>"; };
 		09F6E8791D6A3758006DBC9E /* AGOutputNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGOutputNode.h; sourceTree = "<group>"; };
+		09F700B41D6FA75900294BDD /* AGAudioOutputDestination.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGAudioOutputDestination.h; sourceTree = "<group>"; };
+		09F700B51D6FA79B00294BDD /* AGAudioRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGAudioRenderer.h; sourceTree = "<group>"; };
+		09F700B61D71046300294BDD /* Buffers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Buffers.cpp; sourceTree = "<group>"; };
+		09F700B71D71046300294BDD /* Buffers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffers.h; sourceTree = "<group>"; };
 		09FC92451A14F55D005D14A3 /* AGTimer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGTimer.mm; sourceTree = "<group>"; };
 		09FC92461A14F55D005D14A3 /* AGTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGTimer.h; sourceTree = "<group>"; };
 		09FC92481A14F915005D14A3 /* spstl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spstl.h; sourceTree = "<group>"; };
@@ -396,6 +405,9 @@
 				095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */,
 				098740A117BA2EA70098511A /* AGAudioManager.h */,
 				098740A217BA2EA70098511A /* AGAudioManager.mm */,
+				09F700B51D6FA79B00294BDD /* AGAudioRenderer.h */,
+				09B674461D6DA2B200F84E09 /* AGAudioCapturer.h */,
+				09F700B41D6FA75900294BDD /* AGAudioOutputDestination.h */,
 				098F9B3919EE49BA00CE2F24 /* AGRenderObject.h */,
 				098F9B3819EE49BA00CE2F24 /* AGRenderObject.mm */,
 				0987409B17B98D7C0098511A /* AGNode.h */,
@@ -511,6 +523,8 @@
 				09412E071A210B630065598D /* sputil.cpp */,
 				09412E0A1A2112300065598D /* NSString+STLString.h */,
 				09412E0B1A2112300065598D /* NSString+STLString.mm */,
+				09F700B71D71046300294BDD /* Buffers.h */,
+				09F700B61D71046300294BDD /* Buffers.cpp */,
 			);
 			path = libsp;
 			sourceTree = "<group>";
@@ -643,6 +657,8 @@
 				0933956C1A08799A009E4802 /* AGFormulaNode.mm */,
 				093395701A088612009E4802 /* AGArrayNode.h */,
 				0933956F1A088612009E4802 /* AGArrayNode.mm */,
+				09B674431D6D9E8700F84E09 /* AGCompositeNode.h */,
+				09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -784,6 +800,7 @@
 				09F6E87A1D6A3758006DBC9E /* AGOutputNode.mm in Sources */,
 				095D12FB17ACAA100048A012 /* Geometry.cpp in Sources */,
 				093395771A08BFAC009E4802 /* AGNodeSelector.mm in Sources */,
+				09F700B81D71046300294BDD /* Buffers.cpp in Sources */,
 				095D12FC17ACAA100048A012 /* Texture.mm in Sources */,
 				09E5EC7F18A36A9D00B21D97 /* SPFilter.cpp in Sources */,
 				09FC92471A14F55D005D14A3 /* AGTimer.mm in Sources */,
@@ -807,6 +824,7 @@
 				098740B017BC527E0098511A /* ES2Render.mm in Sources */,
 				09FC924B1A153A83005D14A3 /* AGConnection.mm in Sources */,
 				098740B317BC61410098511A /* AGUserInterface.mm in Sources */,
+				09B674441D6D9E8700F84E09 /* AGCompositeNode.mm in Sources */,
 				0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */,
 				09412E061A205A070065598D /* AGDocument.mm in Sources */,
 				091081801A0B63DB0063028B /* AGStyle.mm in Sources */,

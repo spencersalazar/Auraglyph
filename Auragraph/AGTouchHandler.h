@@ -32,11 +32,6 @@
 @end
 
 @interface AGDrawNodeTouchHandler : AGTouchHandler
-{
-    LTKTrace _currentTrace;
-    GLvertex3f _currentTraceSum;
-    AGUITrace *_trace;
-}
 
 @end
 

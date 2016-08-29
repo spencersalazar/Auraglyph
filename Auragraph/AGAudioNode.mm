@@ -14,6 +14,8 @@
 #import "AGAudioManager.h"
 #import "ADSR.h"
 #import "spstl.h"
+#import "AGAudioCapturer.h"
+#import "AGCompositeNode.h"
 #include "AGStyle.h"
 
 
@@ -65,8 +67,8 @@ void AGAudioNode::init()
     m_portRadius = 0.01*0.2*AGStyle::oldGlobalScale;
     
     m_lastTime = -1;
-    m_outputBuffer = new float[bufferSize()];
-    memset(m_outputBuffer, 0, sizeof(float)*bufferSize());
+    m_outputBuffer.resize(bufferSize());
+    m_outputBuffer.clear();
     m_inputPortBuffer = NULL;
     
     allocatePortBuffers();
@@ -84,8 +86,8 @@ void AGAudioNode::init(const AGDocument::Node &docNode)
     m_portRadius = 0.01*0.2*AGStyle::oldGlobalScale;
     
     m_lastTime = -1;
-    m_outputBuffer = new float[bufferSize()];
-    memset(m_outputBuffer, 0, sizeof(float)*bufferSize());
+    m_outputBuffer.resize(bufferSize());
+    m_outputBuffer.clear();
     m_inputPortBuffer = NULL;
     
     allocatePortBuffers();
@@ -107,8 +109,6 @@ AGAudioNode::~AGAudioNode()
         delete[] m_inputPortBuffer;
         m_inputPortBuffer = NULL;
     }
-    
-    SAFE_DELETE_ARRAY(m_outputBuffer);
 }
 
 //void AGAudioNode::renderAudio(float *input, float *output, int nFrames)
@@ -179,11 +179,12 @@ void AGAudioNode::render()
     AGNode::render();
 }
 
-AGUIObject *AGAudioNode::hitTest(const GLvertex3f &t)
+AGInteractiveObject *AGAudioNode::hitTest(const GLvertex3f &t)
 {
     if(pointInCircle(t.xy(), m_pos.xy(), m_radius))
         return this;
-    return NULL;
+    
+    return _hitTestConnections(t);
 }
 
 GLvertex3f AGAudioNode::relativePositionForInputPort(int port) const
@@ -255,7 +256,8 @@ void AGAudioNode::pullInputPorts(sampletime t, int nFrames)
         
         if(conn->rate() == RATE_AUDIO)
         {
-            conn->src()->renderAudio(t, NULL, m_inputPortBuffer[conn->dstPort()], nFrames);
+            AGAudioRenderer *rndrr = dynamic_cast<AGAudioRenderer *>(conn->src());
+            rndrr->renderAudio(t, NULL, m_inputPortBuffer[conn->dstPort()], nFrames);
         }
     }
     
@@ -269,119 +271,27 @@ void AGAudioNode::renderLast(float *output, int nFrames)
 }
 
 
-AGDocument::Node AGAudioNode::serialize()
-{
-    assert(type().length());
-    
-    AGDocument::Node docNode;
-    docNode._class = AGDocument::Node::AUDIO;
-    docNode.type = type();
-    docNode.uuid = uuid();
-    docNode.x = position().x;
-    docNode.y = position().y;
-    docNode.z = position().z;
-    
-    for(int i = 0; i < numEditPorts(); i++)
-    {
-        float v;
-        getEditPortValue(i, v);
-        docNode.params[editPortInfo(i).name] = AGDocument::ParamValue(v);
-    }
-    
-    return docNode;
-}
-
 //------------------------------------------------------------------------------
 // ### AGAudioOutputNode ###
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioOutputNode
 
-class AGAudioOutputNode : public AGAudioNode
-{
-public:
-    
-    class Manifest : public AGStandardNodeManifest<AGAudioOutputNode>
-    {
-    public:
-        string _type() const override { return "Output"; };
-        string _name() const override { return "Output"; };
-        
-        vector<AGPortInfo> _inputPortInfo() const override
-        {
-            return {
-                { "input", true, false }
-            };
-        }
-        
-        vector<AGPortInfo> _editPortInfo() const override
-        {
-            return {
-                { "gain", false, true }
-            };
-        }
-        
-        vector<GLvertex3f> _iconGeo() const override
-        {
-            float radius = 0.0066*AGStyle::oldGlobalScale;
-            
-            // speaker icon
-//            vector<GLvertex3f> iconGeo = {
-//                { -radius*0.5f*0.16f, radius*0.5f, 0 },
-//                { -radius*0.5f, radius*0.5f, 0 },
-//                { -radius*0.5f, -radius*0.5f, 0 },
-//                { -radius*0.5f*0.16f, -radius*0.5f, 0 },
-//                { radius*0.5f, -radius, 0 },
-//                { radius*0.5f, radius, 0 },
-//                { -radius*0.5f*0.16f, radius*0.5f, 0 },
-//                { -radius*0.5f*0.16f, -radius*0.5f, 0 },
-//            };
-            
-            // arrow/chevron
-            vector<GLvertex3f> iconGeo = {
-                {  radius*0.3f,  radius, 0 },
-                { -radius*0.5f,       0, 0 },
-                {  radius*0.3f, -radius, 0 },
-                { -radius*0.1f,       0, 0 },
-            };
-            
-            return iconGeo;
-        }
-        
-        GLuint _iconGeoType() const override { return GL_LINE_LOOP; }
-    };
-    
-    using AGAudioNode::AGAudioNode;
-    
-    void init() override;
-    void init(const AGDocument::Node &docNode) override;
-    ~AGAudioOutputNode();
-    
-    void setEditPortValue(int port, float value) override;
-    void getEditPortValue(int port, float &value) const override;
-
-    virtual int numOutputPorts() const override { return 0; }
-    virtual int numInputPorts() const override { return 1; }
-    
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
-};
-
-void AGAudioOutputNode::init()
-{
-    AGAudioNode::init();
-    
-    [[AGAudioManager instance] addRenderer:this];
-}
-
-void AGAudioOutputNode::init(const AGDocument::Node &docNode)
-{
-    AGAudioNode::init(docNode);
-    
-    [[AGAudioManager instance] addRenderer:this];
-}
-
 AGAudioOutputNode::~AGAudioOutputNode()
 {
-    [[AGAudioManager instance] removeRenderer:this];
+    if(m_destination)
+        m_destination->removeOutput(this);
+    m_destination = NULL;
+}
+
+void AGAudioOutputNode::setOutputDestination(AGAudioOutputDestination *destination)
+{
+    if(m_destination)
+        m_destination->removeOutput(this);
+    
+    m_destination = destination;
+    
+    if(m_destination)
+        m_destination->addOutput(this);
 }
 
 void AGAudioOutputNode::setEditPortValue(int port, float value)
@@ -402,14 +312,16 @@ void AGAudioOutputNode::getEditPortValue(int port, float &value) const
 
 void AGAudioOutputNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
+    m_outputBuffer.clear();
+    
     for(std::list<AGConnection *>::iterator i = m_inbound.begin(); i != m_inbound.end(); i++)
     {
         if((*i)->rate() == RATE_AUDIO)
-            ((AGAudioNode *)(*i)->src())->renderAudio(t, input, output, nFrames);
+            ((AGAudioNode *)(*i)->src())->renderAudio(t, input, m_outputBuffer, nFrames);
     }
     
     for(int i = 0; i < nFrames; i++)
-        output[i] *= m_gain;
+        output[i] = m_outputBuffer[i]*m_gain;
 }
 
 //------------------------------------------------------------------------------
@@ -1376,6 +1288,7 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2BPF>::ManifestBPF);
         nodeTypes.push_back(new AGAudioInputNode::Manifest);
         nodeTypes.push_back(new AGAudioOutputNode::Manifest);
+        nodeTypes.push_back(new AGAudioCompositeNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();

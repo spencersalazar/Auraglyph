@@ -179,6 +179,64 @@ void AGNode::removeOutbound(AGConnection *connection)
     m_outbound.remove(connection);
 }
 
+void AGNode::trimConnectionsToNodes(const set<AGNode *> &nodes)
+{
+    list<AGConnection *> removeList;
+    
+    for(auto i = m_inbound.begin(); i != m_inbound.end(); )
+    {
+        auto j = i++;
+        if(!nodes.count((*j)->src()))
+            (*j)->removeFromTopLevel();
+    }
+    
+    for(auto i = m_outbound.begin(); i != m_outbound.end(); )
+    {
+        auto j = i++;
+        if(!nodes.count((*j)->dst()))
+            (*j)->removeFromTopLevel();
+    }
+}
+
+const std::list<AGConnection *> AGNode::outbound() const
+{
+    return m_outbound;
+}
+
+const std::list<AGConnection *> AGNode::inbound() const
+{
+    return m_inbound;
+}
+
+AGInteractiveObject *AGNode::_hitTestConnections(const GLvertex3f &t)
+{
+    AGInteractiveObject *hit = NULL;
+    
+    // a node is only responsible for hittest/update/rendering inbound connections
+    for(AGConnection *connection : m_inbound)
+    {
+        hit = connection->hitTest(t);
+        if(hit != NULL)
+            break;
+    }
+    
+    return hit;
+}
+
+void AGNode::_updateConnections(float t, float dt)
+{
+    // a node is only responsible for hittest/update/rendering inbound connections
+    for(AGConnection *connection : m_inbound)
+        connection->update(t, dt);
+}
+
+void AGNode::_renderConnections()
+{
+    // a node is only responsible for hittest/update/rendering inbound connections
+    for(AGConnection *connection : m_inbound)
+        connection->render();
+}
+
 void AGNode::update(float t, float dt)
 {
     if(!m_active)
@@ -187,6 +245,8 @@ void AGNode::update(float t, float dt)
         if(m_fadeOut < 0.01)
             [[AGViewController instance] removeNode:this];
     }
+    
+    _updateConnections(t, dt);
 }
 
 void AGNode::render()
@@ -243,6 +303,7 @@ void AGNode::render()
     }
     
     _renderIcon();
+    _renderConnections();
 }
 
 void AGNode::_renderIcon()
@@ -303,6 +364,11 @@ void AGNode::unhit()
     
 }
 
+AGInteractiveObject *AGNode::hitTest(const GLvertex3f &t)
+{
+    return _hitTestConnections(t);
+}
+
 void AGNode::touchDown(const GLvertex3f &t)
 {
     m_lastTouch = t;
@@ -356,6 +422,48 @@ void AGNode::receiveControl_internal(int port, AGControl *control)
 {
     m_controlPortBuffer[port] = control;
     receiveControl(port, control);
+}
+
+AGDocument::Node AGNode::serialize()
+{
+    assert(type().length());
+    
+    AGDocument::Node docNode;
+    docNode._class = nodeClass();
+    docNode.type = type();
+    docNode.uuid = uuid();
+    docNode.x = position().x;
+    docNode.y = position().y;
+    docNode.z = position().z;
+    
+    for(int i = 0; i < numEditPorts(); i++)
+    {
+        float v;
+        getEditPortValue(i, v);
+        docNode.params[editPortInfo(i).name] = AGDocument::ParamValue(v);
+    }
+    
+    for(const AGConnection *conn : m_inbound)
+    {
+        docNode.inbound.push_back({
+            conn->uuid(),
+            conn->src()->uuid(),
+            conn->dst()->uuid(),
+            conn->dstPort()
+        });
+    }
+    
+    for(const AGConnection *conn : m_outbound)
+    {
+        docNode.outbound.push_back({
+            conn->uuid(),
+            conn->src()->uuid(),
+            conn->dst()->uuid(),
+            conn->dstPort()
+        });
+    }
+    
+    return docNode;
 }
 
 
@@ -552,7 +660,7 @@ AGDocument::Freedraw AGFreeDraw::serialize()
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
 //------------------------------------------------------------------------------
-#pragma mark AGNodeManager - 
+#pragma mark - AGNodeManager
 
 AGNodeManager *AGNodeManager::s_audioNodeManager = NULL;
 AGNodeManager *AGNodeManager::s_controlNodeManager = NULL;

@@ -22,11 +22,12 @@
 #include "Mutex.h"
 
 #import <GLKit/GLKit.h>
-#import <Foundation/Foundation.h>
+//#import <Foundation/Foundation.h>
 
 #include <list>
 #include <string>
 #include <vector>
+#include <set>
 
 
 using namespace std;
@@ -100,8 +101,6 @@ public:
     // graphics
     virtual void update(float t, float dt);
     virtual void render();
-    // audio
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) { assert(0); }
     // control
     void pushControl(int port, AGControl *control);
     virtual void receiveControl(int port, AGControl *control) { }
@@ -116,6 +115,7 @@ public:
     
     HitTestResult hit(const GLvertex3f &hit, int *port);
     void unhit();
+    AGInteractiveObject *hitTest(const GLvertex3f &t);
     
     void setPosition(const GLvertex3f &pos) { m_pos = pos; }
     const GLvertex3f &position() const { return m_pos; }
@@ -144,6 +144,10 @@ public:
     virtual GLvertex3f relativePositionForInboundConnection(AGConnection * connection) const { return relativePositionForInputPort(connection->dstPort()); }
     virtual GLvertex3f relativePositionForOutboundConnection(AGConnection * connection) const { return relativePositionForOutputPort(0); }
     
+    void trimConnectionsToNodes(const set<AGNode *> &nodes);
+    const std::list<AGConnection *> outbound() const;
+    const std::list<AGConnection *> inbound() const;
+    
     /*** Subclassing note: the following public functions should be overridden ***/
     
     /* overridden by final subclass */
@@ -169,7 +173,7 @@ public:
     virtual void renderOut();
     
     /* serialization - overridden by direct subclass */
-    virtual AGDocument::Node serialize() = 0;
+    virtual AGDocument::Node serialize();
     
 private:
     static bool s_initNode;
@@ -192,11 +196,16 @@ protected:
     
     /* overridden by final subclass */
     virtual void setDefaultPortValues() { }
+    /* overridden by direct subclass */
+    virtual AGDocument::Node::Class nodeClass() const = 0;
+
+    AGInteractiveObject *_hitTestConnections(const GLvertex3f &t);
+    void _updateConnections(float t, float dt);
+    void _renderConnections();
     
     void _renderIcon();
     
     const AGNodeManifest *m_manifest;
-//    AGNodeInfo *m_nodeInfo;
     string m_title;
     string m_uuid; // TODO: const
     
