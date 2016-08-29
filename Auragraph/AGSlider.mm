@@ -10,7 +10,12 @@
 
 #include "TexFont.h"
 #include "AGStyle.h"
+#include "AGGenericShader.h"
+#include "GeoGenerator.h"
 #include <sstream>
+
+#define AGSlider_TextScale (0.61f)
+#define AGSlider_HitOffset (10)
 
 AGSlider::AGSlider(GLvertex3f position, float value)
 : m_value(value), m_position(position)
@@ -40,9 +45,28 @@ void AGSlider::render()
     
     GLKMatrix4 valueMV = modelView;
     valueMV = GLKMatrix4Translate(valueMV, position().x, position().y, position().z);
-    valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
+    valueMV = GLKMatrix4Translate(valueMV, -size().x/2, -size().y/2-2, 0);
+    valueMV = GLKMatrix4Translate(valueMV, AGSlider_HitOffset, AGSlider_HitOffset, 0);
+    valueMV = GLKMatrix4Scale(valueMV, AGSlider_TextScale, AGSlider_TextScale, AGSlider_TextScale);
 //    valueMV = GLKMatrix4Translate(valueMV, -m_size.x/2.0f, -m_size.y/2, 0);
-    text->render(m_valueStream.str(), valueColor, valueMV, proj);
+    text->render(m_str, valueColor, valueMV, proj);
+    
+    // debug: render bounding box
+    AGGenericShader &shader = AGGenericShader::instance();
+    shader.useProgram();
+    
+    shader.setModelViewMatrix(modelView);
+    shader.setProjectionMatrix(proj);
+    
+    GLvertex3f geo[4];
+    GeoGen::makeRect(geo, this->position().x, this->position().y, this->size().x, this->size().y);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, geo);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    
+    glVertexAttrib4f(GLKVertexAttribColor, 1, 1, 1, 0.25);
+    glDisableVertexAttribArray(GLKVertexAttribColor);
+    
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 }
 
 void AGSlider::touchDown(const AGTouchInfo &t)
@@ -73,22 +97,22 @@ void AGSlider::touchMove(const AGTouchInfo &t)
     
     if(m_scale == EXPONENTIAL)
     {
-        float log = log10f(m_value)-0.1;
+        float log = log10f(fabs(m_value))-0.1;
         int oom = (int)floorf(log);
         inc = powf(10, oom-1);
         
         if(m_type == DISCRETE)
             inc = std::max(1.0, inc);
+        
+        fprintf(stderr, "log %f oom %i inc %f ", log, oom, inc);
+        fprintf(stderr, "ytravel %f ", m_ytravel);
     }
     else
     {
         inc = 1;
     }
     
-//    fprintf(stderr, "log %f oom %i inc %f ", log, oom, inc);
-//    fprintf(stderr, "ytravel %f ", m_ytravel);
-    
-//    fprintf(stderr, "amount %f m_ytravel' %f\n", amount, m_ytravel);
+    fprintf(stderr, "amount %f m_ytravel' %f\n", amount, m_ytravel);
     
     _updateValue(m_value + amount*inc);
     
@@ -124,12 +148,16 @@ void AGSlider::_updateValue(float value)
 
     m_value = value;
     
-    m_valueStream = std::stringstream();
     if(m_type == CONTINUOUS)
-        m_valueStream << m_value;
+        snprintf(m_str, BUF_SIZE-1, "%.3lG", m_value);
     else
-        m_valueStream << (int) m_value;
+        snprintf(m_str, BUF_SIZE-1, "%li", (long int) m_value);
     
-    m_size.x = text->width(m_valueStream.str());
-    m_size.y = text->height();
+    m_size.x = text->width(m_str)*AGSlider_TextScale+AGSlider_HitOffset*2;
+    m_size.y = text->height()*AGSlider_TextScale+AGSlider_HitOffset*2;
+    
+//    dbgprint("[ ");
+//    for(char c : m_valueStream.str())
+//        dbgprint("%02X ", c);
+//    dbgprint("]");
 }

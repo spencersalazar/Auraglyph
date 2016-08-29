@@ -64,7 +64,8 @@ private:
     Scale m_scale = LINEAR;
     Type m_type = DISCRETE;
     
-    std::stringstream m_valueStream;
+    constexpr const static size_t BUF_SIZE = 32;
+    char m_str[BUF_SIZE];
     float m_ytravel = 0;
     
     int m_numTouches = 0;

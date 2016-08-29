@@ -117,6 +117,7 @@ m_lastTraceWasRecognized(true)
         float y = s_radius - s_radius*2.0*(i+2)/rowCount;
         
         AGSlider *slider = new AGSlider(position()+GLvertex3f(s_radius*0.1, y + s_radius/rowCount*0.1, 0), v);
+        slider->init();
         slider->setType(AGSlider::CONTINUOUS);
         slider->setScale(AGSlider::EXPONENTIAL);
         m_editSliders.push_back(slider);

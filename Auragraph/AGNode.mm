@@ -263,6 +263,7 @@ void AGNode::render()
     {
         // draw output port
         glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_portGeo);
+        glEnableVertexAttribArray(GLKVertexAttribPosition);
         
         GLvertex3f portPos = relativePositionForOutputPort(0);
         GLKMatrix4 mvpOutputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, portPos.x, portPos.y, portPos.z);
@@ -285,7 +286,8 @@ void AGNode::render()
     {
         // draw input port
         glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_portGeo);
-        
+        glEnableVertexAttribArray(GLKVertexAttribPosition);
+
         GLvertex3f portPos = relativePositionForInputPort(i);
         GLKMatrix4 mvpInputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, portPos.x, portPos.y, portPos.z);
         mvpInputPort = GLKMatrix4Scale(mvpInputPort, 0.8, 0.8, 0.8);

@@ -336,6 +336,7 @@ static AGViewController * g_instance = nil;
     
     // test slider
     AGSlider *testSlider = new AGSlider(vert, 1.2);
+    testSlider->init();
     _objects.push_back(testSlider);
 }
 
