@@ -28,7 +28,7 @@ class AGInteractiveObject;
 - (void)addTopLevelObject:(AGInteractiveObject *)object;
 - (void)addTopLevelObject:(AGInteractiveObject *)object over:(AGInteractiveObject *)over;
 - (void)addTopLevelObject:(AGInteractiveObject *)object under:(AGInteractiveObject *)under;
-- (void)removeTopLevelObject:(AGInteractiveObject *)object;
+- (void)fadeOutAndDelete:(AGInteractiveObject *)object;
 
 - (void)addConnection:(AGConnection *)connection;
 - (void)resignConnection:(AGConnection *)connection;

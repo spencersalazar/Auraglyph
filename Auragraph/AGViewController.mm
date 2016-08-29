@@ -475,7 +475,7 @@ static AGViewController * g_instance = nil;
         _interfaceObjects.push_back(ui);
 }
 
-- (void)removeTopLevelObject:(AGInteractiveObject *)object
+- (void)fadeOutAndDelete:(AGInteractiveObject *)object
 {
     if(object == _touchCapture)
         _touchCapture = NULL;
@@ -486,6 +486,8 @@ static AGViewController * g_instance = nil;
     
     object->renderOut();
     _removeList.push_back(object);
+    
+    _objects.remove(object);
 }
 
 - (void)addConnection:(AGConnection *)connection
@@ -589,7 +591,6 @@ static AGViewController * g_instance = nil;
             
             if((*j)->finishedRenderingOut())
             {
-                _objects.remove(*j);
                 delete *j;
                 _removeList.erase(j);
             }
@@ -603,12 +604,14 @@ static AGViewController * g_instance = nil;
     _t += dt;
     
     AGUITrash::instance().update(_t, dt);
-    for(std::list<AGInteractiveObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
-        (*i)->update(_t, dt);
-    for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
-        (*i)->update(_t, dt);
-    for(std::list<AGInteractiveObject *>::iterator i = _interfaceObjects.begin(); i != _interfaceObjects.end(); i++)
-        (*i)->update(_t, dt);
+    for(AGInteractiveObject *object : _objects)
+        object->update(_t, dt);
+    for(AGInteractiveObject *removeObject : _removeList)
+        removeObject->update(_t, dt);
+    for(AGNode *node : _nodes)
+        node->update(_t, dt);
+    for(AGInteractiveObject *interfaceObject : _interfaceObjects)
+        interfaceObject->update(_t, dt);
     
     [_touchHandler update:_t dt:dt];
 }
@@ -727,12 +730,14 @@ static AGViewController * g_instance = nil;
     AGUITrash::instance().render();
     
     // render nodes
-    for(std::list<AGNode *>::iterator i = _nodes.begin(); i != _nodes.end(); i++)
-        (*i)->render();
-    
+    for(AGNode *node : _nodes)
+        node->render();
     // render objects
-    for(std::list<AGInteractiveObject *>::iterator i = _objects.begin(); i != _objects.end(); i++)
-        (*i)->render();
+    for(AGInteractiveObject *object : _objects)
+        object->render();
+    // render removeList
+    for(AGInteractiveObject *removeObject : _removeList)
+        removeObject->render();
     
     [_touchHandler render];
 }

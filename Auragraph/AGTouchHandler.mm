@@ -842,7 +842,7 @@ private:
     if(hitNode != _currentHit && hitNode != _originalHit)
     {
         if(_browser)
-            [_viewController removeTopLevelObject:_browser];
+            [_viewController fadeOutAndDelete:_browser];
         if(hitNode)
         {
             _browser = new AGPortBrowser(hitNode);
@@ -858,7 +858,7 @@ private:
     {
         if(_browser)
         {
-            [_viewController removeTopLevelObject:_browser];
+            [_viewController fadeOutAndDelete:_browser];
             _browser = NULL;
         }
         
@@ -884,7 +884,7 @@ private:
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    [_viewController removeTopLevelObject:_proto];
+    [_viewController fadeOutAndDelete:_proto];
     _proto = NULL;
     
     if(_browser)
@@ -905,7 +905,7 @@ private:
     
     if(_browser)
     {
-        [_viewController removeTopLevelObject:_browser];
+        [_viewController fadeOutAndDelete:_browser];
         _browser = NULL;
     }
 }
@@ -977,7 +977,7 @@ private:
     if(!_nodeSelector->done())
         _nextHandler = self;
     else
-        [_viewController removeTopLevelObject:_nodeSelector];
+        [_viewController fadeOutAndDelete:_nodeSelector];
 }
 
 //- (void)update:(float)t dt:(float)dt
@@ -1051,7 +1051,7 @@ private:
         // add object
         [_viewController addTopLevelObject:_nodeEditor];
         // immediately remove (cause to fade out/collapse and then deallocate)
-        [_viewController removeTopLevelObject:_nodeEditor];
+        [_viewController fadeOutAndDelete:_nodeEditor];
         _nodeEditor = NULL;
         
         _done = YES;
@@ -1085,7 +1085,7 @@ private:
         // add object
         [_viewController addTopLevelObject:_nodeEditor];
         // immediately remove (cause to fade out/collapse and then deallocate)
-        [_viewController removeTopLevelObject:_nodeEditor];
+        [_viewController fadeOutAndDelete:_nodeEditor];
         _nodeEditor = NULL;
 
         _nextHandler = nil;

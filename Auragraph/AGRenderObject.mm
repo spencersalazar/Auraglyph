@@ -304,7 +304,7 @@ AGInteractiveObject *AGInteractiveObject::hitTest(const GLvertex3f &t)
 
 void AGInteractiveObject::removeFromTopLevel()
 {
-    [[AGViewController instance] removeTopLevelObject:this];
+    [[AGViewController instance] fadeOutAndDelete:this];
 }
 
 
