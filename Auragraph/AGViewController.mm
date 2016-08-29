@@ -919,14 +919,7 @@ static AGViewController * g_instance = nil;
     });
     
     itmap(_objects, ^(AGInteractiveObject *&obj){
-        AGConnection *connection;
         AGFreeDraw *freedraw;
-        
-        if((connection = dynamic_cast<AGConnection *>(obj)) != NULL)
-        {
-            AGDocument::Connection docConnection = connection->serialize();
-            doc.addConnection(docConnection);
-        }
         
         if((freedraw = dynamic_cast<AGFreeDraw *>(obj)) != NULL)
         {
