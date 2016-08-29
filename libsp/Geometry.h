@@ -259,5 +259,17 @@ static inline bool pointInCircle(const GLvertex2f &point, const GLvertex2f &cent
     return false;
 }
 
+#if defined(__APPLE__) && defined(__OBJC__)
+
+#include <GLKit/GLKit.h>
+
+static inline GLvertex3f operator*(GLKMatrix4 m, GLvertex3f v)
+{
+    GLKVector3 v2 = GLKMatrix4MultiplyVector3(m, GLKVector3Make(v.x, v.y, v.z));
+    return GLvertex3f(v2.x, v2.y, v2.z);
+}
+
+#endif // defined(__APPLE__) && defined(__OBJC__)
+
 
 #endif

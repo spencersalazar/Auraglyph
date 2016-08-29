@@ -9,10 +9,13 @@
 #include "AGNodeSelector.h"
 #include "AGAudioNode.h"
 #include "AGControlNode.h"
+#include "AGInputNode.h"
+#include "AGOutputNode.h"
+#include "AGControlNode.h"
 #include "AGStyle.h"
 #include "AGGenericShader.h"
 
-static const float AGNODESELECTOR_RADIUS = 0.02;
+static const float AGNODESELECTOR_RADIUS = 0.02*AGStyle::oldGlobalScale;
 
 
 template<class NodeType, class ManagerType>
@@ -64,22 +67,30 @@ private:
 
 AGUIMetaNodeSelector *AGUIMetaNodeSelector::audioNodeSelector(const GLvertex3f &pos)
 {
-    return new AGUINodeSelector<AGAudioNode, AGAudioNodeManager>(AGAudioNodeManager::instance(), pos);
+    AGUIMetaNodeSelector *nodeSelector = new AGUINodeSelector<AGAudioNode, AGNodeManager>(AGNodeManager::audioNodeManager(), pos);
+    nodeSelector->init();
+    return nodeSelector;
 }
 
 AGUIMetaNodeSelector *AGUIMetaNodeSelector::controlNodeSelector(const GLvertex3f &pos)
 {
-    return new AGUINodeSelector<AGControlNode, AGControlNodeManager>(AGControlNodeManager::instance(), pos);
+    AGUIMetaNodeSelector *nodeSelector = new AGUINodeSelector<AGControlNode, AGNodeManager>(AGNodeManager::controlNodeManager(), pos);
+    nodeSelector->init();
+    return nodeSelector;
 }
 
 AGUIMetaNodeSelector *AGUIMetaNodeSelector::inputNodeSelector(const GLvertex3f &pos)
 {
-    return new AGUINodeSelector<AGInputNode, AGNodeManager>(AGNodeManager::inputNodeManager(), pos);
+    AGUIMetaNodeSelector *nodeSelector = new AGUINodeSelector<AGInputNode, AGNodeManager>(AGNodeManager::inputNodeManager(), pos);
+    nodeSelector->init();
+    return nodeSelector;
 }
 
 AGUIMetaNodeSelector *AGUIMetaNodeSelector::outputNodeSelector(const GLvertex3f &pos)
 {
-    return new AGUINodeSelector<AGOutputNode, AGNodeManager>(AGNodeManager::outputNodeManager(), pos);
+    AGUIMetaNodeSelector *nodeSelector = new AGUINodeSelector<AGOutputNode, AGNodeManager>(AGNodeManager::outputNodeManager(), pos);
+    nodeSelector->init();
+    return nodeSelector;
 }
 
 
@@ -92,11 +103,13 @@ template<class NodeType, class ManagerType>
 AGUINodeSelector<NodeType, ManagerType>::AGUINodeSelector(const ManagerType &manager, const GLvertex3f &pos) :
 AGUIMetaNodeSelector(pos),
 m_pos(pos),
-m_node(new NodeType(pos)),
+m_node(new NodeType(AGNodeManifest::defaultManifest(), pos)),
 m_hit(-1),
 m_done(false),
 m_manager(manager)
 {
+    m_node->init();
+    
     m_geoSize = 4;
     
     m_radius = AGNODESELECTOR_RADIUS;
@@ -120,6 +133,7 @@ m_manager(manager)
 template<class NodeType, class ManagerType>
 AGUINodeSelector<NodeType, ManagerType>::~AGUINodeSelector()
 {
+    dbgprint_off("AGUINodeSelector::~AGUINodeSelector()");
     SAFE_DELETE(m_node);
 }
 

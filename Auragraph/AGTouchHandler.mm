@@ -15,8 +15,6 @@
 #import "ES2Render.h"
 #import "AGHandwritingRecognizer.h"
 #import "AGNode.h"
-#import "AGAudioNode.h"
-#import "AGAudioManager.h"
 #import "AGUserInterface.h"
 #import "TexFont.h"
 #import "AGDef.h"
@@ -27,6 +25,8 @@
 
 #import "GeoGenerator.h"
 #import "spMath.h"
+
+#include "AGStyle.h"
 
 
 //------------------------------------------------------------------------------
@@ -73,6 +73,7 @@
     _currentTraceSum = GLvertex3f();
     
     _trace = new AGUITrace;
+    _trace->init();
     _trace->addPoint(pos);
     [_viewController addTopLevelObject:_trace];
 }
@@ -83,6 +84,7 @@
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
     _trace->addPoint(pos);
+//    NSLog(@"trace: %f %f %f", pos.x, pos.y, pos.z);
     
     _currentTraceSum = _currentTraceSum + GLvertex3f(p.x, p.y, 0);
     
@@ -112,21 +114,16 @@
     {
         AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::controlNodeSelector(centroidMVP);
         _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
-        //        AGControlNode * node = new AGControlTimerNode(centroidMVP);
-        //        [_viewController addNode:node];
     }
     else if(figure == AG_FIGURE_TRIANGLE_DOWN)
     {
-        //        AGInputNode * node = new AGInputNode(centroidMVP);
-        //        [_viewController addNode:node];
-        //        [_viewController clearLinePoints];
         AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::inputNodeSelector(centroidMVP);
         _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
     }
     else if(figure == AG_FIGURE_TRIANGLE_UP)
     {
-        AGOutputNode * node = new AGOutputNode(centroidMVP);
-        [_viewController addNode:node];
+        AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::outputNodeSelector(centroidMVP);
+        _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
     }
     else
     {
@@ -178,6 +175,7 @@
     if(_linePoints.size() > 1)
     {
         AGFreeDraw *freeDraw = new AGFreeDraw(&_linePoints[0], _linePoints.size());
+        freeDraw->init();
         [_viewController addFreeDraw:freeDraw];
     }
 }
@@ -375,8 +373,8 @@ public:
         float textHeight = s_texFont->height()*textScale;
         m_textOriginOffset = GLvertex3f(-textWidth/2.0, -textHeight/2, 0);
         
-        float radius = 0.00275;
-        float margin = 0.001;
+        float radius = 0.00275*AGStyle::oldGlobalScale;
+        float margin = 0.001*AGStyle::oldGlobalScale;
         switch(m_textPosition)
         {
             case TEXTPOSITION_LEFT:
@@ -417,7 +415,7 @@ public:
         
         GLvertex3f position = lerp(m_posLerp, m_node->position(), m_position);
         m_renderState.modelview = GLKMatrix4Multiply(baseModelView, GLKMatrix4MakeTranslation(position.x, position.y, position.z));
-        float radius = 0.00275;
+        float radius = 0.00275*AGStyle::oldGlobalScale;
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeScale(radius, radius, radius));
         
         GLvertex3f textPosition = lerp(m_textPosLerp, position+m_textOriginOffset, position+m_textOffset);
@@ -485,7 +483,7 @@ public:
     AGPortBrowser(AGNode *node) : m_node(node), m_scale(0.2), m_alpha(0.1, 1),
     m_selectedPort(-1)
     {
-        float radius = 0.0125f;
+        float radius = 0.0125f*AGStyle::oldGlobalScale;
         
         m_strokeInfo.shader = &AGGenericShader::instance();
         m_strokeInfo.geo = &(GeoGen::circle64())[1];
@@ -508,7 +506,7 @@ public:
         int numPorts = node->numInputPorts();
         m_ports.reserve(numPorts);
         float angle = 3.0f*M_PI/4.0f;
-        float portRadius = radius * 0.62;
+        float portRadius = radius*0.62;
         for(int i = 0; i < numPorts; i++)
         {
             float _cos = cosf(angle);
@@ -528,6 +526,7 @@ public:
             
             GLvertex3f pos = m_node->position() + GLvertex3f(portRadius*_cos, portRadius*_sin, 0);
             AGPortBrowserPort *port = new AGPortBrowserPort(m_node, i, pos, textPos);
+            port->init();
             addChild(port);
             m_ports.push_back(port);
             
@@ -547,7 +546,7 @@ public:
         
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeTranslation(m_node->position().x, m_node->position().y, m_node->position().z));
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeScale(m_scale, m_scale, m_scale));
-        float radius = 0.0125f;
+        float radius = 0.0125f*AGStyle::oldGlobalScale;
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeScale(radius, radius, radius));
     }
     
@@ -583,7 +582,7 @@ public:
             // squared-distance from center
             float rho_sq = relativeLocation.magnitudeSquared();
             // central dead-zone
-            float radius = 0.0125f * 0.1f;
+            float radius = 0.0125f*0.1f*AGStyle::oldGlobalScale;
             // too close to dead-zone!
             if(rho_sq < radius*radius)
                 return -1;
@@ -653,6 +652,7 @@ private:
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
     _proto = new AGProtoConnection(pos, pos);
+    _proto->init();
     [_viewController addTopLevelObject:_proto];
     
     AGNode *hitNode;
@@ -693,6 +693,7 @@ private:
         if(hitNode)
         {
             _browser = new AGPortBrowser(hitNode);
+            _browser->init();
             [_viewController addTopLevelObject:_browser under:_proto];
         }
         else
@@ -739,6 +740,7 @@ private:
         if(port != -1)
         {
             AGConnection * connection = new AGConnection(_originalHit, _currentHit, port);
+            connection->init();
             
             [_viewController addConnection:connection];
         }
@@ -855,7 +857,10 @@ private:
         _touchCapture = NULL;
         _nodeEditor = node->createCustomEditor();
         if(_nodeEditor == NULL)
+        {
             _nodeEditor = new AGUIStandardNodeEditor(node);
+            _nodeEditor->init();
+        }
     }
     
     return self;

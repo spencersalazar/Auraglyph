@@ -90,6 +90,12 @@ public:
     AGRenderObject();
     virtual ~AGRenderObject();
     
+    /* init() should be used for most initialization other than zeroing/nulling
+       member variables. Unfortunately virtual functions don't really work as 
+       normal in C++ constructors, and vfuncs make the node/render object data 
+       model a lot easier, so init() is used instead. */
+    virtual void init();
+    
     virtual void update(float t, float dt);
     virtual void render();
     
@@ -129,6 +135,8 @@ protected:
     list<AGRenderObject *> m_children;
     
     powcurvef m_alpha;
+    
+    bool m_debug_initCalled;
     
 private:
     bool m_renderedBounds;

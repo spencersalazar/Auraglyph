@@ -9,7 +9,7 @@
 #ifndef __Auragraph__AGFormulaNode__
 #define __Auragraph__AGFormulaNode__
 
-#include "AGNode.h"
+#include "AGAudioNode.h"
 
 using namespace std;
 
@@ -27,7 +27,6 @@ public:
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
     
     static void renderIcon();
-    static AGAudioNode *create(const GLvertex3f &pos);
     
 private:
     static AGNodeInfo *s_audioNodeInfo;

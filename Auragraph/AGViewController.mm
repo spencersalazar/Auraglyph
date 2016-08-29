@@ -175,8 +175,6 @@ static AGViewController * g_instance = nil;
     
     /* preload hw recognizer */
     (void) [AGHandwritingRecognizer instance];
-    /* preload audio node manager */
-    (void) AGAudioNodeManager::instance();
     
 //    _testButton = new AGUIButton("Trainer", [self worldCoordinateForScreenCoordinate:CGPointMake(10, self.view.bounds.size.height-10)], GLvertex2f(0.028, 0.007));
 //    _testButton->setAction(^{
@@ -185,8 +183,6 @@ static AGViewController * g_instance = nil;
 //    _objects.push_back(_testButton);
     
     [self initUI];
-    
-    __block AGAudioOutputNode * outputNode = NULL;
     
     /* load default program */
     if(!AG_RESET_DOCUMENT && AGDocument::existsForTitle(AG_DEFAULT_FILENAME))
@@ -199,14 +195,9 @@ static AGViewController * g_instance = nil;
         defaultDoc.recreate(^(const AGDocument::Node &docNode) {
             AGNode *node = NULL;
             if(docNode._class == AGDocument::Node::AUDIO)
-            {
-                node = AGAudioNodeManager::instance().createNodeType(docNode);
-                if(docNode.type == "Output")
-                    // TODO: fix this hacky shit
-                    outputNode = dynamic_cast<AGAudioOutputNode *>(node);
-            }
+                node = AGNodeManager::audioNodeManager().createNodeType(docNode);
             else if(docNode._class == AGDocument::Node::CONTROL)
-                node = AGControlNodeManager::instance().createNodeType(docNode);
+                node = AGNodeManager::controlNodeManager().createNodeType(docNode);
             else if(docNode._class == AGDocument::Node::INPUT)
                 node = AGNodeManager::inputNodeManager().createNodeType(docNode);
             else if(docNode._class == AGDocument::Node::OUTPUT)
@@ -224,20 +215,21 @@ static AGViewController * g_instance = nil;
                 AGNode *dstNode = uuid2node[docConnection.dstUuid];
                 assert(docConnection.dstPort >= 0 && docConnection.dstPort < dstNode->numInputPorts());
                 AGConnection *conn = new AGConnection(srcNode, dstNode, docConnection.dstPort);
+                conn->init();
                 [self addConnection:conn];
             }
         }, ^(const AGDocument::Freedraw &docFreedraw) {
             AGFreeDraw *freedraw = new AGFreeDraw(docFreedraw);
+            freedraw->init();
             [self addTopLevelObject:freedraw];
         });
     }
     else
     {
-        outputNode = new AGAudioOutputNode([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)]);
-        _nodes.push_back(outputNode);
+        // just create output node by itself
+        AGNode *output = AGNodeManager::audioNodeManager().createNodeOfType("Output", GLvertex3f(0, 0, 0));
+        _nodes.push_back(output);
     }
-    
-    self.audioManager.outputNode = outputNode;
     
     g_instance = self;
     
@@ -269,6 +261,7 @@ static AGViewController * g_instance = nil;
     AGUIButton *saveButton = new AGUIButton("Save",
                                             GLvertex3f(0, -aboutButtonHeight/2, 0) + [self worldCoordinateForScreenCoordinate:CGPointMake(10, 10)],
                                             GLvertex2f(saveButtonWidth, saveButtonHeight));
+    saveButton->init();
     saveButton->setAction(^{
         //        AGViewController *strongSelf = weakSelf;
         //        if(strongSelf)
@@ -278,9 +271,10 @@ static AGViewController * g_instance = nil;
     [self addTopLevelObject:saveButton];
     
     AGUIButtonGroup *modeButtonGroup = new AGUIButtonGroup();
+    modeButtonGroup->init();
     
     /* freedraw button */
-    float freedrawButtonWidth = 0.0095;
+    float freedrawButtonWidth = 0.0095*AGStyle::oldGlobalScale;
     GLvertex3f modeButtonStartPos = [self worldCoordinateForScreenCoordinate:CGPointMake(27.5, self.view.bounds.size.height-20)];
     AGRenderInfoV freedrawRenderInfo;
     freedrawRenderInfo.numVertex = 5;
@@ -297,6 +291,7 @@ static AGViewController * g_instance = nil;
     AGUIIconButton *freedrawButton = new AGUIIconButton(modeButtonStartPos,
                                                         GLvertex2f(freedrawButtonWidth, freedrawButtonWidth),
                                                         freedrawRenderInfo);
+    freedrawButton->init();
     freedrawButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
     freedrawButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
     modeButtonGroup->addButton(freedrawButton, ^{
@@ -315,6 +310,7 @@ static AGViewController * g_instance = nil;
     AGUIIconButton *nodeButton = new AGUIIconButton(modeButtonStartPos + GLvertex3f(0, nodeButtonWidth*1.25, 0),
                                                     GLvertex2f(nodeButtonWidth, nodeButtonWidth),
                                                     nodeRenderInfo);
+    nodeButton->init();
     nodeButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
     nodeButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
     modeButtonGroup->addButton(nodeButton, ^{
@@ -406,11 +402,17 @@ static AGViewController * g_instance = nil;
 {
 //    _defaultDocument.removeNode(node->uuid());
     
-    AGInteractiveObject * ui = node->userInterface();
-    if(ui)
-        _interfaceObjects.remove(ui);
+    // only process for removal if it is part of the node list in the first place
+    bool has = (std::find(_nodes.begin(), _nodes.end(), node) != _nodes.end());
     
-    _nodeRemoveList.push_back(node);
+    if(has)
+    {
+        AGInteractiveObject * ui = node->userInterface();
+        if(ui)
+            _interfaceObjects.remove(ui);
+        
+        _nodeRemoveList.push_back(node);
+    }
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object
@@ -490,12 +492,18 @@ static AGViewController * g_instance = nil;
 {
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     GLKMatrix4 projectionMatrix;
-    if(UIInterfaceOrientationIsLandscape(self.interfaceOrientation))
-        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
-    else
-        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f)/aspect, aspect, 0.1f, 100.0f);
+//    if(UIInterfaceOrientationIsLandscape(self.interfaceOrientation))
+//        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
+//    else
+//        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f)/aspect, aspect, 0.1f, 100.0f);
+//    if(UIInterfaceOrientationIsLandscape(self.interfaceOrientation))
+//    NSLog(@"width %f height %f", self.view.bounds.size.width, self.view.bounds.size.height);
+    projectionMatrix = GLKMatrix4MakeFrustum(-self.view.bounds.size.width/2, self.view.bounds.size.width/2,
+                                             -self.view.bounds.size.height/2, self.view.bounds.size.height/2, 10.0f, 1000.0f);
+//    else
+//        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f)/aspect, aspect, 0.1f, 100.0f);
     
-    GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z-4.0f);
+    GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z-10.0f);
     if(_interfaceMode == INTERFACEMODE_USER)
         baseModelViewMatrix = GLKMatrix4Translate(baseModelViewMatrix, 0, 0, -(G_RATIO-1));
     
@@ -507,12 +515,25 @@ static AGViewController * g_instance = nil;
     
     _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
     _modelView = modelViewMatrix;
-    _fixedModelView = GLKMatrix4MakeTranslation(0, 0, -4.0f);
+    _fixedModelView = GLKMatrix4MakeTranslation(0, 0, -10.0f);
     _projection = projectionMatrix;
     
     AGRenderObject::setProjectionMatrix(projectionMatrix);
     AGRenderObject::setGlobalModelViewMatrix(modelViewMatrix);
     AGRenderObject::setFixedModelViewMatrix(_fixedModelView);
+}
+
+- (GLvertex3f)worldCoordinateForScreenCoordinate:(CGPoint)p
+{
+    int viewport[] = { (int)self.view.bounds.origin.x, (int)(self.view.bounds.origin.y),
+        (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
+    bool success;
+    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, 0.0f),
+                                      _modelView, _projection, viewport, &success);
+    
+    //    vec = GLKMatrix4MultiplyVector3(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z), vec);
+    
+    return GLvertex3f(vec.x, vec.y, vec.z);
 }
 
 - (void)update
@@ -712,19 +733,6 @@ static AGViewController * g_instance = nil;
         (*i)->render();
 }
 
-
-- (GLvertex3f)worldCoordinateForScreenCoordinate:(CGPoint)p
-{
-    int viewport[] = { (int)self.view.bounds.origin.x, (int)self.view.bounds.origin.y,
-        (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
-    bool success;
-    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, 0.01),
-                                      _modelView, _projection, viewport, &success);
-    
-//    vec = GLKMatrix4MultiplyVector3(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z), vec);
-    
-    return GLvertex3f(vec.x, vec.y, vec.z);
-}
 
 - (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)node port:(int *)port
 {

@@ -9,6 +9,7 @@
 #import "TexFont.h"
 #import "ShaderHelper.h"
 #import "ES2Render.h"
+#include "AGStyle.h"
 #import <CoreText/CoreText.h>
 
 bool TexFont::s_init = false;
@@ -49,7 +50,7 @@ void TexFont::initalizeTexFont()
         s_geoSize = 4;
         s_geo = new GLgeoprimf[s_geoSize];
         
-        s_radius = 0.005;
+        s_radius = 0.005*AGStyle::oldGlobalScale;
         
         // fill GL_TRIANGLE_STRIP S-shape
         s_geo[0].vertex = GLvertex3f(0, 0, 0);

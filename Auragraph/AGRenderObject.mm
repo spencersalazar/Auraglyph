@@ -131,6 +131,13 @@ AGRenderObject::AGRenderObject() : m_parent(NULL), m_alpha(powcurvef(0, 1, 0.5, 
     m_renderState.projection = GLKMatrix4Identity;
     m_renderState.modelview = GLKMatrix4Identity;
     m_renderState.normal = GLKMatrix3Identity;
+    m_debug_initCalled = false;
+}
+
+void AGRenderObject::init()
+{
+    // ...
+    m_debug_initCalled = true;
 }
 
 AGRenderObject::~AGRenderObject()
@@ -153,6 +160,8 @@ void AGRenderObject::removeChild(AGRenderObject *child)
 
 void AGRenderObject::update(float t, float dt)
 {
+    assert(m_debug_initCalled);
+    
     m_alpha.update(dt);
     
     m_renderState.alpha = m_alpha;
@@ -175,6 +184,8 @@ void AGRenderObject::updateChildren(float t, float dt)
 
 void AGRenderObject::render()
 {
+    assert(m_debug_initCalled);
+    
     renderPrimitives();
     renderChildren();
 }

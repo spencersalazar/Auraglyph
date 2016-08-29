@@ -15,7 +15,8 @@ void AGAudioFormulaNode::initialize()
     
 }
 
-AGAudioFormulaNode::AGAudioFormulaNode(GLvertex3f pos)
+AGAudioFormulaNode::AGAudioFormulaNode(GLvertex3f pos) :
+AGAudioNode(AGNodeManifest::defaultManifest(), pos)
 {
     
 }
@@ -38,10 +39,5 @@ void AGAudioFormulaNode::renderAudio(sampletime t, float *input, float *output, 
 void AGAudioFormulaNode::renderIcon()
 {
     
-}
-
-AGAudioNode *AGAudioFormulaNode::create(const GLvertex3f &pos)
-{
-    return NULL;
 }
 

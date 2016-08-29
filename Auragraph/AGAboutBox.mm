@@ -11,7 +11,7 @@
 #include "AGStyle.h"
 #include "AGGenericShader.h"
 
-static const float AGABOUTBOX_RADIUS = 0.066;
+static const float AGABOUTBOX_RADIUS = 0.066*AGStyle::oldGlobalScale;
 
 //------------------------------------------------------------------------------
 // ### AGAboutBox ###

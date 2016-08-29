@@ -18,4 +18,13 @@
 #define AGBlock_copy(b) b
 #define AGBlock_release(b)
 
+#ifdef DEBUG
+#define ENABLE_DEBUG_PRINT 1
+#else 
+#define ENABLE_DEBUG_PRINT 0
+#endif 
+
+#define dbgprint(...) do { if (ENABLE_DEBUG_PRINT) fprintf(stderr, ##__VA_ARGS__); } while (0)
+#define dbgprint_off(...) do { if (0) fprintf(stderr, ##__VA_ARGS__); } while (0)
+
 #endif

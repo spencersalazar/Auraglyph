@@ -1,40 +1,36 @@
 //
-//  AGInputNode.h
+//  AGOutputNode.hpp
 //  Auragraph
 //
-//  Created by Spencer Salazar on 4/13/15.
-//  Copyright (c) 2015 Spencer Salazar. All rights reserved.
+//  Created by Spencer Salazar on 8/21/16.
+//  Copyright © 2016 Spencer Salazar. All rights reserved.
 //
 
-#ifndef __Auragraph__AGInputNode__
-#define __Auragraph__AGInputNode__
+#ifndef __Auragraph__AGOutputNode__
+#define __Auragraph__AGOutputNode__
 
 #include "AGNode.h"
 
 //------------------------------------------------------------------------------
-// ### AGInputNode ###
+// ### AGOutputNode ###
 //------------------------------------------------------------------------------
-#pragma mark - AGInputNode
+#pragma mark - AGOutputNode
 
-class AGInputNode : public AGNode
+class AGOutputNode : public AGNode
 {
 public:
     
-    static void initializeInputNode();
+    static void initializeOutputNode();
     
-    AGInputNode(const AGNodeManifest *mf, const GLvertex3f &pos = GLvertex3f());
-    AGInputNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
+    AGOutputNode(const AGNodeManifest *mf, const GLvertex3f &pos = GLvertex3f());
     
     virtual void update(float t, float dt);
     virtual void render();
-    virtual void renderUI() { }
     
     virtual AGUIObject *hitTest(const GLvertex3f &t);
     
     virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();
-    
-    virtual GLvertex3f relativePositionForOutputPort(int port) const;
     
     virtual AGDocument::Node serialize();
     
@@ -49,4 +45,4 @@ private:
     static GLuint s_geoSize;
 };
 
-#endif /* defined(__Auragraph__AGInputNode__) */
+#endif /* __Auragraph__AGOutputNode__ */
