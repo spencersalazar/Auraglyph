@@ -335,9 +335,10 @@ static AGViewController * g_instance = nil;
     GLvertex3f vert = [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)];
     
     // test slider
-    AGSlider *testSlider = new AGSlider(vert, 1.2);
-    testSlider->init();
-    _objects.push_back(testSlider);
+//    AGSlider *testSlider = new AGSlider(vert, 1.2);
+//    testSlider->init();
+//    testSlider->setSize(GLvertex2f(64, 32));
+//    _objects.push_back(testSlider);
 }
 
 - (void)dealloc

@@ -33,6 +33,8 @@ class AGSlider;
 class AGUINodeEditor : public AGUIObject
 {
 public:
+    virtual ~AGUINodeEditor() { }
+    
     virtual bool doneEditing() = 0;
 };
 
@@ -47,6 +49,7 @@ public:
     static void initializeNodeEditor();
     
     AGUIStandardNodeEditor(AGNode *node);
+    ~AGUIStandardNodeEditor();
     
     virtual void update(float t, float dt);
     virtual void render();

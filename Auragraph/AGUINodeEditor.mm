@@ -109,19 +109,31 @@ m_lastTraceWasRecognized(true)
     
     int numEditPorts = m_node->numEditPorts();
     float rowCount = NODEEDITOR_ROWCOUNT;
+    float rowHeight = s_radius*2.0/rowCount;
     for(int i = 0; i < numEditPorts; i++)
     {
         float v;
         m_node->getEditPortValue(i, v);
         
-        float y = s_radius - s_radius*2.0*(i+2)/rowCount;
+        float y = s_radius-rowHeight*(i+2);
         
-        AGSlider *slider = new AGSlider(position()+GLvertex3f(s_radius*0.1, y + s_radius/rowCount*0.1, 0), v);
+        AGSlider *slider = new AGSlider(position()+GLvertex3f(s_radius/2, y+rowHeight/4, 0), v);
         slider->init();
         slider->setType(AGSlider::CONTINUOUS);
         slider->setScale(AGSlider::EXPONENTIAL);
+        slider->setSize(GLvertex2f(s_radius, rowHeight));
+        slider->onUpdate([i, this] (float value) {
+            m_node->setEditPortValue(i, value);
+        });
         m_editSliders.push_back(slider);
     }
+}
+
+AGUIStandardNodeEditor::~AGUIStandardNodeEditor()
+{
+    for(auto slider : m_editSliders)
+        delete slider;
+    m_editSliders.clear();
 }
 
 GLvertex3f AGUIStandardNodeEditor::position()

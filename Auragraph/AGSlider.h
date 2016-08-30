@@ -29,6 +29,7 @@ public:
     
     virtual GLvertex3f position();
     virtual GLvertex2f size();
+    void setSize(const GLvertex2f &size);
     
     float value() { return m_value; }
     void setValue(float value) { m_value = value; }
@@ -51,7 +52,7 @@ public:
     Type type() { return m_type; }
     void setType(Type type) { m_type = type; }
     
-    void onUpdate(void (^update)(float value));
+    void onUpdate(const std::function<void (float)> &update);
     
 private:
     
@@ -59,6 +60,7 @@ private:
     
     GLvertex3f m_position;
     GLvertex2f m_size;
+    GLvertex2f m_textSize;
     
     double m_value = 0;
     Scale m_scale = LINEAR;
@@ -66,11 +68,15 @@ private:
     
     constexpr const static size_t BUF_SIZE = 32;
     char m_str[BUF_SIZE];
+    
     float m_ytravel = 0;
+    bool m_active = false;
     
     int m_numTouches = 0;
     AGTouchInfo m_firstFinger;
     AGTouchInfo m_lastPosition;
+    
+    std::function<void (float)> m_update;
 };
 
 
