@@ -314,7 +314,7 @@ void AGUIStandardNodeEditor::render()
         
         // accept button
         GLKMatrix4 buttonMV = GLKMatrix4Translate(modelview(), s_radius*1.65, y + s_radius/rowCount, 0);
-        AGGenericShader::instance().setMVPMatrix(buttonMV);
+        AGGenericShader::instance().setModelViewMatrix(buttonMV);
         if(m_hitAccept)
             // stroke
             glDrawArrays(GL_LINE_LOOP, s_buttonBoxOffset, 4);
@@ -324,7 +324,7 @@ void AGUIStandardNodeEditor::render()
         
         // discard button
         buttonMV = GLKMatrix4Translate(modelview(), s_radius*1.65 + s_radius*1.2, y + s_radius/rowCount, 0);
-        AGGenericShader::instance().setMVPMatrix(buttonMV);
+        AGGenericShader::instance().setModelViewMatrix(buttonMV);
         // fill
         if(m_hitDiscard)
             // stroke
