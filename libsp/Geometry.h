@@ -15,6 +15,15 @@
 #import <CoreGraphics/CoreGraphics.h>
 
 
+#ifdef __OBJC__
+#define ENABLE_GLKIT (1)
+#endif // __OBJC__
+
+#if ENABLE_GLKIT
+#import <GLKit/GLKit.h>
+#endif
+
+
 struct GLvertex2f;
 struct GLvertex3f;
 
@@ -53,6 +62,28 @@ struct GLvertex3f
     GLvertex2f xy() const;
     
     GLvertex2f toLatLong() const;
+    
+#if ENABLE_GLKIT
+    
+    GLvertex3f(const GLKVector3 &vec)
+    {
+        x = vec.x;
+        y = vec.y;
+        z = vec.z;
+    }
+    
+    GLvertex3f(const GLKVector4 &vec)
+    {
+        x = vec.x/vec.w;
+        y = vec.y/vec.w;
+        z = vec.z/vec.w;
+    }
+    
+    GLKVector3 asGLKVector3() const { return GLKVector3Make(x, y, z); }
+    GLKVector4 asGLKVector4() const { return GLKVector4Make(x, y, z, 1); }
+    
+#endif // ENABLE_GLKIT
+    
 } __attribute__((aligned(4),packed));
 
 
