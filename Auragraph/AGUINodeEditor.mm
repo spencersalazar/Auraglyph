@@ -356,16 +356,7 @@ void AGUIStandardNodeEditor::render()
         
         GLKMatrix4 valueMV = GLKMatrix4Translate(modelview(), s_radius*0.1, y + s_radius/rowCount*0.1, 0);
         valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
-        //        std::stringstream ss;
-        //        ss << m_currentValue;
-        //        if(m_decimal && floorf(m_currentValue) == m_currentValue)
-        //        {
-        //            ss << "."; // show decimal point if user has drawn it
-        //            // draw extra zeros after decimal
-        //            int decimalZeros = (int)(-1-log10f(m_decimalFactor));
-        //            for(int i = 0; i < decimalZeros; i++)
-        //                ss << "0";
-        //        }
+
         if(m_currentValueString.length() == 0)
             // show a 0 if there is no value yet
             text->render("0", GLcolor4f::white, valueMV, projection());
@@ -406,13 +397,6 @@ void AGUIStandardNodeEditor::render()
 
 AGInteractiveObject *AGUIStandardNodeEditor::hitTest(const GLvertex3f &t)
 {
-    for(auto slider : m_editSliders)
-    {
-        AGInteractiveObject *obj = slider->hitTest(t);
-        if(obj != NULL)
-            return obj;
-    }
-    
     return AGInteractiveObject::hitTest(t);
 }
 
