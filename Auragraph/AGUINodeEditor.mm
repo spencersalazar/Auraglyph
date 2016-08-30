@@ -117,7 +117,7 @@ m_lastTraceWasRecognized(true)
         
         float y = s_radius-rowHeight*(i+2);
         
-        AGSlider *slider = new AGSlider(position()+GLvertex3f(s_radius/2, y+rowHeight/4, 0), v);
+        AGSlider *slider = new AGSlider(GLvertex3f(s_radius/2, y+rowHeight/4, 0), v);
         slider->init();
         slider->setType(AGSlider::CONTINUOUS);
         slider->setScale(AGSlider::EXPONENTIAL);
@@ -126,14 +126,14 @@ m_lastTraceWasRecognized(true)
             m_node->setEditPortValue(i, value);
         });
         m_editSliders.push_back(slider);
+        this->addChild(slider);
     }
 }
 
 AGUIStandardNodeEditor::~AGUIStandardNodeEditor()
 {
-    for(auto slider : m_editSliders)
-        delete slider;
     m_editSliders.clear();
+    // sliders are child objects, so they get deleted automatically by AGRenderObject
 }
 
 GLvertex3f AGUIStandardNodeEditor::position()
@@ -143,10 +143,10 @@ GLvertex3f AGUIStandardNodeEditor::position()
 
 void AGUIStandardNodeEditor::update(float t, float dt)
 {
-    m_modelView = AGNode::globalModelViewMatrix();
-    GLKMatrix4 projection = AGNode::projectionMatrix();
+    m_renderState.modelview = AGNode::globalModelViewMatrix();
+    m_renderState.projection = AGNode::projectionMatrix();
     
-    m_modelView = GLKMatrix4Translate(m_modelView, position().x, position().y, position().z);
+    m_renderState.modelview = GLKMatrix4Translate(m_renderState.modelview, position().x, position().y, position().z);
     
     //    float squeezeHeight = AGStyle::open_squeezeHeight;
     //    float animTimeX = AGStyle::open_animTimeX;
@@ -160,14 +160,10 @@ void AGUIStandardNodeEditor::update(float t, float dt)
     if(m_yScale <= AGStyle::open_squeezeHeight) m_xScale.update(dt);
     if(m_xScale >= 0.99f) m_yScale.update(dt);
     
-    m_modelView = GLKMatrix4Scale(m_modelView,
-                                  m_yScale <= AGStyle::open_squeezeHeight ? (float)m_xScale : 1.0f,
-                                  m_xScale >= 0.99f ? (float)m_yScale : AGStyle::open_squeezeHeight,
-                                  1);
-    
-    m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_modelView), NULL);
-    
-    m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, m_modelView);
+    m_renderState.modelview = GLKMatrix4Scale(m_renderState.modelview,
+                                              m_yScale <= AGStyle::open_squeezeHeight ? (float)m_xScale : 1.0f,
+                                              m_xScale >= 0.99f ? (float)m_yScale : AGStyle::open_squeezeHeight,
+                                              1);
     
     m_currentDrawlineAlpha.update(dt);
     
@@ -195,8 +191,8 @@ void AGUIStandardNodeEditor::render()
     
     AGGenericShader::instance().useProgram();
     
-    AGGenericShader::instance().setMVPMatrix(m_modelViewProjectionMatrix);
-    AGGenericShader::instance().setNormalMatrix(m_normalMatrix);
+    AGGenericShader::instance().setModelViewMatrix(modelview());
+    AGGenericShader::instance().setProjectionMatrix(projection());
     
     //    AGClipShader &shader = AGClipShader::instance();
     //
@@ -223,11 +219,10 @@ void AGUIStandardNodeEditor::render()
     /* draw title */
     
     float rowCount = NODEEDITOR_ROWCOUNT;
-    GLKMatrix4 proj = AGNode::projectionMatrix();
     
-    GLKMatrix4 titleMV = GLKMatrix4Translate(m_modelView, -s_radius*0.9, s_radius - s_radius*2.0/rowCount, 0);
+    GLKMatrix4 titleMV = GLKMatrix4Translate(modelview(), -s_radius*0.9, s_radius - s_radius*2.0/rowCount, 0);
     titleMV = GLKMatrix4Scale(titleMV, 0.61, 0.61, 0.61);
-    text->render(m_title, GLcolor4f::white, titleMV, proj);
+    text->render(m_title, GLcolor4f::white, titleMV, projection());
     
     
     /* draw items */
@@ -255,9 +250,9 @@ void AGUIStandardNodeEditor::render()
             glDisableVertexAttribArray(GLKVertexAttribNormal);
             
             AGGenericShader::instance().useProgram();
-            GLKMatrix4 hitMVP = GLKMatrix4Multiply(proj, GLKMatrix4Translate(m_modelView, 0, y + s_radius/rowCount, 0));
-            AGGenericShader::instance().setMVPMatrix(hitMVP);
-            AGGenericShader::instance().setNormalMatrix(m_normalMatrix);
+            GLKMatrix4 hitMV = GLKMatrix4Translate(modelview(), 0, y + s_radius/rowCount, 0);
+            AGGenericShader::instance().setModelViewMatrix(hitMV);
+            AGGenericShader::instance().setProjectionMatrix(projection());
             
             // fill
             glDrawArrays(GL_TRIANGLE_FAN, s_innerboxOffset, 4);
@@ -267,9 +262,9 @@ void AGUIStandardNodeEditor::render()
             valueColor = GLcolor4f(1-valueColor.r, 1-valueColor.g, 1-valueColor.b, 1);
         }
         
-        GLKMatrix4 nameMV = GLKMatrix4Translate(m_modelView, -s_radius*0.9, y + s_radius/rowCount*0.1, 0);
+        GLKMatrix4 nameMV = GLKMatrix4Translate(modelview(), -s_radius*0.9, y + s_radius/rowCount*0.1, 0);
         nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
-        text->render(m_node->editPortInfo(i).name, nameColor, nameMV, proj);
+        text->render(m_node->editPortInfo(i).name, nameColor, nameMV, projection());
         
 //        GLKMatrix4 valueMV = GLKMatrix4Translate(m_modelView, s_radius*0.1, y + s_radius/rowCount*0.1, 0);
 //        valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
@@ -300,11 +295,11 @@ void AGUIStandardNodeEditor::render()
         float y = s_radius - s_radius*2.0*(m_editingPort+2)/rowCount;
         
         AGGenericShader::instance().useProgram();
-        AGGenericShader::instance().setNormalMatrix(m_normalMatrix);
+        AGGenericShader::instance().setProjectionMatrix(projection());
         
         // bounding box
-        GLKMatrix4 bbMVP = GLKMatrix4Multiply(proj, GLKMatrix4Translate(m_modelView, 0, y - s_radius + s_radius*2/rowCount, 0));
-        AGGenericShader::instance().setMVPMatrix(bbMVP);
+        GLKMatrix4 bbMV = GLKMatrix4Translate(modelview(), 0, y - s_radius + s_radius*2/rowCount, 0);
+        AGGenericShader::instance().setModelViewMatrix(bbMV);
         
         // stroke
         glDrawArrays(GL_LINE_LOOP, s_itemEditBoxOffset, 4);
@@ -318,8 +313,8 @@ void AGUIStandardNodeEditor::render()
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
         
         // accept button
-        GLKMatrix4 buttonMVP = GLKMatrix4Multiply(proj, GLKMatrix4Translate(m_modelView, s_radius*1.65, y + s_radius/rowCount, 0));
-        AGGenericShader::instance().setMVPMatrix(buttonMVP);
+        GLKMatrix4 buttonMV = GLKMatrix4Translate(modelview(), s_radius*1.65, y + s_radius/rowCount, 0);
+        AGGenericShader::instance().setMVPMatrix(buttonMV);
         if(m_hitAccept)
             // stroke
             glDrawArrays(GL_LINE_LOOP, s_buttonBoxOffset, 4);
@@ -328,8 +323,8 @@ void AGUIStandardNodeEditor::render()
             glDrawArrays(GL_TRIANGLE_FAN, s_buttonBoxOffset, 4);
         
         // discard button
-        buttonMVP = GLKMatrix4Multiply(proj, GLKMatrix4Translate(m_modelView, s_radius*1.65 + s_radius*1.2, y + s_radius/rowCount, 0));
-        AGGenericShader::instance().setMVPMatrix(buttonMVP);
+        buttonMV = GLKMatrix4Translate(modelview(), s_radius*1.65 + s_radius*1.2, y + s_radius/rowCount, 0);
+        AGGenericShader::instance().setMVPMatrix(buttonMV);
         // fill
         if(m_hitDiscard)
             // stroke
@@ -339,27 +334,27 @@ void AGUIStandardNodeEditor::render()
             glDrawArrays(GL_TRIANGLE_FAN, s_buttonBoxOffset, 4);
         
         // text
-        GLKMatrix4 textMV = GLKMatrix4Translate(m_modelView, s_radius*1.2, y + s_radius/rowCount*0.1, 0);
+        GLKMatrix4 textMV = GLKMatrix4Translate(modelview(), s_radius*1.2, y + s_radius/rowCount*0.1, 0);
         textMV = GLKMatrix4Scale(textMV, 0.5, 0.5, 0.5);
         if(m_hitAccept)
-            text->render("Accept", GLcolor4f::white, textMV, proj);
+            text->render("Accept", GLcolor4f::white, textMV, projection());
         else
-            text->render("Accept", GLcolor4f::black, textMV, proj);
+            text->render("Accept", GLcolor4f::black, textMV, projection());
         
         
-        textMV = GLKMatrix4Translate(m_modelView, s_radius*1.2 + s_radius*1.2, y + s_radius/rowCount*0.1, 0);
+        textMV = GLKMatrix4Translate(modelview(), s_radius*1.2 + s_radius*1.2, y + s_radius/rowCount*0.1, 0);
         textMV = GLKMatrix4Scale(textMV, 0.5, 0.5, 0.5);
         if(m_hitDiscard)
-            text->render("Discard", GLcolor4f::white, textMV, proj);
+            text->render("Discard", GLcolor4f::white, textMV, projection());
         else
-            text->render("Discard", GLcolor4f::black, textMV, proj);
+            text->render("Discard", GLcolor4f::black, textMV, projection());
         
         // text name + value
-        GLKMatrix4 nameMV = GLKMatrix4Translate(m_modelView, -s_radius*0.9, y + s_radius/rowCount*0.1, 0);
+        GLKMatrix4 nameMV = GLKMatrix4Translate(modelview(), -s_radius*0.9, y + s_radius/rowCount*0.1, 0);
         nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
-        text->render(m_node->editPortInfo(m_editingPort).name, GLcolor4f::white, nameMV, proj);
+        text->render(m_node->editPortInfo(m_editingPort).name, GLcolor4f::white, nameMV, projection());
         
-        GLKMatrix4 valueMV = GLKMatrix4Translate(m_modelView, s_radius*0.1, y + s_radius/rowCount*0.1, 0);
+        GLKMatrix4 valueMV = GLKMatrix4Translate(modelview(), s_radius*0.1, y + s_radius/rowCount*0.1, 0);
         valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
         //        std::stringstream ss;
         //        ss << m_currentValue;
@@ -373,13 +368,13 @@ void AGUIStandardNodeEditor::render()
         //        }
         if(m_currentValueString.length() == 0)
             // show a 0 if there is no value yet
-            text->render("0", GLcolor4f::white, valueMV, proj);
+            text->render("0", GLcolor4f::white, valueMV, projection());
         else
-            text->render(m_currentValueString, GLcolor4f::white, valueMV, proj);
+            text->render(m_currentValueString, GLcolor4f::white, valueMV, projection());
         
         AGGenericShader::instance().useProgram();
-        AGGenericShader::instance().setNormalMatrix(m_normalMatrix);
-        AGGenericShader::instance().setMVPMatrix(GLKMatrix4Multiply(proj, AGNode::globalModelViewMatrix()));
+        AGGenericShader::instance().setProjectionMatrix(projection());
+        AGGenericShader::instance().setModelViewMatrix(AGNode::globalModelViewMatrix());
         
         // draw traces
         for(std::list<std::vector<GLvertex3f> >::iterator i = m_drawline.begin(); i != m_drawline.end(); i++)

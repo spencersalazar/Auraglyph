@@ -92,9 +92,9 @@ private:
     
     bool m_doneEditing;
     
-    GLKMatrix4 m_modelViewProjectionMatrix;
-    GLKMatrix4 m_modelView;
-    GLKMatrix3 m_normalMatrix;
+//    GLKMatrix4 m_modelViewProjectionMatrix;
+//    GLKMatrix4 m_modelView;
+//    GLKMatrix3 m_normalMatrix;
     
     lincurvef m_xScale;
     lincurvef m_yScale;

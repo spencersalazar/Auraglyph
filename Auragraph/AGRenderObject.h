@@ -111,6 +111,9 @@ public:
     list<AGRenderInfo *> m_renderList;
     AGRenderState m_renderState;
     
+    const GLKMatrix4 &modelview() const { return m_renderState.modelview; }
+    const GLKMatrix4 &projection() const { return m_renderState.projection; }
+    
     // override to force fixed-position rendering (e.g. ignores camera movement)
     virtual bool renderFixed() { return false; }
     

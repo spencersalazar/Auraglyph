@@ -37,8 +37,19 @@ void AGSlider::render()
 {
     TexFont *text = AGStyle::standardFont64();
     
-    GLKMatrix4 modelView = globalModelViewMatrix();
-    GLKMatrix4 proj = projectionMatrix();
+    GLKMatrix4 modelView;
+    GLKMatrix4 proj;
+
+    if(parent())
+    {
+        modelView = parent()->m_renderState.modelview;
+        proj = parent()->m_renderState.projection;
+    }
+    else
+    {
+        modelView = globalModelViewMatrix();
+        proj = projectionMatrix();
+    }
     
     GLcolor4f valueColor = GLcolor4f::white;
     valueColor.a = m_renderState.alpha;
