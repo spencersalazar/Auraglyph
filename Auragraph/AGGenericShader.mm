@@ -57,6 +57,8 @@ void AGGenericShader::setModelViewMatrix(const GLKMatrix4 &mv)
 {
     m_mv = mv;
     glUniformMatrix4fv(m_uniformMVPMatrix, 1, 0, GLKMatrix4Multiply(m_proj, m_mv).m);
+    
+    setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_mv), NULL));
 }
 
 void AGGenericShader::setMVPMatrix(const GLKMatrix4 &mvpm)
