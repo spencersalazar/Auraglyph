@@ -211,7 +211,6 @@ void AGAudioNode::allocatePortBuffers()
     if(numInputPorts() > 0)
     {
         m_inputPortBuffer = new float*[numInputPorts()];
-        m_controlPortBuffer = new AGControl *[numInputPorts()];
         for(int i = 0; i < numInputPorts(); i++)
         {
             if(m_manifest->inputPortInfo()[i].canConnect)
@@ -223,8 +222,6 @@ void AGAudioNode::allocatePortBuffers()
             {
                 m_inputPortBuffer[i] = NULL;
             }
-            
-            m_controlPortBuffer[i] = NULL;
         }
     }
     else
@@ -534,8 +531,8 @@ void AGAudioSineWaveNode::renderAudio(sampletime t, float *input, float *output,
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
     
-    if(m_controlPortBuffer[0] != NULL) m_controlPortBuffer[0]->mapTo(m_freq);
-    if(m_controlPortBuffer[1] != NULL) m_controlPortBuffer[1]->mapTo(m_gain);
+    if(m_controlPortBuffer[0]) m_controlPortBuffer[0].mapTo(m_freq);
+    if(m_controlPortBuffer[1]) m_controlPortBuffer[1].mapTo(m_gain);
     
     for(int i = 0; i < nFrames; i++)
     {
@@ -643,8 +640,8 @@ void AGAudioSquareWaveNode::renderAudio(sampletime t, float *input, float *outpu
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
     
-    if(m_controlPortBuffer[0] != NULL) m_controlPortBuffer[0]->mapTo(m_freq);
-    if(m_controlPortBuffer[1] != NULL) m_controlPortBuffer[1]->mapTo(m_gain);
+    if(m_controlPortBuffer[0]) m_controlPortBuffer[0].mapTo(m_freq);
+    if(m_controlPortBuffer[1]) m_controlPortBuffer[1].mapTo(m_gain);
     
     for(int i = 0; i < nFrames; i++)
     {
@@ -751,8 +748,8 @@ void AGAudioSawtoothWaveNode::renderAudio(sampletime t, float *input, float *out
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
     
-    if(m_controlPortBuffer[0] != NULL) m_controlPortBuffer[0]->mapTo(m_freq);
-    if(m_controlPortBuffer[1] != NULL) m_controlPortBuffer[1]->mapTo(m_gain);
+    if(m_controlPortBuffer[0]) m_controlPortBuffer[0].mapTo(m_freq);
+    if(m_controlPortBuffer[1]) m_controlPortBuffer[1].mapTo(m_gain);
     
     for(int i = 0; i < nFrames; i++)
     {
@@ -860,8 +857,8 @@ void AGAudioTriangleWaveNode::renderAudio(sampletime t, float *input, float *out
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
     
-    if(m_controlPortBuffer[0] != NULL) m_controlPortBuffer[0]->mapTo(m_freq);
-    if(m_controlPortBuffer[1] != NULL) m_controlPortBuffer[1]->mapTo(m_gain);
+    if(m_controlPortBuffer[0]) m_controlPortBuffer[0].mapTo(m_freq);
+    if(m_controlPortBuffer[1]) m_controlPortBuffer[1].mapTo(m_gain);
     
     for(int i = 0; i < nFrames; i++)
     {
@@ -951,7 +948,7 @@ public:
     virtual void getEditPortValue(int port, float &value) const override;
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
-    virtual void receiveControl(int port, AGControl *control) override;
+    virtual void receiveControl(int port, const AGControl &control) override;
     
 private:
     float m_prevTrigger;
@@ -1013,14 +1010,14 @@ void AGAudioADSRNode::renderAudio(sampletime t, float *input, float *output, int
     m_lastTime = t;
 }
 
-void AGAudioADSRNode::receiveControl(int port, AGControl *control)
+void AGAudioADSRNode::receiveControl(int port, const AGControl &control)
 {
     switch(port)
     {
         case 2:
         {
             int fire = 0;
-            control->mapTo(fire);
+            control.mapTo(fire);
             if(fire)
                 m_adsr.keyOn();
             else

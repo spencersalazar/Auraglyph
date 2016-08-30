@@ -96,15 +96,8 @@ void AGNode::init()
     m_activation = 0;
     
     if(numInputPorts() > 0)
-    {
-        m_controlPortBuffer = new AGControl *[numInputPorts()];
-        for(int i = 0; i < numInputPorts(); i++)
-            m_controlPortBuffer[i] = NULL;
-    }
-    else
-    {
-        m_controlPortBuffer = NULL;
-    }
+        m_controlPortBuffer.resize(numInputPorts());
+//        m_controlPortBuffer = new AGControl[numInputPorts()];
     
     setDefaultPortValues();
 }
@@ -401,28 +394,29 @@ void AGNode::touchUp(const GLvertex3f &t)
     trash.deactivate();
 }
 
-void AGNode::pushControl(int port, AGControl *control)
+void AGNode::pushControl(int port, const AGControl &control)
 {
     this->lock();
     
     float f;
-    control->mapTo(f);
+    control.mapTo(f);
     dbgprint_off("pushControl %i:%f from %0lx\n", port, f, (unsigned long)this);
     
-    itmap(m_outbound, ^(AGConnection *&conn) {
+    for(AGConnection *conn : m_outbound)
+    {
         if(conn->rate() == RATE_CONTROL)
         {
             conn->dst()->receiveControl_internal(conn->dstPort(), control);
             conn->controlActivate();
         }
-    });
+    };
     
     this->unlock();
 }
 
-void AGNode::receiveControl_internal(int port, AGControl *control)
+void AGNode::receiveControl_internal(int port, const AGControl &control)
 {
-    m_controlPortBuffer[port] = control;
+    m_controlPortBuffer[port] = AGControl(control);
     receiveControl(port, control);
 }
 

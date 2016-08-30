@@ -217,12 +217,12 @@ public:
         m_interval = 0.5;
         m_lastFire = 0;
         m_lastTime = 0;
-        m_control.v = 0;
+        m_value = false;
         
         m_timer = AGTimer(m_interval, ^(AGTimer *) {
             // flip
-            m_control.v = !m_control.v;
-            pushControl(0, &m_control);
+            m_value = !m_value;
+            pushControl(0, AGControl(m_value));
         });
     }
     
@@ -233,7 +233,7 @@ public:
 private:
     AGTimer m_timer;
     
-    AGIntControl m_control;
+    bool m_value;
     float m_lastTime;
     float m_lastFire;
     float m_interval;

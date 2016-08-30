@@ -42,12 +42,11 @@ public:
     
     virtual AGUINodeEditor *createCustomEditor() override;
     
-    virtual void receiveControl(int port, AGControl *control) override;
+    virtual void receiveControl(int port, const AGControl &control) override;
     
 private:
     static AGNodeInfo *s_nodeInfo;
     
-    AGFloatControl m_control;
     sampletime m_lastTime;
     
     list<float> m_items;

@@ -660,18 +660,18 @@ AGUINodeEditor *AGControlArrayNode::createCustomEditor()
     return editor;
 }
 
-void AGControlArrayNode::receiveControl(int port, AGControl *control)
+void AGControlArrayNode::receiveControl(int port, const AGControl &control)
 {
     switch(port)
     {
         case 0: // iterate
             if(m_items.size())
             {
-                m_control.v = *m_position;
+                pushControl(0, AGControl(*m_position));
+                
                 m_position++;
                 if(m_position == m_items.end()) m_position = m_items.begin();
                 
-                pushControl(0, &m_control);
             }
             break;
     }

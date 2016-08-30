@@ -102,8 +102,8 @@ public:
     virtual void update(float t, float dt);
     virtual void render();
     // control
-    void pushControl(int port, AGControl *control);
-    virtual void receiveControl(int port, AGControl *control) { }
+    void pushControl(int port, const AGControl &control);
+    virtual void receiveControl(int port, const AGControl &control) { }
 
     enum HitTestResult
     {
@@ -179,7 +179,7 @@ private:
     static bool s_initNode;
     
     Mutex m_mutex;
-    virtual void receiveControl_internal(int port, AGControl *control);
+    virtual void receiveControl_internal(int port, const AGControl &control);
     
 protected:
     static float s_portRadius;
@@ -212,7 +212,7 @@ protected:
     std::list<AGConnection *> m_inbound;
     std::list<AGConnection *> m_outbound;
     
-    AGControl ** m_controlPortBuffer;
+    vector<AGControl> m_controlPortBuffer;
     
 //    AGPortInfo * m_inputPortInfo;
     
