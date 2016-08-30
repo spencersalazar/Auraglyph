@@ -111,7 +111,9 @@ void AGSlider::touchMove(const AGTouchInfo &t)
     
     if(m_scale == EXPONENTIAL)
     {
-        float log = log10f(fabs(m_value))-0.1;
+        float val = m_value;
+        if(val == 0) val = 0.1;
+        float log = log10f(fabs(val))-0.1;
         int oom = (int)floorf(log);
         inc = powf(10, oom-1);
         
