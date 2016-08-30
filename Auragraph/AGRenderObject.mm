@@ -282,12 +282,13 @@ AGInteractiveObject *AGInteractiveObject::hitTest(const GLvertex3f &t)
 {
     // first check children
     AGInteractiveObject *hit;
-    for(list<AGRenderObject *>::iterator i = m_children.begin(); i != m_children.end(); i++)
+    GLvertex3f tt = GLKMatrix4MultiplyVector4(globalModelViewMatrix(), GLKMatrix4MultiplyVector4(GLKMatrix4Invert(modelview(), NULL), t.asGLKVector4()));
+    for(AGRenderObject *renderObject : m_children)
     {
-        AGInteractiveObject *object = dynamic_cast<AGInteractiveObject *>(*i);
+        AGInteractiveObject *object = dynamic_cast<AGInteractiveObject *>(renderObject);
         if(object)
         {
-            hit = object->hitTest(t);
+            hit = object->hitTest(tt);
             if(hit != NULL)
                 return hit;
         }
