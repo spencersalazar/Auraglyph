@@ -540,15 +540,18 @@ void AGAudioSineWaveNode::renderAudio(sampletime t, float *input, float *output,
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
     
-    if(m_controlPortBuffer[0]) m_controlPortBuffer[0].mapTo(m_freq);
-    if(m_controlPortBuffer[1]) m_controlPortBuffer[1].mapTo(m_gain);
+    float gain = m_gain;
+    float freq = m_freq;
+    
+    if(m_controlPortBuffer[0]) freq += m_controlPortBuffer[0].getFloat();
+    if(m_controlPortBuffer[1]) gain += m_controlPortBuffer[1].getFloat();
     
     for(int i = 0; i < nFrames; i++)
     {
-        m_outputBuffer[i] = sinf(m_phase*2.0*M_PI) * (m_gain + m_inputPortBuffer[1][i]);
+        m_outputBuffer[i] = sinf(m_phase*2.0*M_PI) * (gain + m_inputPortBuffer[1][i]);
         output[i] += m_outputBuffer[i];
         
-        m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
+        m_phase += (freq + m_inputPortBuffer[0][i])/sampleRate();
         while(m_phase >= 1.0) m_phase -= 1.0;
     }
     
@@ -649,15 +652,18 @@ void AGAudioSquareWaveNode::renderAudio(sampletime t, float *input, float *outpu
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
     
-    if(m_controlPortBuffer[0]) m_controlPortBuffer[0].mapTo(m_freq);
-    if(m_controlPortBuffer[1]) m_controlPortBuffer[1].mapTo(m_gain);
+    float gain = m_gain;
+    float freq = m_freq;
+    
+    if(m_controlPortBuffer[0]) freq += m_controlPortBuffer[0].getFloat();
+    if(m_controlPortBuffer[1]) gain += m_controlPortBuffer[1].getFloat();
     
     for(int i = 0; i < nFrames; i++)
     {
-        m_outputBuffer[i] = (m_phase < 0.5 ? 1 : -1) * (m_gain + m_inputPortBuffer[1][i]);
+        m_outputBuffer[i] = (m_phase < 0.5 ? 1 : -1) * (gain + m_inputPortBuffer[1][i]);
         output[i] += m_outputBuffer[i];
 
-        m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
+        m_phase += (freq + m_inputPortBuffer[0][i])/sampleRate();
         while(m_phase >= 1.0) m_phase -= 1.0;
     }
     
@@ -757,15 +763,18 @@ void AGAudioSawtoothWaveNode::renderAudio(sampletime t, float *input, float *out
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
     
-    if(m_controlPortBuffer[0]) m_controlPortBuffer[0].mapTo(m_freq);
-    if(m_controlPortBuffer[1]) m_controlPortBuffer[1].mapTo(m_gain);
+    float gain = m_gain;
+    float freq = m_freq;
+    
+    if(m_controlPortBuffer[0]) freq += m_controlPortBuffer[0].getFloat();
+    if(m_controlPortBuffer[1]) gain += m_controlPortBuffer[1].getFloat();
     
     for(int i = 0; i < nFrames; i++)
     {
-        m_outputBuffer[i] = ((1-m_phase)*2-1)  * (m_gain + m_inputPortBuffer[1][i]);
+        m_outputBuffer[i] = ((1-m_phase)*2-1)  * (gain + m_inputPortBuffer[1][i]);
         output[i] += m_outputBuffer[i];
         
-        m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
+        m_phase += (freq + m_inputPortBuffer[0][i])/sampleRate();
         while(m_phase >= 1.0) m_phase -= 1.0;
     }
     
@@ -866,15 +875,18 @@ void AGAudioTriangleWaveNode::renderAudio(sampletime t, float *input, float *out
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
     
-    if(m_controlPortBuffer[0]) m_controlPortBuffer[0].mapTo(m_freq);
-    if(m_controlPortBuffer[1]) m_controlPortBuffer[1].mapTo(m_gain);
+    float gain = m_gain;
+    float freq = m_freq;
     
+    if(m_controlPortBuffer[0]) freq += m_controlPortBuffer[0].getFloat();
+    if(m_controlPortBuffer[1]) gain += m_controlPortBuffer[1].getFloat();
+
     for(int i = 0; i < nFrames; i++)
     {
         if(m_phase < 0.5)
-            m_outputBuffer[i] = ((1-m_phase*2)*2-1) * (m_gain + m_inputPortBuffer[1][i]);
+            m_outputBuffer[i] = ((1-m_phase*2)*2-1) * (gain + m_inputPortBuffer[1][i]);
         else
-            m_outputBuffer[i] = ((m_phase-0.5)*4-1) * (m_gain + m_inputPortBuffer[1][i]);
+            m_outputBuffer[i] = ((m_phase-0.5)*4-1) * (gain + m_inputPortBuffer[1][i]);
         output[i] += m_outputBuffer[i];
 
         m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
@@ -1229,7 +1241,14 @@ void AGAudioFilterFQNode<Filter>::setEditPortValue(int port, float value)
         case 2: m_Q = value; set = true; break;
     }
     
-    if(set) m_filter->set(m_freq, m_Q);
+    if(set)
+    {
+        if(m_Q < 0.001) m_Q = 0.001;
+        if(m_freq < 0) m_freq = 0;
+        if(m_freq > sampleRate()/2) m_freq = sampleRate()/2;
+        
+        m_filter->set(m_freq, m_Q);
+    }
 }
 
 template<class Filter>
@@ -1256,7 +1275,13 @@ void AGAudioFilterFQNode<Filter>::renderAudio(sampletime t, float *input, float 
         float Q = m_Q + m_inputPortBuffer[3][i];
         
         if(freq != m_freq || m_Q != Q)
+        {
+            if(Q < 0.001) Q = 0.001;
+            if(freq < 0) freq = 0;
+            if(freq > sampleRate()/2) freq = sampleRate()/2;
+            
             m_filter->set(freq, Q);
+        }
         
         m_outputBuffer[i] = gain * m_filter->tick(m_inputPortBuffer[0][i]);
         output[i] += m_outputBuffer[i];
