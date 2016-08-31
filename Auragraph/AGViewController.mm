@@ -208,7 +208,6 @@ static AGViewController * g_instance = nil;
                 uuid2node[node->uuid()] = node;
                 [self addNode:node];
                 
-                
                 if(node->type() == "Output")
                 {
                     AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
@@ -232,8 +231,10 @@ static AGViewController * g_instance = nil;
     else
     {
         // just create output node by itself
-        AGNode *output = AGNodeManager::audioNodeManager().createNodeOfType("Output", GLvertex3f(0, 0, 0));
-        _nodes.push_back(output);
+        AGNode *node = AGNodeManager::audioNodeManager().createNodeOfType("Output", GLvertex3f(0, 0, 0));
+        AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
+        outputNode->setOutputDestination([AGAudioManager instance].masterOut);
+        _nodes.push_back(node);
     }
     
     g_instance = self;
