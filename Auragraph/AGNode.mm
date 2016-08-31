@@ -407,7 +407,7 @@ void AGNode::pushControl(int port, const AGControl &control)
         if(conn->rate() == RATE_CONTROL)
         {
             conn->dst()->receiveControl_internal(conn->dstPort(), control);
-            conn->controlActivate();
+            conn->controlActivate(control);
         }
     };
     

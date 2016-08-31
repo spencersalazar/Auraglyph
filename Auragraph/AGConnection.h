@@ -12,6 +12,7 @@
 #include "AGRenderObject.h"
 #include "AGUserInterface.h"
 #include "AGDocument.h"
+#include "AGControl.h"
 
 #include "Geometry.h"
 #include "Animation.h"
@@ -57,7 +58,7 @@ public:
     
     AGRate rate() { return m_rate; }
     
-    void controlActivate();
+    void controlActivate(const AGControl &ctrl);
     
     void renderOut();
     
@@ -87,6 +88,7 @@ private:
     slew<GLvertex3f> m_stretchPoint;
     
     bool m_active;
+    AGControl m_activation;
 //    powcurvef m_alpha;
     
     const AGRate m_rate;
