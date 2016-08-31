@@ -413,12 +413,21 @@ public:
     
     void renderAudio(sampletime t, float *input, float *output, int nFrames) override
     {
+        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        // pullInputPorts(t, nFrames);
+
         if(m_inputSize && m_input)
         {
+            float *_outputBuffer = m_outputBuffer.buffer;
             float *_input = m_input;
             int mn = min(nFrames, m_inputSize);
             for(int i = 0; i < mn; i++)
-                *output++ += (*_input++)*m_gain;
+            {
+                *_outputBuffer = (*_input++)*m_gain;
+                *output++ += *_outputBuffer++;
+            }
+            
+            m_lastTime = t;
         }
     }
     
