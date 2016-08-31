@@ -13,13 +13,18 @@
 
 using namespace std;
 
+typedef bool AGBit;
+typedef int AGInt;
+typedef float AGFloat;
+typedef string AGString;
+
 class AGControl
 {
 public:
     AGControl() : type(TYPE_NONE) { }
-    AGControl(bool b) : type(TYPE_BIT), vbit(b) { }
-    AGControl(int i) : type(TYPE_INT), vint(i) { }
-    AGControl(float f) : type(TYPE_FLOAT), vfloat(f) { }
+    AGControl(AGBit b) : type(TYPE_BIT), vbit(b) { }
+    AGControl(AGInt i) : type(TYPE_INT), vint(i) { }
+    AGControl(AGFloat f) : type(TYPE_FLOAT), vfloat(f) { }
 
     AGControl(const AGControl &ctl) : type(ctl.type)
     {
@@ -106,50 +111,59 @@ public:
     
     union
     {
-        bool vbit;
-        int vint;
-        float vfloat;
-        string vstring;
+        AGBit vbit;
+        AGInt vint;
+        AGFloat vfloat;
+        AGString vstring;
     };
     
-    void mapTo(float &v) const
+    
+    AGFloat getFloat() const
     {
         switch(type)
         {
             case TYPE_NONE:
             case TYPE_STRING:
-                v = 0;
+                return 0;
+            case TYPE_BIT:
+                return vbit ? 1.0f : 0.0f;
+            case TYPE_INT:
+                return (float) vint;
+            case TYPE_FLOAT:
+                return vfloat;
+        }
+        
+        return 0;
+    }
+    
+    void mapTo(AGFloat &v) const
+    {
+        v = getFloat();
+    }
+    
+    AGInt getInt() const
+    {
+        switch(type)
+        {
+            case TYPE_NONE:
+            case TYPE_STRING:
+                return 0;
                 break;
             case TYPE_BIT:
-                v = vbit;
+                return vbit ? 1 : 0;
                 break;
             case TYPE_INT:
-                v = (float) vint;
+                return vint;
                 break;
             case TYPE_FLOAT:
-                v = vfloat;
+                return (int) vfloat;
                 break;
         }
     }
     
-    void mapTo(int &v) const
+    void mapTo(AGInt &v) const
     {
-        switch(type)
-        {
-            case TYPE_NONE:
-            case TYPE_STRING:
-                v = 0;
-                break;
-            case TYPE_BIT:
-                v = vbit;
-                break;
-            case TYPE_INT:
-                v = vint;
-                break;
-            case TYPE_FLOAT:
-                v = (int) vfloat;
-                break;
-        }
+        v = getInt();
     }
     
     operator bool()
