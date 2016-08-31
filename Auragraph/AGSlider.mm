@@ -163,6 +163,18 @@ void AGSlider::setSize(const GLvertex2f &size)
     m_size = size;
 }
 
+void AGSlider::setValue(float value)
+{
+    m_value = value;
+    _updateValue(m_value);
+}
+
+void AGSlider::setType(Type type)
+{
+    m_type = type;
+    _updateValue(m_value);
+}
+
 void AGSlider::onUpdate(const std::function<void (float)> &update)
 {
     m_update = update;

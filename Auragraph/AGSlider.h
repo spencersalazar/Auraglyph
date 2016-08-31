@@ -31,8 +31,8 @@ public:
     virtual GLvertex2f size();
     void setSize(const GLvertex2f &size);
     
-    float value() { return m_value; }
-    void setValue(float value) { m_value = value; }
+    float value() const { return m_value; }
+    void setValue(float value);
 
     enum Scale
     {
@@ -40,7 +40,7 @@ public:
         EXPONENTIAL
     };
     
-    Scale scale() { return m_scale; }
+    Scale scale() const { return m_scale; }
     void setScale(Scale scale) { m_scale = scale; }
     
     enum Type
@@ -49,8 +49,8 @@ public:
         CONTINUOUS
     };
     
-    Type type() { return m_type; }
-    void setType(Type type) { m_type = type; }
+    Type type() const { return m_type; }
+    void setType(Type type);
     
     void onUpdate(const std::function<void (float)> &update);
     
