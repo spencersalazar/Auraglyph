@@ -172,14 +172,12 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
     
     /* draw bounding box */
     
-    AGClipShader &shader = AGClipShader::instance();
+    AGGenericShader &shader = AGGenericShader::instance();
     
     shader.useProgram();
     
     shader.setMVPMatrix(m_modelViewProjectionMatrix);
     shader.setNormalMatrix(m_normalMatrix);
-    shader.setClip(GLvertex2f(-m_radius, -m_radius), GLvertex2f(m_radius*2, m_radius*2));
-    shader.setLocalMatrix(GLKMatrix4Identity);
     
     glDisableVertexAttribArray(GLKVertexAttribColor);
     glDisableVertexAttribArray(GLKVertexAttribNormal);
@@ -189,15 +187,15 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
     
-    // stroke
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
-    glLineWidth(4.0f);
-    glDrawArrays(GL_LINE_LOOP, 0, m_geoSize);
-    
     // fill
     GLcolor4f blackA = GLcolor4f(0, 0, 0, 0.75);
     glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &blackA);
     glDrawArrays(GL_TRIANGLE_FAN, 0, m_geoSize);
+    
+    // stroke
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+    glLineWidth(4.0f);
+    glDrawArrays(GL_LINE_LOOP, 0, m_geoSize);
     
     /* draw scroll bar */
     int nTypes = m_manager.nodeTypes().size();
@@ -219,6 +217,15 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
     glDrawArrays(GL_LINES, 0, 2);
     
     /* draw node types */
+    
+    AGClipShader &clipShader = AGClipShader::instance();
+    
+    clipShader.useProgram();
+    
+    clipShader.setMVPMatrix(m_modelViewProjectionMatrix);
+    clipShader.setNormalMatrix(m_normalMatrix);
+    clipShader.setClip(GLvertex2f(-m_radius, -m_radius), GLvertex2f(m_radius*2, m_radius*2));
+    clipShader.setLocalMatrix(GLKMatrix4Identity);
     
     //    GLvertex3f startPos(-m_radius/2, -m_radius/2, 0);
     GLvertex3f startPos(-m_radius/2, m_radius/2 + m_verticalScrollPos, 0);
