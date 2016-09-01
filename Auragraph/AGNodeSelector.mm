@@ -246,15 +246,15 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
         {
             // draw highlight background
             GLKMatrix4 hitModelView = GLKMatrix4Scale(modelView, 0.5, 0.5, 0.5);
-            shader.setLocalMatrix(GLKMatrix4Scale(GLKMatrix4MakeTranslation(iconPos.x, iconPos.y, iconPos.z), 0.5, 0.5, 0.5));
+            clipShader.setLocalMatrix(GLKMatrix4Scale(GLKMatrix4MakeTranslation(iconPos.x, iconPos.y, iconPos.z), 0.5, 0.5, 0.5));
             GLKMatrix3 hitNormal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
             GLKMatrix4 hitMvp = GLKMatrix4Multiply(projection, hitModelView);
             
             GLcolor4f whiteA = GLcolor4f::white;
             whiteA.a = 0.75;
             
-            shader.setMVPMatrix(hitMvp);
-            shader.setNormalMatrix(hitNormal);
+            clipShader.setMVPMatrix(hitMvp);
+            clipShader.setNormalMatrix(hitNormal);
             glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &whiteA);
             
             glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, m_geo);
@@ -268,9 +268,9 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
             glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &GLcolor4f::white);
         }
         
-        shader.setMVPMatrix(mvp);
-        shader.setNormalMatrix(normal);
-        shader.setLocalMatrix(GLKMatrix4MakeTranslation(iconPos.x, iconPos.y, iconPos.z));
+        clipShader.setMVPMatrix(mvp);
+        clipShader.setNormalMatrix(normal);
+        clipShader.setLocalMatrix(GLKMatrix4MakeTranslation(iconPos.x, iconPos.y, iconPos.z));
         
         glLineWidth(4.0f);
         m_manager.renderNodeTypeIcon(m_manager.nodeTypes()[i]);
