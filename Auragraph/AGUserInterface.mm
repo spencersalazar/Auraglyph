@@ -70,7 +70,12 @@ void AGUIButton::render()
     float textScale = 0.5;
     
     GLKMatrix4 proj = AGNode::projectionMatrix();
-    GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::globalModelViewMatrix(), m_pos.x, m_pos.y, m_pos.z);
+    GLKMatrix4 modelView;
+    if(renderFixed())
+        modelView = AGNode::fixedModelViewMatrix();
+    else
+        modelView = AGNode::globalModelViewMatrix();
+    modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
     GLKMatrix4 textMV = GLKMatrix4Translate(modelView, m_size.x/2-text->width(m_title)*textScale/2, m_size.y/2-text->height()*textScale/2*1.25, 0);
 //    GLKMatrix4 textMV = modelView;
     textMV = GLKMatrix4Scale(textMV, textScale, textScale, textScale);
@@ -190,7 +195,6 @@ void AGUITextButton::render()
         
         shader.setProjectionMatrix(proj);
         shader.setModelViewMatrix(modelView);
-        shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));
         
         glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
         glEnableVertexAttribArray(GLKVertexAttribPosition);

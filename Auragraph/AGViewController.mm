@@ -265,13 +265,11 @@ static AGViewController * g_instance = nil;
     float saveButtonWidth = _font->width("  Save  ")*1.05;
     float saveButtonHeight = _font->height()*1.05;
     AGUIButton *saveButton = new AGUIButton("Save",
-                                            GLvertex3f(0, -aboutButtonHeight/2, 0) + [self worldCoordinateForScreenCoordinate:CGPointMake(10, 10)],
+                                            [self worldCoordinateForScreenCoordinate:CGPointMake(10, 20+saveButtonHeight/2)],
                                             GLvertex2f(saveButtonWidth, saveButtonHeight));
     saveButton->init();
+    saveButton->setRenderFixed(true);
     saveButton->setAction(^{
-        //        AGViewController *strongSelf = weakSelf;
-        //        if(strongSelf)
-        //            strongSelf->_defaultDocument.save();
         [weakSelf save];
     });
     [self addTopLevelObject:saveButton];
@@ -525,7 +523,7 @@ static AGViewController * g_instance = nil;
 //    else
 //        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f)/aspect, aspect, 0.1f, 100.0f);
     
-    GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z-10.0f);
+    GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z-10.1f);
     if(_interfaceMode == INTERFACEMODE_USER)
         baseModelViewMatrix = GLKMatrix4Translate(baseModelViewMatrix, 0, 0, -(G_RATIO-1));
     
@@ -537,7 +535,7 @@ static AGViewController * g_instance = nil;
     
     _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
     _modelView = modelViewMatrix;
-    _fixedModelView = GLKMatrix4MakeTranslation(0, 0, -10.0f);
+    _fixedModelView = GLKMatrix4MakeTranslation(0, 0, -10.1f);
     _projection = projectionMatrix;
     
     AGRenderObject::setProjectionMatrix(projectionMatrix);
