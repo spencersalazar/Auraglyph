@@ -1244,7 +1244,7 @@ void AGAudioFilterFQNode<Filter>::setEditPortValue(int port, float value)
     if(set)
     {
         if(m_Q < 0.001) m_Q = 0.001;
-        if(m_freq < 0) m_freq = 0;
+        if(m_freq < 0) m_freq = 1;
         if(m_freq > sampleRate()/2) m_freq = sampleRate()/2;
         
         m_filter->set(m_freq, m_Q);
@@ -1283,7 +1283,14 @@ void AGAudioFilterFQNode<Filter>::renderAudio(sampletime t, float *input, float 
             m_filter->set(freq, Q);
         }
         
-        m_outputBuffer[i] = gain * m_filter->tick(m_inputPortBuffer[0][i]);
+        float samp = gain * m_filter->tick(m_inputPortBuffer[0][i]);
+        if(samp == NAN || samp == INFINITY || samp == -INFINITY)
+        {
+            samp = 0;
+            m_filter->clear();
+        }
+        
+        m_outputBuffer[i] = samp;
         output[i] += m_outputBuffer[i];
         
         m_inputPortBuffer[0][i] = 0; // input
