@@ -13,6 +13,7 @@
 #import "AGGenericShader.h"
 #import "AGAudioManager.h"
 #import "ADSR.h"
+#import "DelayA.h"
 #import "spstl.h"
 #import "AGAudioCapturer.h"
 #import "AGCompositeNode.h"
@@ -1304,6 +1305,159 @@ void AGAudioFilterFQNode<Filter>::renderAudio(sampletime t, float *input, float 
 
 
 //------------------------------------------------------------------------------
+// ### AGAudioFeedbackNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioFeedbackNode
+
+class AGAudioFeedbackNode : public AGAudioNode
+{
+public:
+    class Manifest : public AGStandardNodeManifest<AGAudioFeedbackNode>
+    {
+    public:
+        string _type() const override { return "Feedback"; };
+        string _name() const override { return "Feedback"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { "input", true, false },
+                { "delay", true, true },
+                { "feedback", true, true },
+                { "gain", true, true },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { "gain", true, true },
+                { "delay", true, true },
+                { "feedback", true, true },
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x * 0.66;
+            
+            // ADSR shape
+            vector<GLvertex3f> iconGeo = {
+                {       -radius_x, radius_y, 0 }, {       -radius_x, -radius_y, 0 },
+                { -radius_x*0.33f, radius_y, 0 }, { -radius_x*0.33f, -radius_y, 0 },
+                {  radius_x*0.33f, radius_y, 0 }, {  radius_x*0.33f, -radius_y, 0 },
+                {       -radius_x,        0, 0 }, {        radius_x,         0, 0 },
+            };
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINES; };
+    };
+    
+     using AGAudioNode::AGAudioNode;
+    
+    virtual void init() override
+    {
+        AGAudioNode::init();
+        
+        stk::Stk::setSampleRate(sampleRate());
+    }
+    
+    virtual void init(const AGDocument::Node &docNode) override
+    {
+        AGAudioNode::init(docNode);
+        
+        stk::Stk::setSampleRate(sampleRate());
+    }
+    
+    void setDefaultPortValues() override
+    {
+        m_delayLength = 1;
+        m_feedbackGain = 0;
+        _setDelay(m_delayLength, true);
+    }
+    
+    virtual int numOutputPorts() const override { return 1; }
+    
+    virtual void setEditPortValue(int port, float value) override
+    {
+        bool set = false;
+        switch(port)
+        {
+            case 0: m_gain = value; break;
+            case 1: m_delayLength = value; set = true; break;
+            case 2: m_feedbackGain = value; break;
+        }
+        
+        if(set) _setDelay(m_delayLength);
+    }
+    
+    virtual void getEditPortValue(int port, float &value) const override
+    {
+        switch(port)
+        {
+            case 0: value = m_gain; break;
+            case 1: value = m_delayLength; break;
+            case 2: value = m_feedbackGain; break;
+        }
+    }
+    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
+    {
+        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        pullInputPorts(t, nFrames);
+        
+        float delayLength = m_delayLength;
+        float feedbackGain = m_feedbackGain;
+        float gain = m_gain;
+        
+        // extra semicolon to trick stupid xcode into formatting correctly
+        if(m_controlPortBuffer[1]) delayLength += m_controlPortBuffer[1].getFloat();;
+        if(m_controlPortBuffer[2]) feedbackGain += m_controlPortBuffer[2].getFloat();;
+        if(m_controlPortBuffer[3]) gain += m_controlPortBuffer[3].getFloat();;
+        
+        for(int i = 0; i < nFrames; i++)
+        {
+            float input = m_inputPortBuffer[0][i];
+            delayLength += m_inputPortBuffer[1][i];
+            feedbackGain += m_inputPortBuffer[2][i];
+            gain += m_inputPortBuffer[3][i];
+            
+            _setDelay(delayLength);
+            
+            float delaySamp = m_delay.tick(input + m_delay.lastOut()*feedbackGain);
+            m_outputBuffer[i] = (input + delaySamp)*gain;
+            output[i] += m_outputBuffer[i];
+        }
+    }
+    
+private:
+    
+    void _setDelay(float delaySecs, bool force=false)
+    {
+        if(force || m_currentDelayLength != delaySecs)
+        {
+            float delaySamps = delaySecs*sampleRate();
+            if(delaySamps > m_delay.getMaximumDelay())
+            {
+                int _max = m_delay.getMaximumDelay();
+                while(delaySamps > _max)
+                    _max *= 2;
+                m_delay.setMaximumDelay(_max);
+            }
+            m_delay.setDelay(delaySamps);
+            m_currentDelayLength = delaySecs;
+        }
+    }
+    
+    float m_delayLength, m_currentDelayLength, m_feedbackGain;
+    stk::DelayA m_delay;
+};
+
+
+//------------------------------------------------------------------------------
 // ### AGNodeManager ###
 //------------------------------------------------------------------------------
 #pragma mark - AGNodeManager
@@ -1324,6 +1478,7 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RLPF>::ManifestLPF);
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RHPF>::ManifestHPF);
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2BPF>::ManifestBPF);
+        nodeTypes.push_back(new AGAudioFeedbackNode::Manifest);
         nodeTypes.push_back(new AGAudioInputNode::Manifest);
         nodeTypes.push_back(new AGAudioOutputNode::Manifest);
         nodeTypes.push_back(new AGAudioCompositeNode::Manifest);
