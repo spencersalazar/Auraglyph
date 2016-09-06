@@ -31,6 +31,9 @@ public:
     static const float open_animTimeX;
     static const float open_animTimeY;
     
+    static const GLcolor4f foregroundColor;
+    static const GLcolor4f backgroundColor;
+    
     constexpr static const float oldGlobalScale = 5000.0f;
 };
 

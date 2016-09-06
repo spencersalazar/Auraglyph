@@ -615,7 +615,7 @@ static AGViewController * g_instance = nil;
     if(AG_ENABLE_FBO)
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     else
-        glClearColor(12.0f/255.0f, 16.0f/255.0f, 33.0f/255.0f, 1.0f);
+        glClearColor(AGStyle::backgroundColor.r, AGStyle::backgroundColor.g, AGStyle::backgroundColor.b, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     [self renderEdit];
@@ -629,7 +629,7 @@ static AGViewController * g_instance = nil;
 //        [((GLKView *) self.view) bindDrawable];
         
         //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClearColor(12.0f/255.0f, 16.0f/255.0f, 33.0f/255.0f, 1.0f);
+        glClearColor(AGStyle::backgroundColor.r, AGStyle::backgroundColor.g, AGStyle::backgroundColor.b, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         glBindVertexArrayOES(0);
