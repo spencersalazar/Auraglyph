@@ -18,6 +18,9 @@ typedef int AGInt;
 typedef float AGFloat;
 typedef string AGString;
 
+const static float AGFloat_Min = FLT_MIN;
+const static float AGFloat_Max = FLT_MAX;
+
 class AGControl
 {
 public:

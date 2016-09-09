@@ -420,6 +420,21 @@ void AGNode::receiveControl_internal(int port, const AGControl &control)
     receiveControl(port, control);
 }
 
+float AGNode::validateEditPortValue(int port, float _new) const
+{
+    const AGPortInfo &info = editPortInfo(port);
+    
+    if(info.min != info.max)
+    {
+        if(_new < info.min)
+            return info.min;
+        if(_new > info.max)
+            return info.max;
+    }
+    
+    return _new;
+}
+
 AGDocument::Node AGNode::serialize()
 {
     assert(type().length());

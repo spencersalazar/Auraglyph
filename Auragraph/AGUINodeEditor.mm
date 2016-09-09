@@ -110,21 +110,28 @@ m_lastTraceWasRecognized(true)
     int numEditPorts = m_node->numEditPorts();
     float rowCount = NODEEDITOR_ROWCOUNT;
     float rowHeight = s_radius*2.0/rowCount;
-    for(int i = 0; i < numEditPorts; i++)
+    for(int port = 0; port < numEditPorts; port++)
     {
-        float v;
-        m_node->getEditPortValue(i, v);
+        AGNode *node = m_node;
         
-        float y = s_radius-rowHeight*(i+2);
+        float v;
+        m_node->getEditPortValue(port, v);
+        
+        float y = s_radius-rowHeight*(port+2);
         
         AGSlider *slider = new AGSlider(GLvertex3f(s_radius/2, y+rowHeight/4, 0), v);
         slider->init();
+        
         slider->setType(AGSlider::CONTINUOUS);
         slider->setScale(AGSlider::EXPONENTIAL);
         slider->setSize(GLvertex2f(s_radius, rowHeight));
-        slider->onUpdate([i, this] (float value) {
-            m_node->setEditPortValue(i, value);
+        slider->onUpdate([port, node] (float value) {
+            node->setEditPortValue(port, value);
         });
+        slider->setValidator([port, node] (float _old, float _new) {
+            return node->validateEditPortValue(port, _new);
+        });
+        
         m_editSliders.push_back(slider);
         this->addChild(slider);
     }

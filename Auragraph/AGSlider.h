@@ -54,6 +54,12 @@ public:
     
     void onUpdate(const std::function<void (float)> &update);
     
+    /* 
+     Validator function takes two arguments (old and new value) and returns
+     validated value. 
+     */
+    void setValidator(const std::function<float (float, float)> &validator);
+    
 private:
     
     void _updateValue(float value);
@@ -77,6 +83,7 @@ private:
     AGTouchInfo m_lastPosition;
     
     std::function<void (float)> m_update;
+    std::function<float (float, float)> m_validator;
 };
 
 

@@ -18,7 +18,8 @@
 #define AGSlider_HitOffset (10)
 
 AGSlider::AGSlider(GLvertex3f position, float value)
-: m_value(value), m_position(position), m_update([](float){})
+: m_value(value), m_position(position), m_update([](float){}),
+m_validator([](float _old, float _new) { return _new; })
 {
     _updateValue(value);
 }
@@ -180,11 +181,16 @@ void AGSlider::onUpdate(const std::function<void (float)> &update)
     m_update = update;
 }
 
+void AGSlider::setValidator(const std::function<float (float, float)> &validator)
+{
+    m_validator = validator;
+}
+
 void AGSlider::_updateValue(float value)
 {
     TexFont *text = AGStyle::standardFont64();
 
-    m_value = value;
+    m_value = m_validator(m_value, value);
     
     if(m_type == CONTINUOUS)
         snprintf(m_str, BUF_SIZE-1, "%.3lG", m_value);

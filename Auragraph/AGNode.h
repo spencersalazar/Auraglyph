@@ -43,6 +43,9 @@ struct AGPortInfo
     bool canConnect; // can create connection btw this port and another port
     bool canEdit; // should this port appear in the node's editor window
     
+    float min;
+    float max;
+    
     // TODO: min, max, units label, rate, etc.
 };
 
@@ -136,8 +139,8 @@ public:
     virtual int numOutputPorts() const { return 1; }
     virtual int numInputPorts() const { if(m_manifest) return m_manifest->inputPortInfo().size(); else return 0; }
     virtual int numEditPorts() const { if(m_manifest) return m_manifest->editPortInfo().size(); else return 0; }
-    virtual const AGPortInfo &inputPortInfo(int port) { return m_manifest->inputPortInfo()[port]; }
-    virtual const AGPortInfo &editPortInfo(int port) { return m_manifest->editPortInfo()[port]; }
+    virtual const AGPortInfo &inputPortInfo(int port) const { return m_manifest->inputPortInfo()[port]; }
+    virtual const AGPortInfo &editPortInfo(int port) const { return m_manifest->editPortInfo()[port]; }
     
     virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const { return m_pos + relativePositionForInboundConnection(connection); }
     virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const { return m_pos + relativePositionForOutboundConnection(connection); }
@@ -155,7 +158,9 @@ public:
     virtual void setEditPortValue(int port, float value) { }
     /* overridden by final subclass */
     virtual void getEditPortValue(int port, float &value) const { }
-    
+    /* can be overridden by final subclass */
+    virtual float validateEditPortValue(int port, float _new) const;
+
     void loadEditPortValues(const AGDocument::Node &docNode);
     
     /* overridden by final subclass (if needed) */
