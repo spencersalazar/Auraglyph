@@ -1170,7 +1170,7 @@ public:
             return {
                 { "gain", true, true },
                 { "freq", true, true },
-                { "Q", true, true },
+                { "Q", true, true, 0.001, 1000 },
             };
         };
         
@@ -1222,6 +1222,22 @@ public:
     
     virtual void setEditPortValue(int port, float value) override;
     virtual void getEditPortValue(int port, float &value) const override;
+    
+    float validateEditPortValue(int port, float value) const override
+    {
+        if(port == 1)
+        {
+            // freq
+            if(value < 0)
+                return 0;
+            if(value > sampleRate()/2)
+                return sampleRate()/2;
+        }
+        else
+        {
+            AGNode::validateEditPortValue(port, value);
+        }
+    }
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
     
@@ -1332,8 +1348,8 @@ public:
         {
             return {
                 { "gain", true, true },
-                { "delay", true, true },
-                { "feedback", true, true },
+                { "delay", true, true, 0, AGFloat_Max },
+                { "feedback", true, true, 0, 1 },
             };
         };
         
