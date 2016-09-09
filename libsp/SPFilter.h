@@ -323,6 +323,8 @@ public:
     virtual void set(float freq, float Q) = 0;
     virtual float tick(float input) = 0;
     
+    void clear() { m_filter.m_y1 = 0; m_filter.m_y2 = 0; set(m_filter.m_freq, m_filter.m_Q); }
+    
 protected:
     Butterworth2Filter m_filter;
 };

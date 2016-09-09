@@ -47,7 +47,7 @@ public:
         m_renderList.push_back(&m_boxOuterInfo);
         
         // undo button
-        float buttonSize = 0.0062f;
+        float buttonSize = 0.0062f*AGStyle::oldGlobalScale;
         AGRenderInfoV m_undoInfo;
         m_undoInfo.geoType = GL_LINES;
         m_undoInfo.numVertex = 6;
@@ -61,6 +61,7 @@ public:
         AGUIButton *undoButton = new AGUIIconButton(GLvertex3f(-size.x, size.y, 0)*0.5f+GLvertex3f(buttonSize/2, -buttonSize/2, 0),
                                                     GLvertex2f(buttonSize, buttonSize),
                                                     m_undoInfo);
+        undoButton->init();
         undoButton->setAction(^{ undo(); });
         addChild(undoButton);
         
@@ -76,6 +77,7 @@ public:
         AGUIButton *cancelButton = new AGUIIconButton(size*0.5f+GLvertex3f(-buttonSize/2 -buttonSize*1.25, -buttonSize/2, 0),
                                                       GLvertex2f(buttonSize, buttonSize),
                                                       m_cancelInfo);
+        cancelButton->init();
         cancelButton->setAction(^{ cancel(); });
         addChild(cancelButton);
         
@@ -90,6 +92,7 @@ public:
         AGUIButton *okButton = new AGUIIconButton(size*0.5f+GLvertex3f(-buttonSize/2, -buttonSize/2, 0),
                                                   GLvertex2f(buttonSize, buttonSize),
                                                   m_okInfo);
+        okButton->init();
         okButton->setAction(^{ accept(); });
         addChild(okButton);
         
@@ -368,6 +371,7 @@ public:
                 // open number editor
                 GLvertex2f size(m_size.x*2, m_size.y*G_RATIO);
                 m_numInput = new AGUINumberInput(m_arrayEditor->position()+m_pos, size);
+                m_numInput->init();
                 m_numInput->setAction(^(bool accepted, float value) { numberInputAction(accepted, value); });
                 addChild(m_numInput);
             }
@@ -436,8 +440,8 @@ public:
     m_node(node),
     m_doneEditing(false)
     {
-        m_width = 0.08f;
-        m_height = 0.02f;
+        m_width = 0.08f*AGStyle::oldGlobalScale;
+        m_height = 0.02f*AGStyle::oldGlobalScale;
         
         GeoGen::makeRect(m_boxGeo, m_width, m_height);
         
@@ -463,6 +467,7 @@ public:
                 
                 int len = m_node->m_items.size();
                 m_ghostElement = new Element(this, GLvertex3f(-m_width/3.0f + m_width/3.0*len, 0.0f, 0.0f), GLvertex2f(m_width/3.0f, m_height));
+                m_ghostElement->init();
                 m_ghostElement->setValueRef(NULL);
                 m_ghostElement->setEditAction(m_editAction);
                 addChild(m_ghostElement);
@@ -473,6 +478,7 @@ public:
         for(list<float>::iterator i = m_node->m_items.begin(); i != m_node->m_items.end(); i++)
         {
             Element *e = new Element(this, GLvertex3f(-m_width/3.0f + m_width/3.0*j, 0.0f, 0.0f), GLvertex2f(m_width/3.0f, m_height));
+            e->init();
             e->setValueRef(&*i);
             e->setEditAction(m_editAction);
             addChild(e);
@@ -480,6 +486,7 @@ public:
         }
         
         m_ghostElement = new Element(this, GLvertex3f(-m_width/3.0f + m_width/3.0*j, 0.0f, 0.0f), GLvertex2f(m_width/3.0f, m_height));
+        m_ghostElement->init();
         m_ghostElement->setValueRef(NULL);
         m_ghostElement->setEditAction(m_editAction);
         addChild(m_ghostElement);
@@ -587,46 +594,46 @@ private:
 //------------------------------------------------------------------------------
 #pragma mark - AGControlArrayNode
 
-AGNodeInfo *AGControlArrayNode::s_nodeInfo = NULL;
-
-void AGControlArrayNode::initialize()
+string AGControlArrayNode::Manifest::_type() const { return "Array"; };
+string AGControlArrayNode::Manifest::_name() const { return "Array"; };
+    
+vector<AGPortInfo> AGControlArrayNode::Manifest::_inputPortInfo() const
 {
-    s_nodeInfo = new AGNodeInfo;
-    
-    s_nodeInfo->type = "Array";
-    
-    float radius = 0.0057;
+    return {
+        { "iterate", true, true }
+    };
+};
+
+vector<AGPortInfo> AGControlArrayNode::Manifest::_editPortInfo() const { return { }; };
+
+vector<GLvertex3f> AGControlArrayNode::Manifest::_iconGeo() const
+{
+    float radius = 0.0057*AGStyle::oldGlobalScale;
     int numBoxes = 5;
     float boxWidth = radius*2.0f/((float)numBoxes);
     float boxHeight = radius/2.5f;
-    s_nodeInfo->iconGeoSize = (numBoxes*3+1)*2;
-    s_nodeInfo->iconGeoType = GL_LINES;
-    s_nodeInfo->iconGeo = new GLvertex3f[s_nodeInfo->iconGeoSize];
+    int GEO_SIZE = (numBoxes*3+1)*2;
+    vector<GLvertex3f> iconGeo = vector<GLvertex3f>(GEO_SIZE);
     
     for(int i = 0; i < numBoxes; i++)
     {
-        s_nodeInfo->iconGeo[i*6+0] = GLvertex3f(-radius+i*boxWidth,  boxHeight, 0);
-        s_nodeInfo->iconGeo[i*6+1] = GLvertex3f(-radius+i*boxWidth, -boxHeight, 0);
-        s_nodeInfo->iconGeo[i*6+2] = GLvertex3f(-radius+i*boxWidth,  boxHeight, 0);
-        s_nodeInfo->iconGeo[i*6+3] = GLvertex3f(-radius+i*boxWidth+boxWidth,  boxHeight, 0);
-        s_nodeInfo->iconGeo[i*6+4] = GLvertex3f(-radius+i*boxWidth, -boxHeight, 0);
-        s_nodeInfo->iconGeo[i*6+5] = GLvertex3f(-radius+i*boxWidth+boxWidth, -boxHeight, 0);
+        iconGeo[i*6+0] = GLvertex3f(-radius+i*boxWidth,  boxHeight, 0);
+        iconGeo[i*6+1] = GLvertex3f(-radius+i*boxWidth, -boxHeight, 0);
+        iconGeo[i*6+2] = GLvertex3f(-radius+i*boxWidth,  boxHeight, 0);
+        iconGeo[i*6+3] = GLvertex3f(-radius+i*boxWidth+boxWidth,  boxHeight, 0);
+        iconGeo[i*6+4] = GLvertex3f(-radius+i*boxWidth, -boxHeight, 0);
+        iconGeo[i*6+5] = GLvertex3f(-radius+i*boxWidth+boxWidth, -boxHeight, 0);
     }
     
-    s_nodeInfo->iconGeo[numBoxes*6+0] = GLvertex3f(-radius+numBoxes*boxWidth, -boxHeight, 0);
-    s_nodeInfo->iconGeo[numBoxes*6+1] = GLvertex3f(-radius+numBoxes*boxWidth,  boxHeight, 0);
+    iconGeo[numBoxes*6+0] = GLvertex3f(-radius+numBoxes*boxWidth, -boxHeight, 0);
+    iconGeo[numBoxes*6+1] = GLvertex3f(-radius+numBoxes*boxWidth,  boxHeight, 0);
     
-    s_nodeInfo->inputPortInfo.push_back({ "iterate", true, true });
-}
+    return iconGeo;
+};
 
-AGControlArrayNode::AGControlArrayNode(const GLvertex3f &pos) :
-AGControlNode(pos, s_nodeInfo)
-{
-    m_lastTime = 0;
-    m_position = m_items.begin();
-}
+GLuint AGControlArrayNode::Manifest::_iconGeoType() const { return GL_LINES; };
 
-AGControlArrayNode::AGControlArrayNode(const AGDocument::Node &docNode) : AGControlNode(docNode, s_nodeInfo)
+void AGControlArrayNode::setDefaultPortValues()
 {
     m_lastTime = 0;
     m_position = m_items.begin();
@@ -648,38 +655,25 @@ void AGControlArrayNode::getEditPortValue(int port, float &value) const
 
 AGUINodeEditor *AGControlArrayNode::createCustomEditor()
 {
-    return new AGUIArrayEditor(this);
+    AGUIArrayEditor *editor = new AGUIArrayEditor(this);
+    editor->init();
+    return editor;
 }
 
-void AGControlArrayNode::receiveControl(int port, AGControl *control)
+void AGControlArrayNode::receiveControl(int port, const AGControl &control)
 {
     switch(port)
     {
         case 0: // iterate
             if(m_items.size())
             {
-                m_control.v = *m_position;
+                pushControl(0, AGControl(*m_position));
+                
                 m_position++;
                 if(m_position == m_items.end()) m_position = m_items.begin();
                 
-                pushControl(0, &m_control);
             }
             break;
     }
-}
-
-void AGControlArrayNode::renderIcon()
-{
-    // render icon
-    glBindVertexArrayOES(0);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_nodeInfo->iconGeo);
-    
-    glLineWidth(2.0);
-    glDrawArrays(s_nodeInfo->iconGeoType, 0, s_nodeInfo->iconGeoSize);
-}
-
-AGNode *AGControlArrayNode::create(const GLvertex3f &pos)
-{
-    return new AGControlArrayNode(pos);
 }
 

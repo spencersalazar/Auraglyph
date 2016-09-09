@@ -42,7 +42,7 @@ m_action(nil)
     m_geo[2] = GLvertex3f(size.x, size.y, 0);
     m_geo[3] = GLvertex3f(0, size.y, 0);
     
-    float stripeInset = 0.0002;
+    float stripeInset = 0.0002*AGStyle::oldGlobalScale;
     
     m_geo[4] = GLvertex3f(stripeInset, stripeInset, 0);
     m_geo[5] = GLvertex3f(size.x-stripeInset, stripeInset, 0);
@@ -70,7 +70,12 @@ void AGUIButton::render()
     float textScale = 0.5;
     
     GLKMatrix4 proj = AGNode::projectionMatrix();
-    GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::globalModelViewMatrix(), m_pos.x, m_pos.y, m_pos.z);
+    GLKMatrix4 modelView;
+    if(renderFixed())
+        modelView = AGNode::fixedModelViewMatrix();
+    else
+        modelView = AGNode::globalModelViewMatrix();
+    modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
     GLKMatrix4 textMV = GLKMatrix4Translate(modelView, m_size.x/2-text->width(m_title)*textScale/2, m_size.y/2-text->height()*textScale/2*1.25, 0);
 //    GLKMatrix4 textMV = modelView;
     textMV = GLKMatrix4Scale(textMV, textScale, textScale, textScale);
@@ -190,7 +195,6 @@ void AGUITextButton::render()
         
         shader.setProjectionMatrix(proj);
         shader.setModelViewMatrix(modelView);
-        shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));
         
         glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
         glEnableVertexAttribArray(GLKVertexAttribPosition);
@@ -349,7 +353,7 @@ AGUITrash::AGUITrash()
 {
     m_tex = loadOrRetrieveTexture(@"trash.png");
     
-    m_radius = 0.005;
+    m_radius = 0.005*AGStyle::oldGlobalScale;
     m_geo[0] = GLvertex3f(-m_radius, -m_radius, 0);
     m_geo[1] = GLvertex3f( m_radius, -m_radius, 0);
     m_geo[2] = GLvertex3f(-m_radius,  m_radius, 0);
@@ -473,6 +477,11 @@ void AGUITrace::addPoint(const GLvertex3f &v)
     m_traceGeo.push_back(v);
     m_renderInfo.numVertex = m_traceGeo.size();
     m_renderInfo.geo = m_traceGeo.data();
+}
+
+const vector<GLvertex3f> AGUITrace::points() const
+{
+    return m_traceGeo;
 }
 
 

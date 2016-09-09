@@ -9,10 +9,13 @@
 #include "AGNodeSelector.h"
 #include "AGAudioNode.h"
 #include "AGControlNode.h"
+#include "AGInputNode.h"
+#include "AGOutputNode.h"
+#include "AGControlNode.h"
 #include "AGStyle.h"
 #include "AGGenericShader.h"
 
-static const float AGNODESELECTOR_RADIUS = 0.02;
+static const float AGNODESELECTOR_RADIUS = 0.02*AGStyle::oldGlobalScale;
 
 
 template<class NodeType, class ManagerType>
@@ -64,22 +67,30 @@ private:
 
 AGUIMetaNodeSelector *AGUIMetaNodeSelector::audioNodeSelector(const GLvertex3f &pos)
 {
-    return new AGUINodeSelector<AGAudioNode, AGAudioNodeManager>(AGAudioNodeManager::instance(), pos);
+    AGUIMetaNodeSelector *nodeSelector = new AGUINodeSelector<AGAudioNode, AGNodeManager>(AGNodeManager::audioNodeManager(), pos);
+    nodeSelector->init();
+    return nodeSelector;
 }
 
 AGUIMetaNodeSelector *AGUIMetaNodeSelector::controlNodeSelector(const GLvertex3f &pos)
 {
-    return new AGUINodeSelector<AGControlNode, AGControlNodeManager>(AGControlNodeManager::instance(), pos);
+    AGUIMetaNodeSelector *nodeSelector = new AGUINodeSelector<AGControlNode, AGNodeManager>(AGNodeManager::controlNodeManager(), pos);
+    nodeSelector->init();
+    return nodeSelector;
 }
 
 AGUIMetaNodeSelector *AGUIMetaNodeSelector::inputNodeSelector(const GLvertex3f &pos)
 {
-    return new AGUINodeSelector<AGInputNode, AGNodeManager>(AGNodeManager::inputNodeManager(), pos);
+    AGUIMetaNodeSelector *nodeSelector = new AGUINodeSelector<AGInputNode, AGNodeManager>(AGNodeManager::inputNodeManager(), pos);
+    nodeSelector->init();
+    return nodeSelector;
 }
 
 AGUIMetaNodeSelector *AGUIMetaNodeSelector::outputNodeSelector(const GLvertex3f &pos)
 {
-    return new AGUINodeSelector<AGOutputNode, AGNodeManager>(AGNodeManager::outputNodeManager(), pos);
+    AGUIMetaNodeSelector *nodeSelector = new AGUINodeSelector<AGOutputNode, AGNodeManager>(AGNodeManager::outputNodeManager(), pos);
+    nodeSelector->init();
+    return nodeSelector;
 }
 
 
@@ -92,11 +103,13 @@ template<class NodeType, class ManagerType>
 AGUINodeSelector<NodeType, ManagerType>::AGUINodeSelector(const ManagerType &manager, const GLvertex3f &pos) :
 AGUIMetaNodeSelector(pos),
 m_pos(pos),
-m_node(new NodeType(pos)),
+m_node(new NodeType(AGNodeManifest::defaultManifest(), pos)),
 m_hit(-1),
 m_done(false),
 m_manager(manager)
 {
+    m_node->init();
+    
     m_geoSize = 4;
     
     m_radius = AGNODESELECTOR_RADIUS;
@@ -120,6 +133,7 @@ m_manager(manager)
 template<class NodeType, class ManagerType>
 AGUINodeSelector<NodeType, ManagerType>::~AGUINodeSelector()
 {
+    dbgprint_off("AGUINodeSelector::~AGUINodeSelector()");
     SAFE_DELETE(m_node);
 }
 
@@ -158,14 +172,12 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
     
     /* draw bounding box */
     
-    AGClipShader &shader = AGClipShader::instance();
+    AGGenericShader &shader = AGGenericShader::instance();
     
     shader.useProgram();
     
     shader.setMVPMatrix(m_modelViewProjectionMatrix);
     shader.setNormalMatrix(m_normalMatrix);
-    shader.setClip(GLvertex2f(-m_radius, -m_radius), GLvertex2f(m_radius*2, m_radius*2));
-    shader.setLocalMatrix(GLKMatrix4Identity);
     
     glDisableVertexAttribArray(GLKVertexAttribColor);
     glDisableVertexAttribArray(GLKVertexAttribNormal);
@@ -175,15 +187,15 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
     
-    // stroke
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
-    glLineWidth(4.0f);
-    glDrawArrays(GL_LINE_LOOP, 0, m_geoSize);
-    
     // fill
     GLcolor4f blackA = GLcolor4f(0, 0, 0, 0.75);
     glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &blackA);
     glDrawArrays(GL_TRIANGLE_FAN, 0, m_geoSize);
+    
+    // stroke
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+    glLineWidth(4.0f);
+    glDrawArrays(GL_LINE_LOOP, 0, m_geoSize);
     
     /* draw scroll bar */
     int nTypes = m_manager.nodeTypes().size();
@@ -206,6 +218,15 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
     
     /* draw node types */
     
+    AGClipShader &clipShader = AGClipShader::instance();
+    
+    clipShader.useProgram();
+    
+    clipShader.setMVPMatrix(m_modelViewProjectionMatrix);
+    clipShader.setNormalMatrix(m_normalMatrix);
+    clipShader.setClip(GLvertex2f(-m_radius, -m_radius), GLvertex2f(m_radius*2, m_radius*2));
+    clipShader.setLocalMatrix(GLKMatrix4Identity);
+    
     //    GLvertex3f startPos(-m_radius/2, -m_radius/2, 0);
     GLvertex3f startPos(-m_radius/2, m_radius/2 + m_verticalScrollPos, 0);
     GLvertex3f xInc(m_radius, 0, 0);
@@ -225,15 +246,15 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
         {
             // draw highlight background
             GLKMatrix4 hitModelView = GLKMatrix4Scale(modelView, 0.5, 0.5, 0.5);
-            shader.setLocalMatrix(GLKMatrix4Scale(GLKMatrix4MakeTranslation(iconPos.x, iconPos.y, iconPos.z), 0.5, 0.5, 0.5));
+            clipShader.setLocalMatrix(GLKMatrix4Scale(GLKMatrix4MakeTranslation(iconPos.x, iconPos.y, iconPos.z), 0.5, 0.5, 0.5));
             GLKMatrix3 hitNormal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
             GLKMatrix4 hitMvp = GLKMatrix4Multiply(projection, hitModelView);
             
             GLcolor4f whiteA = GLcolor4f::white;
             whiteA.a = 0.75;
             
-            shader.setMVPMatrix(hitMvp);
-            shader.setNormalMatrix(hitNormal);
+            clipShader.setMVPMatrix(hitMvp);
+            clipShader.setNormalMatrix(hitNormal);
             glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &whiteA);
             
             glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, m_geo);
@@ -247,9 +268,9 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
             glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &GLcolor4f::white);
         }
         
-        shader.setMVPMatrix(mvp);
-        shader.setNormalMatrix(normal);
-        shader.setLocalMatrix(GLKMatrix4MakeTranslation(iconPos.x, iconPos.y, iconPos.z));
+        clipShader.setMVPMatrix(mvp);
+        clipShader.setNormalMatrix(normal);
+        clipShader.setLocalMatrix(GLKMatrix4MakeTranslation(iconPos.x, iconPos.y, iconPos.z));
         
         glLineWidth(4.0f);
         m_manager.renderNodeTypeIcon(m_manager.nodeTypes()[i]);

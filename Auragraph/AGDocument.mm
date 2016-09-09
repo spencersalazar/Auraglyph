@@ -113,6 +113,36 @@ void AGDocument::load(const string &title)
                     }
                 }
                 
+                if([dict objectForKey:@"inbound"])
+                {
+                    for(NSDictionary *conn in dict[@"inbound"])
+                    {
+                        Connection c;
+                        
+                        c.uuid = [conn[@"uuid"] stlString];
+                        c.srcUuid = [conn[@"src"] stlString];
+                        c.dstUuid = n.uuid;
+                        c.dstPort = [conn[@"dstPort"] intValue];
+                        
+                        m_connections[c.uuid] = c;
+                    }
+                }
+                
+                if([dict objectForKey:@"outbound"])
+                {
+                    for(NSDictionary *conn in dict[@"outbound"])
+                    {
+                        Connection c;
+                        
+                        c.uuid = [conn[@"uuid"] stlString];
+                        c.srcUuid = n.uuid;
+                        c.dstUuid = [conn[@"dst"] stlString];
+                        c.dstPort = [conn[@"dstPort"] intValue];
+                        
+                        m_connections[c.uuid] = c;
+                    }
+                }
+                
                 m_nodes[n.uuid] = n;
             }
             else if([object isEqualToString:@"connection"])
@@ -120,9 +150,9 @@ void AGDocument::load(const string &title)
                 Connection c;
                 
                 c.uuid = [key stlString];
-                c.srcUuid = [dict[@"source"] stlString];
-                c.dstUuid = [dict[@"destination"] stlString];
-                c.dstPort = [dict[@"port"] intValue];
+                c.srcUuid = [dict[@"src"] stlString];
+                c.dstUuid = [dict[@"dst"] stlString];
+                c.dstPort = [dict[@"dstPort"] intValue];
                 
                 m_connections[c.uuid] = c;
             }
@@ -150,12 +180,14 @@ void AGDocument::save()
 {
     NSMutableDictionary *doc = [NSMutableDictionary new];
     
-    itmap(m_nodes, ^(pair<const string, Node> &val){
+    for(const pair<const string, Node> &val : m_nodes)
+    {
         const string &uuid = val.first;
-        Node &node = val.second;
+        const Node &node = val.second;
         
         NSMutableDictionary *params = [NSMutableDictionary new];
-        itmap(node.params, ^(pair<const string, ParamValue> &param){
+        for(const pair<const string, ParamValue> &param : node.params)
+        {
             NSString *serialType = nil;
             id serialValue = nil;
             
@@ -167,55 +199,70 @@ void AGDocument::save()
                 case ParamValue::FLOAT_ARRAY:
                      serialType = @"array_float";
                     serialValue = [NSMutableArray arrayWithCapacity:param.second.fa.size()];
-                    itmap(param.second.fa, ^(float &f){
+                    for(const float &f : param.second.fa)
+                    {
                         [serialValue addObject:@(f)];
-                    });
+                    }
                     break;
             }
             
             [params setObject:@{ @"type": serialType, @"value": serialValue }
                        forKey:[NSString stringWithSTLString:param.first]];
-        });
+        };
         
-        [doc setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                        @"node", @"object",
-                        @((int) node._class), @"class",
-                        [NSString stringWithSTLString:node.type], @"type",
-                        @(node.x), @"x", @(node.y), @"y", @(node.z), @"z",
-                        params, @"params",
-                        nil]
-                forKey:[NSString stringWithSTLString:uuid]];
-    });
-    
-    itmap(m_connections, ^(pair<const string, Connection> &val){
-        const string &uuid = val.first;
-        Connection &conn = val.second;
+        NSMutableArray *inbound = [NSMutableArray arrayWithCapacity:node.inbound.size()];
+        for(const Connection &conn : node.inbound)
+            [inbound addObject:@{ @"uuid": [NSString stringWithSTLString:conn.uuid],
+                                  @"src": [NSString stringWithSTLString:conn.srcUuid],
+                                  @"dstPort": @(conn.dstPort)
+                                  }];
         
-        [doc setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                        @"connection", @"object",
-                        [NSString stringWithSTLString:conn.srcUuid], @"source",
-                        [NSString stringWithSTLString:conn.dstUuid], @"destination",
-                        [NSString stringWithFormat:@"%i", conn.dstPort], @"port",
-                        nil]
+        NSMutableArray *outbound = [NSMutableArray arrayWithCapacity:node.outbound.size()];
+        for(const Connection &conn : node.outbound)
+            [outbound addObject:@{ @"uuid": [NSString stringWithSTLString:conn.uuid],
+                                   @"dst": [NSString stringWithSTLString:conn.dstUuid],
+                                   @"dstPort": @(conn.dstPort)
+                                   }];
+        
+        [doc setObject:@{ @"object": @"node",
+                          @"class": @((int) node._class),
+                          @"type": [NSString stringWithSTLString:node.type],
+                          @"x": @(node.x), @"y": @(node.y), @"z": @(node.z),
+                          @"params": params,
+                          @"inbound": inbound,
+                          @"outbound": outbound
+                          }
                 forKey:[NSString stringWithSTLString:uuid]];
-    });
+    }
     
-    itmap(m_freedraws, ^(pair<const string, Freedraw> &val){
+    for(const pair<const string, Connection> &val : m_connections)
+    {
         const string &uuid = val.first;
-        Freedraw &fd = val.second;
+        const Connection &conn = val.second;
+        
+        [doc setObject:@{ @"object": @"connection",
+                          @"src": [NSString stringWithSTLString:conn.srcUuid],
+                          @"dst": [NSString stringWithSTLString:conn.dstUuid],
+                          @"dstPort": [NSString stringWithFormat:@"%i", conn.dstPort],
+                          }
+                forKey:[NSString stringWithSTLString:uuid]];
+    };
+    
+    for(const pair<const string, Freedraw> &val : m_freedraws)
+    {
+        const string &uuid = val.first;
+        const Freedraw &fd = val.second;
         
         NSMutableArray *points = [NSMutableArray arrayWithCapacity:fd.points.size()];
-        itmap(fd.points, ^(float &f){
+        for(const float &f : fd.points)
             [points addObject:@(f)];
-        });
         
-        [doc setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                        @"freedraw", @"object",
-                        @(fd.x), @"x", @(fd.y), @"y", @(fd.z), @"z",
-                        points, @"points",
-                        nil]
+        [doc setObject:@{ @"object": @"freedraw",
+                          @"x": @(fd.x), @"y": @(fd.y), @"z": @(fd.z),
+                          @"points": points,
+                          }
                 forKey:[NSString stringWithSTLString:uuid]];
-    });
+    };
     
     NSData *data = [NSJSONSerialization dataWithJSONObject:doc
                                                    options:NSJSONWritingPrettyPrinted
@@ -235,15 +282,12 @@ void AGDocument::recreate(void (^createNode)(const Node &node),
                           void (^createConnection)(const Connection &connection),
                           void (^createFreedraw)(const Freedraw &freedraw))
 {
-    itmap(m_nodes, ^(pair<const string, Node> &kv){
+    for(const pair<const string, Node> &kv : m_nodes)
         createNode(kv.second);
-    });
-    itmap(m_connections, ^(pair<const string, Connection> &kv){
+    for(const pair<const string, Connection> &kv : m_connections)
         createConnection(kv.second);
-    });
-    itmap(m_freedraws, ^(pair<const string, Freedraw> &kv){
+    for(const pair<const string, Freedraw> &kv : m_freedraws)
         createFreedraw(kv.second);
-    });
 }
 
 

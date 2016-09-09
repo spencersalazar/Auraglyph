@@ -52,6 +52,14 @@ namespace GeoGen
         points[3] = GLvertex3f( width/2.0f,  height/2.0f, 0);
     }
     
+    void makeRect(GLvertex3f *points, float x, float y, float width, float height)
+    {
+        points[0] = GLvertex3f(x-width/2.0f, y+height/2.0f, 0);
+        points[1] = GLvertex3f(x-width/2.0f, y-height/2.0f, 0);
+        points[2] = GLvertex3f(x+width/2.0f, y-height/2.0f, 0);
+        points[3] = GLvertex3f(x+width/2.0f, y+height/2.0f, 0);
+    }
+    
     void makeRectUV(GLvertex2f *points)
     {
         points[0] = GLvertex2f(0, 1);

@@ -12,6 +12,7 @@
 class AGTimer
 {
 public:
+    AGTimer();
     AGTimer(float interval, void (^action)(AGTimer *timer));
     ~AGTimer();
     

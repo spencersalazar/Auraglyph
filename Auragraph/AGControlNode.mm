@@ -7,104 +7,244 @@
 //
 
 #include "AGControlNode.h"
+#include "AGGenericShader.h"
+#include "AGNode.h"
 #include "AGArrayNode.h"
 #include "AGControlSequencerNode.h"
 #include "AGTimer.h"
 #include "spstl.h"
+#include "AGStyle.h"
+
+
+//------------------------------------------------------------------------------
+// ### AGControlNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGControlNode
+
+bool AGControlNode::s_init = false;
+GLuint AGControlNode::s_vertexArray = 0;
+GLuint AGControlNode::s_vertexBuffer = 0;
+GLvncprimf *AGControlNode::s_geo = NULL;
+GLuint AGControlNode::s_geoSize = 0;
+float AGControlNode::s_radius = 0;
+
+void AGControlNode::initializeControlNode()
+{
+    initalizeNode();
+    
+    if(!s_init)
+    {
+        s_init = true;
+        
+        // generate square
+        s_geoSize = 4;
+        s_geo = new GLvncprimf[s_geoSize];
+        s_radius = AGNode::s_sizeFactor/(sqrt(sqrtf(2)));
+        
+        s_geo[0].vertex = GLvertex3f(s_radius, s_radius, 0);
+        s_geo[1].vertex = GLvertex3f(s_radius, -s_radius, 0);
+        s_geo[2].vertex = GLvertex3f(-s_radius, -s_radius, 0);
+        s_geo[3].vertex = GLvertex3f(-s_radius, s_radius, 0);
+        
+        glGenVertexArraysOES(1, &s_vertexArray);
+        glBindVertexArrayOES(s_vertexArray);
+        
+        glGenBuffers(1, &s_vertexBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, s_vertexBuffer);
+        glBufferData(GL_ARRAY_BUFFER, s_geoSize*sizeof(GLvncprimf), s_geo, GL_STATIC_DRAW);
+        
+        glEnableVertexAttribArray(GLKVertexAttribPosition);
+        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(0));
+        glEnableVertexAttribArray(GLKVertexAttribNormal);
+        glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(sizeof(GLvertex3f)));
+        glEnableVertexAttribArray(GLKVertexAttribColor);
+        glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(2*sizeof(GLvertex3f)));
+        
+        glBindVertexArrayOES(0);
+    }
+}
+
+AGControlNode::AGControlNode(const AGNodeManifest *mf, const GLvertex3f &pos) :
+AGNode(mf, pos)
+{
+    initializeControlNode();
+}
+
+AGControlNode::AGControlNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
+AGNode(mf, docNode)
+{
+    initializeControlNode();
+}
+
+void AGControlNode::update(float t, float dt)
+{
+    AGNode::update(t, dt);
+    
+    GLKMatrix4 projection = projectionMatrix();
+    GLKMatrix4 modelView = globalModelViewMatrix();
+    
+    modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
+    
+    m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
+    
+    m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, modelView);
+}
+
+void AGControlNode::render()
+{
+    glBindVertexArrayOES(s_vertexArray);
+    
+    AGGenericShader &shader = AGGenericShader::instance();
+    shader.useProgram();
+    shader.setMVPMatrix(m_modelViewProjectionMatrix);
+    shader.setNormalMatrix(m_normalMatrix);
+    
+    GLcolor4f color = GLcolor4f::white;
+    color.a = m_fadeOut;
+    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &color);
+    glDisableVertexAttribArray(GLKVertexAttribColor);
+    
+    if(m_activation)
+    {
+        float scale = 0.975;
+        
+        GLKMatrix4 projection = projectionMatrix();
+        GLKMatrix4 modelView = globalModelViewMatrix();
+        
+        modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
+        GLKMatrix4 modelViewInner = GLKMatrix4Scale(modelView, scale, scale, scale);
+        GLKMatrix4 mvp = GLKMatrix4Multiply(projection, modelViewInner);
+        shader.setMVPMatrix(mvp);
+        
+        glLineWidth(4.0f);
+        glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
+        
+        GLKMatrix4 modelViewOuter = GLKMatrix4Scale(modelView, 1.0/scale, 1.0/scale, 1.0/scale);
+        mvp = GLKMatrix4Multiply(projection, modelViewOuter);
+        shader.setMVPMatrix(mvp);
+        
+        glLineWidth(4.0f);
+        glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
+    }
+    else
+    {
+        shader.setMVPMatrix(m_modelViewProjectionMatrix);
+        shader.setNormalMatrix(m_normalMatrix);
+        
+        glLineWidth(4.0f);
+        glDrawArrays(GL_LINE_LOOP, 0, s_geoSize);
+    }
+    
+    AGNode::render();
+}
+
+AGInteractiveObject *AGControlNode::hitTest(const GLvertex3f &t)
+{
+    if(pointInRectangle(t.xy(),
+                        m_pos.xy() + GLvertex2f(-s_radius, -s_radius),
+                        m_pos.xy() + GLvertex2f(s_radius, s_radius)))
+        return this;
+    
+    return _hitTestConnections(t);
+}
+
 
 //------------------------------------------------------------------------------
 // ### AGControlTimerNode ###
 //------------------------------------------------------------------------------
 #pragma mark - AGControlTimerNode
 
-AGNodeInfo *AGControlTimerNode::s_nodeInfo = NULL;
-
-void AGControlTimerNode::initialize()
+class AGControlTimerNode : public AGControlNode
 {
-    s_nodeInfo = new AGNodeInfo;
-    
-    s_nodeInfo->type = "Timer";
-    
-    float radius = 0.005;
-    int circleSize = 48;
-    s_nodeInfo->iconGeoSize = circleSize*2 + 4;
-    s_nodeInfo->iconGeoType = GL_LINES;
-    s_nodeInfo->iconGeo = new GLvertex3f[s_nodeInfo->iconGeoSize];
-    
-    // TODO: multiple geoTypes (GL_LINE_LOOP + GL_LINE_STRIP) instead of wasteful GL_LINES
-    
-    for(int i = 0; i < circleSize; i++)
+public:
+    class Manifest : public AGStandardNodeManifest<AGControlTimerNode>
     {
-        float theta0 = 2*M_PI*((float)i)/((float)(circleSize));
-        float theta1 = 2*M_PI*((float)(i+1))/((float)(circleSize));
-        s_nodeInfo->iconGeo[i*2+0] = GLvertex3f(radius*cosf(theta0), radius*sinf(theta0), 0);
-        s_nodeInfo->iconGeo[i*2+1] = GLvertex3f(radius*cosf(theta1), radius*sinf(theta1), 0);
+    public:
+        string _type() const override { return "Timer"; };
+        string _name() const override { return "Timer"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { "interval", true, true },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { "interval", true, true },
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius = 0.005*AGStyle::oldGlobalScale;
+            int circleSize = 48;
+            int GEO_SIZE = circleSize*2 + 4;
+            vector<GLvertex3f> iconGeo = vector<GLvertex3f>(GEO_SIZE);
+            
+            // TODO: multiple geoTypes (GL_LINE_LOOP + GL_LINE_STRIP) instead of wasteful GL_LINES
+            
+            for(int i = 0; i < circleSize; i++)
+            {
+                float theta0 = 2*M_PI*((float)i)/((float)(circleSize));
+                float theta1 = 2*M_PI*((float)(i+1))/((float)(circleSize));
+                iconGeo[i*2+0] = GLvertex3f(radius*cosf(theta0), radius*sinf(theta0), 0);
+                iconGeo[i*2+1] = GLvertex3f(radius*cosf(theta1), radius*sinf(theta1), 0);
+            }
+            
+            float minute = 47;
+            float minuteAngle = M_PI/2.0 + (minute/60.0)*(-2.0*M_PI);
+            float hour = 1;
+            float hourAngle = M_PI/2.0 + (hour/12.0 + minute/60.0/12.0)*(-2.0*M_PI);
+            
+            iconGeo[circleSize*2+0] = GLvertex3f(0, 0, 0);
+            iconGeo[circleSize*2+1] = GLvertex3f(radius/G_RATIO*cosf(hourAngle), radius/G_RATIO*sinf(hourAngle), 0);
+            iconGeo[circleSize*2+2] = GLvertex3f(0, 0, 0);
+            iconGeo[circleSize*2+3] = GLvertex3f(radius*0.925*cosf(minuteAngle), radius*0.925*sinf(minuteAngle), 0);
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINES; };
+    };
+    
+    using AGControlNode::AGControlNode;
+    virtual ~AGControlTimerNode() { dbgprint_off("AGControlTimerNode::~AGControlTimerNode()\n"); }
+    
+    void setDefaultPortValues() override
+    {
+        m_interval = 0.5;
+        m_lastFire = 0;
+        m_lastTime = 0;
+        m_value = false;
+        
+        m_timer = AGTimer(m_interval, ^(AGTimer *) {
+            // flip
+            m_value = !m_value;
+            pushControl(0, AGControl(m_value));
+        });
     }
     
-    float minute = 47;
-    float minuteAngle = M_PI/2.0 + (minute/60.0)*(-2.0*M_PI);
-    float hour = 1;
-    float hourAngle = M_PI/2.0 + (hour/12.0 + minute/60.0/12.0)*(-2.0*M_PI);
+    virtual int numOutputPorts() const override { return 1; }
+    virtual void setEditPortValue(int port, float value) override;
+    virtual void getEditPortValue(int port, float &value) const override;
     
-    s_nodeInfo->iconGeo[circleSize*2+0] = GLvertex3f(0, 0, 0);
-    s_nodeInfo->iconGeo[circleSize*2+1] = GLvertex3f(radius/G_RATIO*cosf(hourAngle), radius/G_RATIO*sinf(hourAngle), 0);
-    s_nodeInfo->iconGeo[circleSize*2+2] = GLvertex3f(0, 0, 0);
-    s_nodeInfo->iconGeo[circleSize*2+3] = GLvertex3f(radius*0.925*cosf(minuteAngle), radius*0.925*sinf(minuteAngle), 0);
+private:
+    AGTimer m_timer;
     
-    s_nodeInfo->editPortInfo.push_back({ "interval", true, true });
-    s_nodeInfo->inputPortInfo.push_back({ "interval", true, true });
-}
-
-AGControlTimerNode::AGControlTimerNode(const GLvertex3f &pos) :
-AGControlNode(pos, s_nodeInfo)
-{
-    m_interval = 0.5;
-    m_lastFire = 0;
-    m_lastTime = 0;
-    m_control.v = 0;
-    
-    m_timer = new AGTimer(m_interval, ^(AGTimer *) {
-        // flip
-        m_control.v = !m_control.v;
-        pushControl(0, &m_control);
-    });
-}
-
-AGControlTimerNode::AGControlTimerNode(const AGDocument::Node &docNode) : AGControlNode(docNode, s_nodeInfo)
-{
-    m_interval = 0.5;
-    m_lastFire = 0;
-    m_lastTime = 0;
-    m_control.v = 0;
-    
-    m_timer = new AGTimer(m_interval, ^(AGTimer *) {
-        // flip
-        m_control.v = !m_control.v;
-        pushControl(0, &m_control);
-    });
-}
-
-AGControlTimerNode::~AGControlTimerNode()
-{
-    delete m_timer;
-    m_timer = NULL;
-}
-
-void AGControlTimerNode::update(float t, float dt)
-{
-    AGControlNode::update(t, dt);
-}
-
-void AGControlTimerNode::render()
-{
-    AGControlNode::render();
-}
+    bool m_value;
+    float m_lastTime;
+    float m_lastFire;
+    float m_interval;
+};
 
 void AGControlTimerNode::setEditPortValue(int port, float value)
 {
     switch(port)
     {
-        case 0: m_interval = value; m_timer->setInterval(m_interval); break;
+        case 0: m_interval = value; m_timer.setInterval(m_interval); break;
     }
 }
 
@@ -116,97 +256,28 @@ void AGControlTimerNode::getEditPortValue(int port, float &value) const
     }
 }
 
-void AGControlTimerNode::renderIcon()
-{
-    // render icon
-    glBindVertexArrayOES(0);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_nodeInfo->iconGeo);
-    
-    glLineWidth(2.0);
-    glDrawArrays(s_nodeInfo->iconGeoType, 0, s_nodeInfo->iconGeoSize);
-}
-
-AGNode *AGControlTimerNode::create(const GLvertex3f &pos)
-{
-    return new AGControlTimerNode(pos);
-}
-
 
 //------------------------------------------------------------------------------
-// ### AGControlNodeManager ###
+// ### AGNodeManager ###
 //------------------------------------------------------------------------------
-#pragma mark - AGControlNodeManager
+#pragma mark - AGNodeManager
 
-AGControlNodeManager *AGControlNodeManager::s_instance = NULL;
-
-const AGControlNodeManager &AGControlNodeManager::instance()
+const AGNodeManager &AGNodeManager::controlNodeManager()
 {
-    if(s_instance == NULL)
+    if(s_controlNodeManager == NULL)
     {
-        s_instance = new AGControlNodeManager();
+        s_controlNodeManager = new AGNodeManager();
+
+        vector<const AGNodeManifest *> &nodeTypes = s_controlNodeManager->m_nodeTypes;
+        
+        nodeTypes.push_back(new AGControlTimerNode::Manifest);
+        nodeTypes.push_back(new AGControlArrayNode::Manifest);
+        
+        for(const AGNodeManifest *const &mf : nodeTypes)
+            mf->initialize();
     }
     
-    return *s_instance;
+    return *s_controlNodeManager;
 }
-
-AGControlNodeManager::AGControlNodeManager()
-{
-    m_controlNodeTypes.push_back(new ControlNodeType("Timer",
-                                                     AGControlTimerNode::initialize,
-                                                     AGControlTimerNode::renderIcon,
-                                                     AGControlTimerNode::create,
-                                                     createNode<AGControlTimerNode>));
-    m_controlNodeTypes.push_back(new ControlNodeType("Array",
-                                                     AGControlArrayNode::initialize,
-                                                     AGControlArrayNode::renderIcon,
-                                                     AGControlArrayNode::create,
-                                                     createNode<AGControlArrayNode>));
-    m_controlNodeTypes.push_back(new ControlNodeType("Sequencer",
-                                                     AGControlSequencerNode::initialize,
-                                                     renderNodeIcon<AGControlSequencerNode>,
-                                                     createNode<AGControlSequencerNode>,
-                                                     createNode<AGControlSequencerNode>));
-    
-    itmap(m_controlNodeTypes, ^(ControlNodeType *&type){
-        if(type->initialize)
-            type->initialize();
-    });
-}
-
-const std::vector<AGControlNodeManager::ControlNodeType *> &AGControlNodeManager::nodeTypes() const
-{
-    return m_controlNodeTypes;
-}
-
-void AGControlNodeManager::renderNodeTypeIcon(ControlNodeType *type) const
-{
-    type->renderIcon();
-}
-
-AGNode * AGControlNodeManager::createNodeType(AGControlNodeManager::ControlNodeType *type, const GLvertex3f &pos) const
-{
-    AGControlNode *node = static_cast<AGControlNode *>(type->createNode(pos));
-    node->setTitle(type->name);
-    return node;
-}
-
-AGNode * AGControlNodeManager::createNodeType(const AGDocument::Node &docNode) const
-{
-    __block AGNode *node = NULL;
-    
-    itmap(m_controlNodeTypes, ^bool (ControlNodeType *const &type){
-        if(type->name == docNode.type)
-        {
-            node = type->createWithDocNode(docNode);
-            node->setTitle(type->name);
-            return false;
-        }
-        
-        return true;
-    });
-    
-    return node;
-}
-
 
 

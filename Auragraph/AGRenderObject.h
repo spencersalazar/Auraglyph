@@ -92,6 +92,12 @@ public:
     AGRenderObject();
     virtual ~AGRenderObject();
     
+    /* init() should be used for most initialization other than zeroing/nulling
+       member variables. Unfortunately virtual functions don't really work as 
+       normal in C++ constructors, and vfuncs make the node/render object data 
+       model a lot easier, so init() is used instead. */
+    virtual void init();
+    
     virtual void update(float t, float dt);
     virtual void render();
     
@@ -106,6 +112,9 @@ public:
     
     list<AGRenderInfo *> m_renderList;
     AGRenderState m_renderState;
+    
+    const GLKMatrix4 &modelview() const { return m_renderState.modelview; }
+    const GLKMatrix4 &projection() const { return m_renderState.projection; }
     
     // override to force fixed-position rendering (e.g. ignores camera movement)
     virtual bool renderFixed() { return false; }
@@ -131,6 +140,8 @@ protected:
     list<AGRenderObject *> m_children;
     
     powcurvef m_alpha;
+    
+    bool m_debug_initCalled;
     
 private:
     bool m_renderedBounds;
@@ -166,15 +177,18 @@ public:
     AGInteractiveObject();
     virtual ~AGInteractiveObject();
     
+    // DEPRECATED
     virtual void touchDown(const GLvertex3f &t);
     virtual void touchMove(const GLvertex3f &t);
     virtual void touchUp(const GLvertex3f &t);
     
     // new version
+    // subclasses generally should override these
     virtual void touchDown(const AGTouchInfo &t);
     virtual void touchMove(const AGTouchInfo &t);
     virtual void touchUp(const AGTouchInfo &t);
     
+    // default implementation checks if touch is within this->effectiveBounds()
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
     
     virtual AGInteractiveObject *userInterface() { return NULL; }

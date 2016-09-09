@@ -17,19 +17,50 @@
 #import "spstl.h"
 
 
+
+class AGAudioManagerOutputDestination : public AGAudioOutputDestination
+{
+public:
+    
+    AGAudioManagerOutputDestination(AGAudioManager *manager) :
+    m_manager(manager)
+    { }
+    
+    void addOutput(AGAudioRenderer *renderer) override
+    {
+        [m_manager addRenderer:renderer];
+    }
+    
+    virtual void removeOutput(AGAudioRenderer *renderer) override
+    {
+        [m_manager removeRenderer:renderer];
+    }
+    
+private:
+    AGAudioManager *m_manager;
+};
+
+
 static float g_audio_buf[1024];
 
 @interface AGAudioManager ()
 {
     sampletime t;
     
+    list<AGAudioRenderer *> _renderers;
+    Mutex _renderersMutex;
+    list<AGAudioCapturer *> _capturers;
+    Mutex _capturersMutex;
     list<AGTimer *> _timers;
     Mutex _timersMutex;
+    
+    float _inputBuffer[1024];
 }
 
 - (void)renderAudio:(Float32 *)buffer numFrames:(UInt32)numFrames;
 
 @end
+
 
 void audio_cb( Float32 * buffer, UInt32 numFrames, void * userData )
 {
@@ -38,11 +69,10 @@ void audio_cb( Float32 * buffer, UInt32 numFrames, void * userData )
 
 static AGAudioManager *g_audioManager;
 
+
 @implementation AGAudioManager
 
-@synthesize outputNode;
-
-+ (id)instance
++ (instancetype)instance
 {
     return g_audioManager;
 }
@@ -53,16 +83,51 @@ static AGAudioManager *g_audioManager;
     {
         g_audioManager = self;
         
+        self.masterOut = new AGAudioManagerOutputDestination(self);
+        
         t = 0;
-        self.outputNode = NULL;
         
         memset(g_audio_buf, 0, sizeof(float)*1024);
+        memset(_inputBuffer, 0, sizeof(float)*1024);
         
         MoAudio::init(AGAudioNode::sampleRate(), AGAudioNode::bufferSize(), 2);
         MoAudio::start(audio_cb, (__bridge void *) self);
     }
     
     return self;
+}
+
+- (void)dealloc
+{
+    SAFE_DELETE(self.masterOut);
+}
+
+- (void)addRenderer:(AGAudioRenderer *)renderer
+{
+    _renderersMutex.lock();
+    _renderers.push_back(renderer);
+    _renderersMutex.unlock();
+}
+
+- (void)removeRenderer:(AGAudioRenderer *)renderer
+{
+    _renderersMutex.lock();
+    _renderers.remove(renderer);
+    _renderersMutex.unlock();
+}
+
+- (void)addCapturer:(AGAudioCapturer *)capturer
+{
+    _capturersMutex.lock();
+    _capturers.push_back(capturer);
+    _capturersMutex.unlock();
+}
+
+- (void)removeCapturer:(AGAudioCapturer *)capturer
+{
+    _capturersMutex.lock();
+    _capturers.remove(capturer);
+    _capturersMutex.unlock();
 }
 
 - (void)addTimer:(AGTimer *)timer
@@ -85,17 +150,28 @@ static AGAudioManager *g_audioManager;
     memset(g_audio_buf, 0, sizeof(float)*1024);
     
     _timersMutex.lock();
-    itmap(_timers, ^(AGTimer *&timer){
+    for(AGTimer *timer : _timers )
+    {
         float tf = ((float)t)/((float)AGAudioNode::sampleRate());
         float dtf = ((float)numFrames)/((float)AGAudioNode::sampleRate());
         timer->checkTimer(tf, dtf);
-    });
+    };
     _timersMutex.unlock();
     
-    if(self.outputNode)
+    for(int i = 0; i < numFrames; i++)
     {
-        self.outputNode->renderAudio(t, NULL, g_audio_buf, numFrames);
+        _inputBuffer[i] = buffer[i*2];
     }
+    
+    _capturersMutex.lock();
+    for(AGAudioCapturer *capturer : _capturers)
+        capturer->captureAudio(_inputBuffer, numFrames);
+    _capturersMutex.unlock();
+    
+    _renderersMutex.lock();
+    for(AGAudioRenderer *renderer : _renderers)
+        renderer->renderAudio(t, NULL, g_audio_buf, numFrames);
+    _renderersMutex.unlock();
     
     for(int i = 0; i < numFrames; i++)
     {

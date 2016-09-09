@@ -10,6 +10,12 @@
 #include "AGAudioManager.h"
 
 
+AGTimer::AGTimer() :
+m_lastFire(FLT_MIN), m_interval(FLT_MAX), m_action(NULL)
+{
+    [[AGAudioManager instance] addTimer:this];
+}
+
 AGTimer::AGTimer(float interval, void (^action)(AGTimer *timer)) :
 m_lastFire(FLT_MIN), m_interval(interval), m_action(action)
 {
@@ -29,7 +35,8 @@ void AGTimer::checkTimer(float t, float dt)
     
     if(t-m_lastFire >= m_interval)
     {
-        m_action(this);
+        if(m_action)
+            m_action(this);
         m_lastFire = t;
     }
 }

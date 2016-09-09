@@ -11,10 +11,11 @@
 #import "AGStyle.h"
 #import "AGGenericShader.h"
 #import "AGHandwritingRecognizer.h"
+#import "AGSlider.h"
 
 #import "TexFont.h"
 
-static const float AGNODESELECTOR_RADIUS = 0.02;
+static const float AGNODESELECTOR_RADIUS = 0.02*AGStyle::oldGlobalScale;
 
 
 //------------------------------------------------------------------------------
@@ -105,14 +106,54 @@ m_lastTraceWasRecognized(true)
     
     m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
     m_yScale = lincurvef(AGStyle::open_animTimeY, AGStyle::open_squeezeHeight, 1);
+    
+    int numEditPorts = m_node->numEditPorts();
+    float rowCount = NODEEDITOR_ROWCOUNT;
+    float rowHeight = s_radius*2.0/rowCount;
+    for(int port = 0; port < numEditPorts; port++)
+    {
+        AGNode *node = m_node;
+        
+        float v;
+        m_node->getEditPortValue(port, v);
+        
+        float y = s_radius-rowHeight*(port+2);
+        
+        AGSlider *slider = new AGSlider(GLvertex3f(s_radius/2, y+rowHeight/4, 0), v);
+        slider->init();
+        
+        slider->setType(AGSlider::CONTINUOUS);
+        slider->setScale(AGSlider::EXPONENTIAL);
+        slider->setSize(GLvertex2f(s_radius, rowHeight));
+        slider->onUpdate([port, node] (float value) {
+            node->setEditPortValue(port, value);
+        });
+        slider->setValidator([port, node] (float _old, float _new) {
+            return node->validateEditPortValue(port, _new);
+        });
+        
+        m_editSliders.push_back(slider);
+        this->addChild(slider);
+    }
+}
+
+AGUIStandardNodeEditor::~AGUIStandardNodeEditor()
+{
+    m_editSliders.clear();
+    // sliders are child objects, so they get deleted automatically by AGRenderObject
+}
+
+GLvertex3f AGUIStandardNodeEditor::position()
+{
+    return m_node->position();
 }
 
 void AGUIStandardNodeEditor::update(float t, float dt)
 {
-    m_modelView = AGNode::globalModelViewMatrix();
-    GLKMatrix4 projection = AGNode::projectionMatrix();
+    m_renderState.modelview = AGNode::globalModelViewMatrix();
+    m_renderState.projection = AGNode::projectionMatrix();
     
-    m_modelView = GLKMatrix4Translate(m_modelView, m_node->position().x, m_node->position().y, m_node->position().z);
+    m_renderState.modelview = GLKMatrix4Translate(m_renderState.modelview, position().x, position().y, position().z);
     
     //    float squeezeHeight = AGStyle::open_squeezeHeight;
     //    float animTimeX = AGStyle::open_animTimeX;
@@ -126,16 +167,15 @@ void AGUIStandardNodeEditor::update(float t, float dt)
     if(m_yScale <= AGStyle::open_squeezeHeight) m_xScale.update(dt);
     if(m_xScale >= 0.99f) m_yScale.update(dt);
     
-    m_modelView = GLKMatrix4Scale(m_modelView,
-                                  m_yScale <= AGStyle::open_squeezeHeight ? (float)m_xScale : 1.0f,
-                                  m_xScale >= 0.99f ? (float)m_yScale : AGStyle::open_squeezeHeight,
-                                  1);
-    
-    m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_modelView), NULL);
-    
-    m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, m_modelView);
+    m_renderState.modelview = GLKMatrix4Scale(m_renderState.modelview,
+                                              m_yScale <= AGStyle::open_squeezeHeight ? (float)m_xScale : 1.0f,
+                                              m_xScale >= 0.99f ? (float)m_yScale : AGStyle::open_squeezeHeight,
+                                              1);
     
     m_currentDrawlineAlpha.update(dt);
+    
+    for(auto slider : m_editSliders)
+        slider->update(t, dt);
     
     m_t += dt;
 }
@@ -158,8 +198,8 @@ void AGUIStandardNodeEditor::render()
     
     AGGenericShader::instance().useProgram();
     
-    AGGenericShader::instance().setMVPMatrix(m_modelViewProjectionMatrix);
-    AGGenericShader::instance().setNormalMatrix(m_normalMatrix);
+    AGGenericShader::instance().setModelViewMatrix(modelview());
+    AGGenericShader::instance().setProjectionMatrix(projection());
     
     //    AGClipShader &shader = AGClipShader::instance();
     //
@@ -186,11 +226,10 @@ void AGUIStandardNodeEditor::render()
     /* draw title */
     
     float rowCount = NODEEDITOR_ROWCOUNT;
-    GLKMatrix4 proj = AGNode::projectionMatrix();
     
-    GLKMatrix4 titleMV = GLKMatrix4Translate(m_modelView, -s_radius*0.9, s_radius - s_radius*2.0/rowCount, 0);
+    GLKMatrix4 titleMV = GLKMatrix4Translate(modelview(), -s_radius*0.9, s_radius - s_radius*2.0/rowCount, 0);
     titleMV = GLKMatrix4Scale(titleMV, 0.61, 0.61, 0.61);
-    text->render(m_title, GLcolor4f::white, titleMV, proj);
+    text->render(m_title, GLcolor4f::white, titleMV, projection());
     
     
     /* draw items */
@@ -218,9 +257,9 @@ void AGUIStandardNodeEditor::render()
             glDisableVertexAttribArray(GLKVertexAttribNormal);
             
             AGGenericShader::instance().useProgram();
-            GLKMatrix4 hitMVP = GLKMatrix4Multiply(proj, GLKMatrix4Translate(m_modelView, 0, y + s_radius/rowCount, 0));
-            AGGenericShader::instance().setMVPMatrix(hitMVP);
-            AGGenericShader::instance().setNormalMatrix(m_normalMatrix);
+            GLKMatrix4 hitMV = GLKMatrix4Translate(modelview(), 0, y + s_radius/rowCount, 0);
+            AGGenericShader::instance().setModelViewMatrix(hitMV);
+            AGGenericShader::instance().setProjectionMatrix(projection());
             
             // fill
             glDrawArrays(GL_TRIANGLE_FAN, s_innerboxOffset, 4);
@@ -230,19 +269,21 @@ void AGUIStandardNodeEditor::render()
             valueColor = GLcolor4f(1-valueColor.r, 1-valueColor.g, 1-valueColor.b, 1);
         }
         
-        GLKMatrix4 nameMV = GLKMatrix4Translate(m_modelView, -s_radius*0.9, y + s_radius/rowCount*0.1, 0);
+        GLKMatrix4 nameMV = GLKMatrix4Translate(modelview(), -s_radius*0.9, y + s_radius/rowCount*0.1, 0);
         nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
-        text->render(m_node->editPortInfo(i).name, nameColor, nameMV, proj);
+        text->render(m_node->editPortInfo(i).name, nameColor, nameMV, projection());
         
-        GLKMatrix4 valueMV = GLKMatrix4Translate(m_modelView, s_radius*0.1, y + s_radius/rowCount*0.1, 0);
-        valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
-        std::stringstream ss;
-        float v = 0;
-        m_node->getEditPortValue(i, v);
-        ss << v;
-        text->render(ss.str(), valueColor, valueMV, proj);
+//        GLKMatrix4 valueMV = GLKMatrix4Translate(m_modelView, s_radius*0.1, y + s_radius/rowCount*0.1, 0);
+//        valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
+//        std::stringstream ss;
+//        float v = 0;
+//        m_node->getEditPortValue(i, v);
+//        ss << v;
+//        text->render(ss.str(), valueColor, valueMV, proj);
     }
     
+    for(auto slider : m_editSliders)
+        slider->render();
     
     /* draw item editor */
     
@@ -261,11 +302,11 @@ void AGUIStandardNodeEditor::render()
         float y = s_radius - s_radius*2.0*(m_editingPort+2)/rowCount;
         
         AGGenericShader::instance().useProgram();
-        AGGenericShader::instance().setNormalMatrix(m_normalMatrix);
+        AGGenericShader::instance().setProjectionMatrix(projection());
         
         // bounding box
-        GLKMatrix4 bbMVP = GLKMatrix4Multiply(proj, GLKMatrix4Translate(m_modelView, 0, y - s_radius + s_radius*2/rowCount, 0));
-        AGGenericShader::instance().setMVPMatrix(bbMVP);
+        GLKMatrix4 bbMV = GLKMatrix4Translate(modelview(), 0, y - s_radius + s_radius*2/rowCount, 0);
+        AGGenericShader::instance().setModelViewMatrix(bbMV);
         
         // stroke
         glDrawArrays(GL_LINE_LOOP, s_itemEditBoxOffset, 4);
@@ -279,8 +320,8 @@ void AGUIStandardNodeEditor::render()
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
         
         // accept button
-        GLKMatrix4 buttonMVP = GLKMatrix4Multiply(proj, GLKMatrix4Translate(m_modelView, s_radius*1.65, y + s_radius/rowCount, 0));
-        AGGenericShader::instance().setMVPMatrix(buttonMVP);
+        GLKMatrix4 buttonMV = GLKMatrix4Translate(modelview(), s_radius*1.65, y + s_radius/rowCount, 0);
+        AGGenericShader::instance().setModelViewMatrix(buttonMV);
         if(m_hitAccept)
             // stroke
             glDrawArrays(GL_LINE_LOOP, s_buttonBoxOffset, 4);
@@ -289,8 +330,8 @@ void AGUIStandardNodeEditor::render()
             glDrawArrays(GL_TRIANGLE_FAN, s_buttonBoxOffset, 4);
         
         // discard button
-        buttonMVP = GLKMatrix4Multiply(proj, GLKMatrix4Translate(m_modelView, s_radius*1.65 + s_radius*1.2, y + s_radius/rowCount, 0));
-        AGGenericShader::instance().setMVPMatrix(buttonMVP);
+        buttonMV = GLKMatrix4Translate(modelview(), s_radius*1.65 + s_radius*1.2, y + s_radius/rowCount, 0);
+        AGGenericShader::instance().setModelViewMatrix(buttonMV);
         // fill
         if(m_hitDiscard)
             // stroke
@@ -300,47 +341,38 @@ void AGUIStandardNodeEditor::render()
             glDrawArrays(GL_TRIANGLE_FAN, s_buttonBoxOffset, 4);
         
         // text
-        GLKMatrix4 textMV = GLKMatrix4Translate(m_modelView, s_radius*1.2, y + s_radius/rowCount*0.1, 0);
+        GLKMatrix4 textMV = GLKMatrix4Translate(modelview(), s_radius*1.2, y + s_radius/rowCount*0.1, 0);
         textMV = GLKMatrix4Scale(textMV, 0.5, 0.5, 0.5);
         if(m_hitAccept)
-            text->render("Accept", GLcolor4f::white, textMV, proj);
+            text->render("Accept", GLcolor4f::white, textMV, projection());
         else
-            text->render("Accept", GLcolor4f::black, textMV, proj);
+            text->render("Accept", GLcolor4f::black, textMV, projection());
         
         
-        textMV = GLKMatrix4Translate(m_modelView, s_radius*1.2 + s_radius*1.2, y + s_radius/rowCount*0.1, 0);
+        textMV = GLKMatrix4Translate(modelview(), s_radius*1.2 + s_radius*1.2, y + s_radius/rowCount*0.1, 0);
         textMV = GLKMatrix4Scale(textMV, 0.5, 0.5, 0.5);
         if(m_hitDiscard)
-            text->render("Discard", GLcolor4f::white, textMV, proj);
+            text->render("Discard", GLcolor4f::white, textMV, projection());
         else
-            text->render("Discard", GLcolor4f::black, textMV, proj);
+            text->render("Discard", GLcolor4f::black, textMV, projection());
         
         // text name + value
-        GLKMatrix4 nameMV = GLKMatrix4Translate(m_modelView, -s_radius*0.9, y + s_radius/rowCount*0.1, 0);
+        GLKMatrix4 nameMV = GLKMatrix4Translate(modelview(), -s_radius*0.9, y + s_radius/rowCount*0.1, 0);
         nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
-        text->render(m_node->editPortInfo(m_editingPort).name, GLcolor4f::white, nameMV, proj);
+        text->render(m_node->editPortInfo(m_editingPort).name, GLcolor4f::white, nameMV, projection());
         
-        GLKMatrix4 valueMV = GLKMatrix4Translate(m_modelView, s_radius*0.1, y + s_radius/rowCount*0.1, 0);
+        GLKMatrix4 valueMV = GLKMatrix4Translate(modelview(), s_radius*0.1, y + s_radius/rowCount*0.1, 0);
         valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
-        //        std::stringstream ss;
-        //        ss << m_currentValue;
-        //        if(m_decimal && floorf(m_currentValue) == m_currentValue)
-        //        {
-        //            ss << "."; // show decimal point if user has drawn it
-        //            // draw extra zeros after decimal
-        //            int decimalZeros = (int)(-1-log10f(m_decimalFactor));
-        //            for(int i = 0; i < decimalZeros; i++)
-        //                ss << "0";
-        //        }
+
         if(m_currentValueString.length() == 0)
             // show a 0 if there is no value yet
-            text->render("0", GLcolor4f::white, valueMV, proj);
+            text->render("0", GLcolor4f::white, valueMV, projection());
         else
-            text->render(m_currentValueString, GLcolor4f::white, valueMV, proj);
+            text->render(m_currentValueString, GLcolor4f::white, valueMV, projection());
         
         AGGenericShader::instance().useProgram();
-        AGGenericShader::instance().setNormalMatrix(m_normalMatrix);
-        AGGenericShader::instance().setMVPMatrix(GLKMatrix4Multiply(proj, AGNode::globalModelViewMatrix()));
+        AGGenericShader::instance().setProjectionMatrix(projection());
+        AGGenericShader::instance().setModelViewMatrix(AGNode::globalModelViewMatrix());
         
         // draw traces
         for(std::list<std::vector<GLvertex3f> >::iterator i = m_drawline.begin(); i != m_drawline.end(); i++)
@@ -370,7 +402,13 @@ void AGUIStandardNodeEditor::render()
 }
 
 
-int AGUIStandardNodeEditor::hitTest(const GLvertex3f &t, bool *inBbox)
+AGInteractiveObject *AGUIStandardNodeEditor::hitTest(const GLvertex3f &t)
+{
+    return AGInteractiveObject::hitTest(t);
+}
+
+
+int AGUIStandardNodeEditor::hitTestX(const GLvertex3f &t, bool *inBbox)
 {
     float rowCount = NODEEDITOR_ROWCOUNT;
     
@@ -446,7 +484,7 @@ void AGUIStandardNodeEditor::touchDown(const GLvertex3f &t, const CGPoint &scree
         bool inBBox = false;
         
         // check if in entire bounds
-        m_hit = hitTest(t, &inBBox);
+        m_hit = hitTestX(t, &inBBox);
         
         m_doneEditing = !inBBox;
     }
@@ -458,7 +496,7 @@ void AGUIStandardNodeEditor::touchDown(const GLvertex3f &t, const CGPoint &scree
         m_startedInDiscard = false;
         
         bool inBBox = false;
-        int hit = hitTest(t, &inBBox);
+        int hit = hitTestX(t, &inBBox);
         
         if(hit == 0)
         {
@@ -494,7 +532,7 @@ void AGUIStandardNodeEditor::touchMove(const GLvertex3f &t, const CGPoint &scree
         if(m_editingPort >= 0)
         {
             bool inBBox = false;
-            int hit = hitTest(t, &inBBox);
+            int hit = hitTestX(t, &inBBox);
             
             m_hitAccept = false;
             m_hitDiscard = false;
@@ -519,7 +557,7 @@ void AGUIStandardNodeEditor::touchMove(const GLvertex3f &t, const CGPoint &scree
         else
         {
             bool inBBox = false;
-            m_hit = hitTest(t, &inBBox);
+            m_hit = hitTestX(t, &inBBox);
         }
     }
 }
@@ -607,7 +645,7 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
         else
         {
             bool inBBox = false;
-            m_hit = hitTest(t, &inBBox);
+            m_hit = hitTestX(t, &inBBox);
             
             if(m_hit >= 0)
             {

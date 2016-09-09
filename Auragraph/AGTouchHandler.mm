@@ -15,7 +15,8 @@
 #import "ES2Render.h"
 #import "AGHandwritingRecognizer.h"
 #import "AGNode.h"
-#import "AGAudioNode.h"
+#import "AGCompositeNode.h"
+#import "AGAudioCapturer.h"
 #import "AGAudioManager.h"
 #import "AGUserInterface.h"
 #import "TexFont.h"
@@ -27,6 +28,10 @@
 
 #import "GeoGenerator.h"
 #import "spMath.h"
+
+#include "AGStyle.h"
+
+#import <set>
 
 
 //------------------------------------------------------------------------------
@@ -62,6 +67,19 @@
 #pragma mark -
 #pragma mark AGDrawNodeTouchHandler
 
+@interface AGDrawNodeTouchHandler ()
+{
+    LTKTrace _currentTrace;
+    GLvertex3f _currentTraceSum;
+    AGUITrace *_trace;
+    
+    GLvertex2f _traceBottomLeft, _traceTopRight;
+}
+
+- (void)coalesceComposite:(AGAudioCompositeNode *)compositeNode withNodes:(const set<AGNode *> &)subnodes;
+
+@end
+
 @implementation AGDrawNodeTouchHandler
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
@@ -71,8 +89,11 @@
     
     _currentTrace = LTKTrace();
     _currentTraceSum = GLvertex3f();
+    _traceBottomLeft = pos.xy();
+    _traceTopRight = pos.xy();
     
     _trace = new AGUITrace;
+    _trace->init();
     _trace->addPoint(pos);
     [_viewController addTopLevelObject:_trace];
 }
@@ -83,8 +104,14 @@
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
     _trace->addPoint(pos);
+//    NSLog(@"trace: %f %f %f", pos.x, pos.y, pos.z);
     
     _currentTraceSum = _currentTraceSum + GLvertex3f(p.x, p.y, 0);
+    
+    if(pos.x < _traceBottomLeft.x) _traceBottomLeft.x = pos.x;
+    if(pos.y < _traceBottomLeft.y) _traceBottomLeft.y = pos.y;
+    if(pos.x > _traceTopRight.x) _traceTopRight.x = pos.x;
+    if(pos.y > _traceTopRight.y) _traceTopRight.y = pos.y;
     
     floatVector point;
     point.push_back(p.x);
@@ -96,37 +123,87 @@
 {
     /* analysis */
     
-    AGHandwritingRecognizerFigure figure = [[AGHandwritingRecognizer instance] recognizeShape:_currentTrace];
-    
     GLvertex3f centroid = _currentTraceSum/_currentTrace.getNumberOfPoints();
     GLvertex3f centroidMVP = [_viewController worldCoordinateForScreenCoordinate:CGPointMake(centroid.x, centroid.y)];
+    
+    float traceArea = area(_trace->points().data(), _trace->points().size());
+    dbgprint("trace area: %f\n", traceArea);
+    if(traceArea > 15000)
+    {
+        // treat as composite if nodes are inside
+        
+        // check if nodes are inside
+        set<AGNode *> subnodes;
+        for(AGNode *node : [_viewController nodes])
+        {
+            // first check square bounding box
+            if(pointInRectangle(node->position().xy(), _traceBottomLeft, _traceTopRight) &&
+               // check entire polygon
+               pointInPolygon(node->position(), _trace->points().data(), _trace->points().size()))
+            {
+                subnodes.insert(node);
+            }
+        }
+        
+        if(subnodes.size())
+        {
+            // treat as composite
+            AGNode *node = AGNodeManager::audioNodeManager().createNodeOfType("Composite", centroidMVP);
+            AGAudioCompositeNode *compositeNode = static_cast<AGAudioCompositeNode *>(node);
+            [self coalesceComposite:compositeNode withNodes:subnodes];
+            [_viewController addNode:compositeNode];
+            
+            _trace->removeFromTopLevel();
+            
+            return;
+        }
+    }
+    
+    AGHandwritingRecognizerFigure figure = [[AGHandwritingRecognizer instance] recognizeShape:_currentTrace];
     
     BOOL animateOut = NO;
     
     if(figure == AG_FIGURE_CIRCLE)
     {
-        AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::audioNodeSelector(centroidMVP);
-        _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
+//        // first check average polar length
+//        float sumPolarLength = 0;
+//        // compute centroid
+//        for(GLvertex3f point : _trace->points())
+//        {
+//            float dx = point.x-centroidMVP.x, dy = point.y-centroidMVP.y;
+//            sumPolarLength += sqrtf(dx*dx+dy*dy);
+//        }
+//        
+//        float avgPolarLength = sumPolarLength/_currentTrace.getNumberOfPoints();
+//        dbgprint("avgPolarLength: %f\n", avgPolarLength);
+//        
+//        if(avgPolarLength > 180.0f)
+//        {
+//            // treat as composite
+//            AGAudioCompositeNode *compositeNode = static_cast<AGAudioCompositeNode *>(AGNodeManager::audioNodeManager().createNodeOfType("Composite", centroidMVP));
+//            [self coalesceComposite:compositeNode];
+//            [_viewController addNode:compositeNode];
+//        }
+//        else
+        {
+            AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::audioNodeSelector(centroidMVP);
+            _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
+        }
     }
     else if(figure == AG_FIGURE_SQUARE)
     {
         AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::controlNodeSelector(centroidMVP);
         _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
-        //        AGControlNode * node = new AGControlTimerNode(centroidMVP);
-        //        [_viewController addNode:node];
     }
     else if(figure == AG_FIGURE_TRIANGLE_DOWN)
     {
-        //        AGInputNode * node = new AGInputNode(centroidMVP);
-        //        [_viewController addNode:node];
-        //        [_viewController clearLinePoints];
         AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::inputNodeSelector(centroidMVP);
         _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
     }
     else if(figure == AG_FIGURE_TRIANGLE_UP)
     {
-        AGOutputNode * node = new AGOutputNode(centroidMVP);
-        [_viewController addNode:node];
+        AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::outputNodeSelector(centroidMVP);
+        _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
     }
     else
     {
@@ -138,6 +215,74 @@
 
 - (void)update:(float)t dt:(float)dt { }
 - (void)render { }
+
+- (void)coalesceComposite:(AGAudioCompositeNode *)compositeNode withNodes:(const set<AGNode *> &)subnodes
+{
+    // save broken input/output connections
+    list<tuple<AGNode *, AGNode *, int>> inbound;
+    list<tuple<AGNode *, AGNode *, int>> outbound;
+    
+    for(AGNode *node : subnodes)
+    {
+        // trim connections
+        const list<AGConnection *> &nodeInbound = node->inbound();
+        const list<AGConnection *> &nodeOutbound = node->outbound();
+        
+        for(auto i = nodeInbound.begin(); i != nodeInbound.end(); )
+        {
+            auto j = i++;
+            if(!subnodes.count((*j)->src()))
+            {
+                outbound.push_back(std::make_tuple((*j)->src(), node, (*j)->dstPort()));
+                (*j)->removeFromTopLevel();
+            }
+        }
+        
+        for(auto i = nodeOutbound.begin(); i != nodeOutbound.end(); )
+        {
+            auto j = i++;
+            if(!subnodes.count((*j)->dst()))
+            {
+                outbound.push_back(std::make_tuple(node, (*j)->dst(), (*j)->dstPort()));
+                (*j)->removeFromTopLevel();
+            }
+        }
+        
+        [_viewController resignNode:node];
+        
+        compositeNode->addSubnode(node);
+        
+        if(node->type() == "Output")
+        {
+            AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
+            outputNode->setOutputDestination(compositeNode);
+        }
+            
+//        if(node->type() == "Input")
+//            compositeNode->addInputNode(dynamic_cast<AGAudioCapturer *>(node));
+    }
+    
+    // relink broken connections across composite boundary
+    // TODO: multiple outbound connections
+    if(outbound.size() && compositeNode->numOutputPorts() == 0)
+    {
+        AGNode *src = std::get<0>(outbound.front());
+        AGNode *dst = std::get<1>(outbound.front());
+        int port = std::get<2>(outbound.front());
+        
+        // create output within composite
+        AGNode *newNode = AGNodeManager::audioNodeManager().createNodeOfType("Output", dst->position());
+        AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(newNode);
+        outputNode->setOutputDestination(compositeNode);
+        
+        // make connection within composite
+        AGConnection *internalConnection = new AGConnection(src, newNode, 0);
+        internalConnection->init();
+        // make connection outside composite
+        AGConnection *externalConnection = new AGConnection(compositeNode, dst, port);
+        externalConnection->init();
+    }
+}
 
 @end
 
@@ -178,6 +323,7 @@
     if(_linePoints.size() > 1)
     {
         AGFreeDraw *freeDraw = new AGFreeDraw(&_linePoints[0], _linePoints.size());
+        freeDraw->init();
         [_viewController addFreeDraw:freeDraw];
     }
 }
@@ -375,8 +521,8 @@ public:
         float textHeight = s_texFont->height()*textScale;
         m_textOriginOffset = GLvertex3f(-textWidth/2.0, -textHeight/2, 0);
         
-        float radius = 0.00275;
-        float margin = 0.001;
+        float radius = 0.00275*AGStyle::oldGlobalScale;
+        float margin = 0.001*AGStyle::oldGlobalScale;
         switch(m_textPosition)
         {
             case TEXTPOSITION_LEFT:
@@ -417,7 +563,7 @@ public:
         
         GLvertex3f position = lerp(m_posLerp, m_node->position(), m_position);
         m_renderState.modelview = GLKMatrix4Multiply(baseModelView, GLKMatrix4MakeTranslation(position.x, position.y, position.z));
-        float radius = 0.00275;
+        float radius = 0.00275*AGStyle::oldGlobalScale;
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeScale(radius, radius, radius));
         
         GLvertex3f textPosition = lerp(m_textPosLerp, position+m_textOriginOffset, position+m_textOffset);
@@ -485,7 +631,7 @@ public:
     AGPortBrowser(AGNode *node) : m_node(node), m_scale(0.2), m_alpha(0.1, 1),
     m_selectedPort(-1)
     {
-        float radius = 0.0125f;
+        float radius = 0.0125f*AGStyle::oldGlobalScale;
         
         m_strokeInfo.shader = &AGGenericShader::instance();
         m_strokeInfo.geo = &(GeoGen::circle64())[1];
@@ -508,7 +654,7 @@ public:
         int numPorts = node->numInputPorts();
         m_ports.reserve(numPorts);
         float angle = 3.0f*M_PI/4.0f;
-        float portRadius = radius * 0.62;
+        float portRadius = radius*0.62;
         for(int i = 0; i < numPorts; i++)
         {
             float _cos = cosf(angle);
@@ -528,6 +674,7 @@ public:
             
             GLvertex3f pos = m_node->position() + GLvertex3f(portRadius*_cos, portRadius*_sin, 0);
             AGPortBrowserPort *port = new AGPortBrowserPort(m_node, i, pos, textPos);
+            port->init();
             addChild(port);
             m_ports.push_back(port);
             
@@ -547,7 +694,7 @@ public:
         
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeTranslation(m_node->position().x, m_node->position().y, m_node->position().z));
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeScale(m_scale, m_scale, m_scale));
-        float radius = 0.0125f;
+        float radius = 0.0125f*AGStyle::oldGlobalScale;
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeScale(radius, radius, radius));
     }
     
@@ -583,7 +730,7 @@ public:
             // squared-distance from center
             float rho_sq = relativeLocation.magnitudeSquared();
             // central dead-zone
-            float radius = 0.0125f * 0.1f;
+            float radius = 0.0125f*0.1f*AGStyle::oldGlobalScale;
             // too close to dead-zone!
             if(rho_sq < radius*radius)
                 return -1;
@@ -653,6 +800,7 @@ private:
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
     _proto = new AGProtoConnection(pos, pos);
+    _proto->init();
     [_viewController addTopLevelObject:_proto];
     
     AGNode *hitNode;
@@ -689,10 +837,11 @@ private:
     if(hitNode != _currentHit && hitNode != _originalHit)
     {
         if(_browser)
-            [_viewController removeTopLevelObject:_browser];
+            [_viewController fadeOutAndDelete:_browser];
         if(hitNode)
         {
             _browser = new AGPortBrowser(hitNode);
+            _browser->init();
             [_viewController addTopLevelObject:_browser under:_proto];
         }
         else
@@ -704,7 +853,7 @@ private:
     {
         if(_browser)
         {
-            [_viewController removeTopLevelObject:_browser];
+            [_viewController fadeOutAndDelete:_browser];
             _browser = NULL;
         }
         
@@ -730,7 +879,7 @@ private:
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    [_viewController removeTopLevelObject:_proto];
+    [_viewController fadeOutAndDelete:_proto];
     _proto = NULL;
     
     if(_browser)
@@ -738,9 +887,7 @@ private:
         int port = _browser->selectedPort();
         if(port != -1)
         {
-            AGConnection * connection = new AGConnection(_originalHit, _currentHit, port);
-            
-            [_viewController addConnection:connection];
+            AGConnection::connect(_originalHit, _currentHit, port);
         }
     }
     
@@ -750,7 +897,7 @@ private:
     
     if(_browser)
     {
-        [_viewController removeTopLevelObject:_browser];
+        [_viewController fadeOutAndDelete:_browser];
         _browser = NULL;
     }
 }
@@ -809,12 +956,20 @@ private:
     
     AGNode * newNode = _nodeSelector->createNode();
     if(newNode)
+    {
         [_viewController addNode:newNode];
+        
+        if(newNode->type() == "Output")
+        {
+            AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(newNode);
+            outputNode->setOutputDestination([AGAudioManager instance].masterOut);
+        }
+    }
     
     if(!_nodeSelector->done())
         _nextHandler = self;
     else
-        [_viewController removeTopLevelObject:_nodeSelector];
+        [_viewController fadeOutAndDelete:_nodeSelector];
 }
 
 //- (void)update:(float)t dt:(float)dt
@@ -855,7 +1010,10 @@ private:
         _touchCapture = NULL;
         _nodeEditor = node->createCustomEditor();
         if(_nodeEditor == NULL)
+        {
             _nodeEditor = new AGUIStandardNodeEditor(node);
+            _nodeEditor->init();
+        }
     }
     
     return self;
@@ -885,7 +1043,7 @@ private:
         // add object
         [_viewController addTopLevelObject:_nodeEditor];
         // immediately remove (cause to fade out/collapse and then deallocate)
-        [_viewController removeTopLevelObject:_nodeEditor];
+        [_viewController fadeOutAndDelete:_nodeEditor];
         _nodeEditor = NULL;
         
         _done = YES;
@@ -919,7 +1077,7 @@ private:
         // add object
         [_viewController addTopLevelObject:_nodeEditor];
         // immediately remove (cause to fade out/collapse and then deallocate)
-        [_viewController removeTopLevelObject:_nodeEditor];
+        [_viewController fadeOutAndDelete:_nodeEditor];
         _nodeEditor = NULL;
 
         _nextHandler = nil;

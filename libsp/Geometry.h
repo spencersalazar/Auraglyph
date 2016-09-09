@@ -15,6 +15,15 @@
 #import <CoreGraphics/CoreGraphics.h>
 
 
+#ifdef __OBJC__
+#define ENABLE_GLKIT (1)
+#endif // __OBJC__
+
+#if ENABLE_GLKIT
+#import <GLKit/GLKit.h>
+#endif
+
+
 struct GLvertex2f;
 struct GLvertex3f;
 
@@ -53,6 +62,28 @@ struct GLvertex3f
     GLvertex2f xy() const;
     
     GLvertex2f toLatLong() const;
+    
+#if ENABLE_GLKIT
+    
+    GLvertex3f(const GLKVector3 &vec)
+    {
+        x = vec.x;
+        y = vec.y;
+        z = vec.z;
+    }
+    
+    GLvertex3f(const GLKVector4 &vec)
+    {
+        x = vec.x/vec.w;
+        y = vec.y/vec.w;
+        z = vec.z/vec.w;
+    }
+    
+    GLKVector3 asGLKVector3() const { return GLKVector3Make(x, y, z); }
+    GLKVector4 asGLKVector4() const { return GLKVector4Make(x, y, z, 1); }
+    
+#endif // ENABLE_GLKIT
+    
 } __attribute__((aligned(4),packed));
 
 
@@ -258,6 +289,119 @@ static inline bool pointInCircle(const GLvertex2f &point, const GLvertex2f &cent
         return true;
     return false;
 }
+
+// TODO: point-by-point amortized version of this
+static inline float area(const GLvertex3f *points, int N)
+{
+    // via http://stackoverflow.com/questions/451426/how-do-i-calculate-the-area-of-a-2d-polygon
+    
+    float area = 0;
+    for(size_t i = 1; i <= N; ++i)
+        area += points[i%N].x*(points[(i+1)%N].y - points[(i-1)%N].y);
+    area /= 2;
+    
+    return fabsf(area);
+}
+
+// point in polygon methods
+
+// Copyright 2000 softSurfer, 2012 Dan Sunday
+// This code may be freely used and modified for any purpose
+// providing that this copyright notice is included with it.
+// SoftSurfer makes no warranty for this code, and cannot be held
+// liable for any real or imagined damage resulting from its use.
+// Users of this code must verify correctness for their application.
+
+
+// a Point is defined by its coordinates {int x, y;}
+//===================================================================
+
+
+// isLeft(): tests if a point is Left|On|Right of an infinite line.
+//    Input:  three points P0, P1, and P2
+//    Return: >0 for P2 left of the line through P0 and P1
+//            =0 for P2  on the line
+//            <0 for P2  right of the line
+//    See: Algorithm 1 "Area of Triangles and Polygons"
+static inline int
+isLeft( GLvertex3f P0, GLvertex3f P1, GLvertex3f P2 )
+{
+    return ( (P1.x - P0.x) * (P2.y - P0.y)
+            - (P2.x -  P0.x) * (P1.y - P0.y) );
+}
+//===================================================================
+
+
+// cn_PnPoly(): crossing number test for a point in a polygon
+//      Input:   P = a point,
+//               V[] = vertex points of a polygon V[n+1] with V[n]=V[0]
+//      Return:  0 = outside, 1 = inside
+// This code is patterned after [Franklin, 2000]
+static int
+cn_PnPoly( GLvertex3f P, const GLvertex3f* V, int n )
+{
+    int    cn = 0;    // the  crossing number counter
+    
+    // loop through all edges of the polygon
+    for (int i=0; i<n; i++) {    // edge from V[i]  to V[i+1]
+        if (((V[i].y <= P.y) && (V[(i+1)%n].y > P.y))     // an upward crossing
+            || ((V[i].y > P.y) && (V[(i+1)%n].y <=  P.y))) { // a downward crossing
+            // compute  the actual edge-ray intersect x-coordinate
+            float vt = (float)(P.y  - V[i].y) / (V[(i+1)%n].y - V[i].y);
+            if (P.x <  V[i].x + vt * (V[(i+1)%n].x - V[i].x)) // P.x < intersect
+                ++cn;   // a valid crossing of y=P.y right of P.x
+        }
+    }
+    return (cn&1);    // 0 if even (out), and 1 if  odd (in)
+    
+}
+//===================================================================
+
+
+// wn_PnPoly(): winding number test for a point in a polygon
+//      Input:   P = a point,
+//               V[] = vertex points of a polygon V[n+1] with V[n]=V[0]
+//      Return:  wn = the winding number (=0 only when P is outside)
+static int
+wn_PnPoly( GLvertex3f P, const GLvertex3f* V, int n )
+{
+    int    wn = 0;    // the  winding number counter
+    
+    // loop through all edges of the polygon
+    for (int i=0; i<n; i++) {   // edge from V[i] to  V[i+1]
+        if (V[i].y <= P.y) {          // start y <= P.y
+            if (V[(i+1)%n].y  > P.y)      // an upward crossing
+                if (isLeft( V[i], V[(i+1)%n], P) > 0)  // P left of  edge
+                    ++wn;            // have  a valid up intersect
+        }
+        else {                        // start y > P.y (no test needed)
+            if (V[(i+1)%n].y  <= P.y)     // a downward crossing
+                if (isLeft( V[i], V[(i+1)%n], P) < 0)  // P right of  edge
+                    --wn;            // have  a valid down intersect
+        }
+    }
+    return wn;
+}
+//===================================================================
+
+
+static inline bool pointInPolygon(GLvertex3f p, const GLvertex3f *poly, int N)
+{
+    return wn_PnPoly(p, poly, N) != 0;
+}
+
+
+#if defined(__APPLE__) && defined(__OBJC__)
+
+#include <GLKit/GLKit.h>
+
+static inline GLvertex3f operator*(GLKMatrix4 m, GLvertex3f v)
+{
+    GLKVector3 v2 = GLKMatrix4MultiplyVector3(m, GLKVector3Make(v.x, v.y, v.z));
+    return GLvertex3f(v2.x, v2.y, v2.z);
+}
+
+#endif // defined(__APPLE__) && defined(__OBJC__)
 
 
 #endif

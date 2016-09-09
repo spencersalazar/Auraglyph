@@ -7,7 +7,7 @@
 //
 
 #include "AGConnection.h"
-#include "AGNode.h"
+#include "AGAudioNode.h"
 #include "AGViewController.h"
 #include "AGGenericShader.h"
 
@@ -15,6 +15,7 @@
 #include "spstl.h"
 #include "GeoGenerator.h"
 #include "sputil.h"
+#include "AGStyle.h"
 
 bool AGConnection::s_init = false;
 GLuint AGConnection::s_flareTex = 0;
@@ -44,8 +45,8 @@ void AGConnection::initalize()
         
         g_controlVis = new AGRenderInfoV;
         
-        float height = 1;
-        float exponent = 1.9;
+        float height = 0.62;
+        float exponent = 12;
         int nQuads = 32;
         // fill with GL_TRIANGLE_STRIP
         g_controlVis->geo = new GLvertex3f[(nQuads+1)*2];
@@ -61,11 +62,18 @@ void AGConnection::initalize()
     }
 }
 
+AGConnection *AGConnection::connect(AGNode *src, AGNode *dst, int dstPort)
+{
+    AGConnection *conn = new AGConnection(src, dst, dstPort);
+    conn->init();
+    return conn;
+}
+
 AGConnection::AGConnection(AGNode * src, AGNode * dst, int dstPort) :
 m_src(src), m_dst(dst), m_dstPort(dstPort),
 m_rate((src->rate() == RATE_AUDIO && dst->rate() == RATE_AUDIO) ? RATE_AUDIO : RATE_CONTROL),
 m_geoSize(0), m_hit(false), m_stretch(false), m_active(true),
-m_stretchPoint(0.25, GLvertex3f()), m_controlVisScale(0.1, 0), m_uuid(makeUUID())
+m_stretchPoint(0.25, GLvertex3f()), m_controlVisScale(0.07, 0), m_uuid(makeUUID())
 {
     initalize();
     
@@ -84,7 +92,7 @@ m_stretchPoint(0.25, GLvertex3f()), m_controlVisScale(0.1, 0), m_uuid(makeUUID()
     
     m_break = false;
     
-    float flareSize = 0.004;
+    float flareSize = 0.004*AGStyle::oldGlobalScale;
     GeoGen::makeRect(m_flareGeo, flareSize, flareSize);
     GeoGen::makeRectUV(m_flareUV);
 }
@@ -210,9 +218,9 @@ void AGConnection::render()
         // rotate to face direction of source terminal
         modelView = GLKMatrix4Rotate(modelView, vec.xy().angle(), 0, 0, 1);
         // move a to edge of port circle
-        modelView = GLKMatrix4Translate(modelView, 0.002, 0, 0);
+        modelView = GLKMatrix4Translate(modelView, 0.002*AGStyle::oldGlobalScale, 0, 0);
         // scale [0,1] to length of connection (minus port circle radius)
-        modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004), 0.001, 1);
+        modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004*AGStyle::oldGlobalScale), 0.001*AGStyle::oldGlobalScale, 1);
         
         waveformShader.setProjectionMatrix(projection);
         waveformShader.setModelViewMatrix(modelView);
@@ -236,59 +244,6 @@ void AGConnection::render()
         glEnableVertexAttribArray(GLKVertexAttribPosition);
     }
     
-//    if(m_flares.size())
-//    {
-//        GLKMatrix4 projection = AGNode::projectionMatrix();
-//        GLKMatrix4 modelView = AGNode::globalModelViewMatrix();
-//        GLvertex3f vec = (m_inTerminal - m_outTerminal);
-//        
-//        //float portOffset = 0.002;
-//        float portOffset = 0.000;
-//        modelView = GLKMatrix4Translate(modelView, m_outTerminal.x, m_outTerminal.y, m_outTerminal.z);
-//        modelView = GLKMatrix4Rotate(modelView, vec.xy().angle(), 0, 0, 1);
-//        modelView = GLKMatrix4Translate(modelView, portOffset, 0, 0);
-//        
-//        AGGenericShader &texShader = AGTextureShader::instance();
-//        
-//        texShader.useProgram();
-//        
-//        texShader.setProjectionMatrix(projection);
-//        texShader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));
-//        
-//        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_flareGeo);
-//        glEnableVertexAttribArray(GLKVertexAttribPosition);
-//        
-//        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-//        
-//        glEnable(GL_TEXTURE_2D);
-//        glActiveTexture(GL_TEXTURE0);
-//        glBindTexture(GL_TEXTURE_2D, s_flareTex);
-//        
-//        glEnable(GL_BLEND);
-//        // additive blending
-//        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-//        
-//        glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLvertex2f), m_flareUV);
-//        glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
-//        
-//        float distFactor = (vec.xy().magnitude() - portOffset*2);
-//        
-//        itmap(m_flares, ^(float &f){
-//            GLKMatrix4 flareModelView = GLKMatrix4Translate(modelView, f*distFactor, 0, 0);
-//            GLcolor4f flareColor = GLcolor4f(1, 1, 1, window(1, f));
-//            
-//            glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &flareColor);
-//            texShader.setModelViewMatrix(flareModelView);
-//            
-//            glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-//            glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-//            glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-//        });
-//        
-//        // normal blending
-//        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//    }
-    
     if(src()->rate() == RATE_CONTROL)
     {
         GLvertex3f vec = (m_outTerminal - m_inTerminal);
@@ -304,9 +259,9 @@ void AGConnection::render()
         // rotate to face direction of source terminal
         modelView = GLKMatrix4Rotate(modelView, vec.xy().angle(), 0, 0, 1);
         // move a to edge of port circle
-        modelView = GLKMatrix4Translate(modelView, 0.002, 0, 0);
+        modelView = GLKMatrix4Translate(modelView, 0.002*AGStyle::oldGlobalScale, 0, 0);
         // scale x = [0,1] to length of connection (minus port circle radius)
-        modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004), 0.0025, 1);
+        modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004*AGStyle::oldGlobalScale), 0.0025*AGStyle::oldGlobalScale, 1);
         // scale height to control activation
         modelView = GLKMatrix4Scale(modelView, 1, powf(10, -2*(1-m_controlVisScale)), 1);
 //        modelView = GLKMatrix4Scale(modelView, 1, 1, 1);
@@ -339,7 +294,7 @@ void AGConnection::touchMove(const GLvertex3f &_t)
     GLvertex2f r = GLvertex2f(m_outTerminal.x - _t.x, m_outTerminal.y - _t.y);
     GLvertex2f normal = GLvertex2f(m_inTerminal.y - m_outTerminal.y, m_outTerminal.x - m_inTerminal.x);
     
-    if(fabsf(normal.normalize().dot(r)) > 0.01)
+    if(fabsf(normal.normalize().dot(r)) > 0.01*AGStyle::oldGlobalScale)
     {
         m_break = true;
     }
@@ -376,18 +331,42 @@ AGInteractiveObject *AGConnection::hitTest(const GLvertex3f &_t)
     GLvertex2f p1 = GLvertex2f(m_inTerminal.x, m_inTerminal.y);
     GLvertex2f t = GLvertex2f(_t.x, _t.y);
     
-    if(pointOnLine(t, p0, p1, 0.005))
+    if(pointOnLine(t, p0, p1, 0.005*AGStyle::oldGlobalScale))
         return this;
     
     return NULL;
 }
 
-void AGConnection::controlActivate()
+void AGConnection::controlActivate(const AGControl &ctrl)
 {
-    // immediately pop up to "1"
-    m_controlVisScale.reset(1);
-    // set target to 0 - slowly contract
-    m_controlVisScale = 0;
+//    // immediately pop up to "1"
+//    m_controlVisScale.reset(1);
+//    // set target to 0 - slowly contract
+//    m_controlVisScale = 0;
+    
+    switch(ctrl.type)
+    {
+        case AGControl::TYPE_NONE:
+            m_controlVisScale = 0;
+            break;
+        case AGControl::TYPE_BIT:
+            if(ctrl.vbit)
+                m_controlVisScale.reset(1); // jump to full on
+            else
+                m_controlVisScale = 0; // relax to off
+            break;
+        case AGControl::TYPE_INT:
+            m_controlVisScale = 1+log10(fabsf((float)ctrl.vint)+0.00001);
+            break;
+        case AGControl::TYPE_FLOAT:
+            m_controlVisScale = 1+log10(fabsf(ctrl.vfloat)+0.00001);
+            break;
+        case AGControl::TYPE_STRING:
+            m_controlVisScale = ctrl.vstring.length() > 0 ? 1 : 0;
+            break;
+    }
+    
+    m_activation = ctrl;
 }
 
 

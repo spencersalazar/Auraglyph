@@ -73,7 +73,8 @@ public:
     bool isPressed();
     void setLatched(bool latched);
     
-    virtual bool renderFixed() { return true; }
+    void setRenderFixed(bool fixed) { m_renderFixed = fixed; }
+    virtual bool renderFixed() { return m_renderFixed; }
     
 //    enum ActionType
 //    {
@@ -101,6 +102,7 @@ protected:
     
     GLvertex3f m_pos, m_size;
     GLvertex3f m_geo[8];
+    bool m_renderFixed = false;
     
     bool m_hit;
     bool m_hitOnTouchDown;
@@ -174,6 +176,8 @@ public:
     
     void addButton(AGUIButton *button, void (^action)(), bool isDefault);
     
+    virtual bool renderFixed() { return true; }
+    
 private:
     std::list<AGUIButton *> m_buttons;
 };
@@ -229,6 +233,7 @@ public:
     AGUITrace();
     
     void addPoint(const GLvertex3f &);
+    const vector<GLvertex3f> points() const;
     
 //    AGHandwritingRecognizerFigure recognizeNumeral();
     

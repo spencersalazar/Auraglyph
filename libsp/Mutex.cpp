@@ -27,3 +27,29 @@ void Mutex::unlock()
 {
     pthread_mutex_unlock(&m_mutex);
 }
+
+void Mutex::sync(const std::function<void()> &f)
+{
+    Scope scope = inScope();
+    f();
+}
+
+Mutex::Scope Mutex::inScope()
+{
+    return std::move(Scope(*this));
+}
+
+
+Mutex::Scope::Scope(Mutex &m) : m_mutex(m)
+{
+    m_mutex.lock();
+}
+
+Mutex::Scope::~Scope()
+{
+    m_mutex.unlock();
+}
+
+Mutex::Scope::Scope(const Scope &&scope) : m_mutex(scope.m_mutex)
+{ dbgprint_off("Scope move\n"); }
+

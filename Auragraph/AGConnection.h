@@ -12,6 +12,7 @@
 #include "AGRenderObject.h"
 #include "AGUserInterface.h"
 #include "AGDocument.h"
+#include "AGControl.h"
 
 #include "Geometry.h"
 #include "Animation.h"
@@ -32,12 +33,11 @@ enum AGRate
     RATE_AUDIO,
 };
 
-typedef long long sampletime;
-
-
 class AGConnection : public AGInteractiveObject
 {
 public:
+    
+    static AGConnection *connect(AGNode *src, AGNode *dst, int dstPort);
     
     AGConnection(AGNode * src, AGNode * dst, int dstPort);
     ~AGConnection();
@@ -51,13 +51,14 @@ public:
     
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
     
+    const string &uuid() const { return m_uuid; }
     AGNode * src() const { return m_src; }
     AGNode * dst() const { return m_dst; }
     int dstPort() const { return m_dstPort; }
     
     AGRate rate() { return m_rate; }
     
-    void controlActivate();
+    void controlActivate(const AGControl &ctrl);
     
     void renderOut();
     
@@ -87,6 +88,7 @@ private:
     slew<GLvertex3f> m_stretchPoint;
     
     bool m_active;
+    AGControl m_activation;
 //    powcurvef m_alpha;
     
     const AGRate m_rate;
