@@ -1340,14 +1340,15 @@ public:
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius_x = 0.005*AGStyle::oldGlobalScale;
-            float radius_y = radius_x * 0.66;
+            float radius_y = radius_x;
             
             // ADSR shape
             vector<GLvertex3f> iconGeo = {
-                {       -radius_x, radius_y, 0 }, {       -radius_x, -radius_y, 0 },
-                { -radius_x*0.33f, radius_y, 0 }, { -radius_x*0.33f, -radius_y, 0 },
-                {  radius_x*0.33f, radius_y, 0 }, {  radius_x*0.33f, -radius_y, 0 },
-                {       -radius_x,        0, 0 }, {        radius_x,         0, 0 },
+                {       -radius_x,        radius_y, 0 }, {       -radius_x,        -radius_y, 0 },
+                { -radius_x*0.33f,   radius_y*0.5f, 0 }, { -radius_x*0.33f,   -radius_y*0.5f, 0 },
+                {  radius_x*0.33f,  radius_y*0.25f, 0 }, {  radius_x*0.33f,  -radius_y*0.25f, 0 },
+                {        radius_x, radius_y*0.125f, 0 }, {        radius_x, -radius_y*0.125f, 0 },
+                {       -radius_x,               0, 0 }, {        radius_x,                0, 0 },
             };
             
             return iconGeo;
