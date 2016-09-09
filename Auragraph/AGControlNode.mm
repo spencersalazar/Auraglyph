@@ -272,6 +272,7 @@ const AGNodeManager &AGNodeManager::controlNodeManager()
         
         nodeTypes.push_back(new AGControlTimerNode::Manifest);
         nodeTypes.push_back(new AGControlArrayNode::Manifest);
+        nodeTypes.push_back(new AGControlSequencerNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();

@@ -10,30 +10,36 @@
 #define AGControlSequencerNode_hpp
 
 #import "AGControlNode.h"
+#import "AGTimer.h"
 #import <list>
 #import <vector>
 
 class AGControlSequencerNode : public AGControlNode
 {
 public:
-    static void initialize();
     
-    AGControlSequencerNode(const GLvertex3f &pos);
-    AGControlSequencerNode(const AGDocument::Node &docNode);
+    class Manifest : public AGStandardNodeManifest<AGControlSequencerNode>
+    {
+    public:
+        string _type() const override;
+        string _name() const override;
+        vector<AGPortInfo> _inputPortInfo() const override;
+        vector<AGPortInfo> _editPortInfo() const override;
+        vector<GLvertex3f> _iconGeo() const override;
+        GLuint _iconGeoType() const override;
+    };
+    
+//    using AGControlNode::AGControlNode;
+    
+    AGControlSequencerNode(const AGNodeManifest *mf, const GLvertex3f &pos);
+    AGControlSequencerNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
     ~AGControlSequencerNode();
     
     virtual int numOutputPorts() const { return 1; }
     virtual void setEditPortValue(int port, float value);
     virtual void getEditPortValue(int port, float &value) const;
-    
-    virtual void update(float t, float dt);
-    virtual void render();
-    
+        
     virtual AGUINodeEditor *createCustomEditor();
-    
-    static void renderIcon();
-    static AGNode *create(const GLvertex3f &pos);
-    static AGNodeInfo *nodeInfo() { return s_nodeInfo; }
     
     int currentStep();
     int numSequences();
@@ -47,7 +53,6 @@ private:
     
     AGTimer *m_timer;
     
-    AGFloatControl m_control;
     float m_bpm;
     
     int m_pos;

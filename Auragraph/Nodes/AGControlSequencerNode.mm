@@ -12,6 +12,7 @@
 #include "GeoGenerator.h"
 #include "AGTimer.h"
 #include "AGGenericShader.h"
+#include "AGStyle.h"
 #include "spRandom.h"
 
 #include <string>
@@ -21,9 +22,9 @@
 //------------------------------------------------------------------------------
 #pragma mark - AGUISequencerEditor
 
-static const float AGUISequencerEditor_stepSize = 0.01f;
+static const float AGUISequencerEditor_stepSize = 0.01f*AGStyle::oldGlobalScale;
 static const float AGUISequencerEditor_minClearance = AGUISequencerEditor_stepSize/20;
-static const float AGUISequencerEditor_adjustmentScale = 75;
+static const float AGUISequencerEditor_adjustmentScale = 75/AGStyle::oldGlobalScale;
 
 class AGUISequencerEditor : public AGUINodeEditor
 {
@@ -336,71 +337,81 @@ private:
 //------------------------------------------------------------------------------
 #pragma mark - AGControlSequencerNode
 
-AGNodeInfo *AGControlSequencerNode::s_nodeInfo = NULL;
+string AGControlSequencerNode::Manifest::_type() const { return "Sequencer"; };
+string AGControlSequencerNode::Manifest::_name() const { return "Sequencer"; };
 
-void AGControlSequencerNode::initialize()
+vector<AGPortInfo> AGControlSequencerNode::Manifest::_inputPortInfo() const
 {
-    s_nodeInfo = new AGNodeInfo;
-    
-    s_nodeInfo->type = "Sequencer";
-    
-    float radius = 0.005;
+    return {
+        { "bpm", true, true }
+    };
+};
+
+vector<AGPortInfo> AGControlSequencerNode::Manifest::_editPortInfo() const { return { }; };
+
+vector<GLvertex3f> AGControlSequencerNode::Manifest::_iconGeo() const
+{
+    float radius = 0.005*AGStyle::oldGlobalScale;
     int gridSize = 5;
-    s_nodeInfo->iconGeoSize = gridSize*4;
-    s_nodeInfo->iconGeoType = GL_LINES;
-    s_nodeInfo->iconGeo = new GLvertex3f[s_nodeInfo->iconGeoSize];
+    int NUM_PTS = gridSize*4;
+    vector<GLvertex3f> iconGeo(NUM_PTS);
     
     // horizontal grid lines
     for(int i = 0; i < gridSize; i++)
     {
         float y = radius*2*i/(gridSize-1);
-        s_nodeInfo->iconGeo[i*2+0] = GLvertex3f(-radius, radius-y, 0);
-        s_nodeInfo->iconGeo[i*2+1] = GLvertex3f( radius, radius-y, 0);
+        iconGeo[i*2+0] = GLvertex3f(-radius, radius-y, 0);
+        iconGeo[i*2+1] = GLvertex3f( radius, radius-y, 0);
     }
     
     // vertical grid lines
     for(int i = 0; i < gridSize; i++)
     {
         float x = radius*2*i/(gridSize-1);
-        s_nodeInfo->iconGeo[gridSize*2+i*2+0] = GLvertex3f(-radius+x,  radius, 0);
-        s_nodeInfo->iconGeo[gridSize*2+i*2+1] = GLvertex3f(-radius+x, -radius, 0);
+        iconGeo[gridSize*2+i*2+0] = GLvertex3f(-radius+x,  radius, 0);
+        iconGeo[gridSize*2+i*2+1] = GLvertex3f(-radius+x, -radius, 0);
     }
     
     // TODO: filled-in grid squares
     
-    s_nodeInfo->editPortInfo.push_back({ "bpm", true, true });
-    s_nodeInfo->inputPortInfo.push_back({ "bpm", true, true });
-}
+    return iconGeo;
+};
 
-AGControlSequencerNode::AGControlSequencerNode(const GLvertex3f &pos) :
-AGControlNode(pos, s_nodeInfo)
+GLuint AGControlSequencerNode::Manifest::_iconGeoType() const { return GL_LINES; };
+
+
+AGControlSequencerNode::AGControlSequencerNode(const AGNodeManifest *mf, const GLvertex3f &pos) :
+AGControlNode(mf, pos)
 {
     m_bpm = 120;
     m_numSteps = 8;
+    m_pos = 0;
     // add default sequence
     m_sequence.push_back(std::vector<float>(m_numSteps, 0));
 //    m_sequence.push_back(std::vector<float>(m_numSteps, 0));
     for(auto i = m_sequence.begin(); i != m_sequence.end(); i++)
         for(auto j = i->begin(); j != i->end(); j++)
             *j = Random::unit();
-    m_control.v = 0;
+//    m_control.v = 0;
     
     m_timer = new AGTimer(60.0/m_bpm, ^(AGTimer *) {
         updateStep();
     });
 }
 
-AGControlSequencerNode::AGControlSequencerNode(const AGDocument::Node &docNode) : AGControlNode(docNode, s_nodeInfo)
+AGControlSequencerNode::AGControlSequencerNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
+AGControlNode(mf, docNode)
 {
     m_bpm = 120;
     m_numSteps = 8;
+    m_pos = 0;
     // add default sequence
     m_sequence.push_back(std::vector<float>(m_numSteps, 0));
     m_sequence.push_back(std::vector<float>(m_numSteps, 0));
     for(auto i = m_sequence.begin(); i != m_sequence.end(); i++)
         for(auto j = i->begin(); j != i->end(); j++)
             *j = Random::unit();
-    m_control.v = 0;
+//    m_control.v = 0;
     
     m_timer = new AGTimer(60.0/m_bpm, ^(AGTimer *) {
         updateStep();
@@ -411,16 +422,6 @@ AGControlSequencerNode::~AGControlSequencerNode()
 {
     delete m_timer;
     m_timer = NULL;
-}
-
-void AGControlSequencerNode::update(float t, float dt)
-{
-    AGControlNode::update(t, dt);
-}
-
-void AGControlSequencerNode::render()
-{
-    AGControlNode::render();
 }
 
 AGUINodeEditor *AGControlSequencerNode::createCustomEditor()
@@ -448,8 +449,8 @@ void AGControlSequencerNode::updateStep()
 {
     m_pos = (m_pos + 1) % m_numSteps;
     
-    m_control.v = m_sequence[0][m_pos];
-    pushControl(0, &m_control);
+//    m_control.v = m_sequence[0][m_pos];
+//    pushControl(0, &m_control);
 }
 
 void AGControlSequencerNode::setStepValue(int seq, int step, float value)
@@ -476,21 +477,6 @@ void AGControlSequencerNode::getEditPortValue(int port, float &value) const
     {
         case 0: value = m_bpm; break;
     }
-}
-
-void AGControlSequencerNode::renderIcon()
-{
-    // render icon
-    glBindVertexArrayOES(0);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_nodeInfo->iconGeo);
-    
-    glLineWidth(2.0);
-    glDrawArrays(s_nodeInfo->iconGeoType, 0, s_nodeInfo->iconGeoSize);
-}
-
-AGNode *AGControlSequencerNode::create(const GLvertex3f &pos)
-{
-    return new AGControlTimerNode(pos);
 }
 
 
