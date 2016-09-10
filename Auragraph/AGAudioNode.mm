@@ -985,10 +985,10 @@ void AGAudioADSRNode::setEditPortValue(int port, float value)
     switch(port)
     {
         case 0: m_gain = value; break;
-        case 1: m_attack = value/1000.0f; set = true; break;
-        case 2: m_decay = value/1000.0f; set = true; break;
-        case 3: m_sustain = value/1000.0f; set = true; break;
-        case 4: m_release = value/1000.0f; set = true; break;
+        case 1: m_attack = value; set = true; break;
+        case 2: m_decay = value; set = true; break;
+        case 3: m_sustain = value; set = true; break;
+        case 4: m_release = value; set = true; break;
     }
     
     if(set) m_adsr.setAllTimes(m_attack, m_decay, m_sustain, m_release);
