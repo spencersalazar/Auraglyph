@@ -1232,11 +1232,10 @@ public:
                 return 0;
             if(value > sampleRate()/2)
                 return sampleRate()/2;
+            return value;
         }
-        else
-        {
-            AGNode::validateEditPortValue(port, value);
-        }
+        
+        return AGNode::validateEditPortValue(port, value);
     }
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
