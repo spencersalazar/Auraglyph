@@ -17,6 +17,7 @@
 #import "spstl.h"
 #import "AGAudioCapturer.h"
 #import "AGCompositeNode.h"
+#include "AGCompressorNode.h"
 #include "AGStyle.h"
 
 
@@ -1496,6 +1497,7 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RHPF>::ManifestHPF);
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2BPF>::ManifestBPF);
         nodeTypes.push_back(new AGAudioFeedbackNode::Manifest);
+        nodeTypes.push_back(new AGAudioCompressorNode::Manifest);
         nodeTypes.push_back(new AGAudioInputNode::Manifest);
         nodeTypes.push_back(new AGAudioOutputNode::Manifest);
         nodeTypes.push_back(new AGAudioCompositeNode::Manifest);
