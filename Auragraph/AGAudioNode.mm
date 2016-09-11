@@ -17,6 +17,7 @@
 #import "spstl.h"
 #import "AGAudioCapturer.h"
 #import "AGCompositeNode.h"
+#include "AGCompressorNode.h"
 #include "AGStyle.h"
 
 
@@ -985,10 +986,10 @@ void AGAudioADSRNode::setEditPortValue(int port, float value)
     switch(port)
     {
         case 0: m_gain = value; break;
-        case 1: m_attack = value/1000.0f; set = true; break;
-        case 2: m_decay = value/1000.0f; set = true; break;
-        case 3: m_sustain = value/1000.0f; set = true; break;
-        case 4: m_release = value/1000.0f; set = true; break;
+        case 1: m_attack = value; set = true; break;
+        case 2: m_decay = value; set = true; break;
+        case 3: m_sustain = value; set = true; break;
+        case 4: m_release = value; set = true; break;
     }
     
     if(set) m_adsr.setAllTimes(m_attack, m_decay, m_sustain, m_release);
@@ -1232,11 +1233,10 @@ public:
                 return 0;
             if(value > sampleRate()/2)
                 return sampleRate()/2;
+            return value;
         }
-        else
-        {
-            AGNode::validateEditPortValue(port, value);
-        }
+        
+        return AGNode::validateEditPortValue(port, value);
     }
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
@@ -1496,6 +1496,7 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RHPF>::ManifestHPF);
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2BPF>::ManifestBPF);
         nodeTypes.push_back(new AGAudioFeedbackNode::Manifest);
+        nodeTypes.push_back(new AGAudioCompressorNode::Manifest);
         nodeTypes.push_back(new AGAudioInputNode::Manifest);
         nodeTypes.push_back(new AGAudioOutputNode::Manifest);
         nodeTypes.push_back(new AGAudioCompositeNode::Manifest);
