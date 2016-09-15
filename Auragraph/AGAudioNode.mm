@@ -17,6 +17,7 @@
 #import "spstl.h"
 #import "AGAudioCapturer.h"
 #import "AGCompositeNode.h"
+#include "FileWvIn.h"
 #include "AGCompressorNode.h"
 #include "AGStyle.h"
 
@@ -1475,6 +1476,106 @@ private:
 
 
 //------------------------------------------------------------------------------
+// ### AGAudioSoundFileNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioSoundFileNode
+
+class AGAudioSoundFileNode : public AGAudioNode
+{
+public:
+    class Manifest : public AGStandardNodeManifest<AGAudioSoundFileNode>
+    {
+    public:
+        string _type() const override { return "SoundFile"; };
+        string _name() const override { return "SoundFile"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { "rate", true, true },
+                { "gain", true, true }
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { "file", true, true },
+                { "rate", true, true },
+                { "gain", true, true }
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_y = 0.005f*AGStyle::oldGlobalScale;
+            float radius_x = radius_y*0.66f;
+            
+            // sawtooth wave shape
+            vector<GLvertex3f> iconGeo = {
+                { -radius_x, 0, 0 },
+                { -radius_x*0.5f, radius_y, 0 },
+                { radius_x*0.5f, -radius_y, 0 },
+                { radius_x, 0, 0 },
+            };
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+    };
+    
+    using AGAudioNode::AGAudioNode;
+    
+    void setDefaultPortValues() override
+    {
+        m_rate = 1;
+        m_gain = 1;
+//        m_file.openFile("");
+    }
+    
+    virtual int numOutputPorts() const override { return 1; }
+    virtual int numInputPorts() const override { return 2; }
+    
+    virtual void setEditPortValue(int port, float value) override
+    {
+        
+    }
+    
+    virtual void getEditPortValue(int port, float &value) const override
+    {
+        
+    }
+    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
+    {
+        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        pullInputPorts(t, nFrames);
+        
+        float gain = m_gain;
+        float rate = m_rate;
+        
+        for(int i = 0; i < nFrames; i++)
+        {
+            rate += m_inputPortBuffer[0][i];
+            gain += m_inputPortBuffer[1][i];
+            
+            m_file.setRate(rate);
+            
+            m_outputBuffer[i] = m_file.tick()*gain;
+            output[i] += m_outputBuffer[i];
+        }
+        
+        m_lastTime = t;
+    }
+    
+private:
+    float m_rate;
+    stk::FileWvIn m_file;
+};
+
+
+//------------------------------------------------------------------------------
 // ### AGNodeManager ###
 //------------------------------------------------------------------------------
 #pragma mark - AGNodeManager
@@ -1491,6 +1592,7 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioSquareWaveNode::Manifest);
         nodeTypes.push_back(new AGAudioSawtoothWaveNode::Manifest);
         nodeTypes.push_back(new AGAudioTriangleWaveNode::Manifest);
+        nodeTypes.push_back(new AGAudioSoundFileNode::Manifest);
         nodeTypes.push_back(new AGAudioADSRNode::Manifest);
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RLPF>::ManifestLPF);
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RHPF>::ManifestHPF);

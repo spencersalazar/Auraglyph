@@ -79,6 +79,8 @@
 		098F9B3A19EE49BA00CE2F24 /* AGRenderObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098F9B3819EE49BA00CE2F24 /* AGRenderObject.mm */; };
 		0991BA7A1D839BB10080175C /* AGCompressorNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0991BA781D839BB10080175C /* AGCompressorNode.mm */; };
 		0991BA7E1D83A5140080175C /* spdsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0991BA7C1D83A5140080175C /* spdsp.cpp */; };
+		0991BA841D8654C70080175C /* FileRead.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0991BA821D8654C70080175C /* FileRead.cpp */; };
+		0991BA851D8654C70080175C /* FileWvIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0991BA831D8654C70080175C /* FileWvIn.cpp */; };
 		099AF10F17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png in Resources */ = {isa = PBXBuildFile; fileRef = 099AF10E17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png */; };
 		099AF11317D12DD9000BAB7B /* AGTrainerViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 099AF11117D12DD9000BAB7B /* AGTrainerViewController.mm */; };
 		099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */; };
@@ -278,6 +280,11 @@
 		0991BA791D839BB10080175C /* AGCompressorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGCompressorNode.h; sourceTree = "<group>"; };
 		0991BA7C1D83A5140080175C /* spdsp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spdsp.cpp; sourceTree = "<group>"; };
 		0991BA7D1D83A5140080175C /* spdsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spdsp.h; sourceTree = "<group>"; };
+		0991BA7F1D8654B70080175C /* FileRead.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileRead.h; sourceTree = "<group>"; };
+		0991BA801D8654B70080175C /* FileWvIn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileWvIn.h; sourceTree = "<group>"; };
+		0991BA811D8654B70080175C /* WvIn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WvIn.h; sourceTree = "<group>"; };
+		0991BA821D8654C70080175C /* FileRead.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileRead.cpp; sourceTree = "<group>"; };
+		0991BA831D8654C70080175C /* FileWvIn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileWvIn.cpp; sourceTree = "<group>"; };
 		099AF10E17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AURAGRPH-AppIcon144.png"; path = "../AURAGRPH-AppIcon144.png"; sourceTree = "<group>"; };
 		099AF11017D12DD9000BAB7B /* AGTrainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGTrainerViewController.h; sourceTree = "<group>"; };
 		099AF11117D12DD9000BAB7B /* AGTrainerViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGTrainerViewController.mm; sourceTree = "<group>"; };
@@ -700,6 +707,8 @@
 				09F2D5391D7EA33400F537C7 /* DelayL.cpp */,
 				09E5EC8618A5A88100B21D97 /* ADSR.cpp */,
 				09F3C50718A5A8C300E499AF /* Stk.cpp */,
+				0991BA821D8654C70080175C /* FileRead.cpp */,
+				0991BA831D8654C70080175C /* FileWvIn.cpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -714,6 +723,9 @@
 				09F2D5441D7EA35300F537C7 /* DelayA.h */,
 				09F2D5451D7EA35300F537C7 /* DelayL.h */,
 				09F2D5461D7EA35E00F537C7 /* Filter.h */,
+				0991BA7F1D8654B70080175C /* FileRead.h */,
+				0991BA801D8654B70080175C /* FileWvIn.h */,
+				0991BA811D8654B70080175C /* WvIn.h */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -747,6 +759,11 @@
 				CLASSPREFIX = AG;
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "Spencer Salazar";
+				TargetAttributes = {
+					095D12BF17ACA36C0048A012 = {
+						DevelopmentTeam = 9GU9FHJ3JC;
+					};
+				};
 			};
 			buildConfigurationList = 095D12BB17ACA36C0048A012 /* Build configuration list for PBXProject "Auragraph" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -837,6 +854,7 @@
 				093395741A088849009E4802 /* AGControlNode.mm in Sources */,
 				09F3C50818A5A8C300E499AF /* Stk.cpp in Sources */,
 				09817F3919F87CC7000E9FB3 /* GeoGenerator.cpp in Sources */,
+				0991BA841D8654C70080175C /* FileRead.cpp in Sources */,
 				093395711A088612009E4802 /* AGArrayNode.mm in Sources */,
 				0991BA7A1D839BB10080175C /* AGCompressorNode.mm in Sources */,
 				09E5EC8718A5A88100B21D97 /* ADSR.cpp in Sources */,
@@ -865,6 +883,7 @@
 				099AF12717D1A6DA000BAB7B /* mztools.c in Sources */,
 				099AF12817D1A6DA000BAB7B /* unzip.c in Sources */,
 				099AF12917D1A6DA000BAB7B /* zip.c in Sources */,
+				0991BA851D8654C70080175C /* FileWvIn.cpp in Sources */,
 				099AF12A17D1A6DA000BAB7B /* SSZipArchive.m in Sources */,
 				0933957A1A0A3785009E4802 /* AGAboutBox.mm in Sources */,
 			);
@@ -957,6 +976,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LIBRARY = "libc++";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEAD_CODE_STRIPPING = NO;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -971,6 +992,7 @@
 				);
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_NAME = AURAGLPH;
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -982,6 +1004,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LIBRARY = "libc++";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEAD_CODE_STRIPPING = NO;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -996,6 +1020,7 @@
 				);
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_NAME = AURAGLPH;
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
