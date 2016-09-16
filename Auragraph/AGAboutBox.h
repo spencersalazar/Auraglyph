@@ -10,7 +10,7 @@
 #define __Auragraph__AGAboutBox__
 
 
-#include "AGRenderObject.h"
+#include "AGInteractiveObject.h"
 #include "AGAudioNode.h"
 #include "AGUserInterface.h"
 #include "AGStyle.h"

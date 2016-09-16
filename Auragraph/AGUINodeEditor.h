@@ -13,7 +13,7 @@
 #import <GLKit/GLKit.h>
 #import "Geometry.h"
 #import "Animation.h"
-#import "AGRenderObject.h"
+#include "AGInteractiveObject.h"
 #import "AGUserInterface.h"
 
 #include "LTKTypes.h"

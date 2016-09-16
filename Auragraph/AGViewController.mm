@@ -12,6 +12,7 @@
 #import "hsv.h"
 #import "ES2Render.h"
 #import "AGHandwritingRecognizer.h"
+#import "AGInteractiveObject.h"
 #import "AGNode.h"
 #import "AGAudioNode.h"
 #import "AGControlNode.h"

@@ -9,7 +9,7 @@
 #ifndef __Auragraph__AGConnection__
 #define __Auragraph__AGConnection__
 
-#include "AGRenderObject.h"
+#include "AGInteractiveObject.h"
 #include "AGUserInterface.h"
 #include "AGDocument.h"
 #include "AGControl.h"

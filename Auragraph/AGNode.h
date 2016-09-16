@@ -14,6 +14,7 @@
 #include "AGConnection.h"
 #include "AGDocument.h"
 //#include "AGUserInterface.h"
+#include "AGInteractiveObject.h"
 
 #include "Geometry.h"
 #include "Animation.h"

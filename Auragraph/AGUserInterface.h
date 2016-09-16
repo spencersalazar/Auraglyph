@@ -10,9 +10,9 @@
 #define __Auragraph__AGUserInterface__
 
 #import <GLKit/GLKit.h>
-#import "Geometry.h"
-#import "Animation.h"
-#import "AGRenderObject.h"
+#include "Geometry.h"
+#include "Animation.h"
+#include "AGInteractiveObject.h"
 
 #include <string>
 #include <vector>
