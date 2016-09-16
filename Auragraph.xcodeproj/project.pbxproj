@@ -53,6 +53,7 @@
 		095E853117B358FC0065EF8E /* shaperectst.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E852F17B358FC0065EF8E /* shaperectst.mm */; };
 		095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */; };
 		09817F3919F87CC7000E9FB3 /* GeoGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09817F3819F87CC7000E9FB3 /* GeoGenerator.cpp */; };
+		0985E5331D8C91BF00B536C8 /* AGUIFilePicker.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0985E5311D8C91BF00B536C8 /* AGUIFilePicker.mm */; };
 		0987409C17B98D7C0098511A /* AGNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0987409A17B98D7C0098511A /* AGNode.mm */; };
 		098740A017BA2AB90098511A /* mo_audio.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0987409E17BA2AB90098511A /* mo_audio.mm */; };
 		098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740A217BA2EA70098511A /* AGAudioManager.mm */; };
@@ -244,6 +245,8 @@
 		095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGHandwritingRecognizer.mm; sourceTree = "<group>"; };
 		09817F3719F78B3F000E9FB3 /* GeoGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeoGenerator.h; sourceTree = "<group>"; };
 		09817F3819F87CC7000E9FB3 /* GeoGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeoGenerator.cpp; sourceTree = "<group>"; };
+		0985E5311D8C91BF00B536C8 /* AGUIFilePicker.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGUIFilePicker.mm; sourceTree = "<group>"; };
+		0985E5321D8C91BF00B536C8 /* AGUIFilePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGUIFilePicker.h; sourceTree = "<group>"; };
 		0987409A17B98D7C0098511A /* AGNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGNode.mm; sourceTree = "<group>"; };
 		0987409B17B98D7C0098511A /* AGNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGNode.h; sourceTree = "<group>"; };
 		0987409D17BA2AB90098511A /* mo_audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mo_audio.h; sourceTree = "<group>"; };
@@ -430,6 +433,8 @@
 				0987409A17B98D7C0098511A /* AGNode.mm */,
 				09FC924A1A153A83005D14A3 /* AGConnection.h */,
 				09FC92491A153A83005D14A3 /* AGConnection.mm */,
+				09E5EC8118A46F7300B21D97 /* AGControl.h */,
+				09E5EC8018A46F7300B21D97 /* AGControl.mm */,
 				098740AC17BC377E0098511A /* AGAudioNode.h */,
 				098740AB17BC377E0098511A /* AGAudioNode.mm */,
 				093395731A088849009E4802 /* AGControlNode.h */,
@@ -439,18 +444,7 @@
 				09F6E8791D6A3758006DBC9E /* AGOutputNode.h */,
 				09F6E8781D6A3758006DBC9E /* AGOutputNode.mm */,
 				09B674411D6D9D6500F84E09 /* Nodes */,
-				098740B217BC61410098511A /* AGUserInterface.h */,
-				098740B117BC61410098511A /* AGUserInterface.mm */,
-				093395761A08BFAC009E4802 /* AGNodeSelector.h */,
-				093395751A08BFAC009E4802 /* AGNodeSelector.mm */,
-				091C70CB1C48A9A600B513C2 /* AGUINodeEditor.h */,
-				091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */,
-				09F29DAE1CCA086200502C01 /* AGSlider.h */,
-				09F29DAD1CCA086200502C01 /* AGSlider.mm */,
-				09E5EC8118A46F7300B21D97 /* AGControl.h */,
-				09E5EC8018A46F7300B21D97 /* AGControl.mm */,
-				093395791A0A3785009E4802 /* AGAboutBox.h */,
-				093395781A0A3785009E4802 /* AGAboutBox.mm */,
+				0985E5301D8C8DEF00B536C8 /* UI */,
 				0901C1BB17BE2F970032904B /* AGGenericShader.h */,
 				0901C1BA17BE2F970032904B /* AGGenericShader.mm */,
 				095D12E117ACA36C0048A012 /* Shader.vsh */,
@@ -631,6 +625,25 @@
 				095E851C17B354BE0065EF8E /* libwordreccommon.a */,
 			);
 			path = lib;
+			sourceTree = "<group>";
+		};
+		0985E5301D8C8DEF00B536C8 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				098740B217BC61410098511A /* AGUserInterface.h */,
+				098740B117BC61410098511A /* AGUserInterface.mm */,
+				09F29DAE1CCA086200502C01 /* AGSlider.h */,
+				09F29DAD1CCA086200502C01 /* AGSlider.mm */,
+				093395761A08BFAC009E4802 /* AGNodeSelector.h */,
+				093395751A08BFAC009E4802 /* AGNodeSelector.mm */,
+				091C70CB1C48A9A600B513C2 /* AGUINodeEditor.h */,
+				091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */,
+				093395791A0A3785009E4802 /* AGAboutBox.h */,
+				093395781A0A3785009E4802 /* AGAboutBox.mm */,
+				0985E5321D8C91BF00B536C8 /* AGUIFilePicker.h */,
+				0985E5311D8C91BF00B536C8 /* AGUIFilePicker.mm */,
+			);
+			name = UI;
 			sourceTree = "<group>";
 		};
 		0989130F189F6D3A00AB98AD /* Images */ = {
@@ -828,6 +841,7 @@
 				09F6E87A1D6A3758006DBC9E /* AGOutputNode.mm in Sources */,
 				095D12FB17ACAA100048A012 /* Geometry.cpp in Sources */,
 				093395771A08BFAC009E4802 /* AGNodeSelector.mm in Sources */,
+				0985E5331D8C91BF00B536C8 /* AGUIFilePicker.mm in Sources */,
 				09F700B81D71046300294BDD /* Buffers.cpp in Sources */,
 				095D12FC17ACAA100048A012 /* Texture.mm in Sources */,
 				09E5EC7F18A36A9D00B21D97 /* SPFilter.cpp in Sources */,
