@@ -20,6 +20,10 @@ typedef uint64_t TouchID;
 typedef uint32_t TouchID;
 #endif
 
+//------------------------------------------------------------------------------
+// ### AGTouchInfo ###
+// Class representing a single touch.
+//------------------------------------------------------------------------------
 struct AGTouchInfo
 {
     AGTouchInfo() { }
@@ -33,11 +37,31 @@ struct AGTouchInfo
 };
 
 
+class AGInteractiveObject;
+
+
+//------------------------------------------------------------------------------
+// ### AGInteractive ###
+// Basic pure virtual class for interactivity.
+//------------------------------------------------------------------------------
+class AGInteractive
+{
+public:
+    virtual ~AGInteractive() { }
+    
+    virtual void touchDown(const AGTouchInfo &t) = 0;
+    virtual void touchMove(const AGTouchInfo &t) = 0;
+    virtual void touchUp(const AGTouchInfo &t) = 0;
+    
+    virtual AGInteractiveObject *hitTest(const GLvertex3f &t) = 0;
+};
+
+
 //------------------------------------------------------------------------------
 // ### AGInteractiveObject ###
 // Base class for objects that support interaction in addition to rendering.
 //------------------------------------------------------------------------------
-class AGInteractiveObject : public AGRenderObject
+class AGInteractiveObject : public AGRenderObject, public AGInteractive
 {
 public:
     AGInteractiveObject();
@@ -50,12 +74,12 @@ public:
     
     // new version
     // subclasses generally should override these
-    virtual void touchDown(const AGTouchInfo &t);
-    virtual void touchMove(const AGTouchInfo &t);
-    virtual void touchUp(const AGTouchInfo &t);
+    virtual void touchDown(const AGTouchInfo &t) override;
+    virtual void touchMove(const AGTouchInfo &t) override;
+    virtual void touchUp(const AGTouchInfo &t) override;
     
     // default implementation checks if touch is within this->effectiveBounds()
-    virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
+    virtual AGInteractiveObject *hitTest(const GLvertex3f &t) override;
     
     virtual AGInteractiveObject *userInterface() { return NULL; }
     

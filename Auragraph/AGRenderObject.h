@@ -16,6 +16,10 @@
 #include <list>
 using namespace std;
 
+//------------------------------------------------------------------------------
+// ### AGRenderable ###
+// Basic pure virtual class for things that can be drawn.
+//------------------------------------------------------------------------------
 class AGRenderable
 {
 public:
@@ -24,8 +28,13 @@ public:
     virtual void render() = 0;
 };
 
+// forward declaration
 class AGGenericShader;
 
+//------------------------------------------------------------------------------
+// ### AGRenderState ###
+// Encapsulates current state related to rendering an object
+//------------------------------------------------------------------------------
 struct AGRenderState
 {
     GLKMatrix4 projection;
@@ -34,6 +43,11 @@ struct AGRenderState
     float alpha;
 };
 
+//------------------------------------------------------------------------------
+// ### AGRenderInfo ###
+// Encapsulates all info needed to glDrawArrays
+// set() function sets up vertex arrays, color, texcoords, etc. 
+//------------------------------------------------------------------------------
 struct AGRenderInfo
 {
 public:
@@ -71,8 +85,8 @@ public:
        model a lot easier, so init() is used instead. */
     virtual void init();
     
-    virtual void update(float t, float dt);
-    virtual void render();
+    virtual void update(float t, float dt) override;
+    virtual void render() override;
     
     virtual void renderOut();
     virtual bool finishedRenderingOut();
