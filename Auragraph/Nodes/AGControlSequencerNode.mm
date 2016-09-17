@@ -455,7 +455,8 @@ void AGControlSequencerNode::updateStep()
     m_pos = (m_pos + 1) % m_numSteps;
     
 //    m_control.v = m_sequence[0][m_pos];
-    pushControl(0, AGControl(m_sequence[0][m_pos]));
+    for(int seq = 0; seq < m_sequence.size(); seq++)
+        pushControl(seq, AGControl(m_sequence[seq][m_pos]));
 }
 
 void AGControlSequencerNode::setStepValue(int seq, int step, float value)
