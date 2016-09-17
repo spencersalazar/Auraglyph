@@ -219,8 +219,8 @@
 - (void)coalesceComposite:(AGAudioCompositeNode *)compositeNode withNodes:(const set<AGNode *> &)subnodes
 {
     // save broken input/output connections
-    list<tuple<AGNode *, AGNode *, int>> inbound;
-    list<tuple<AGNode *, AGNode *, int>> outbound;
+    list<tuple<AGNode *, int, AGNode *, int>> inbound;
+    list<tuple<AGNode *, int, AGNode *, int>> outbound;
     
     for(AGNode *node : subnodes)
     {
@@ -233,7 +233,7 @@
             auto j = i++;
             if(!subnodes.count((*j)->src()))
             {
-                outbound.push_back(std::make_tuple((*j)->src(), node, (*j)->dstPort()));
+                outbound.push_back(std::make_tuple((*j)->src(), (*j)->srcPort(), node, (*j)->dstPort()));
                 (*j)->removeFromTopLevel();
             }
         }
@@ -243,7 +243,7 @@
             auto j = i++;
             if(!subnodes.count((*j)->dst()))
             {
-                outbound.push_back(std::make_tuple(node, (*j)->dst(), (*j)->dstPort()));
+                outbound.push_back(std::make_tuple(node, (*j)->srcPort(), (*j)->dst(), (*j)->dstPort()));
                 (*j)->removeFromTopLevel();
             }
         }
@@ -267,19 +267,20 @@
     if(outbound.size() && compositeNode->numOutputPorts() == 0)
     {
         AGNode *src = std::get<0>(outbound.front());
-        AGNode *dst = std::get<1>(outbound.front());
-        int port = std::get<2>(outbound.front());
+        int srcPort = std::get<1>(outbound.front());
+        AGNode *dst = std::get<2>(outbound.front());
+        int dstPort = std::get<3>(outbound.front());
         
         // create output within composite
-        AGNode *newNode = AGNodeManager::audioNodeManager().createNodeOfType("Output", dst->position());
-        AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(newNode);
+        AGNode *internalNode = AGNodeManager::audioNodeManager().createNodeOfType("Output", dst->position());
+        AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(internalNode);
         outputNode->setOutputDestination(compositeNode);
         
         // make connection within composite
-        AGConnection *internalConnection = new AGConnection(src, newNode, 0);
+        AGConnection *internalConnection = new AGConnection(src, srcPort, internalNode, 0);
         internalConnection->init();
         // make connection outside composite
-        AGConnection *externalConnection = new AGConnection(compositeNode, dst, port);
+        AGConnection *externalConnection = new AGConnection(compositeNode, 0, dst, dstPort);
         externalConnection->init();
     }
 }
@@ -887,7 +888,7 @@ private:
         int port = _browser->selectedPort();
         if(port != -1)
         {
-            AGConnection::connect(_originalHit, _currentHit, port);
+            AGConnection::connect(_originalHit, srcPort, _currentHit, port);
         }
     }
     

@@ -62,15 +62,15 @@ void AGConnection::initalize()
     }
 }
 
-AGConnection *AGConnection::connect(AGNode *src, AGNode *dst, int dstPort)
+AGConnection *AGConnection::connect(AGNode *src, int srcPort, AGNode *dst, int dstPort)
 {
-    AGConnection *conn = new AGConnection(src, dst, dstPort);
+    AGConnection *conn = new AGConnection(src, srcPort, dst, dstPort);
     conn->init();
     return conn;
 }
 
-AGConnection::AGConnection(AGNode * src, AGNode * dst, int dstPort) :
-m_src(src), m_dst(dst), m_dstPort(dstPort),
+AGConnection::AGConnection(AGNode * src, int srcPort, AGNode * dst, int dstPort) :
+m_src(src), m_srcPort(srcPort), m_dst(dst), m_dstPort(dstPort),
 m_rate((src->rate() == RATE_AUDIO && dst->rate() == RATE_AUDIO) ? RATE_AUDIO : RATE_CONTROL),
 m_geoSize(0), m_hit(false), m_stretch(false), m_active(true),
 m_stretchPoint(0.25, GLvertex3f()), m_controlVisScale(0.07, 0), m_uuid(makeUUID())
@@ -375,6 +375,7 @@ AGDocument::Connection AGConnection::serialize()
     AGDocument::Connection docConnection;
     docConnection.uuid = m_uuid;
     docConnection.srcUuid = src()->uuid();
+    docConnection.srcPort = srcPort();
     docConnection.dstUuid = dst()->uuid();
     docConnection.dstPort = dstPort();
     

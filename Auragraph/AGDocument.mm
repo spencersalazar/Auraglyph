@@ -121,6 +121,10 @@ void AGDocument::load(const string &title)
                         
                         c.uuid = [conn[@"uuid"] stlString];
                         c.srcUuid = [conn[@"src"] stlString];
+                        if([conn objectForKey:@"srcPort"])
+                            c.srcPort = [[conn objectForKey:@"srcPort"] intValue];
+                        else
+                            c.srcPort = 0;
                         c.dstUuid = n.uuid;
                         c.dstPort = [conn[@"dstPort"] intValue];
                         
@@ -136,6 +140,10 @@ void AGDocument::load(const string &title)
                         
                         c.uuid = [conn[@"uuid"] stlString];
                         c.srcUuid = n.uuid;
+                        if([conn objectForKey:@"srcPort"])
+                            c.srcPort = [[conn objectForKey:@"srcPort"] intValue];
+                        else
+                            c.srcPort = 0;
                         c.dstUuid = [conn[@"dst"] stlString];
                         c.dstPort = [conn[@"dstPort"] intValue];
                         
@@ -214,12 +222,14 @@ void AGDocument::save()
         for(const Connection &conn : node.inbound)
             [inbound addObject:@{ @"uuid": [NSString stringWithSTLString:conn.uuid],
                                   @"src": [NSString stringWithSTLString:conn.srcUuid],
+                                  @"srcPort": @(conn.srcPort),
                                   @"dstPort": @(conn.dstPort)
                                   }];
         
         NSMutableArray *outbound = [NSMutableArray arrayWithCapacity:node.outbound.size()];
         for(const Connection &conn : node.outbound)
             [outbound addObject:@{ @"uuid": [NSString stringWithSTLString:conn.uuid],
+                                   @"srcPort": @(conn.srcPort),
                                    @"dst": [NSString stringWithSTLString:conn.dstUuid],
                                    @"dstPort": @(conn.dstPort)
                                    }];

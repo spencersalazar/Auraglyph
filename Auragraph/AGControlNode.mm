@@ -75,6 +75,18 @@ AGNode(mf, docNode)
     initializeControlNode();
 }
 
+GLvertex3f AGControlNode::relativePositionForInputPort(int port) const
+{
+    int numIn = numInputPorts();
+    return GLvertex3f(-s_radius, s_portRadius*(numIn-1)-s_portRadius*2*port, 0);
+}
+
+GLvertex3f AGControlNode::relativePositionForOutputPort(int port) const
+{
+    int numOut = numOutputPorts();
+    return GLvertex3f(s_radius, s_portRadius*(numOut-1)-s_portRadius*2*port, 0);
+}
+
 void AGControlNode::update(float t, float dt)
 {
     AGNode::update(t, dt);
