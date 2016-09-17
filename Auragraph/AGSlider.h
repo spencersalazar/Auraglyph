@@ -9,8 +9,8 @@
 #ifndef AGSlider_h
 #define AGSlider_h
 
-#include "AGRenderObject.h"
-#include <sstream>
+#include "AGInteractiveObject.h"
+#include <functional>
 
 class AGSlider : public AGInteractiveObject
 {

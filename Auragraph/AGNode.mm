@@ -257,21 +257,21 @@ void AGNode::render()
     shader.setNormalMatrix(m_normalMatrix);
     
     int numOut = numOutputPorts();
-    if(numOut)
+    for(int port = 0; port < numOut; port++)
     {
         // draw output port
         glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_portGeo);
         glEnableVertexAttribArray(GLKVertexAttribPosition);
         
-        GLvertex3f portPos = relativePositionForOutputPort(0);
+        GLvertex3f portPos = relativePositionForOutputPort(port);
         GLKMatrix4 mvpOutputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, portPos.x, portPos.y, portPos.z);
         mvpOutputPort = GLKMatrix4Scale(mvpOutputPort, 0.8, 0.8, 0.8);
         shader.setMVPMatrix(mvpOutputPort);
         
         GLcolor4f color;
-        if(m_outputActivation == 1)       color = GLcolor4f(0, 1, 0, 1);
-        else if(m_outputActivation == -1) color = GLcolor4f(1, 0, 0, 1);
-        else                              color = GLcolor4f(1, 1, 1, 1);
+        if(m_outputActivation == 1+port)       color = GLcolor4f(0, 1, 0, 1);
+        else if(m_outputActivation == -1-port) color = GLcolor4f(1, 0, 0, 1);
+        else                                   color = GLcolor4f(1, 1, 1, 1);
         color.a = m_fadeOut;
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
         
@@ -280,21 +280,21 @@ void AGNode::render()
     }
     
     int numIn = numInputPorts();
-    for(int i = 0; i < numIn; i++)
+    for(int port = 0; port < numIn; port++)
     {
         // draw input port
         glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_portGeo);
         glEnableVertexAttribArray(GLKVertexAttribPosition);
 
-        GLvertex3f portPos = relativePositionForInputPort(i);
+        GLvertex3f portPos = relativePositionForInputPort(port);
         GLKMatrix4 mvpInputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, portPos.x, portPos.y, portPos.z);
         mvpInputPort = GLKMatrix4Scale(mvpInputPort, 0.8, 0.8, 0.8);
         shader.setMVPMatrix(mvpInputPort);
         
         GLcolor4f color;
-        if(m_inputActivation == 1+i)       color = GLcolor4f(0, 1, 0, 1);
-        else if(m_inputActivation == -1-i) color = GLcolor4f(1, 0, 0, 1);
-        else                               color = GLcolor4f(1, 1, 1, 1);
+        if(m_inputActivation == 1+port)       color = GLcolor4f(0, 1, 0, 1);
+        else if(m_inputActivation == -1-port) color = GLcolor4f(1, 0, 0, 1);
+        else                                  color = GLcolor4f(1, 1, 1, 1);
         color.a = m_fadeOut;
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
         
@@ -464,6 +464,7 @@ AGDocument::Node AGNode::serialize()
         docNode.inbound.push_back({
             conn->uuid(),
             conn->src()->uuid(),
+            conn->srcPort(),
             conn->dst()->uuid(),
             conn->dstPort()
         });
@@ -474,6 +475,7 @@ AGDocument::Node AGNode::serialize()
         docNode.outbound.push_back({
             conn->uuid(),
             conn->src()->uuid(),
+            conn->srcPort(),
             conn->dst()->uuid(),
             conn->dstPort()
         });

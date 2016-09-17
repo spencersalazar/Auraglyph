@@ -44,6 +44,7 @@ public:
     {
         string uuid;
         string srcUuid;
+        int srcPort;
         string dstUuid;
         int dstPort;
     };

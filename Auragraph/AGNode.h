@@ -14,6 +14,7 @@
 #include "AGConnection.h"
 #include "AGDocument.h"
 //#include "AGUserInterface.h"
+#include "AGInteractiveObject.h"
 
 #include "Geometry.h"
 #include "Animation.h"
@@ -145,7 +146,7 @@ public:
     virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const { return m_pos + relativePositionForInboundConnection(connection); }
     virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const { return m_pos + relativePositionForOutboundConnection(connection); }
     virtual GLvertex3f relativePositionForInboundConnection(AGConnection * connection) const { return relativePositionForInputPort(connection->dstPort()); }
-    virtual GLvertex3f relativePositionForOutboundConnection(AGConnection * connection) const { return relativePositionForOutputPort(0); }
+    virtual GLvertex3f relativePositionForOutboundConnection(AGConnection * connection) const { return relativePositionForOutputPort(connection->srcPort()); }
     
     void trimConnectionsToNodes(const set<AGNode *> &nodes);
     const std::list<AGConnection *> outbound() const;

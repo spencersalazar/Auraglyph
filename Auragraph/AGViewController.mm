@@ -12,6 +12,7 @@
 #import "hsv.h"
 #import "ES2Render.h"
 #import "AGHandwritingRecognizer.h"
+#import "AGInteractiveObject.h"
 #import "AGNode.h"
 #import "AGAudioNode.h"
 #import "AGControlNode.h"
@@ -220,7 +221,8 @@ static AGViewController * g_instance = nil;
                 AGNode *srcNode = uuid2node[docConnection.srcUuid];
                 AGNode *dstNode = uuid2node[docConnection.dstUuid];
                 assert(docConnection.dstPort >= 0 && docConnection.dstPort < dstNode->numInputPorts());
-                AGConnection::connect(srcNode, dstNode, docConnection.dstPort);
+                assert(docConnection.srcPort >= 0 && docConnection.srcPort < srcNode->numOutputPorts());
+                AGConnection::connect(srcNode, docConnection.srcPort, dstNode, docConnection.dstPort);
             }
         }, ^(const AGDocument::Freedraw &docFreedraw) {
             AGFreeDraw *freedraw = new AGFreeDraw(docFreedraw);

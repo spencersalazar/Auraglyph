@@ -9,7 +9,7 @@
 #ifndef __Auragraph__AGConnection__
 #define __Auragraph__AGConnection__
 
-#include "AGRenderObject.h"
+#include "AGInteractiveObject.h"
 #include "AGUserInterface.h"
 #include "AGDocument.h"
 #include "AGControl.h"
@@ -37,9 +37,9 @@ class AGConnection : public AGInteractiveObject
 {
 public:
     
-    static AGConnection *connect(AGNode *src, AGNode *dst, int dstPort);
+    static AGConnection *connect(AGNode *src, int srcPort, AGNode *dst, int dstPort);
     
-    AGConnection(AGNode * src, AGNode * dst, int dstPort);
+    AGConnection(AGNode * src, int srcPort, AGNode * dst, int dstPort);
     ~AGConnection();
     
     virtual void update(float t, float dt);
@@ -55,6 +55,7 @@ public:
     AGNode * src() const { return m_src; }
     AGNode * dst() const { return m_dst; }
     int dstPort() const { return m_dstPort; }
+    int srcPort() const { return m_srcPort; }
     
     AGRate rate() { return m_rate; }
     
@@ -78,6 +79,7 @@ private:
     AGNode * const m_src;
     AGNode * const m_dst;
     const int m_dstPort;
+    const int m_srcPort;
     
     GLvertex3f m_outTerminal;
     GLvertex3f m_inTerminal;

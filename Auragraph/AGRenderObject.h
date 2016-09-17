@@ -16,10 +16,38 @@
 #include <list>
 using namespace std;
 
+//------------------------------------------------------------------------------
+// ### AGRenderable ###
+// Basic pure virtual class for things that can be drawn.
+//------------------------------------------------------------------------------
+class AGRenderable
+{
+public:
+    virtual ~AGRenderable() { }
+    virtual void update(float t, float dt) = 0;
+    virtual void render() = 0;
+};
+
+// forward declaration
 class AGGenericShader;
 
-struct AGRenderState;
+//------------------------------------------------------------------------------
+// ### AGRenderState ###
+// Encapsulates current state related to rendering an object
+//------------------------------------------------------------------------------
+struct AGRenderState
+{
+    GLKMatrix4 projection;
+    GLKMatrix4 modelview;
+    GLKMatrix3 normal;
+    float alpha;
+};
 
+//------------------------------------------------------------------------------
+// ### AGRenderInfo ###
+// Encapsulates all info needed to glDrawArrays
+// set() function sets up vertex arrays, color, texcoords, etc. 
+//------------------------------------------------------------------------------
 struct AGRenderInfo
 {
 public:
@@ -34,52 +62,11 @@ public:
     GLuint geoOffset;
 };
 
-struct AGRenderInfoV : public AGRenderInfo
-{
-    AGRenderInfoV();
-    
-    virtual void set();
-    virtual void set(const AGRenderState &);
-    
-    GLcolor4f color;
-    GLvertex3f *geo;
-};
-
-struct AGRenderInfoVL : public AGRenderInfo
-{
-    AGRenderInfoVL();
-    
-    virtual void set();
-    virtual void set(const AGRenderState &);
-    
-    GLfloat lineWidth;
-    GLcolor4f color;
-    GLvertex3f *geo;
-};
-
-struct AGRenderInfoVC : public AGRenderInfo
-{
-    virtual void set();
-    virtual void set(const AGRenderState &);
-
-    GLvcprimf *geo;
-};
-
-struct AGRenderState
-{
-    AGRenderState() : alpha(1) { }
-    
-    GLKMatrix4 projection;
-    GLKMatrix4 modelview;
-    GLKMatrix3 normal;
-    float alpha;
-};
-
 //------------------------------------------------------------------------------
 // ### AGRenderObject ###
 // Base class for objects that are rendered on screen.
 //------------------------------------------------------------------------------
-class AGRenderObject
+class AGRenderObject : public AGRenderable
 {
 public:
     static void setProjectionMatrix(const GLKMatrix4 &proj) { s_projectionMatrix = proj; }
@@ -98,8 +85,8 @@ public:
        model a lot easier, so init() is used instead. */
     virtual void init();
     
-    virtual void update(float t, float dt);
-    virtual void render();
+    virtual void update(float t, float dt) override;
+    virtual void render() override;
     
     virtual void renderOut();
     virtual bool finishedRenderingOut();
@@ -148,53 +135,37 @@ private:
 };
 
 
-#ifdef __LP64__ // arm64
-typedef uint64_t TouchID;
-#else // arm32
-typedef uint32_t TouchID;
-#endif
-
-struct AGTouchInfo
+struct AGRenderInfoV : public AGRenderInfo
 {
-    AGTouchInfo() { }
-    AGTouchInfo(const GLvertex3f &_position, const CGPoint &_screenPosition, TouchID _touchId) :
-    position(_position), screenPosition(_screenPosition), touchId(_touchId)
-    { }
+    AGRenderInfoV();
     
-    GLvertex3f position;
-    CGPoint screenPosition;
-    TouchID touchId;
+    virtual void set();
+    virtual void set(const AGRenderState &);
+    
+    GLcolor4f color;
+    GLvertex3f *geo;
 };
 
-
-//------------------------------------------------------------------------------
-// ### AGInteractiveObject ###
-// Base class for objects that support interaction in addition to rendering.
-//------------------------------------------------------------------------------
-class AGInteractiveObject : public AGRenderObject
+struct AGRenderInfoVL : public AGRenderInfo
 {
-public:
-    AGInteractiveObject();
-    virtual ~AGInteractiveObject();
+    AGRenderInfoVL();
     
-    // DEPRECATED
-    virtual void touchDown(const GLvertex3f &t);
-    virtual void touchMove(const GLvertex3f &t);
-    virtual void touchUp(const GLvertex3f &t);
+    virtual void set();
+    virtual void set(const AGRenderState &);
     
-    // new version
-    // subclasses generally should override these
-    virtual void touchDown(const AGTouchInfo &t);
-    virtual void touchMove(const AGTouchInfo &t);
-    virtual void touchUp(const AGTouchInfo &t);
-    
-    // default implementation checks if touch is within this->effectiveBounds()
-    virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
-    
-    virtual AGInteractiveObject *userInterface() { return NULL; }
-    
-    void removeFromTopLevel();
+    GLfloat lineWidth;
+    GLcolor4f color;
+    GLvertex3f *geo;
 };
+
+struct AGRenderInfoVC : public AGRenderInfo
+{
+    virtual void set();
+    virtual void set(const AGRenderState &);
+    
+    GLvcprimf *geo;
+};
+
 
 
 #endif /* defined(__Auragraph__AGRenderObject__) */
