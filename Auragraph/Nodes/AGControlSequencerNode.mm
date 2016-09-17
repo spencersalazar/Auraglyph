@@ -429,6 +429,11 @@ AGUINodeEditor *AGControlSequencerNode::createCustomEditor()
     return new AGUISequencerEditor(this);
 }
 
+int AGControlSequencerNode::numOutputPorts() const
+{
+    return m_sequence.size();
+}
+
 
 int AGControlSequencerNode::currentStep()
 {
