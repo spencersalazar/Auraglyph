@@ -48,6 +48,9 @@ public:
     void setStepValue(int seq, int step, float value);
     float getStepValue(int seq, int step);
     
+    float bpm();
+    void setBpm(float bpm);
+    
 private:
     static AGNodeInfo *s_nodeInfo;
     

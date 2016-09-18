@@ -13,6 +13,7 @@
 #include "AGTimer.h"
 #include "AGGenericShader.h"
 #include "AGStyle.h"
+#include "AGSlider.h"
 #include "spRandom.h"
 
 #include <string>
@@ -65,6 +66,23 @@ public:
         m_lastStep = 0;
         m_lastStepAlpha = expcurvef(1, 0, 4, 2);
         m_lastStepAlpha.finish();
+        
+        m_bpmSlider = new AGSlider(GLvertex3f(m_width/2-75, m_height/2-AGUISequencerEditor_stepSize/2, 0));
+        m_bpmSlider->init();
+        
+        m_bpmSlider->setSize(GLvertex2f(m_width/7, AGUISequencerEditor_stepSize*0.6));
+        m_bpmSlider->setType(AGSlider::DISCRETE);
+        m_bpmSlider->setScale(AGSlider::LINEAR);
+        m_bpmSlider->setValue(m_node->bpm());
+        m_bpmSlider->onUpdate([this] (float value) {
+            m_node->setBpm(value);
+        });
+        m_bpmSlider->setValidator([] (float _old, float _new) -> float {
+            if(_new < 1)
+                return 1;
+            return _new;
+        });
+        addChild(m_bpmSlider);
     }
     
     ~AGUISequencerEditor()
@@ -77,6 +95,7 @@ public:
         
         m_squeeze.update(t, dt);
         
+        m_renderState.alpha = 1.0;
         m_modelView = AGNode::globalModelViewMatrix();
         m_renderState.projection = AGNode::projectionMatrix();
         
@@ -99,6 +118,8 @@ public:
         m_lastStep = step;
         
         m_lastStepAlpha.update(dt);
+        
+//        m_bpmSlider->update(t, dt);
     }
     
     virtual void render()
@@ -215,6 +236,18 @@ public:
         /* render outer box */
         renderPrimitive(&m_boxOuterInfo);
         
+        /* render bpm text */
+        proj = m_renderState.projection;
+        
+        titleMV = GLKMatrix4Translate(m_renderState.modelview,
+                                      m_width/2-50,
+                                      m_height/2-AGUISequencerEditor_stepSize/2-text->height()*0.61/2,
+                                      0);
+        titleMV = GLKMatrix4Scale(titleMV, 0.61, 0.61, 0.61);
+        text->render("bpm", GLcolor4f::white, titleMV, proj);
+        
+        renderChildren();
+        
         debug_renderBounds();
     }
     
@@ -329,6 +362,8 @@ private:
     
     int m_lastStep;
     expcurvef m_lastStepAlpha;
+    
+    AGSlider *m_bpmSlider;
 };
 
 
@@ -343,6 +378,7 @@ string AGControlSequencerNode::Manifest::_name() const { return "Sequencer"; };
 vector<AGPortInfo> AGControlSequencerNode::Manifest::_inputPortInfo() const
 {
     return {
+        { "advance", true, true },
         { "bpm", true, true }
     };
 };
@@ -448,6 +484,17 @@ int AGControlSequencerNode::numSequences()
 int AGControlSequencerNode::numSteps()
 {
     return m_numSteps;
+}
+
+float AGControlSequencerNode::bpm()
+{
+    return m_bpm;
+}
+
+void AGControlSequencerNode::setBpm(float bpm)
+{
+    m_bpm = bpm;
+    m_timer->setInterval(60.0/m_bpm);
 }
 
 void AGControlSequencerNode::updateStep()
