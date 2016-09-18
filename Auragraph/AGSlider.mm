@@ -17,7 +17,7 @@
 #define AGSlider_TextScale (0.61f)
 #define AGSlider_HitOffset (10)
 
-AGSlider::AGSlider(GLvertex3f position, float value)
+AGSlider::AGSlider(const GLvertex3f &position, float value)
 : m_value(value), m_position(position), m_update([](float){}),
 m_validator([](float _old, float _new) { return _new; })
 {
@@ -147,6 +147,11 @@ void AGSlider::touchUp(const AGTouchInfo &t)
 AGInteractiveObject *AGSlider::hitTest(const GLvertex3f &t)
 {
     return AGInteractiveObject::hitTest(t);
+}
+
+void AGSlider::setPosition(const GLvertex3f &position)
+{
+    m_position = position;
 }
 
 GLvertex3f AGSlider::position()
