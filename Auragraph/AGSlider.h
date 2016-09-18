@@ -15,7 +15,7 @@
 class AGSlider : public AGInteractiveObject
 {
 public:
-    AGSlider(GLvertex3f position, float value = 0);
+    AGSlider(const GLvertex3f &position = GLvertex3f(), float value = 0);
     ~AGSlider();
     
     virtual void update(float t, float dt);
@@ -27,6 +27,7 @@ public:
     
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
     
+    void setPosition(const GLvertex3f &position);
     virtual GLvertex3f position();
     virtual GLvertex2f size();
     void setSize(const GLvertex2f &size);
