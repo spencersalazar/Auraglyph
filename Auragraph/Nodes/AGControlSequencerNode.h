@@ -35,11 +35,11 @@ public:
     AGControlSequencerNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
     ~AGControlSequencerNode();
     
-    virtual int numOutputPorts() const;
-    virtual void setEditPortValue(int port, float value);
-    virtual void getEditPortValue(int port, float &value) const;
+    virtual int numOutputPorts() const override;
+    virtual void setEditPortValue(int port, float value) override;
+    virtual void getEditPortValue(int port, float &value) const override;
     
-    virtual AGUINodeEditor *createCustomEditor();
+    virtual AGUINodeEditor *createCustomEditor() override;
     
     int currentStep();
     int numSequences();
@@ -50,6 +50,8 @@ public:
     
     float bpm();
     void setBpm(float bpm);
+    
+    AGDocument::Node serialize() override;
     
 private:
     static AGNodeInfo *s_nodeInfo;

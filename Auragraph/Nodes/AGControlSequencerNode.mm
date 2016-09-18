@@ -383,7 +383,12 @@ vector<AGPortInfo> AGControlSequencerNode::Manifest::_inputPortInfo() const
     };
 };
 
-vector<AGPortInfo> AGControlSequencerNode::Manifest::_editPortInfo() const { return { }; };
+vector<AGPortInfo> AGControlSequencerNode::Manifest::_editPortInfo() const
+{
+    return {
+        { "bpm", true, true }
+    };
+};
 
 vector<GLvertex3f> AGControlSequencerNode::Manifest::_iconGeo() const
 {
@@ -439,15 +444,33 @@ AGControlSequencerNode::AGControlSequencerNode(const AGNodeManifest *mf, const A
 AGControlNode(mf, docNode)
 {
     m_bpm = 120;
-    m_numSteps = 8;
+    if(docNode.params.count("seq_steps"))
+        m_numSteps = docNode.params.at("seq_steps").i;
+    else
+        m_numSteps = 8;
     m_pos = 0;
-    // add default sequence
-    m_sequence.push_back(std::vector<float>(m_numSteps, 0));
-    m_sequence.push_back(std::vector<float>(m_numSteps, 0));
-    for(auto i = m_sequence.begin(); i != m_sequence.end(); i++)
-        for(auto j = i->begin(); j != i->end(); j++)
-            *j = Random::unit();
-//    m_control.v = 0;
+    
+    if(docNode.params.count("num_seqs"))
+    {
+        int num_seqs = docNode.params.at("num_seqs").i;
+        for(int seq = 0; seq < num_seqs; seq++)
+        {
+            m_sequence.push_back(std::vector<float>(m_numSteps, 0));
+            
+            string seqkey = "seq" + std::to_string(seq);
+            if(docNode.params.count(seqkey))
+            {
+                auto stepValue = docNode.params.at(seqkey).fa.begin();
+                for(int step = 0; step < numSteps(); step++)
+                    m_sequence[seq][step] = *stepValue++;
+            }
+        }
+    }
+    else
+    {
+        m_sequence.push_back(std::vector<float>(m_numSteps, 0));
+        m_sequence.push_back(std::vector<float>(m_numSteps, 0));
+    }
     
     m_timer = new AGTimer(60.0/m_bpm, ^(AGTimer *) {
         updateStep();
@@ -530,6 +553,24 @@ void AGControlSequencerNode::getEditPortValue(int port, float &value) const
     {
         case 0: value = m_bpm; break;
     }
+}
+
+AGDocument::Node AGControlSequencerNode::serialize()
+{
+    AGDocument::Node docNode = AGNode::serialize();
+    
+    docNode.params["seq_steps"] = AGDocument::ParamValue(numSteps());
+    docNode.params["num_seqs"] = AGDocument::ParamValue(numSequences());
+    
+    for(int seq = 0; seq < numSequences(); seq++)
+    {
+        string seqkey = "seq" + std::to_string(seq);
+        docNode.params[seqkey].type = AGDocument::ParamValue::FLOAT_ARRAY;
+        for(int step = 0; step < numSteps(); step++)
+            docNode.params[seqkey].fa.push_back(getStepValue(seq, step));
+    }
+    
+    return std::move(docNode);
 }
 
 
