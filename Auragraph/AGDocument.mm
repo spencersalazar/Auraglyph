@@ -107,6 +107,12 @@ void AGDocument::load(const string &title)
                         if([value[@"type"] isEqualToString:@"int"]) { pv.type = ParamValue::INT; pv.i = [value[@"value"] intValue]; }
                         else if([value[@"type"] isEqualToString:@"float"]) { pv.type = ParamValue::FLOAT; pv.f = [value[@"value"] floatValue]; }
                         else if([value[@"type"] isEqualToString:@"string"]) { pv.type = ParamValue::STRING; pv.s = [[value[@"value"] stringValue] UTF8String]; }
+                        else if([value[@"type"] isEqualToString:@"array_float"])
+                        {
+                            pv.type = ParamValue::FLOAT_ARRAY;
+                            for(id v in value[@"value"])
+                                pv.fa.push_back([v floatValue]);
+                        }
                         else assert(0); // unhandled
                         
                         n.params[[param UTF8String]] = pv;
