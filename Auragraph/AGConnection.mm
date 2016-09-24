@@ -159,6 +159,9 @@ void AGConnection::update(float t, float dt)
     itfilter(m_flares, ^bool (float &f){
         return f >= 1;
     });
+    
+    // relax to zero
+    m_controlVisScale = 0;
 }
 
 void AGConnection::render()
@@ -263,7 +266,7 @@ void AGConnection::render()
         // scale x = [0,1] to length of connection (minus port circle radius)
         modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004*AGStyle::oldGlobalScale), 0.0025*AGStyle::oldGlobalScale, 1);
         // scale height to control activation
-        modelView = GLKMatrix4Scale(modelView, 1, powf(10, -2*(1-m_controlVisScale)), 1);
+        modelView = GLKMatrix4Scale(modelView, 1, m_controlVisScale*0.5, 1);
 //        modelView = GLKMatrix4Scale(modelView, 1, 1, 1);
         
         shader.setProjectionMatrix(projection);
@@ -344,10 +347,14 @@ void AGConnection::controlActivate(const AGControl &ctrl)
 //    // set target to 0 - slowly contract
 //    m_controlVisScale = 0;
     
+    bool set = false;
+    float val = 0;
+    
     switch(ctrl.type)
     {
         case AGControl::TYPE_NONE:
-            m_controlVisScale = 0;
+            val = 0;
+            set = true;
             break;
         case AGControl::TYPE_BIT:
             if(ctrl.vbit)
@@ -356,14 +363,29 @@ void AGConnection::controlActivate(const AGControl &ctrl)
                 m_controlVisScale = 0; // relax to off
             break;
         case AGControl::TYPE_INT:
-            m_controlVisScale = 1+log10(fabsf((float)ctrl.vint)+0.00001);
+            val = ctrl.vint;
+            set = true;
+//            m_controlVisScale = 1+log10(fabsf((float)ctrl.vint)+0.00001);
             break;
         case AGControl::TYPE_FLOAT:
-            m_controlVisScale = 1+log10(fabsf(ctrl.vfloat)+0.00001);
+            val = ctrl.vfloat;
+            set = true;
+//            m_controlVisScale = 1+log10(fabsf(ctrl.vfloat)+0.00001);
             break;
         case AGControl::TYPE_STRING:
             m_controlVisScale = ctrl.vstring.length() > 0 ? 1 : 0;
             break;
+    }
+    
+    if(set)
+    {
+        val = fabsf(val);
+        if(val >= 1)
+            m_controlVisScale.reset(1+(log10f(val)));
+        else if(val > 0)
+            m_controlVisScale.reset(1/(1-log10(val)));
+        else
+            m_controlVisScale = 0;
     }
     
     m_activation = ctrl;
