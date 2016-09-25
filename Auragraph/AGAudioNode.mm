@@ -19,6 +19,7 @@
 #import "AGCompositeNode.h"
 #include "AGCompressorNode.h"
 #include "AGStyle.h"
+#include "spdsp.h"
 
 
 //------------------------------------------------------------------------------
@@ -554,7 +555,7 @@ void AGAudioSineWaveNode::renderAudio(sampletime t, float *input, float *output,
         output[i] += m_outputBuffer[i];
         
         m_phase += (freq + m_inputPortBuffer[0][i])/sampleRate();
-        while(m_phase >= 1.0) m_phase -= 1.0;
+        m_phase = clipunit(m_phase);
     }
     
     m_lastTime = t;
@@ -666,7 +667,7 @@ void AGAudioSquareWaveNode::renderAudio(sampletime t, float *input, float *outpu
         output[i] += m_outputBuffer[i];
 
         m_phase += (freq + m_inputPortBuffer[0][i])/sampleRate();
-        while(m_phase >= 1.0) m_phase -= 1.0;
+        m_phase = clipunit(m_phase);
     }
     
     m_lastTime = t;
@@ -777,7 +778,7 @@ void AGAudioSawtoothWaveNode::renderAudio(sampletime t, float *input, float *out
         output[i] += m_outputBuffer[i];
         
         m_phase += (freq + m_inputPortBuffer[0][i])/sampleRate();
-        while(m_phase >= 1.0) m_phase -= 1.0;
+        m_phase = clipunit(m_phase);
     }
     
     m_lastTime = t;
@@ -892,7 +893,7 @@ void AGAudioTriangleWaveNode::renderAudio(sampletime t, float *input, float *out
         output[i] += m_outputBuffer[i];
 
         m_phase += (m_freq + m_inputPortBuffer[0][i])/sampleRate();
-        while(m_phase >= 1.0) m_phase -= 1.0;
+        m_phase = clipunit(m_phase);
     }
     
     m_lastTime = t;
