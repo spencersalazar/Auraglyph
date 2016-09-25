@@ -333,6 +333,11 @@ class AGAudioInputNode : public AGAudioNode, public AGAudioCapturer
 {
 public:
     
+    enum Param
+    {
+        PARAM_GAIN,
+    };
+
     class Manifest : public AGStandardNodeManifest<AGAudioInputNode>
     {
     public:
@@ -344,7 +349,7 @@ public:
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { "gain", false, true }
+                { PARAM_GAIN, "gain", false, true, 0, 0, AGPortInfo::LOG }
             };
         }
         
@@ -457,6 +462,12 @@ class AGAudioSineWaveNode : public AGAudioNode
 {
 public:
     
+    enum Param
+    {
+        PARAM_FREQ,
+        PARAM_GAIN,
+    };
+
     class Manifest : public AGStandardNodeManifest<AGAudioSineWaveNode>
     {
     public:
@@ -466,16 +477,16 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { "freq", true, true },
-                { "gain", true, true }
+                { PARAM_FREQ, "freq", true, true, 0, 0, AGPortInfo::LOG },
+                { PARAM_GAIN, "gain", true, true, 0, 0, AGPortInfo::LOG }
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { "freq", true, true },
-                { "gain", true, true }
+                { PARAM_FREQ, "freq", true, true, 0, 0, AGPortInfo::LOG },
+                { PARAM_GAIN, "gain", true, true, 0, 0, AGPortInfo::LOG }
             };
         };
         
@@ -569,6 +580,13 @@ void AGAudioSineWaveNode::renderAudio(sampletime t, float *input, float *output,
 class AGAudioSquareWaveNode : public AGAudioNode
 {
 public:
+    
+    enum Param
+    {
+        PARAM_FREQ,
+        PARAM_GAIN,
+    };
+
     class Manifest : public AGStandardNodeManifest<AGAudioSquareWaveNode>
     {
     public:
@@ -578,16 +596,16 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { "freq", true, true },
-                { "gain", true, true }
+                { PARAM_FREQ, "freq", true, true },
+                { PARAM_GAIN, "gain", true, true }
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { "freq", true, true },
-                { "gain", true, true }
+                { PARAM_FREQ, "freq", true, true },
+                { PARAM_GAIN, "gain", true, true }
             };
         };
         
@@ -682,6 +700,13 @@ void AGAudioSquareWaveNode::renderAudio(sampletime t, float *input, float *outpu
 class AGAudioSawtoothWaveNode : public AGAudioNode
 {
 public:
+    
+    enum Param
+    {
+        PARAM_FREQ,
+        PARAM_GAIN,
+    };
+
     class Manifest : public AGStandardNodeManifest<AGAudioSawtoothWaveNode>
     {
     public:
@@ -691,16 +716,16 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { "freq", true, true },
-                { "gain", true, true }
+                { PARAM_FREQ, "freq", true, true },
+                { PARAM_GAIN, "gain", true, true }
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { "freq", true, true },
-                { "gain", true, true }
+                { PARAM_FREQ, "freq", true, true },
+                { PARAM_GAIN, "gain", true, true }
             };
         };
         
@@ -793,6 +818,13 @@ void AGAudioSawtoothWaveNode::renderAudio(sampletime t, float *input, float *out
 class AGAudioTriangleWaveNode : public AGAudioNode
 {
 public:
+    
+    enum Param
+    {
+        PARAM_FREQ,
+        PARAM_GAIN,
+    };
+
     class Manifest : public AGStandardNodeManifest<AGAudioTriangleWaveNode>
     {
     public:
@@ -802,16 +834,16 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { "freq", true, true },
-                { "gain", true, true }
+                { PARAM_FREQ, "freq", true, true },
+                { PARAM_GAIN, "gain", true, true }
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { "freq", true, true },
-                { "gain", true, true }
+                { PARAM_FREQ, "freq", true, true },
+                { PARAM_GAIN, "gain", true, true }
             };
         };
         
@@ -908,6 +940,18 @@ void AGAudioTriangleWaveNode::renderAudio(sampletime t, float *input, float *out
 class AGAudioADSRNode : public AGAudioNode
 {
 public:
+    
+    enum Param
+    {
+        PARAM_INPUT,
+        PARAM_GAIN,
+        PARAM_TRIGGER,
+        PARAM_ATTACK,
+        PARAM_DECAY,
+        PARAM_SUSTAIN,
+        PARAM_RELEASE,
+    };
+
     class Manifest : public AGStandardNodeManifest<AGAudioADSRNode>
     {
     public:
@@ -917,20 +961,20 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { "input", true, false },
-                { "gain", true, true },
-                { "trigger", true, false },
+                { PARAM_INPUT, "input", true, false },
+                { PARAM_GAIN, "gain", true, true },
+                { PARAM_TRIGGER, "trigger", true, false },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { "gain", true, true },
-                { "attack", true, true },
-                { "decay", true, true },
-                { "sustain", true, true },
-                { "release", true, true },
+                { PARAM_GAIN, "gain", true, true },
+                { PARAM_ATTACK, "attack", true, true },
+                { PARAM_DECAY, "decay", true, true },
+                { PARAM_SUSTAIN, "sustain", true, true },
+                { PARAM_RELEASE, "release", true, true },
             };
         };
         
@@ -1061,6 +1105,14 @@ class AGAudioFilterFQNode : public AGAudioNode
 {
 public:
     
+    enum Param
+    {
+        PARAM_INPUT,
+        PARAM_GAIN,
+        PARAM_FREQ,
+        PARAM_Q,
+    };
+    
     class ManifestLPF : public AGStandardNodeManifest<AGAudioFilterFQNode<Butter2RLPF>>
     {
     public:
@@ -1070,19 +1122,19 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { "input", true, false },
-                { "gain", true, true },
-                { "freq", true, true },
-                { "Q", true, true },
+                { PARAM_INPUT, "input", true, false },
+                { PARAM_GAIN, "gain", true, true },
+                { PARAM_FREQ, "freq", true, true },
+                { PARAM_Q, "Q", true, true, 0.001, 1000 },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { "gain", true, true },
-                { "freq", true, true },
-                { "Q", true, true },
+                { PARAM_GAIN, "gain", true, true },
+                { PARAM_FREQ, "freq", true, true },
+                { PARAM_Q, "Q", true, true, 0.001, 1000 },
             };
         };
         
@@ -1115,19 +1167,19 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { "input", true, false },
-                { "gain", true, true },
-                { "freq", true, true },
-                { "Q", true, true },
+                { PARAM_INPUT, "input", true, false },
+                { PARAM_GAIN, "gain", true, true },
+                { PARAM_FREQ, "freq", true, true },
+                { PARAM_Q, "Q", true, true, 0.001, 1000 },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { "gain", true, true },
-                { "freq", true, true },
-                { "Q", true, true },
+                { PARAM_GAIN, "gain", true, true },
+                { PARAM_FREQ, "freq", true, true },
+                { PARAM_Q, "Q", true, true, 0.001, 1000 },
             };
         };
         
@@ -1160,19 +1212,19 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { "input", true, false },
-                { "gain", true, true },
-                { "freq", true, true },
-                { "Q", true, true },
+                { PARAM_INPUT, "input", true, false },
+                { PARAM_GAIN, "gain", true, true },
+                { PARAM_FREQ, "freq", true, true },
+                { PARAM_Q, "Q", true, true, 0.001, 1000 },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { "gain", true, true },
-                { "freq", true, true },
-                { "Q", true, true, 0.001, 1000 },
+                { PARAM_GAIN, "gain", true, true },
+                { PARAM_FREQ, "freq", true, true },
+                { PARAM_Q, "Q", true, true, 0.001, 1000 },
             };
         };
         
@@ -1329,6 +1381,15 @@ void AGAudioFilterFQNode<Filter>::renderAudio(sampletime t, float *input, float 
 class AGAudioFeedbackNode : public AGAudioNode
 {
 public:
+    
+    enum Param
+    {
+        PARAM_INPUT,
+        PARAM_DELAY,
+        PARAM_FEEDBACK,
+        PARAM_GAIN,
+    };
+    
     class Manifest : public AGStandardNodeManifest<AGAudioFeedbackNode>
     {
     public:
@@ -1338,19 +1399,19 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { "input", true, false },
-                { "delay", true, true },
-                { "feedback", true, true },
-                { "gain", true, true },
+                { PARAM_INPUT, "input", true, false },
+                { PARAM_DELAY, "delay", true, true },
+                { PARAM_FEEDBACK, "feedback", true, true },
+                { PARAM_GAIN, "gain", true, true },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { "gain", true, true },
-                { "delay", true, true, 0, AGFloat_Max },
-                { "feedback", true, true, 0, 1 },
+                { PARAM_GAIN, "gain", true, true },
+                { PARAM_DELAY, "delay", true, true, 0, AGFloat_Max },
+                { PARAM_FEEDBACK, "feedback", true, true, 0, 1 },
             };
         };
         

@@ -168,6 +168,12 @@ AGInteractiveObject *AGControlNode::hitTest(const GLvertex3f &t)
 class AGControlTimerNode : public AGControlNode
 {
 public:
+    
+    enum Param
+    {
+        PARAM_INTERVAL,
+    };
+    
     class Manifest : public AGStandardNodeManifest<AGControlTimerNode>
     {
     public:
@@ -177,14 +183,14 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { "interval", true, true },
+                { PARAM_INTERVAL, "interval", true, true },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { "interval", true, true },
+                { PARAM_INTERVAL, "interval", true, true },
             };
         };
         

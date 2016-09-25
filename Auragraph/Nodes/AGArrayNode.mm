@@ -601,7 +601,7 @@ string AGControlArrayNode::Manifest::_name() const { return "Array"; };
 vector<AGPortInfo> AGControlArrayNode::Manifest::_inputPortInfo() const
 {
     return {
-        { "iterate", true, true }
+        { PARAM_ITERATE, "iterate", true, true }
     };
 };
 

@@ -40,12 +40,22 @@ class AGUINodeEditor;
 
 struct AGPortInfo
 {
+    int portId;
+    
     string name;
     bool canConnect; // can create connection btw this port and another port
     bool canEdit; // should this port appear in the node's editor window
     
     float min;
     float max;
+    
+    enum Mode
+    {
+        LIN,
+        LOG,
+    };
+    
+    Mode mode;
     
     // TODO: min, max, units label, rate, etc.
 };

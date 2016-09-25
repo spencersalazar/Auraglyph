@@ -21,6 +21,11 @@ class AGControlArrayNode : public AGControlNode
     
 public:
     
+    enum Param
+    {
+        PARAM_ITERATE,
+    };
+    
     class Manifest : public AGStandardNodeManifest<AGControlArrayNode>
     {
     public:

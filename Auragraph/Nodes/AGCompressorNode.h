@@ -78,6 +78,14 @@ class AGAudioCompressorNode : public AGAudioNode
 {
 public:
     
+    enum Param
+    {
+        PARAM_INPUT,
+        PARAM_THRESHOLD,
+        PARAM_RATIO,
+        PARAM_GAIN,
+    };
+    
     class Manifest : public AGStandardNodeManifest<AGAudioCompressorNode>
     {
     public:
@@ -87,16 +95,16 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { "input", true, true }
+                { PARAM_INPUT, "input", true, true }
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { "threshold", true, true },
-                { "ratio", true, true },
-                { "gain", true, true },
+                { PARAM_THRESHOLD, "threshold", true, true },
+                { PARAM_RATIO, "ratio", true, true },
+                { PARAM_GAIN, "gain", true, true },
             };
         };
         

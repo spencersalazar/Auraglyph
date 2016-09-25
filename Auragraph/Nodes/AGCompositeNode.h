@@ -28,6 +28,12 @@ class AGAudioCompositeNode : public AGAudioNode, public AGAudioOutputDestination
 {
 public:
     
+    enum Param
+    {
+        PARAM_INPUT,
+        PARAM_GAIN,
+    };
+    
     class Manifest : public AGStandardNodeManifest<AGAudioCompositeNode>
     {
     public:
@@ -37,14 +43,14 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { "input", true, true }
+                { PARAM_INPUT, "input", true, true }
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { "gain", true, true }
+                { PARAM_GAIN, "gain", true, true }
             };
         };
         

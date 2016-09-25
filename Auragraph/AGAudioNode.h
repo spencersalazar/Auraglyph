@@ -102,6 +102,12 @@ class AGAudioOutputNode : public AGAudioNode
 {
 public:
     
+    enum Param
+    {
+        PARAM_INPUT,
+        PARAM_GAIN,
+    };
+    
     class Manifest : public AGStandardNodeManifest<AGAudioOutputNode>
     {
     public:
@@ -111,14 +117,14 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { "input", true, false }
+                { PARAM_INPUT, "input", true, false }
             };
         }
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { "gain", false, true }
+                { PARAM_GAIN, "gain", false, true, 0, AGFloat_Max, AGPortInfo::LOG }
             };
         }
         
