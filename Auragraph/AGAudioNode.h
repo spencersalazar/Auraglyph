@@ -55,6 +55,8 @@ public:
     virtual GLvertex3f relativePositionForInputPort(int port) const override;
     virtual GLvertex3f relativePositionForOutputPort(int port) const override;
     
+    virtual void finalPortValue(float &value, int portId, int sample = -1) const override;
+    
     virtual AGRate rate() override { return RATE_AUDIO; }
     inline float gain() { return m_gain; }
     

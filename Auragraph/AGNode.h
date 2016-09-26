@@ -171,6 +171,8 @@ public:
     virtual void getEditPortValue(int port, float &value) const { }
     /* can be overridden by final subclass */
     virtual float validateEditPortValue(int port, float _new) const;
+    /* can be overridden by direct subclass */
+    virtual void finalPortValue(float &value, int portId, int sample = -1) const;
 
     void loadEditPortValues(const AGDocument::Node &docNode);
     
@@ -245,6 +247,9 @@ protected:
     
     bool m_active;
     powcurvef m_fadeOut;
+    
+    map<int, int> m_param2InputPort;
+    map<int, int> m_param2EditPort;
 };
 
 

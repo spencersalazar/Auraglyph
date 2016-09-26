@@ -100,6 +100,20 @@ void AGNode::init()
 //        m_controlPortBuffer = new AGControl[numInputPorts()];
     
     setDefaultPortValues();
+    
+    int numInput = numInputPorts();
+    for(int i = 0; i < numInput; i++)
+    {
+        const AGPortInfo &info = inputPortInfo(i);
+        m_param2InputPort[info.portId] = i;
+    }
+    
+    int numEdit = numEditPorts();
+    for(int i = 0; i < numEdit; i++)
+    {
+        const AGPortInfo &info = editPortInfo(i);
+        m_param2EditPort[info.portId] = i;
+    }
 }
 
 void AGNode::init(const AGDocument::Node &docNode)
@@ -433,6 +447,13 @@ float AGNode::validateEditPortValue(int port, float _new) const
     }
     
     return _new;
+}
+
+void AGNode::finalPortValue(float &value, int portId, int sample) const
+{
+    int index = m_param2InputPort.at(portId);
+    if(m_controlPortBuffer[index])
+        value = m_controlPortBuffer[index].getFloat();
 }
 
 AGDocument::Node AGNode::serialize()

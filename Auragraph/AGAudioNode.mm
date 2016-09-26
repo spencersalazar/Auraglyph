@@ -264,6 +264,14 @@ void AGAudioNode::pullInputPorts(sampletime t, int nFrames)
     this->unlock();
 }
 
+void AGAudioNode::finalPortValue(float &value, int portId, int sample) const
+{
+    int index = m_param2InputPort.at(portId);
+    if(m_controlPortBuffer[index])
+        value = m_controlPortBuffer[index].getFloat();
+    if(sample >= 0)
+        value += m_inputPortBuffer[index][sample];
+}
 
 void AGAudioNode::renderLast(float *output, int nFrames)
 {
