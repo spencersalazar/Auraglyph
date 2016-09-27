@@ -1,0 +1,392 @@
+{
+  "289D37A1-4B1B-470F-90C4-707B28C6DE6B" : {
+    "x" : 263.9,
+    "outbound" : [
+      {
+        "uuid" : "68C30E28-D2AB-4349-81E7-18FCFA1B9DB1",
+        "dst" : "16B30115-BC9A-4DF9-8D9A-20BE9D92BAC7",
+        "dstPort" : 0
+      }
+    ],
+    "type" : "Feedback",
+    "y" : -104.9,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 1
+      },
+      "delay" : {
+        "type" : "float",
+        "value" : 0.5000004
+      },
+      "feedback" : {
+        "type" : "float",
+        "value" : 0.30766
+      }
+    },
+    "inbound" : [
+      {
+        "uuid" : "BB996652-7DDA-4D3C-9DB6-DF963CD36880",
+        "src" : "5275D25E-4B7A-4CB8-8E87-850B61E33077",
+        "dstPort" : 0
+      }
+    ]
+  },
+  "E7250751-A06B-43D5-9A2B-79C9D02DB838" : {
+    "x" : -112.6129,
+    "outbound" : [
+      {
+        "uuid" : "7009C3F4-D68C-4CE8-BD9F-24CFAD85B832",
+        "dst" : "5275D25E-4B7A-4CB8-8E87-850B61E33077",
+        "dstPort" : 0
+      }
+    ],
+    "type" : "SineWave",
+    "y" : -112.129,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 1
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 220
+      }
+    },
+    "inbound" : [
+      {
+        "uuid" : "B96E55E5-6EAD-442A-9CD5-50AAFD516690",
+        "src" : "86497BF8-F5AB-4E14-A866-C32052980745",
+        "dstPort" : 1
+      },
+      {
+        "uuid" : "E866A542-18C2-4D31-B87B-AB6A66BA76AF",
+        "src" : "73CC9CC3-8974-4269-81E6-374AE98BD466",
+        "dstPort" : 0
+      },
+      {
+        "uuid" : "981CFB6D-8787-4A1E-8824-A2AE79D9F2A3",
+        "src" : "F18FC51A-0227-4531-9B8D-4EF389868E0F",
+        "dstPort" : 1
+      }
+    ]
+  },
+  "42A50A98-934B-49CC-A6B0-3EA8E819B20E" : {
+    "x" : 39.93338,
+    "outbound" : [
+
+    ],
+    "type" : "SineWave",
+    "y" : 97.03333,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 1
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 220
+      }
+    },
+    "inbound" : [
+
+    ]
+  },
+  "86497BF8-F5AB-4E14-A866-C32052980745" : {
+    "x" : -277.3125,
+    "outbound" : [
+      {
+        "uuid" : "B96E55E5-6EAD-442A-9CD5-50AAFD516690",
+        "dst" : "E7250751-A06B-43D5-9A2B-79C9D02DB838",
+        "dstPort" : 1
+      },
+      {
+        "uuid" : "26582750-3D27-45EE-B476-A21536180412",
+        "dst" : "3CB34CAF-A2E4-4F9F-B426-82E8E2467AA8",
+        "dstPort" : 1
+      }
+    ],
+    "type" : "SineWave",
+    "y" : -135.375,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 0.8800001
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 0.949998
+      }
+    },
+    "inbound" : [
+
+    ]
+  },
+  "3CB34CAF-A2E4-4F9F-B426-82E8E2467AA8" : {
+    "x" : -145.5862,
+    "outbound" : [
+      {
+        "uuid" : "6126717F-A5E5-4F7F-AE12-442326925556",
+        "dst" : "5275D25E-4B7A-4CB8-8E87-850B61E33077",
+        "dstPort" : 0
+      }
+    ],
+    "type" : "SawWave",
+    "y" : 31.48279,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 0.6700003
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 776.6
+      }
+    },
+    "inbound" : [
+      {
+        "uuid" : "26582750-3D27-45EE-B476-A21536180412",
+        "src" : "86497BF8-F5AB-4E14-A866-C32052980745",
+        "dstPort" : 1
+      },
+      {
+        "uuid" : "E2550FD4-F4B0-45B1-945B-67AFDB2DDB9D",
+        "src" : "65BD9B52-73A9-4D57-8141-AC6E69974F05",
+        "dstPort" : 0
+      }
+    ]
+  },
+  "65BD9B52-73A9-4D57-8141-AC6E69974F05" : {
+    "x" : -242.6765,
+    "outbound" : [
+      {
+        "uuid" : "E2550FD4-F4B0-45B1-945B-67AFDB2DDB9D",
+        "dst" : "3CB34CAF-A2E4-4F9F-B426-82E8E2467AA8",
+        "dstPort" : 0
+      }
+    ],
+    "type" : "SineWave",
+    "y" : 205.4412,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 916.66
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 1.107001
+      }
+    },
+    "inbound" : [
+
+    ]
+  },
+  "16B30115-BC9A-4DF9-8D9A-20BE9D92BAC7" : {
+    "x" : 416.0001,
+    "outbound" : [
+
+    ],
+    "type" : "Output",
+    "y" : -49.99999,
+    "object" : "node",
+    "z" : 0,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 1
+      }
+    },
+    "inbound" : [
+      {
+        "uuid" : "68C30E28-D2AB-4349-81E7-18FCFA1B9DB1",
+        "src" : "289D37A1-4B1B-470F-90C4-707B28C6DE6B",
+        "dstPort" : 0
+      }
+    ]
+  },
+  "8F3D6DAF-70EB-4892-838C-B34B839182D5" : {
+    "x" : -198.85,
+    "outbound" : [
+      {
+        "uuid" : "1667AF77-99EE-4E36-8B14-F6EFA489C8AA",
+        "dst" : "5275D25E-4B7A-4CB8-8E87-850B61E33077",
+        "dstPort" : 2
+      }
+    ],
+    "type" : "Timer",
+    "y" : -321.75,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 1,
+    "params" : {
+      "interval" : {
+        "type" : "float",
+        "value" : 0.17
+      }
+    },
+    "inbound" : [
+
+    ]
+  },
+  "FDE11D64-F797-41DA-B9D5-DE713D9E0F86" : {
+    "x" : -434.1334,
+    "outbound" : [
+      {
+        "uuid" : "71EC95B6-1AC9-440B-A86B-CCD04203B40E",
+        "dst" : "73CC9CC3-8974-4269-81E6-374AE98BD466",
+        "dstPort" : 1
+      }
+    ],
+    "type" : "SineWave",
+    "y" : 14.86671,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 1026.66
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 0.1170001
+      }
+    },
+    "inbound" : [
+
+    ]
+  },
+  "F18FC51A-0227-4531-9B8D-4EF389868E0F" : {
+    "x" : -307.4688,
+    "outbound" : [
+      {
+        "uuid" : "981CFB6D-8787-4A1E-8824-A2AE79D9F2A3",
+        "dst" : "E7250751-A06B-43D5-9A2B-79C9D02DB838",
+        "dstPort" : 1
+      }
+    ],
+    "type" : "SineWave",
+    "y" : -247.9688,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 0.8700001
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 0.5699939
+      }
+    },
+    "inbound" : [
+
+    ]
+  },
+  "5275D25E-4B7A-4CB8-8E87-850B61E33077" : {
+    "x" : 76.81249,
+    "outbound" : [
+      {
+        "uuid" : "BB996652-7DDA-4D3C-9DB6-DF963CD36880",
+        "dst" : "289D37A1-4B1B-470F-90C4-707B28C6DE6B",
+        "dstPort" : 0
+      }
+    ],
+    "type" : "ADSR",
+    "y" : -54.37499,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "attack" : {
+        "type" : "float",
+        "value" : 0.01
+      },
+      "decay" : {
+        "type" : "float",
+        "value" : 0.01
+      },
+      "gain" : {
+        "type" : "float",
+        "value" : 1
+      },
+      "release" : {
+        "type" : "float",
+        "value" : 0.1
+      },
+      "sustain" : {
+        "type" : "float",
+        "value" : 0.5
+      }
+    },
+    "inbound" : [
+      {
+        "uuid" : "7009C3F4-D68C-4CE8-BD9F-24CFAD85B832",
+        "src" : "E7250751-A06B-43D5-9A2B-79C9D02DB838",
+        "dstPort" : 0
+      },
+      {
+        "uuid" : "1667AF77-99EE-4E36-8B14-F6EFA489C8AA",
+        "src" : "8F3D6DAF-70EB-4892-838C-B34B839182D5",
+        "dstPort" : 2
+      },
+      {
+        "uuid" : "6126717F-A5E5-4F7F-AE12-442326925556",
+        "src" : "3CB34CAF-A2E4-4F9F-B426-82E8E2467AA8",
+        "dstPort" : 0
+      }
+    ]
+  },
+  "73CC9CC3-8974-4269-81E6-374AE98BD466" : {
+    "x" : -265.5454,
+    "outbound" : [
+      {
+        "uuid" : "E866A542-18C2-4D31-B87B-AB6A66BA76AF",
+        "dst" : "E7250751-A06B-43D5-9A2B-79C9D02DB838",
+        "dstPort" : 0
+      }
+    ],
+    "type" : "SineWave",
+    "y" : -17.18182,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 1128.67
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 330
+      }
+    },
+    "inbound" : [
+      {
+        "uuid" : "71EC95B6-1AC9-440B-A86B-CCD04203B40E",
+        "src" : "FDE11D64-F797-41DA-B9D5-DE713D9E0F86",
+        "dstPort" : 1
+      }
+    ]
+  }
+}
