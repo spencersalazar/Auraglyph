@@ -30,8 +30,7 @@ public:
     
     enum Param
     {
-        PARAM_INPUT,
-        PARAM_GAIN,
+        PARAM_INPUT = AUDIO_PARAM_LAST+1,
     };
     
     class Manifest : public AGStandardNodeManifest<AGAudioCompositeNode>
@@ -50,7 +49,7 @@ public:
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_GAIN, "gain", true, true }
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1 }
             };
         };
         
@@ -76,16 +75,8 @@ public:
     
     using AGAudioNode::AGAudioNode;
     
-    void setDefaultPortValues() override
-    {
-        m_gain = 1;
-    }
-    
     virtual int numOutputPorts() const override;
-    
-    virtual void setEditPortValue(int port, float value) override;
-    virtual void getEditPortValue(int port, float &value) const override;
-    
+        
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
     
 //    void addOutputNode(AGAudioNode *outputNode);

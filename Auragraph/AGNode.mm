@@ -88,7 +88,7 @@ m_fadeOut(1, 0, 0.5, 2),
 m_uuid(docNode.uuid)
 { }
 
-void AGNode::init()
+void AGNode::_initBase()
 {
     AGRenderObject::init();
     
@@ -97,9 +97,7 @@ void AGNode::init()
     
     if(numInputPorts() > 0)
         m_controlPortBuffer.resize(numInputPorts());
-//        m_controlPortBuffer = new AGControl[numInputPorts()];
-    
-    setDefaultPortValues();
+    //        m_controlPortBuffer = new AGControl[numInputPorts()];
     
     int numInput = numInputPorts();
     for(int i = 0; i < numInput; i++)
@@ -113,14 +111,24 @@ void AGNode::init()
     {
         const AGPortInfo &info = editPortInfo(i);
         m_param2EditPort[info.portId] = i;
+        m_params[info.portId] = getDefaultParamValue(info.portId);
     }
+}
+
+void AGNode::init()
+{
+    _initBase();
+    
+    initFinal();
 }
 
 void AGNode::init(const AGDocument::Node &docNode)
 {
-    AGNode::init();
+    _initBase();
     
     loadEditPortValues(docNode);
+    
+    initFinal();
 }
 
 void AGNode::loadEditPortValues(const AGDocument::Node &docNode)
@@ -454,6 +462,8 @@ void AGNode::finalPortValue(float &value, int portId, int sample) const
     int index = m_param2InputPort.at(portId);
     if(m_controlPortBuffer[index])
         value = m_controlPortBuffer[index].getFloat();
+    else
+        value = m_params.at(portId);
 }
 
 AGDocument::Node AGNode::serialize()

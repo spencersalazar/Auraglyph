@@ -80,10 +80,9 @@ public:
     
     enum Param
     {
-        PARAM_INPUT,
+        PARAM_INPUT = AUDIO_PARAM_LAST+1,
         PARAM_THRESHOLD,
         PARAM_RATIO,
-        PARAM_GAIN,
     };
     
     class Manifest : public AGStandardNodeManifest<AGAudioCompressorNode>
@@ -102,9 +101,9 @@ public:
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_THRESHOLD, "threshold", true, true },
-                { PARAM_RATIO, "ratio", true, true },
-                { PARAM_GAIN, "gain", true, true },
+                { PARAM_THRESHOLD, "threshold", true, true, -20, -200, 0 },
+                { PARAM_RATIO, "ratio", true, true, 2, 1, AGFloat_Max },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1 },
             };
         };
         
@@ -127,16 +126,12 @@ public:
     
     using AGAudioNode::AGAudioNode;
     
-    void setDefaultPortValues() override;
-    
-    virtual void setEditPortValue(int port, float value) override;
-    virtual void getEditPortValue(int port, float &value) const override;
+    void initFinal() override;
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
     
 private:
     PeakDetector m_detector;
-    float m_ratio, m_dBThreshold, m_linearThreshold;
 };
 
 

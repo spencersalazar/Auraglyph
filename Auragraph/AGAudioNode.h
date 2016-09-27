@@ -36,6 +36,12 @@ class AGAudioNode : public AGNode, public AGAudioRenderer
 {
 public:
     
+    enum AudioNodeParam
+    {
+        AUDIO_PARAM_GAIN,
+        AUDIO_PARAM_LAST = AUDIO_PARAM_GAIN
+    };
+    
     static void initializeAudioNode();
     
     using AGNode::AGNode;
@@ -58,14 +64,12 @@ public:
     virtual void finalPortValue(float &value, int portId, int sample = -1) const override;
     
     virtual AGRate rate() override { return RATE_AUDIO; }
-    inline float gain() { return m_gain; }
+    inline float gain() const { return m_params.at(AUDIO_PARAM_GAIN); }
     
     const float *lastOutputBuffer() const { return m_outputBuffer; }
     
     static int sampleRate() { return s_sampleRate; }
     static int bufferSize() { return 1024; }
-    //    template<class NodeClass>
-    //    static AGAudioNode *createFromDocNode(const AGDocument::Node &docNode);
     
 private:
     
@@ -84,8 +88,6 @@ protected:
     sampletime m_lastTime;
     Buffer<float> m_outputBuffer;
     float ** m_inputPortBuffer;
-    
-    float m_gain;
     
     void allocatePortBuffers();
     void pullInputPorts(sampletime t, int nFrames);
@@ -106,8 +108,7 @@ public:
     
     enum Param
     {
-        PARAM_INPUT,
-        PARAM_GAIN,
+        PARAM_INPUT = AUDIO_PARAM_LAST+1,
     };
     
     class Manifest : public AGStandardNodeManifest<AGAudioOutputNode>
@@ -126,7 +127,7 @@ public:
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_GAIN, "gain", false, true, 0, AGFloat_Max, AGPortInfo::LOG }
+                { AUDIO_PARAM_GAIN, "gain", false, true, 1, 0, AGFloat_Max, AGPortInfo::LOG }
             };
         }
         
@@ -164,9 +165,6 @@ public:
     ~AGAudioOutputNode();
     
     void setOutputDestination(AGAudioOutputDestination *destination);
-    
-    void setEditPortValue(int port, float value) override;
-    void getEditPortValue(int port, float &value) const override;
     
     virtual int numOutputPorts() const override { return 0; }
     virtual int numInputPorts() const override { return 1; }
