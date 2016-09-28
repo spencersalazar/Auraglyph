@@ -92,6 +92,7 @@ protected:
     void allocatePortBuffers();
     void pullInputPorts(sampletime t, int nFrames);
     void renderLast(float *output, int nFrames);
+    float *inputPortVector(int paramId);
 };
 
 

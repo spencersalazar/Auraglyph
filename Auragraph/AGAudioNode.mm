@@ -286,6 +286,10 @@ void AGAudioNode::renderLast(float *output, int nFrames)
     for(int i = 0; i < nFrames; i++) output[i] += m_outputBuffer[i];
 }
 
+float *AGAudioNode::inputPortVector(int paramId)
+{
+    return m_inputPortBuffer[m_param2InputPort.at(paramId)];
+}
 
 //------------------------------------------------------------------------------
 // ### AGAudioOutputNode ###
@@ -505,8 +509,8 @@ public:
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
         pullInputPorts(t, nFrames);
         
-        float *gainv = m_inputPortBuffer[m_param2InputPort[AUDIO_PARAM_GAIN]];
-        float *freqv = m_inputPortBuffer[m_param2InputPort[PARAM_FREQ]];
+        float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        float *freqv = inputPortVector(PARAM_FREQ);
         
         for(int i = 0; i < nFrames; i++)
         {
@@ -594,8 +598,8 @@ public:
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
         pullInputPorts(t, nFrames);
         
-        float *gainv = m_inputPortBuffer[m_param2InputPort[AUDIO_PARAM_GAIN]];
-        float *freqv = m_inputPortBuffer[m_param2InputPort[PARAM_FREQ]];
+        float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        float *freqv = inputPortVector(PARAM_FREQ);
         
         for(int i = 0; i < nFrames; i++)
         {
@@ -682,8 +686,8 @@ public:
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
         pullInputPorts(t, nFrames);
         
-        float *gainv = m_inputPortBuffer[m_param2InputPort[AUDIO_PARAM_GAIN]];
-        float *freqv = m_inputPortBuffer[m_param2InputPort[PARAM_FREQ]];
+        float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        float *freqv = inputPortVector(PARAM_FREQ);
         
         for(int i = 0; i < nFrames; i++)
         {
@@ -770,8 +774,8 @@ public:
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
         pullInputPorts(t, nFrames);
         
-        float *gainv = m_inputPortBuffer[m_param2InputPort[AUDIO_PARAM_GAIN]];
-        float *freqv = m_inputPortBuffer[m_param2InputPort[PARAM_FREQ]];
+        float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        float *freqv = inputPortVector(PARAM_FREQ);
         
         for(int i = 0; i < nFrames; i++)
         {
@@ -887,9 +891,9 @@ public:
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
         pullInputPorts(t, nFrames);
         
-        float *triggerv = m_inputPortBuffer[m_param2InputPort[PARAM_TRIGGER]];
-        float *gainv = m_inputPortBuffer[m_param2InputPort[AUDIO_PARAM_GAIN]];
-        float *inputv = m_inputPortBuffer[m_param2InputPort[PARAM_INPUT]];
+        float *triggerv = inputPortVector(PARAM_TRIGGER);
+        float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        float *inputv = inputPortVector(PARAM_INPUT);
         
         for(int i = 0; i < nFrames; i++)
         {
@@ -1124,10 +1128,10 @@ public:
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
         pullInputPorts(t, nFrames);
         
-        float *inputv = m_inputPortBuffer[m_param2InputPort[PARAM_INPUT]];
-        float *gainv = m_inputPortBuffer[m_param2InputPort[AUDIO_PARAM_GAIN]];
-        float *freqv = m_inputPortBuffer[m_param2InputPort[PARAM_FREQ]];
-        float *qv = m_inputPortBuffer[m_param2InputPort[PARAM_Q]];
+        float *inputv = inputPortVector(PARAM_INPUT);
+        float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        float *freqv = inputPortVector(PARAM_FREQ);
+        float *qv = inputPortVector(PARAM_Q);
         
         for(int i = 0; i < nFrames; i++)
         {
@@ -1247,10 +1251,10 @@ public:
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
         pullInputPorts(t, nFrames);
         
-        float *inputv = m_inputPortBuffer[m_param2InputPort[PARAM_INPUT]];
-        float *gainv = m_inputPortBuffer[m_param2InputPort[AUDIO_PARAM_GAIN]];
-        float *delayLengthv = m_inputPortBuffer[m_param2InputPort[PARAM_DELAY]];
-        float *feedbackGainv = m_inputPortBuffer[m_param2InputPort[PARAM_FEEDBACK]];
+        float *inputv = inputPortVector(PARAM_INPUT);
+        float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        float *delayLengthv = inputPortVector(PARAM_DELAY);
+        float *feedbackGainv = inputPortVector(PARAM_FEEDBACK);
         
         for(int i = 0; i < nFrames; i++)
         {
