@@ -40,12 +40,23 @@ class AGUINodeEditor;
 
 struct AGPortInfo
 {
+    int portId;
+    
     string name;
     bool canConnect; // can create connection btw this port and another port
     bool canEdit; // should this port appear in the node's editor window
     
+    float _default;
     float min;
     float max;
+    
+    enum Mode
+    {
+        LIN,
+        LOG,
+    };
+    
+    Mode mode;
     
     // TODO: min, max, units label, rate, etc.
 };
@@ -94,6 +105,7 @@ public:
     AGNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
     virtual void init();
     virtual void init(const AGDocument::Node &docNode);
+    virtual void initFinal() { }
     virtual ~AGNode();
     
     virtual const string &type() { return m_manifest->type(); }
@@ -152,15 +164,19 @@ public:
     const std::list<AGConnection *> outbound() const;
     const std::list<AGConnection *> inbound() const;
     
-    /*** Subclassing note: the following public functions should be overridden ***/
+    void setEditPortValue(int port, float value) { m_params[editPortInfo(port).portId] = value; editPortValueChanged(editPortInfo(port).portId); }
+    void getEditPortValue(int port, float &value) const { value = m_params.at(editPortInfo(port).portId); }
+    virtual float getDefaultParamValue(int paramId) const { return editPortInfo(m_param2EditPort.at(paramId))._default; }
+    float param(int paramId) const { return m_params.at(paramId); }
     
-    /* overridden by final subclass */
-    // TODO: should be pure virtual
-    virtual void setEditPortValue(int port, float value) { }
-    /* overridden by final subclass */
-    virtual void getEditPortValue(int port, float &value) const { }
+    /*** Subclassing note: override information as described ***/
+    
     /* can be overridden by final subclass */
     virtual float validateEditPortValue(int port, float _new) const;
+    /* can be overridden by direct subclass */
+    virtual void finalPortValue(float &value, int portId, int sample = -1) const;
+    /* can be overridden by final subclass */
+    virtual void editPortValueChanged(int paramId) { }
 
     void loadEditPortValues(const AGDocument::Node &docNode);
     
@@ -178,13 +194,14 @@ public:
     virtual void fadeOutAndRemove();
     virtual void renderOut();
     
-    /* serialization - overridden by direct subclass */
     virtual AGDocument::Node serialize();
     
 private:
     static bool s_initNode;
     
     Mutex m_mutex;
+    
+    void _initBase();
     virtual void receiveControl_internal(int port, const AGControl &control);
     
 protected:
@@ -200,8 +217,6 @@ protected:
     virtual void removeInbound(AGConnection *connection);
     virtual void removeOutbound(AGConnection *connection);
     
-    /* overridden by final subclass */
-    virtual void setDefaultPortValues() { }
     /* overridden by direct subclass */
     virtual AGDocument::Node::Class nodeClass() const = 0;
 
@@ -235,6 +250,10 @@ protected:
     
     bool m_active;
     powcurvef m_fadeOut;
+    
+    map<int, int> m_param2InputPort;
+    map<int, int> m_param2EditPort;
+    map<int, float> m_params;
 };
 
 

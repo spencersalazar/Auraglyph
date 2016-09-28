@@ -21,6 +21,11 @@ class AGControlArrayNode : public AGControlNode
     
 public:
     
+    enum Param
+    {
+        PARAM_ITERATE,
+    };
+    
     class Manifest : public AGStandardNodeManifest<AGControlArrayNode>
     {
     public:
@@ -34,11 +39,9 @@ public:
     
     using AGControlNode::AGControlNode;
     
-    void setDefaultPortValues() override;
+    void initFinal() override;
     
     virtual int numOutputPorts() const override { return 1; }
-    virtual void setEditPortValue(int port, float value) override;
-    virtual void getEditPortValue(int port, float &value) const override;
     
     virtual AGUINodeEditor *createCustomEditor() override;
     
