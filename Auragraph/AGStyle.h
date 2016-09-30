@@ -75,6 +75,14 @@ public:
                                    1.0f);
     }
     
+    GLKMatrix4 apply(const GLKMatrix4 &m)
+    {
+        return GLKMatrix4Scale(m,
+                               m_yScale <= AGStyle::open_squeezeHeight ? (float)m_xScale : 1.0f,
+                               m_xScale >= 0.99f ? (float)m_yScale : AGStyle::open_squeezeHeight,
+                               1.0f);
+    }
+    
     void update(float t, float dt)
     {
         if(m_yScale <= AGStyle::open_squeezeHeight) m_xScale.update(dt);
