@@ -18,6 +18,7 @@
 #import "AGAudioCapturer.h"
 #import "AGCompositeNode.h"
 #include "AGCompressorNode.h"
+#include "AGWaveformAudioNode.h"
 #include "AGStyle.h"
 #include "spdsp.h"
 
@@ -1308,6 +1309,7 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioSquareWaveNode::Manifest);
         nodeTypes.push_back(new AGAudioSawtoothWaveNode::Manifest);
         nodeTypes.push_back(new AGAudioTriangleWaveNode::Manifest);
+        nodeTypes.push_back(new AGAudioWaveformNode::Manifest);
         nodeTypes.push_back(new AGAudioADSRNode::Manifest);
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RLPF>::ManifestLPF);
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RHPF>::ManifestHPF);
