@@ -17,6 +17,7 @@ uniform mat4 modelViewProjectionMatrix;
 uniform mat3 normalMatrix;
 uniform float positionZ;
 uniform float gain;
+uniform float alphaWindow;
 
 #define M_PI 3.1415926535897932384626433832795
 
@@ -45,7 +46,7 @@ void main()
     float nDotVP = max(0.0, dot(eyeNormal, normalize(lightPosition)));
     
     colorVarying = diffuseColor * nDotVP * color;
-    colorVarying.a *= window(1.0, positionX);
+    colorVarying.a = window(colorVarying.a, positionX)*alphaWindow + colorVarying.a*(1.0-alphaWindow);
     
     gl_Position = modelViewProjectionMatrix * position;
     //gl_Position = vec4(0, 0, 0, 1);

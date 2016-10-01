@@ -11,8 +11,12 @@
 
 #include "AGAudioNode.h"
 
+class AGWaveformEditor;
+
 class AGAudioWaveformNode : public AGAudioNode
 {
+    friend AGWaveformEditor;
+    
 public:
     
     enum Param
