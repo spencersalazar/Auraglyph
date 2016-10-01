@@ -21,6 +21,11 @@ private:
     AGSqueezeAnimation m_squeeze;
     bool m_doneEditing;
     
+    GLvertex2f m_waveformPos;
+    GLvertex2f m_waveformSize;
+    
+    int m_lastModifiedPos;
+    
 public:
     AGWaveformEditor(AGAudioWaveformNode *node) :
     m_node(node), m_doneEditing(false)
@@ -28,6 +33,9 @@ public:
         m_squeeze.open();
         m_width = 400;
         m_height = m_width*0.5f;
+        
+        m_waveformPos = GLvertex2f(0,0);
+        m_waveformSize = GLvertex2f(m_width*0.9, m_height*0.9);
     }
     
     virtual void update(float t, float dt) override
@@ -59,33 +67,101 @@ public:
         glLineWidth(1.0f);
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
         drawLineStrip((GLvertex2f[]) {
-            { -m_width*0.5f*0.9f,  m_height*0.5f*0.9f },
-            { -m_width*0.5f*0.9f, -m_height*0.5f*0.9f },
+            m_waveformPos + GLvertex2f{ -m_waveformSize.x*0.5f,  m_waveformSize.y*0.5f },
+            m_waveformPos + GLvertex2f{ -m_waveformSize.x*0.5f, -m_waveformSize.y*0.5f },
         }, 2);
         
         // draw x-axis
         glLineWidth(1.0f);
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
         drawLineStrip((GLvertex2f[]) {
-            { -m_width*0.5f*0.9f, 0 },
-            {  m_width*0.5f*0.9f, 0 },
+            m_waveformPos + GLvertex2f{ -m_waveformSize.x*0.5f, 0 },
+            m_waveformPos + GLvertex2f{  m_waveformSize.x*0.5f, 0 },
         }, 2);
         
-        glLineWidth(3.0f);
         // draw waveform
+        glLineWidth(3.0f);
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
         drawWaveform(m_node->m_waveform.data(), m_node->m_waveform.size(),
-                     GLvertex2f(-m_width*0.5f*0.9f, 0), GLvertex2f(m_width*0.5f*0.9f, 0),
-                     1.0f, m_height*0.5f*0.9f);
+                     m_waveformPos+GLvertex2f(-m_waveformSize.x*0.5f, 0),
+                     m_waveformPos+GLvertex2f( m_waveformSize.x*0.5f, 0),
+                     1.0f, m_waveformSize.y*0.5f);
+        
+        // draw phase
+//        glLineWidth(1.0f);
+//        float phaseOffset = (m_node->m_phase-0.5f);
+//        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+//        drawLineStrip((GLvertex2f[]) {
+//            m_waveformPos + GLvertex2f{ phaseOffset*m_waveformSize.x,  m_waveformSize.y*0.5f },
+//            m_waveformPos + GLvertex2f{ phaseOffset*m_waveformSize.x, -m_waveformSize.y*0.5f },
+//        }, 2);
     }
     
     virtual void touchDown(const AGTouchInfo &t) override
     {
-        
+        if(pointInRectangle(t.position.xy(), position().xy()+m_waveformPos-m_waveformSize*0.5f, position().xy()+m_waveformPos+m_waveformSize*0.5f))
+        {
+            GLvertex2f posInWaveform = t.position.xy()-position().xy()-m_waveformPos;
+            // normalize x to [0,1]
+            float normX = (posInWaveform.x+(m_waveformSize.x*0.5f))/m_waveformSize.x;
+            // normalize y to [-1,1]
+            float normY = posInWaveform.y/m_waveformSize.y*2;
+            
+            dbgprint("posInWaveform %f %f\n", posInWaveform.x, posInWaveform.y);
+            dbgprint("norm %f %f\n", normX, normY);
+            
+            int pos = (int) roundf(normX*m_node->m_waveform.size());
+            m_node->m_waveform[pos] = normY;
+            
+            m_lastModifiedPos = pos;
+        }
     }
     
     virtual void touchMove(const AGTouchInfo &t) override
     {
-        
+        if(pointInRectangle(t.position.xy(), position().xy()+m_waveformPos-m_waveformSize*0.5f, position().xy()+m_waveformPos+m_waveformSize*0.5f))
+        {
+            GLvertex2f posInWaveform = t.position.xy()-position().xy()-m_waveformPos;
+            // normalize x to [0,1]
+            float normX = (posInWaveform.x+(m_waveformSize.x*0.5f))/m_waveformSize.x;
+            // normalize y to [-1,1]
+            float normY = posInWaveform.y/m_waveformSize.y*2;
+            
+            dbgprint_off("posInWaveform %f %f\n", posInWaveform.x, posInWaveform.y);
+            dbgprint_off("norm %f %f\n", normX, normY);
+
+            int pos = (int) roundf(normX*m_node->m_waveform.size());
+            m_node->m_waveform[pos] = normY;
+            
+            // interpolate from last point
+            if(pos != m_lastModifiedPos)
+            {
+                int from, to;
+                if(pos > m_lastModifiedPos)
+                {
+                    from = m_lastModifiedPos;
+                    to = pos;
+                }
+                else
+                {
+                    from = pos;
+                    to = m_lastModifiedPos;
+                }
+                
+                // interpolate
+                float fromVal = m_node->m_waveform[from];
+                float toVal = m_node->m_waveform[to];
+                float size = to-from;
+                dbgprint("from/to %i %i\n", from, to);
+                for(int i = 1; i < size; i++)
+                {
+                    dbgprint("from/to scale %f %f\n", (1.0f-i/size), (i/size));
+                    m_node->m_waveform[from+i] = fromVal*(1.0f-i/size) + toVal*(i/size);
+                }
+                
+                m_lastModifiedPos = pos;
+            }
+        }
     }
     
     virtual void touchUp(const AGTouchInfo &t) override
