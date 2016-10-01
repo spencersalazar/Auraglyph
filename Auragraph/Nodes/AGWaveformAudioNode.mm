@@ -264,12 +264,9 @@ public:
         GLKMatrix4 projection = m_renderState.projection;
         GLKMatrix4 modelView = m_renderState.modelview;
         
-        // rendering the waveform in reverse seems to look better
-        // probably because of aliasing between graphic fps and audio rate
-        // move to destination terminal
-        // modelView = GLKMatrix4Translate(modelView, m_outTerminal.x, m_outTerminal.y, m_outTerminal.z);
+        // move to from location
         modelView = GLKMatrix4Translate(modelView, from.x, from.y, 0);
-        // rotate to face direction of source terminal
+        // rotate to face direction of to terminal
         modelView = GLKMatrix4Rotate(modelView, vec.angle(), 0, 0, 1);
         // scale [0,1] to length of connection
         modelView = GLKMatrix4Scale(modelView, vec.magnitude(), yScale, 1);

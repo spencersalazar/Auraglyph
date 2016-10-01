@@ -35,7 +35,8 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", true, true }
+                { PARAM_FREQ, "freq", true, true },
+                { AUDIO_PARAM_GAIN, "gain", true, true },
             };
         };
         
