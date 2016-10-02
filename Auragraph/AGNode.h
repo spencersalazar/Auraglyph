@@ -168,6 +168,8 @@ public:
     void getEditPortValue(int port, float &value) const { value = m_params.at(editPortInfo(port).portId); }
     virtual float getDefaultParamValue(int paramId) const { return editPortInfo(m_param2EditPort.at(paramId))._default; }
     float param(int paramId) const { return m_params.at(paramId); }
+    void setParam(int paramId, float value) { m_params[paramId] = value; editPortValueChanged(paramId); }
+    float validateParam(int paramId, float value) const { return validateEditPortValue(m_param2EditPort.at(paramId), value); }
     
     /*** Subclassing note: override information as described ***/
     
