@@ -39,6 +39,12 @@ public:
         m_waveformPos = GLvertex2f( 0, -m_height*0.1f );
         m_waveformSize = GLvertex2f( m_width*0.9f, m_height*0.7f );
         
+        AGUILabel *titleLabel = new AGUILabel(GLvertex3f(0, 0, 0), "WAVEFORM");
+        titleLabel->init();
+        titleLabel->setSize(titleLabel->naturalSize());
+        titleLabel->setPosition(GLvertex2f(-m_width/2, m_height/2)+titleLabel->size()/2);
+        addChild(titleLabel);
+        
         float hmargin = 10;
         float labelWidth = 40;
         float sliderWidth = 80;
