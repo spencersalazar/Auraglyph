@@ -15,6 +15,7 @@
 #include <sstream>
 
 #define AGSlider_TextScale (0.61f)
+#define AGSlider_TextMargin (4)
 #define AGSlider_HitOffset (10)
 
 AGSlider::AGSlider(const GLvertex3f &position, float value)
@@ -57,7 +58,12 @@ void AGSlider::render()
     
     GLKMatrix4 valueMV = modelView;
     valueMV = GLKMatrix4Translate(valueMV, m_position.x, m_position.y, m_position.z);
-    valueMV = GLKMatrix4Translate(valueMV, -m_textSize.x/2, -m_textSize.y/2, 0);
+    if(m_alignment == ALIGN_CENTER)
+        valueMV = GLKMatrix4Translate(valueMV, -m_textSize.x/2, -m_textSize.y/2, 0);
+    else if(m_alignment == ALIGN_RIGHT)
+        valueMV = GLKMatrix4Translate(valueMV, m_size.x/2-m_textSize.x/2-AGSlider_TextMargin, -m_textSize.y/2, 0);
+    else if(m_alignment == ALIGN_LEFT)
+        valueMV = GLKMatrix4Translate(valueMV, -m_size.x/2+AGSlider_TextMargin, -m_textSize.y/2, 0);
     valueMV = GLKMatrix4Scale(valueMV, AGSlider_TextScale, AGSlider_TextScale, AGSlider_TextScale);
     text->render(m_str, valueColor, valueMV, proj);
     
