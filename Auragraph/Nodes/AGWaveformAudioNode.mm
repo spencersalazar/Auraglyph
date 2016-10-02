@@ -187,6 +187,12 @@ public:
     virtual GLvertex2f size() override { return GLvertex2f(m_width, m_height); }
 };
 
+void AGAudioWaveformNode::init(const AGDocument::Node &docNode)
+{
+    AGAudioNode::init(docNode);
+    
+    docNode.loadParam("waveform", m_waveform);
+}
 
 void AGAudioWaveformNode::initFinal()
 {
@@ -230,4 +236,13 @@ AGUINodeEditor *AGAudioWaveformNode::createCustomEditor()
     AGUINodeEditor *editor = new AGWaveformEditor(this);
     editor->init();
     return editor;
+}
+
+AGDocument::Node AGAudioWaveformNode::serialize()
+{
+    AGDocument::Node docNode = AGNode::serialize();
+    
+    docNode.saveParam("waveform", m_waveform);
+    
+    return std::move(docNode);
 }

@@ -68,10 +68,15 @@ public:
     
     using AGAudioNode::AGAudioNode;
     
+    using AGAudioNode::init;
+    void init(const AGDocument::Node &docNode) override;
+    
     void initFinal() override;
     void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
+    
     AGUINodeEditor *createCustomEditor() override;
-
+    AGDocument::Node serialize() override;
+    
 private:
     vector<float> m_waveform;
     float m_phase;
