@@ -217,15 +217,15 @@ void AGAudioWaveformNode::renderAudio(sampletime t, float *input, float *output,
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     pullInputPorts(t, nFrames);
     
-//    float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
-//    float *freqv = inputPortVector(PARAM_FREQ);
+    float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+    float *freqv = inputPortVector(PARAM_FREQ);
     
     for(int i = 0; i < nFrames; i++)
     {
-        m_outputBuffer[i] = get(m_phase) * param(AUDIO_PARAM_GAIN);
+        m_outputBuffer[i] = get(m_phase) * gainv[i];
         output[i] += m_outputBuffer[i];
         
-        m_phase = clipunit(m_phase + param(PARAM_FREQ)/sampleRate());
+        m_phase = clipunit(m_phase + freqv[i]/sampleRate());
     }
     
     m_lastTime = t;
