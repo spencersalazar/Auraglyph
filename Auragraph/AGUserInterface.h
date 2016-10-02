@@ -51,6 +51,32 @@ private:
     GLvertex2f m_geo[4];
 };
 
+/*------------------------------------------------------------------------------
+ - AGUILabel -
+ Text label
+ -----------------------------------------------------------------------------*/
+class AGUILabel : public AGRenderObject
+{
+public:
+    AGUILabel(const GLvertex3f &position = GLvertex3f(), const string &text = "");
+    ~AGUILabel();
+    
+    virtual void update(float t, float dt);
+    virtual void render();
+    
+    void setPosition(const GLvertex3f &position);
+    virtual GLvertex3f position();
+    virtual GLvertex2f size();
+    void setSize(const GLvertex2f &size);
+    
+private:
+    GLvertex3f m_position;
+    GLvertex2f m_size;
+    GLvertex2f m_textSize;
+    
+    string m_text;
+};
+
 
 /*------------------------------------------------------------------------------
  - AGUIButton -
