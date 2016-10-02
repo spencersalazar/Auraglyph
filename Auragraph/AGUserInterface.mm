@@ -560,5 +560,9 @@ void AGUILabel::setSize(const GLvertex2f &size)
     m_size = size;
 }
 
+GLvertex2f AGUILabel::naturalSize() const
+{
+    return m_textSize;
+}
 
 

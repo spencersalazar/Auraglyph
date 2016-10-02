@@ -68,6 +68,7 @@ public:
     virtual GLvertex3f position();
     virtual GLvertex2f size();
     void setSize(const GLvertex2f &size);
+    GLvertex2f naturalSize() const;
     
 private:
     GLvertex3f m_position;
