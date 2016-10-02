@@ -313,3 +313,32 @@ bool AGDocument::existsForTitle(const string &title)
     return [[NSFileManager defaultManager] fileExistsAtPath:filename isDirectory:NULL];
 }
 
+void AGDocument::Node::saveParam(const string &name, int p)
+{
+    params[name] = AGDocument::ParamValue(p);
+}
+
+void AGDocument::Node::saveParam(const string &name, float p)
+{
+    params[name] = AGDocument::ParamValue(p);
+}
+
+void AGDocument::Node::saveParam(const string &name, const vector<float> &p)
+{
+    params[name].type = ParamValue::FLOAT_ARRAY;
+    for(float f : p)
+        params[name].fa.push_back(f);
+}
+
+void AGDocument::Node::loadParam(const string &name, vector<float> &p) const
+{
+    if(params.count(name) && params.at(name).type == ParamValue::FLOAT_ARRAY)
+    {
+        p.clear();
+        p.reserve(params.at(name).fa.size());
+        
+        for(float f : params.at(name).fa)
+            p.push_back(f);
+    }
+}
+

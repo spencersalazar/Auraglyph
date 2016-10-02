@@ -59,6 +59,12 @@ public:
         list<Connection> inbound;
         list<Connection> outbound;
         map<string, ParamValue> params;
+        
+        void saveParam(const string &name, int p);
+        void saveParam(const string &name, float p);
+        void saveParam(const string &name, const vector<float> &p);
+
+        void loadParam(const string &name, vector<float> &p) const;
     };
     
     struct Freedraw
