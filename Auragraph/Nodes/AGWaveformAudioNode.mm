@@ -9,6 +9,8 @@
 #include "AGWaveformAudioNode.h"
 #include "AGUINodeEditor.h"
 #include "AGGenericShader.h"
+#include "AGSlider.h"
+
 #include "GeoGenerator.h"
 #include "spdsp.h"
 
@@ -31,16 +33,103 @@ public:
     m_node(node), m_doneEditing(false)
     {
         m_squeeze.open();
-        m_width = 400;
+        m_width = 425;
         m_height = m_width*0.5f;
         
-        m_waveformPos = GLvertex2f(0,0);
-        m_waveformSize = GLvertex2f(m_width*0.9, m_height*0.9);
+        m_waveformPos = GLvertex2f( 0, -m_height*0.1f );
+        m_waveformSize = GLvertex2f( m_width*0.9f, m_height*0.7f );
+        
+        float hmargin = 10;
+        float labelWidth = 40;
+        float sliderWidth = 80;
+        float sliderHeight = 32;
+        float pos = -m_width/2;
+        
+        // freq label
+        pos += hmargin + labelWidth/2;
+        
+        AGUILabel *freqLabel = new AGUILabel(GLvertex3f(pos, m_height/2-sliderHeight/2, 0), "freq");
+        freqLabel->init();
+        freqLabel->setSize(GLvertex2f(labelWidth, sliderHeight));
+        addChild(freqLabel);
+        
+        // freq slider
+        pos += hmargin + labelWidth/2 + sliderWidth/2;
+        
+        AGSlider *freqSlider = new AGSlider(GLvertex3f(pos, m_height/2-sliderHeight/2, 0));
+        freqSlider->init();
+        
+        freqSlider->setSize(GLvertex2f(sliderWidth, sliderHeight));
+        freqSlider->setType(AGSlider::CONTINUOUS);
+        freqSlider->setScale(AGSlider::EXPONENTIAL);
+        freqSlider->setAlignment(AGSlider::ALIGN_LEFT);
+        freqSlider->setValue(m_node->param(AGAudioWaveformNode::PARAM_FREQ));
+        freqSlider->onUpdate([this] (float value) {
+            m_node->setParam(AGAudioWaveformNode::PARAM_FREQ, value);
+        });
+        freqSlider->setValidator([this] (float _old, float _new) -> float {
+            return m_node->validateParam(AGAudioWaveformNode::PARAM_FREQ, _new);
+        });
+        addChild(freqSlider);
+        
+        // dur label
+        pos += sliderWidth/2 + hmargin*2 + labelWidth/2;
+        
+        AGUILabel *durLabel = new AGUILabel(GLvertex3f(pos, m_height/2-sliderHeight/2, 0), "dur");
+        durLabel->init();
+        durLabel->setSize(GLvertex2f(labelWidth, sliderHeight));
+        addChild(durLabel);
+        
+        pos += labelWidth/2 + hmargin + sliderWidth/2;
+        
+        // dur slider
+        AGSlider *durSlider = new AGSlider(GLvertex3f(pos, m_height/2-sliderHeight/2, 0));
+        durSlider->init();
+        
+        durSlider->setSize(GLvertex2f(sliderWidth, sliderHeight));
+        durSlider->setType(AGSlider::CONTINUOUS);
+        durSlider->setScale(AGSlider::EXPONENTIAL);
+        durSlider->setAlignment(AGSlider::ALIGN_LEFT);
+        durSlider->setValue(m_node->param(AGAudioWaveformNode::PARAM_DURATION));
+        durSlider->onUpdate([this] (float value) {
+            m_node->setParam(AGAudioWaveformNode::PARAM_DURATION, value);
+        });
+        durSlider->setValidator([this] (float _old, float _new) -> float {
+            return m_node->validateParam(AGAudioWaveformNode::PARAM_DURATION, _new);
+        });
+        addChild(durSlider);
+        
+        // gain label
+        pos += sliderWidth/2 + hmargin*2 + labelWidth/2;
+        
+        AGUILabel *gainLabel = new AGUILabel(GLvertex3f(pos, m_height/2-sliderHeight/2, 0), "gain");
+        gainLabel->init();
+        gainLabel->setSize(GLvertex2f(labelWidth, sliderHeight));
+        addChild(gainLabel);
+        
+        pos += labelWidth/2 + hmargin + sliderWidth/2;
+        
+        // gain slider
+        AGSlider *gainSlider = new AGSlider(GLvertex3f(pos, m_height/2-sliderHeight/2, 0));
+        gainSlider->init();
+        
+        gainSlider->setSize(GLvertex2f(sliderWidth, sliderHeight));
+        gainSlider->setType(AGSlider::CONTINUOUS);
+        gainSlider->setScale(AGSlider::EXPONENTIAL);
+        gainSlider->setAlignment(AGSlider::ALIGN_LEFT);
+        gainSlider->setValue(m_node->param(AGAudioWaveformNode::AUDIO_PARAM_GAIN));
+        gainSlider->onUpdate([this] (float value) {
+            m_node->setParam(AGAudioWaveformNode::AUDIO_PARAM_GAIN, value);
+        });
+        gainSlider->setValidator([this] (float _old, float _new) -> float {
+            return m_node->validateParam(AGAudioWaveformNode::AUDIO_PARAM_GAIN, _new);
+        });
+        addChild(gainSlider);
     }
     
     virtual void update(float t, float dt) override
     {
-        AGInteractiveObject::update(t, dt);
+        AGRenderObject::update(t, dt);
         
         m_renderState.modelview = GLKMatrix4Translate(m_renderState.modelview,
                                                       position().x, position().y, 0);
@@ -95,6 +184,8 @@ public:
 //            m_waveformPos + GLvertex2f{ phaseOffset*m_waveformSize.x,  m_waveformSize.y*0.5f },
 //            m_waveformPos + GLvertex2f{ phaseOffset*m_waveformSize.x, -m_waveformSize.y*0.5f },
 //        }, 2);
+        
+        AGRenderObject::render();
     }
     
     virtual void touchDown(const AGTouchInfo &t) override
