@@ -260,4 +260,106 @@ void AGRenderObject::debug_renderBounds()
 #endif // DEBUG_BOUNDS
 }
 
+void AGRenderObject::drawTriangleFan(GLvertex3f geo[], int size)
+{
+    AGGenericShader &shader = AGGenericShader::instance();
+    
+    shader.useProgram();
+    
+    shader.setModelViewMatrix(m_renderState.modelview);
+    shader.setProjectionMatrix(m_renderState.projection);
+    
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    
+    glDrawArrays(GL_TRIANGLE_FAN, 0, size);
+}
+
+void AGRenderObject::drawLineLoop(GLvertex3f geo[], int size)
+{
+    AGGenericShader &shader = AGGenericShader::instance();
+    
+    shader.useProgram();
+    
+    shader.setModelViewMatrix(m_renderState.modelview);
+    shader.setProjectionMatrix(m_renderState.projection);
+    
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    
+    glDrawArrays(GL_LINE_LOOP, 0, size);
+}
+
+void AGRenderObject::drawLineStrip(GLvertex2f geo[], int size)
+{
+    AGGenericShader &shader = AGGenericShader::instance();
+    
+    shader.useProgram();
+    
+    shader.setModelViewMatrix(m_renderState.modelview);
+    shader.setProjectionMatrix(m_renderState.projection);
+    
+    glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    
+    glDrawArrays(GL_LINE_STRIP, 0, size);
+}
+
+void AGRenderObject::drawLineStrip(GLvertex3f geo[], int size)
+{
+    AGGenericShader &shader = AGGenericShader::instance();
+    
+    shader.useProgram();
+    
+    shader.setModelViewMatrix(m_renderState.modelview);
+    shader.setProjectionMatrix(m_renderState.projection);
+    
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    
+    glDrawArrays(GL_LINE_STRIP, 0, size);
+}
+
+void AGRenderObject::drawWaveform(float waveform[], int size, GLvertex2f from, GLvertex2f to, float gain, float yScale)
+{
+    GLvertex2f vec = (to - from);
+    
+    // scale gain logarithmically
+    if(gain > 0)
+        gain = 1.0f/gain * (1+log10f(gain));
+    else
+        gain = 1;
+    
+    AGWaveformShader &waveformShader = AGWaveformShader::instance();
+    waveformShader.useProgram();
+    
+    waveformShader.setWindowAmount(0);
+    
+    GLKMatrix4 projection = m_renderState.projection;
+    GLKMatrix4 modelView = m_renderState.modelview;
+    
+    // move to from location
+    modelView = GLKMatrix4Translate(modelView, from.x, from.y, 0);
+    // rotate to face direction of to terminal
+    modelView = GLKMatrix4Rotate(modelView, vec.angle(), 0, 0, 1);
+    // scale [0,1] to length of connection
+    modelView = GLKMatrix4Scale(modelView, vec.magnitude(), yScale, 1);
+    
+    waveformShader.setProjectionMatrix(projection);
+    waveformShader.setModelViewMatrix(modelView);
+    
+    waveformShader.setZ(0);
+    waveformShader.setGain(gain);
+    glVertexAttribPointer(AGWaveformShader::s_attribPositionY, 1, GL_FLOAT, GL_FALSE, 0, waveform);
+    glEnableVertexAttribArray(AGWaveformShader::s_attribPositionY);
+    
+    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    glDisableVertexAttribArray(GLKVertexAttribNormal);
+    
+    glDisableVertexAttribArray(GLKVertexAttribPosition);
+    
+    glDrawArrays(GL_LINE_STRIP, 0, size);
+    
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+}
 
