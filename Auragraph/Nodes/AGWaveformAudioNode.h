@@ -55,11 +55,23 @@ public:
             vector<GLvertex3f> iconGeo(NUM_PTS);
             
             float radius = 0.005*AGStyle::oldGlobalScale;
+            float w = radius*1.3, h = w*0.3, t = h*0.75, rot = -M_PI*0.8f;
+            GLvertex2f offset(-w/2,0);
             
             return {
-                { -radius, -radius, 0 },
+                // waveform
+                { -radius, 0, 0 },
+                { -radius*0.75f, radius, 0 },
+                { -radius*0.5f, 0, 0 },
+                { -radius*0.25f, -radius, 0 },
                 { 0, 0, 0 },
-                { radius, 0.5f*radius, 0 },
+                // pen
+                rotateZ(offset+GLvertex2f( w/2,      0), rot),
+                rotateZ(offset+GLvertex2f( w/2-t,  h/2), rot),
+                rotateZ(offset+GLvertex2f(-w/2,    h/2), rot),
+                rotateZ(offset+GLvertex2f(-w/2,   -h/2), rot),
+                rotateZ(offset+GLvertex2f( w/2-t, -h/2), rot),
+                rotateZ(offset+GLvertex2f( w/2,      0), rot),
             };
         };
         
