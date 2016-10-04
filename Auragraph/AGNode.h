@@ -226,7 +226,7 @@ protected:
     void _updateConnections(float t, float dt);
     void _renderConnections();
     
-    void _renderIcon();
+    virtual void _renderIcon();
     
     const AGNodeManifest *m_manifest;
     string m_title;
