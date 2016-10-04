@@ -54,7 +54,7 @@ public:
             int NUM_PTS = 32;
             vector<GLvertex3f> iconGeo(NUM_PTS);
             
-            float radius = 0.005*AGStyle::oldGlobalScale;
+            float radius = 25;
             float w = radius*1.3, h = w*0.3, t = h*0.75, rot = -M_PI*0.8f;
             GLvertex2f offset(-w/2,0);
             
@@ -85,6 +85,8 @@ public:
     
     void initFinal() override;
     void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
+    
+    void _renderIcon() override;
     
     AGUINodeEditor *createCustomEditor() override;
     AGDocument::Node serialize() override;

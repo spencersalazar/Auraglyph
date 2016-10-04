@@ -328,6 +328,27 @@ void AGAudioWaveformNode::renderAudio(sampletime t, float *input, float *output,
     m_lastTime = t;
 }
 
+void AGAudioWaveformNode::_renderIcon()
+{
+    float insetScale = G_RATIO-1;
+    float xInset = 0.01*AGStyle::oldGlobalScale*insetScale;
+    float yScale = 0.01*AGStyle::oldGlobalScale*insetScale/G_RATIO;
+    drawWaveform(m_waveform.data(), m_waveform.size(), GLvertex2f(-xInset, 0), GLvertex2f(xInset, 0), 1, yScale);
+    
+    float radius = 25;
+    float w = radius*1.3, h = w*0.3, t = h*0.75, rot = -M_PI*0.8f;
+    GLvertex2f offset(-w/2,0);
+    
+    drawLineStrip((GLvertex2f[]) {
+        rotateZ(offset+GLvertex2f( w/2,      0), rot),
+        rotateZ(offset+GLvertex2f( w/2-t,  h/2), rot),
+        rotateZ(offset+GLvertex2f(-w/2,    h/2), rot),
+        rotateZ(offset+GLvertex2f(-w/2,   -h/2), rot),
+        rotateZ(offset+GLvertex2f( w/2-t, -h/2), rot),
+        rotateZ(offset+GLvertex2f( w/2,      0), rot),
+    }, 6);
+}
+
 AGUINodeEditor *AGAudioWaveformNode::createCustomEditor()
 {
     AGUINodeEditor *editor = new AGWaveformEditor(this);
