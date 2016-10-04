@@ -555,7 +555,7 @@ static AGViewController * g_instance = nil;
     
     //    vec = GLKMatrix4MultiplyVector3(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z), vec);
     
-    return GLvertex3f(vec.x, vec.y, vec.z);
+    return GLvertex3f(vec.x, vec.y, 0);
 }
 
 - (void)update
@@ -893,7 +893,8 @@ static AGViewController * g_instance = nil;
         GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p1];
         GLvertex3f pos_1 = [self worldCoordinateForScreenCoordinate:p1_1];
         
-        _camera = _camera + (pos - pos_1);
+        _camera = _camera + (pos.xy() - pos_1.xy());
+        dbgprint("camera: %f, %f, %f\n", _camera.x, _camera.y, _camera.z);
         
         _touchHandler = nil;
 //        _camera.z += (dist - dist_1)*0.005;
