@@ -558,6 +558,19 @@ static AGViewController * g_instance = nil;
     return GLvertex3f(vec.x, vec.y, 0);
 }
 
+- (GLvertex3f)fixedCoordinateForScreenCoordinate:(CGPoint)p
+{
+    int viewport[] = { (int)self.view.bounds.origin.x, (int)(self.view.bounds.origin.y),
+        (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
+    bool success;
+    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, 0.0f),
+                                      _fixedModelView, _projection, viewport, &success);
+    
+    //    vec = GLKMatrix4MultiplyVector3(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z), vec);
+    
+    return GLvertex3f(vec.x, vec.y, 0);
+}
+
 - (void)update
 {
     if(_nodeRemoveList.size())
@@ -791,6 +804,7 @@ static AGViewController * g_instance = nil;
             UITouch *touch = [touches anyObject];
             CGPoint p = [[touches anyObject] locationInView:self.view];
             GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
+            GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:p];
             
             AGNode * node = NULL;
             int port;
@@ -824,7 +838,11 @@ static AGViewController * g_instance = nil;
                     {
                         for(AGInteractiveObject *object : _objects)
                         {
-                            hit = object->hitTest(pos);
+                            if(object->renderFixed())
+                                hit = object->hitTest(fixedPos);
+                            else
+                                hit = object->hitTest(pos);
+                            
                             if(hit != NULL)
                                 break;
                         }
