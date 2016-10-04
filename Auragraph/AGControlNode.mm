@@ -99,6 +99,9 @@ void AGControlNode::update(float t, float dt)
     m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
     
     m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, modelView);
+    
+    m_renderState.modelview = modelView;
+    m_renderState.projection = projection;
 }
 
 void AGControlNode::render()
