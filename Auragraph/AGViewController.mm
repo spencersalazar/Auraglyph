@@ -110,6 +110,7 @@ enum InterfaceMode
     
     AGUIButton * _testButton;
     
+    NSMutableSet *_activeTouches;
     AGInteractiveObject * _touchCapture;
 }
 
@@ -797,6 +798,8 @@ static AGViewController * g_instance = nil;
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    dbgprint("touchesBegan, count = %i, %0lx\n", [touches count], (long int) _touchHandler);
+    
     if([touches count] == 1)
     {
         if(_touchHandler == nil)
@@ -869,15 +872,15 @@ static AGViewController * g_instance = nil;
                     break;
             }
 
-            
+            [_touchHandler touchesBegan:touches withEvent:event];
         }
-        
-        [_touchHandler touchesBegan:touches withEvent:event];
     }
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    dbgprint("touchesMoved, count = %i, %0lx\n", [touches count], (long int) _touchHandler);
+
     if([touches count] == 1)
     {
         if(_touchCapture)
@@ -893,6 +896,12 @@ static AGViewController * g_instance = nil;
     }
     else if([touches count] == 2)
     {
+        if(_touchHandler)
+        {
+            [_touchHandler touchesCancelled:touches withEvent:event];
+            _touchHandler = nil;
+        }
+        
         UITouch *t1 = [[touches allObjects] objectAtIndex:0];
         UITouch *t2 = [[touches allObjects] objectAtIndex:1];
         CGPoint p1 = [t1 locationInView:self.view];
@@ -912,15 +921,16 @@ static AGViewController * g_instance = nil;
         GLvertex3f pos_1 = [self worldCoordinateForScreenCoordinate:p1_1];
         
         _camera = _camera + (pos.xy() - pos_1.xy());
-        dbgprint("camera: %f, %f, %f\n", _camera.x, _camera.y, _camera.z);
+//        dbgprint("camera: %f, %f, %f\n", _camera.x, _camera.y, _camera.z);
         
-        _touchHandler = nil;
 //        _camera.z += (dist - dist_1)*0.005;
     }
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    dbgprint("touchEnded, count = %i, %0lx\n", [touches count], (long int) _touchHandler);
+    
     if([touches count] == 1)
     {
         if(_touchCapture)

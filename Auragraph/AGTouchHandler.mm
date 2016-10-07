@@ -161,8 +161,6 @@
     
     AGHandwritingRecognizerFigure figure = [[AGHandwritingRecognizer instance] recognizeShape:_currentTrace];
     
-    BOOL animateOut = NO;
-    
     if(figure == AG_FIGURE_CIRCLE)
     {
 //        // first check average polar length
@@ -205,11 +203,12 @@
         AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::outputNodeSelector(centroidMVP);
         _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
     }
-    else
-    {
-        animateOut = YES;
-    }
     
+    _trace->removeFromTopLevel();
+}
+
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
     _trace->removeFromTopLevel();
 }
 
