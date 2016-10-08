@@ -85,6 +85,7 @@ enum InterfaceMode
     GLuint _screenProgram;
     
     GLvertex3f _camera;
+    slewf _cameraZ;
     
     AGTouchHandler * _touchHandler;
     
@@ -168,6 +169,8 @@ static AGViewController * g_instance = nil;
     [self setupGL];
     
     _camera = GLvertex3f(0, 0, 0);
+    _cameraZ.rate = 0.5;
+    _cameraZ.reset(0);
     
     self.audioManager = [AGAudioManager new];
     [self updateMatrices];
@@ -526,6 +529,10 @@ static AGViewController * g_instance = nil;
 //    else
 //        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f)/aspect, aspect, 0.1f, 100.0f);
     
+    _cameraZ.interp();
+    if(_cameraZ < 0)
+        _camera.z = _cameraZ;
+    
     GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z-10.1f);
     if(_interfaceMode == INTERFACEMODE_USER)
         baseModelViewMatrix = GLKMatrix4Translate(baseModelViewMatrix, 0, 0, -(G_RATIO-1));
@@ -798,7 +805,7 @@ static AGViewController * g_instance = nil;
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    dbgprint("touchesBegan, count = %i, %0lx\n", [touches count], (long int) _touchHandler);
+    dbgprint_off("touchesBegan, count = %i, %0lx\n", [touches count], (long int) _touchHandler);
     
     if([touches count] == 1)
     {
@@ -879,7 +886,7 @@ static AGViewController * g_instance = nil;
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    dbgprint("touchesMoved, count = %i, %0lx\n", [touches count], (long int) _touchHandler);
+    dbgprint_off("touchesMoved, count = %i, %0lx\n", [touches count], (long int) _touchHandler);
 
     if([touches count] == 1)
     {
@@ -921,15 +928,16 @@ static AGViewController * g_instance = nil;
         GLvertex3f pos_1 = [self worldCoordinateForScreenCoordinate:p1_1];
         
         _camera = _camera + (pos.xy() - pos_1.xy());
-//        dbgprint("camera: %f, %f, %f\n", _camera.x, _camera.y, _camera.z);
+        dbgprint("camera: %f, %f, %f\n", _camera.x, _camera.y, _camera.z);
         
-//        _camera.z += (dist - dist_1)*0.005;
+        float zoom = (dist - dist_1)*0.05;
+//        _cameraZ += zoom;
     }
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    dbgprint("touchEnded, count = %i, %0lx\n", [touches count], (long int) _touchHandler);
+    dbgprint_off("touchEnded, count = %i, %0lx\n", [touches count], (long int) _touchHandler);
     
     if([touches count] == 1)
     {
