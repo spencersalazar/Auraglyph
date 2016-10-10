@@ -532,6 +532,7 @@ public:
     enum Param
     {
         PARAM_FREQ = AUDIO_PARAM_LAST+1,
+        PARAM_WIDTH,
     };
 
     class Manifest : public AGStandardNodeManifest<AGAudioSquareWaveNode>
@@ -544,6 +545,7 @@ public:
         {
             return {
                 { PARAM_FREQ, "freq", true, true, 220 },
+                { PARAM_WIDTH, "width", true, true, 0.5, 0, 1 },
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1 }
             };
         };
@@ -552,6 +554,7 @@ public:
         {
             return {
                 { PARAM_FREQ, "freq", true, true, 220 },
+                { PARAM_WIDTH, "width", true, true, 0.5, 0, 1 },
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1 }
             };
         };
@@ -593,10 +596,11 @@ public:
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
         float *freqv = inputPortVector(PARAM_FREQ);
+        float *width = inputPortVector(PARAM_WIDTH);
         
         for(int i = 0; i < nFrames; i++)
         {
-            m_outputBuffer[i] = (m_phase < 0.5 ? 1 : -1) * gainv[i];
+            m_outputBuffer[i] = (m_phase < width[i] ? 1 : -1) * gainv[i];
             output[i] += m_outputBuffer[i];
             
             m_phase = clipunit(m_phase + freqv[i]/sampleRate());
