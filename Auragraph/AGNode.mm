@@ -124,15 +124,17 @@ void AGNode::init()
 
 void AGNode::init(const AGDocument::Node &docNode)
 {
+    // initialize base class
     _initBase();
     
+    // initialize final subclass
+    initFinal();
+
     // load standard edit params from seralization structure
     loadEditPortValues(docNode);
     
     // load any custom data to final subclass
     deserializeFinal(docNode);
-    
-    initFinal();
 }
 
 void AGNode::loadEditPortValues(const AGDocument::Node &docNode)

@@ -328,7 +328,7 @@ void AGAudioOutputNode::renderAudio(sampletime t, float *input, float *output, i
             ((AGAudioNode *)(*i)->src())->renderAudio(t, input, m_outputBuffer, nFrames);
     }
     
-    float gain = m_params[AUDIO_PARAM_GAIN];
+    float gain = param(AUDIO_PARAM_GAIN);
     
     for(int i = 0; i < nFrames; i++)
         output[i] = m_outputBuffer[i]*gain;
@@ -400,7 +400,7 @@ public:
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
         // pullInputPorts(t, nFrames);
         
-        float gain = m_params.at(AUDIO_PARAM_GAIN);
+        float gain = param(AUDIO_PARAM_GAIN);
         
         if(m_inputSize && m_input)
         {
@@ -859,8 +859,8 @@ public:
     void initFinal() override
     {
         m_prevTrigger = FLT_MAX;
-        m_adsr.setAllTimes(m_params.at(PARAM_ATTACK), m_params.at(PARAM_DECAY),
-                           m_params.at(PARAM_SUSTAIN), m_params.at(PARAM_RELEASE));
+        m_adsr.setAllTimes(param(PARAM_ATTACK), param(PARAM_DECAY),
+                           param(PARAM_SUSTAIN), param(PARAM_RELEASE));
     }
     
     virtual int numOutputPorts() const override { return 1; }
@@ -873,8 +873,8 @@ public:
             case PARAM_DECAY:
             case PARAM_SUSTAIN:
             case PARAM_RELEASE:
-                m_adsr.setAllTimes(m_params.at(PARAM_ATTACK), m_params.at(PARAM_DECAY),
-                                   m_params.at(PARAM_SUSTAIN), m_params.at(PARAM_RELEASE));
+                m_adsr.setAllTimes(param(PARAM_ATTACK), param(PARAM_DECAY),
+                                   param(PARAM_SUSTAIN), param(PARAM_RELEASE));
                 break;
         }
     }
@@ -1227,7 +1227,7 @@ public:
     void initFinal() override
     {
         stk::Stk::setSampleRate(sampleRate());
-        _setDelay(m_params[PARAM_DELAY], true);
+        _setDelay(param(PARAM_DELAY), true);
         m_delay.clear();
     }
     
@@ -1236,7 +1236,7 @@ public:
     void editPortValueChanged(int paramId) override
     {
         if(paramId == PARAM_DELAY)
-            _setDelay(m_params[PARAM_DELAY]);
+            _setDelay(param(PARAM_DELAY));
     }
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
