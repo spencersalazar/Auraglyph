@@ -21,9 +21,9 @@ void AGAudioCompressorNode::renderAudio(sampletime t, float *input, float *outpu
     pullInputPorts(t, nFrames);
     
     float gain = param(AUDIO_PARAM_GAIN);
-    float dbThreshold = m_params[PARAM_THRESHOLD];
+    float dbThreshold = param(PARAM_THRESHOLD);
     float linThreshold = dB2lin(dbThreshold);
-    float ratio = m_params[PARAM_RATIO];
+    float ratio = param(PARAM_RATIO);
     float *inputv = inputPortVector(PARAM_INPUT);
     
     // if(m_controlPortBuffer[1]) gain += m_controlPortBuffer[1].getFloat();
