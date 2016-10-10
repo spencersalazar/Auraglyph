@@ -35,17 +35,25 @@ public:
     
     AGUISequencerEditor(AGControlSequencerNode *node) :
     m_node(node),
-    m_doneEditing(false)
+    m_doneEditing(false),
+    m_pullTabDistance(0.5, GLvertex2f(0,0)),
+    m_pullTabCapture(false)
     {
         m_width = (node->numSteps()+0.5f)*AGUISequencerEditor_stepSize;
         m_height = (node->numSequences()+1.0f)*AGUISequencerEditor_stepSize;
+        m_pullTabSize = AGUISequencerEditor_stepSize/2;
         
         string ucname = m_node->title();
         for(int i = 0; i < ucname.length(); i++)
             ucname[i] = toupper(ucname[i]);
         m_title = ucname;
         
-        GeoGen::makeRect(m_boxGeo, m_width, m_height);
+        GeoGen::makeRect(m_defaultBoxGeo, m_width, m_height);
+        
+        m_boxGeo[0] = m_defaultBoxGeo[0];
+        m_boxGeo[1] = m_defaultBoxGeo[1];
+        m_boxGeo[2] = m_defaultBoxGeo[2];
+        m_boxGeo[3] = m_defaultBoxGeo[3];
         
         m_boxOuterInfo.geo = m_boxGeo;
         m_boxOuterInfo.geoType = GL_LINE_LOOP;
@@ -119,6 +127,17 @@ public:
         
         m_lastStepAlpha.update(dt);
         
+        m_pullTabDistance.interp();
+        
+        m_boxGeo[0] = m_defaultBoxGeo[0];
+        m_boxGeo[1] = m_defaultBoxGeo[1];
+        m_boxGeo[2] = m_defaultBoxGeo[2];
+        m_boxGeo[3] = m_defaultBoxGeo[3];
+        
+        m_boxGeo[1] = m_boxGeo[1]+GLvertex2f(0, ((GLvertex2f)m_pullTabDistance).y);
+        m_boxGeo[2] = m_boxGeo[2]+GLvertex2f(((GLvertex2f)m_pullTabDistance).x, ((GLvertex2f)m_pullTabDistance).y);
+        m_boxGeo[3] = m_boxGeo[3]+GLvertex2f(((GLvertex2f)m_pullTabDistance).x, 0);
+        
 //        m_bpmSlider->update(t, dt);
     }
     
@@ -129,6 +148,13 @@ public:
         int numSeq = m_node->numSequences();
         int numStep = m_node->numSteps();
 //        int previousStep = step > 0 ? step-1 : numStep-1;
+        
+        float distX = ((GLvertex2f)m_pullTabDistance).x/AGUISequencerEditor_stepSize;
+        float distY = -((GLvertex2f)m_pullTabDistance).y/AGUISequencerEditor_stepSize;
+        int newStep = (int) ceilf(distX);
+        int newSeq = (int) ceilf(distY);
+        float stepAlpha = 1-(newStep-distX);
+        float seqAlpha = 1-(newSeq-distY);
         
         /* render inner box */
         renderPrimitive(&m_boxInnerInfo);
@@ -193,10 +219,22 @@ public:
         stepInfo.geo = m_stepGeo;
         stepInfo.color = AGStyle::lightColor();
         
-        for(int i = 0; i < numSeq; i++)
+        for(int i = 0; i < numSeq+newSeq; i++)
         {
-            for(int j = 0; j < numStep; j++)
+            for(int j = 0; j < numStep+newStep; j++)
             {
+                float alpha = 1;
+                if(i >= numSeq || j >= numStep)
+                {
+                    alpha = 0.5;
+                    if(i == numSeq+newSeq-1)
+                        alpha *= seqAlpha;
+                    if(j == numStep+newStep-1)
+                        alpha *= stepAlpha;
+                }
+                
+                stepInfo.color = GLcolor4f(1, 1, 1, alpha);
+                
                 // render outline
                 GLKMatrix4 stepMV = GLKMatrix4Translate(m_renderState.modelview,
                                                         -m_width/2+AGUISequencerEditor_stepSize*0.75+AGUISequencerEditor_stepSize*j,
@@ -213,7 +251,9 @@ public:
                 glDrawArrays(GL_LINE_LOOP, 0, 4);
                 
                 // render fill
-                float stepVal = m_node->getStepValue(i, j);
+                float stepVal = 0;
+                if(i < numSeq && j < numStep)
+                    stepVal = m_node->getStepValue(i, j);
                 
                 stepMV = GLKMatrix4Translate(m_renderState.modelview,
                                              -m_width/2+AGUISequencerEditor_stepSize*0.75+AGUISequencerEditor_stepSize*j,
@@ -246,6 +286,15 @@ public:
         titleMV = GLKMatrix4Scale(titleMV, 0.61, 0.61, 0.61);
         text->render("bpm", GLcolor4f::white, titleMV, proj);
         
+        /* render pull tab */
+        
+        GLcolor4f::white.set();
+        drawTriangleFan((GLvertex3f[]) {
+            (GLvertex2f)m_pullTabDistance+(GLvertex3f){ m_width/2, -m_height/2, 0 },
+            (GLvertex2f)m_pullTabDistance+(GLvertex3f){ m_width/2-m_pullTabSize, -m_height/2, 0 },
+            (GLvertex2f)m_pullTabDistance+(GLvertex3f){ m_width/2, -m_height/2+m_pullTabSize, 0 },
+        }, 3);
+        
         renderChildren();
         
         debug_renderBounds();
@@ -255,23 +304,35 @@ public:
     {
         AGInteractiveObject::touchDown(t);
         
-        int numSeq = m_node->numSequences();
-        int numStep = m_node->numSteps();
-
-        for(int i = 0; i < numSeq; i++)
+        if(pointInTriangle(t.position.xy(),
+                           m_node->position().xy()+(GLvertex2f){ m_width/2, -m_height/2 },
+                           m_node->position().xy()+(GLvertex2f){ m_width/2-m_pullTabSize, -m_height/2 },
+                           m_node->position().xy()+(GLvertex2f){ m_width/2, -m_height/2+m_pullTabSize }))
         {
-            for(int j = 0; j < numStep; j++)
+            m_pullTabCapture = true;
+            m_pullTabStartTouch = t;
+            m_pullTabDistance = GLvertex2f(0, 0);
+        }
+        else
+        {
+            int numSeq = m_node->numSequences();
+            int numStep = m_node->numSteps();
+            
+            for(int i = 0; i < numSeq; i++)
             {
-                GLvertex2f stepPos = GLvertex2f(m_node->position().x-m_width/2+AGUISequencerEditor_stepSize*0.75+AGUISequencerEditor_stepSize*j,
-                                                m_node->position().y+m_height/2-AGUISequencerEditor_stepSize*1.375-AGUISequencerEditor_stepSize*i);
-                GLvertex2f stepSize = GLvertex2f(AGUISequencerEditor_stepSize, AGUISequencerEditor_stepSize);
-                
-                if(pointInRectangle(t.position.xy(),
-                                    stepPos-stepSize/2.0f,
-                                    stepPos+stepSize/2.0f))
+                for(int j = 0; j < numStep; j++)
                 {
-                    m_touchCapture[t.touchId] = { i, j, t.position, m_node->getStepValue(i, j), false };
-//                    NSLog(@"caught %i %i", i, j);
+                    GLvertex2f stepPos = GLvertex2f(m_node->position().x-m_width/2+AGUISequencerEditor_stepSize*0.75+AGUISequencerEditor_stepSize*j,
+                                                    m_node->position().y+m_height/2-AGUISequencerEditor_stepSize*1.375-AGUISequencerEditor_stepSize*i);
+                    GLvertex2f stepSize = GLvertex2f(AGUISequencerEditor_stepSize, AGUISequencerEditor_stepSize);
+                    
+                    if(pointInRectangle(t.position.xy(),
+                                        stepPos-stepSize/2.0f,
+                                        stepPos+stepSize/2.0f))
+                    {
+                        m_touchCapture[t.touchId] = { i, j, t.position, m_node->getStepValue(i, j), false };
+                        //                    NSLog(@"caught %i %i", i, j);
+                    }
                 }
             }
         }
@@ -297,6 +358,11 @@ public:
                 m_touchCapture[t.touchId].startPos = t.position;
             }
         }
+        
+        if(m_pullTabCapture && t.touchId == m_pullTabStartTouch.touchId)
+        {
+            m_pullTabDistance.reset(t.position.xy() - m_pullTabStartTouch.position.xy());
+        }
     }
     
     virtual void touchUp(const AGTouchInfo &t)
@@ -312,6 +378,13 @@ public:
                 // flip it
                 m_node->setStepValue(touch.seq, touch.step, touch.startValue > 0.1f ? 0.0f : 1.0f);
             m_touchCapture.erase(t.touchId);
+        }
+        
+        if(m_pullTabCapture && t.touchId == m_pullTabStartTouch.touchId)
+        {
+            GLvertex2f distance = t.position.xy() - m_pullTabStartTouch.position.xy();
+            m_pullTabCapture = false;
+            m_pullTabDistance = GLvertex2f(0, 0);
         }
     }
     
@@ -339,7 +412,9 @@ private:
     string m_title;
     
     float m_width, m_height;
+    float m_pullTabSize;
     AGRenderInfoV m_boxOuterInfo, m_boxInnerInfo;
+    GLvertex3f m_defaultBoxGeo[4];
     GLvertex3f m_boxGeo[4];
     
     GLvertex3f m_stepGeo[4];
@@ -359,6 +434,10 @@ private:
     };
     
     map<TouchID, TouchCapture> m_touchCapture;
+    
+    bool m_pullTabCapture = false;
+    AGTouchInfo m_pullTabStartTouch;
+    slew<GLvertex2f> m_pullTabDistance;
     
     int m_lastStep;
     expcurvef m_lastStepAlpha;
