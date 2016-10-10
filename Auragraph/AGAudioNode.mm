@@ -378,18 +378,12 @@ public:
     
     using AGAudioNode::AGAudioNode;
     
-    void init() override
+    void initFinal() override
     {
-        AGAudioNode::init();
-        
         [[AGAudioManager instance] addCapturer:this];
-    }
-    
-    void init(const AGDocument::Node &docNode) override
-    {
-        AGAudioNode::init();
         
-        [[AGAudioManager instance] addCapturer:this];
+        m_inputSize = 0;
+        m_input = NULL;
     }
     
     virtual ~AGAudioInputNode()
@@ -397,11 +391,6 @@ public:
         [[AGAudioManager instance] removeCapturer:this];
     }
     
-    void initFinal() override
-    {
-        m_inputSize = 0;
-        m_input = NULL;
-    }
     
     int numOutputPorts() const override { return 1; }
     int numInputPorts() const override { return 0; }

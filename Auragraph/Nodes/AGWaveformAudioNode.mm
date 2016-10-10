@@ -284,18 +284,17 @@ public:
     virtual GLvertex2f size() override { return GLvertex2f(m_width, m_height); }
 };
 
-void AGAudioWaveformNode::init(const AGDocument::Node &docNode)
+void AGAudioWaveformNode::deserializeFinal(const AGDocument::Node &docNode)
 {
-    AGAudioNode::init(docNode);
+    m_waveform.resize(1024, 0);
+    for(int i = 0; i < m_waveform.size(); i++)
+        m_waveform[i] = sinf(2*M_PI*((float)i)/m_waveform.size());
     
     docNode.loadParam("waveform", m_waveform);
 }
 
 void AGAudioWaveformNode::initFinal()
 {
-    m_waveform.resize(1024, 0);
-    for(int i = 0; i < m_waveform.size(); i++)
-        m_waveform[i] = sinf(2*M_PI*((float)i)/m_waveform.size());
     m_phase = 0;
 }
 
