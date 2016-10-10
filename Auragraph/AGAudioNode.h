@@ -64,7 +64,7 @@ public:
     virtual void finalPortValue(float &value, int portId, int sample = -1) const override;
     
     virtual AGRate rate() override { return RATE_AUDIO; }
-    inline float gain() const { return m_params.at(AUDIO_PARAM_GAIN); }
+    inline float gain() const { return param(AUDIO_PARAM_GAIN); }
     
     const float *lastOutputBuffer() const { return m_outputBuffer; }
     
