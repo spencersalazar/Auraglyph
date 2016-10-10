@@ -485,3 +485,84 @@ const vector<GLvertex3f> AGUITrace::points() const
 }
 
 
+
+/*------------------------------------------------------------------------------
+ - AGUILabel -
+ -----------------------------------------------------------------------------*/
+#pragma mark - AGUILabel
+
+static const float AGUILabel_TextScale = 0.61f;
+
+AGUILabel::AGUILabel(const GLvertex3f &position, const string &text)
+: m_text(text), m_position(position)
+{
+    TexFont *texFont = AGStyle::standardFont64();
+    
+    m_textSize.x = texFont->width(m_text)*AGUILabel_TextScale;
+    m_textSize.y = texFont->height()*AGUILabel_TextScale;
+}
+
+AGUILabel::~AGUILabel()
+{
+    
+}
+
+void AGUILabel::update(float t, float dt)
+{
+    AGRenderObject::update(t, dt);
+}
+
+void AGUILabel::render()
+{
+    TexFont *text = AGStyle::standardFont64();
+    
+    GLKMatrix4 modelView;
+    GLKMatrix4 proj;
+    
+    if(parent())
+    {
+        modelView = parent()->m_renderState.modelview;
+        proj = parent()->m_renderState.projection;
+    }
+    else
+    {
+        modelView = globalModelViewMatrix();
+        proj = projectionMatrix();
+    }
+    
+    GLcolor4f valueColor = GLcolor4f::white;
+    valueColor.a = m_renderState.alpha;
+    
+    GLKMatrix4 valueMV = modelView;
+    valueMV = GLKMatrix4Translate(valueMV, m_position.x, m_position.y, m_position.z);
+    valueMV = GLKMatrix4Translate(valueMV, -m_textSize.x/2, -m_textSize.y/2, 0);
+    valueMV = GLKMatrix4Scale(valueMV, AGUILabel_TextScale, AGUILabel_TextScale, AGUILabel_TextScale);
+    text->render(m_text, valueColor, valueMV, proj);
+}
+
+void AGUILabel::setPosition(const GLvertex3f &position)
+{
+    m_position = position;
+}
+
+GLvertex3f AGUILabel::position()
+{
+    return m_position;
+}
+
+GLvertex2f AGUILabel::size()
+{
+    return m_size;
+}
+
+void AGUILabel::setSize(const GLvertex2f &size)
+{
+    m_size = size;
+}
+
+GLvertex2f AGUILabel::naturalSize() const
+{
+    return m_textSize;
+}
+
+

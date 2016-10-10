@@ -35,22 +35,6 @@ int AGAudioCompositeNode::numOutputPorts() const
     return m_outputs.size();
 }
 
-void AGAudioCompositeNode::setEditPortValue(int port, float value)
-{
-    switch(port)
-    {
-        case 0: m_gain = value; break;
-    }
-}
-
-void AGAudioCompositeNode::getEditPortValue(int port, float &value) const
-{
-    switch(port)
-    {
-        case 0: value = m_gain; break;
-    }
-}
-
 void AGAudioCompositeNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
@@ -69,8 +53,10 @@ void AGAudioCompositeNode::renderAudio(sampletime t, float *input, float *output
             outputNode->renderAudio(t, input, m_outputBuffer, nFrames);
     }
     
+    float gain = param(AUDIO_PARAM_GAIN);
+    
     for(int i = 0; i < nFrames; i++)
-        output[i] += m_outputBuffer[i]*m_gain;
+        output[i] += m_outputBuffer[i]*gain;
     
     m_lastTime = t;
 }

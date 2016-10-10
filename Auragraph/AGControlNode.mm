@@ -100,6 +100,9 @@ void AGControlNode::update(float t, float dt)
     m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
     
     m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, modelView);
+    
+    m_renderState.modelview = modelView;
+    m_renderState.projection = projection;
 }
 
 void AGControlNode::render()
@@ -169,6 +172,12 @@ AGInteractiveObject *AGControlNode::hitTest(const GLvertex3f &t)
 class AGControlTimerNode : public AGControlNode
 {
 public:
+    
+    enum Param
+    {
+        PARAM_INTERVAL,
+    };
+    
     class Manifest : public AGStandardNodeManifest<AGControlTimerNode>
     {
     public:
@@ -178,14 +187,14 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { "interval", true, true },
+                { PARAM_INTERVAL, "interval", true, true },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { "interval", true, true },
+                { PARAM_INTERVAL, "interval", true, true, 0.5, 0.00001, AGFloat_Max },
             };
         };
         
@@ -225,14 +234,19 @@ public:
     using AGControlNode::AGControlNode;
     virtual ~AGControlTimerNode() { dbgprint_off("AGControlTimerNode::~AGControlTimerNode()\n"); }
     
-    void setDefaultPortValues() override
+    void editPortValueChanged(int paramId) override
     {
-        m_interval = 0.5;
+        if(paramId == PARAM_INTERVAL)
+            m_timer.setInterval(param(PARAM_INTERVAL));
+    }
+    
+    void initFinal() override
+    {
         m_lastFire = 0;
         m_lastTime = 0;
         m_value = false;
         
-        m_timer = AGTimer(m_interval, ^(AGTimer *) {
+        m_timer = AGTimer(param(PARAM_INTERVAL), ^(AGTimer *) {
             // flip
             m_value = !m_value;
             pushControl(0, AGControl(m_value));
@@ -240,8 +254,6 @@ public:
     }
     
     virtual int numOutputPorts() const override { return 1; }
-    virtual void setEditPortValue(int port, float value) override;
-    virtual void getEditPortValue(int port, float &value) const override;
     
 private:
     AGTimer m_timer;
@@ -249,25 +261,7 @@ private:
     bool m_value;
     float m_lastTime;
     float m_lastFire;
-    float m_interval;
 };
-
-void AGControlTimerNode::setEditPortValue(int port, float value)
-{
-    switch(port)
-    {
-        case 0: m_interval = value; m_timer.setInterval(m_interval); break;
-    }
-}
-
-void AGControlTimerNode::getEditPortValue(int port, float &value) const
-{
-    switch(port)
-    {
-        case 0: value = m_interval; break;
-    }
-}
-
 
 //------------------------------------------------------------------------------
 // ### AGControlMidiToFreqNode ###

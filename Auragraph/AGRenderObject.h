@@ -112,6 +112,13 @@ public:
     virtual GLvrectf effectiveBounds() { return GLvrectf(position()-size()*0.5, position()+size()*0.5); }
     AGRenderObject *parent() const { return m_parent; }
     
+    // draw functions
+    void drawTriangleFan(GLvertex3f geo[], int size);
+    void drawLineLoop(GLvertex3f geo[], int size);
+    void drawLineStrip(GLvertex2f geo[], int size);
+    void drawLineStrip(GLvertex3f geo[], int size);
+    void drawWaveform(float waveform[], int size, GLvertex2f from, GLvertex2f to, float gain = 1.0f, float yScale = 1.0f);
+    
 protected:
     static GLKMatrix4 s_projectionMatrix;
     static GLKMatrix4 s_modelViewMatrix;

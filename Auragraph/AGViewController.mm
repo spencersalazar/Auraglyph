@@ -85,8 +85,10 @@ enum InterfaceMode
     GLuint _screenProgram;
     
     GLvertex3f _camera;
+    slewf _cameraZ;
     
     AGTouchHandler * _touchHandler;
+    AGTouchHandler * _nextHandler;
     
     std::list<AGNode *> _nodes;
     std::list<AGNode *> _nodeRemoveList;
@@ -110,6 +112,7 @@ enum InterfaceMode
     
     AGUIButton * _testButton;
     
+    NSMutableSet *_activeTouches;
     AGInteractiveObject * _touchCapture;
 }
 
@@ -167,6 +170,8 @@ static AGViewController * g_instance = nil;
     [self setupGL];
     
     _camera = GLvertex3f(0, 0, 0);
+    _cameraZ.rate = 0.5;
+    _cameraZ.reset(0);
     
     self.audioManager = [AGAudioManager new];
     [self updateMatrices];
@@ -525,6 +530,10 @@ static AGViewController * g_instance = nil;
 //    else
 //        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f)/aspect, aspect, 0.1f, 100.0f);
     
+    _cameraZ.interp();
+    if(_cameraZ < 0)
+        _camera.z = _cameraZ;
+    
     GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z-10.1f);
     if(_interfaceMode == INTERFACEMODE_USER)
         baseModelViewMatrix = GLKMatrix4Translate(baseModelViewMatrix, 0, 0, -(G_RATIO-1));
@@ -555,7 +564,20 @@ static AGViewController * g_instance = nil;
     
     //    vec = GLKMatrix4MultiplyVector3(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z), vec);
     
-    return GLvertex3f(vec.x, vec.y, vec.z);
+    return GLvertex3f(vec.x, vec.y, 0);
+}
+
+- (GLvertex3f)fixedCoordinateForScreenCoordinate:(CGPoint)p
+{
+    int viewport[] = { (int)self.view.bounds.origin.x, (int)(self.view.bounds.origin.y),
+        (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
+    bool success;
+    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, 0.0f),
+                                      _fixedModelView, _projection, viewport, &success);
+    
+    //    vec = GLKMatrix4MultiplyVector3(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z), vec);
+    
+    return GLvertex3f(vec.x, vec.y, 0);
 }
 
 - (void)update
@@ -601,6 +623,7 @@ static AGViewController * g_instance = nil;
         interfaceObject->update(_t, dt);
     
     [_touchHandler update:_t dt:dt];
+    [_nextHandler update:_t dt:dt];
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
@@ -727,6 +750,7 @@ static AGViewController * g_instance = nil;
         removeObject->render();
     
     [_touchHandler render];
+    [_nextHandler render];
 }
 
 - (void)renderUser
@@ -784,82 +808,99 @@ static AGViewController * g_instance = nil;
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    dbgprint("touchesBegan, count = %i, %0lx\n", [touches count], (long int) _touchHandler);
+    
     if([touches count] == 1)
     {
         if(_touchHandler == nil)
         {
-            UITouch *touch = [touches anyObject];
-            CGPoint p = [[touches anyObject] locationInView:self.view];
-            GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
-            
-            AGNode * node = NULL;
-            int port;
-            AGNode::HitTestResult result = [self hitTest:pos node:&node port:&port];
-            
-            switch(result)
+            if(_nextHandler)
             {
-                case AGNode::HIT_INPUT_NODE:
-                case AGNode::HIT_OUTPUT_NODE:
-                    _touchHandler = [[AGConnectTouchHandler alloc] initWithViewController:self];
-                    break;
-                    
-                case AGNode::HIT_MAIN_NODE:
-                    _touchHandler = [[AGMoveNodeTouchHandler alloc] initWithViewController:self node:node];
-                    break;
-                    
-                case AGNode::HIT_NONE:
+                _touchHandler = _nextHandler;
+                _nextHandler = nil;
+                [_touchHandler touchesBegan:touches withEvent:event];
+            }
+            else
+            {
+                UITouch *touch = [touches anyObject];
+                CGPoint p = [[touches anyObject] locationInView:self.view];
+                GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
+                GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:p];
+                
+                AGNode * node = NULL;
+                int port;
+                AGNode::HitTestResult result = [self hitTest:pos node:&node port:&port];
+                
+                switch(result)
                 {
-                    AGInteractiveObject *hit = NULL;
-                    
-                    // check nodes for other possible hits
-                    for(AGNode *node : _nodes)
+                    case AGNode::HIT_INPUT_NODE:
+                    case AGNode::HIT_OUTPUT_NODE:
+                        _touchHandler = [[AGConnectTouchHandler alloc] initWithViewController:self];
+                        break;
+                        
+                    case AGNode::HIT_MAIN_NODE:
+                        _touchHandler = [[AGMoveNodeTouchHandler alloc] initWithViewController:self node:node];
+                        break;
+                        
+                    case AGNode::HIT_NONE:
                     {
-                        hit = node->hitTest(pos);
-                        if(hit != NULL)
-                            break;
-                    }
-                    
-                    // check objects for hits
-                    if(hit == NULL)
-                    {
-                        for(AGInteractiveObject *object : _objects)
+                        AGInteractiveObject *hit = NULL;
+                        
+                        // check nodes for other possible hits
+                        for(AGNode *node : _nodes)
                         {
-                            hit = object->hitTest(pos);
+                            hit = node->hitTest(pos);
                             if(hit != NULL)
                                 break;
                         }
-                    }
-                    
-                    if(hit)
-                    {
-                        _touchCapture = hit;
-                        _touchCapture->touchDown(AGTouchInfo(pos, p, (TouchID) touch));
-                    }
-                    else
-                    {
-                        switch (_drawMode)
+                        
+                        // check objects for hits
+                        if(hit == NULL)
                         {
-                            case DRAWMODE_NODE:
-                                _touchHandler = [[AGDrawNodeTouchHandler alloc] initWithViewController:self];
-                                break;
-                            case DRAWMODE_FREEDRAW:
-                                _touchHandler = [[AGDrawFreedrawTouchHandler alloc] initWithViewController:self];
-                                break;
+                            for(AGInteractiveObject *object : _objects)
+                            {
+                                if(object->renderFixed())
+                                    hit = object->hitTest(fixedPos);
+                                else
+                                    hit = object->hitTest(pos);
+                                
+                                if(hit != NULL)
+                                    break;
+                            }
+                        }
+                        
+                        if(hit)
+                        {
+                            _touchCapture = hit;
+                            _touchCapture->touchDown(AGTouchInfo(pos, p, (TouchID) touch));
+                        }
+                        else
+                        {
+                            switch (_drawMode)
+                            {
+                                case DRAWMODE_NODE:
+                                    _touchHandler = [[AGDrawNodeTouchHandler alloc] initWithViewController:self];
+                                    break;
+                                case DRAWMODE_FREEDRAW:
+                                    _touchHandler = [[AGDrawFreedrawTouchHandler alloc] initWithViewController:self];
+                                    break;
+                            }
                         }
                     }
+                        break;
                 }
-                    break;
             }
 
-            
+            [_touchHandler touchesBegan:touches withEvent:event];
         }
-        
-        [_touchHandler touchesBegan:touches withEvent:event];
     }
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    dbgprint("touchesMoved, count = %i, %0lx\n", [touches count], (long int) _touchHandler);
+    dbgprint("touchCapture: 0x%lx touchHandler: 0x%lx\n", (long int) _touchCapture, (long int) _touchHandler);
+    
     if([touches count] == 1)
     {
         if(_touchCapture)
@@ -875,6 +916,12 @@ static AGViewController * g_instance = nil;
     }
     else if([touches count] == 2)
     {
+        if(_touchHandler)
+        {
+            [_touchHandler touchesCancelled:touches withEvent:event];
+            _touchHandler = nil;
+        }
+        
         UITouch *t1 = [[touches allObjects] objectAtIndex:0];
         UITouch *t2 = [[touches allObjects] objectAtIndex:1];
         CGPoint p1 = [t1 locationInView:self.view];
@@ -893,15 +940,18 @@ static AGViewController * g_instance = nil;
         GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p1];
         GLvertex3f pos_1 = [self worldCoordinateForScreenCoordinate:p1_1];
         
-        _camera = _camera + (pos - pos_1);
+        _camera = _camera + (pos.xy() - pos_1.xy());
+        dbgprint("camera: %f, %f, %f\n", _camera.x, _camera.y, _camera.z);
         
-        _touchHandler = nil;
-//        _camera.z += (dist - dist_1)*0.005;
+        float zoom = (dist - dist_1)*0.05;
+//        _cameraZ += zoom;
     }
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    dbgprint("touchEnded, count = %i, %0lx\n", [touches count], (long int) _touchHandler);
+    
     if([touches count] == 1)
     {
         if(_touchCapture)
@@ -918,7 +968,9 @@ static AGViewController * g_instance = nil;
             [_touchHandler touchesEnded:touches withEvent:event];
             
             if(_touchHandler)
-                _touchHandler = [_touchHandler nextHandler];
+                _nextHandler = [_touchHandler nextHandler];
+            
+            _touchHandler = nil;
         }
     }
 }

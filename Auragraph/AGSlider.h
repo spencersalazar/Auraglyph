@@ -53,6 +53,16 @@ public:
     Type type() const { return m_type; }
     void setType(Type type);
     
+    enum Alignment
+    {
+        ALIGN_CENTER,
+        ALIGN_LEFT,
+        ALIGN_RIGHT,
+    };
+    
+    Alignment alignment() const { return m_alignment; }
+    void setAlignment(Alignment alignment) { m_alignment = alignment; }
+    
     void onUpdate(const std::function<void (float)> &update);
     
     /* 
@@ -72,6 +82,8 @@ private:
     double m_value = 0;
     Scale m_scale = LINEAR;
     Type m_type = DISCRETE;
+    
+    Alignment m_alignment = ALIGN_CENTER;
     
     constexpr const static size_t BUF_SIZE = 32;
     char m_str[BUF_SIZE];

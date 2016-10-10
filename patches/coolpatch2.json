@@ -1,0 +1,354 @@
+{
+  "CE55533A-1655-45AC-8AB5-9BAAD333E43C" : {
+    "x" : 65.66668,
+    "outbound" : [
+      {
+        "uuid" : "A741A743-A734-4DC7-891E-EB5D7DFE827D",
+        "dst" : "4CD1B31A-6544-4C7B-BB8C-3DF58E515F76",
+        "dstPort" : 0
+      }
+    ],
+    "type" : "SawWave",
+    "y" : 124.9999,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 5.169996
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 102.66
+      }
+    },
+    "inbound" : [
+      {
+        "uuid" : "8C1AC0A2-FFCA-47AA-B2DC-4CE9500DAB19",
+        "src" : "1F163A93-3A59-47B6-BDD3-B478F18072C4",
+        "dstPort" : 0
+      },
+      {
+        "uuid" : "24479A19-55F1-46FC-AFFB-D7256F74F7DB",
+        "src" : "6C49893C-2883-40FE-936F-1D93DA9E3CEA",
+        "dstPort" : 1
+      }
+    ]
+  },
+  "F86E4942-5A96-4A1D-A88E-CDA9DC62E1F3" : {
+    "x" : 454,
+    "outbound" : [
+
+    ],
+    "type" : "Output",
+    "y" : -140,
+    "object" : "node",
+    "z" : 0,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 1
+      }
+    },
+    "inbound" : [
+      {
+        "uuid" : "CF8EF63B-758D-482F-9A1E-1049BAA1CCD1",
+        "src" : "03DA4DF5-72A0-4BF0-9B40-BEE37DBFACCD",
+        "dstPort" : 0
+      }
+    ]
+  },
+  "03DA4DF5-72A0-4BF0-9B40-BEE37DBFACCD" : {
+    "x" : 291.9667,
+    "outbound" : [
+      {
+        "uuid" : "CF8EF63B-758D-482F-9A1E-1049BAA1CCD1",
+        "dst" : "F86E4942-5A96-4A1D-A88E-CDA9DC62E1F3",
+        "dstPort" : 0
+      }
+    ],
+    "type" : "Compressor",
+    "y" : -134.9,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "ratio" : {
+        "type" : "float",
+        "value" : 11.3
+      },
+      "threshold" : {
+        "type" : "float",
+        "value" : -41
+      },
+      "gain" : {
+        "type" : "float",
+        "value" : 40.66002
+      }
+    },
+    "inbound" : [
+      {
+        "uuid" : "FFBA780B-84AC-4B68-BB02-48B36B326D3B",
+        "src" : "4CD1B31A-6544-4C7B-BB8C-3DF58E515F76",
+        "dstPort" : 0
+      }
+    ]
+  },
+  "1F163A93-3A59-47B6-BDD3-B478F18072C4" : {
+    "x" : -210.9556,
+    "outbound" : [
+      {
+        "uuid" : "8C1AC0A2-FFCA-47AA-B2DC-4CE9500DAB19",
+        "dst" : "CE55533A-1655-45AC-8AB5-9BAAD333E43C",
+        "dstPort" : 0
+      }
+    ],
+    "type" : "SquareWave",
+    "y" : 290.0889,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 125.66
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 550
+      }
+    },
+    "inbound" : [
+
+    ]
+  },
+  "4CD1B31A-6544-4C7B-BB8C-3DF58E515F76" : {
+    "x" : 138.0444,
+    "outbound" : [
+      {
+        "uuid" : "FFBA780B-84AC-4B68-BB02-48B36B326D3B",
+        "dst" : "03DA4DF5-72A0-4BF0-9B40-BEE37DBFACCD",
+        "dstPort" : 0
+      }
+    ],
+    "type" : "Feedback",
+    "y" : -59.62218,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 1
+      },
+      "delay" : {
+        "type" : "float",
+        "value" : 0.2460007
+      },
+      "feedback" : {
+        "type" : "float",
+        "value" : 0.43666
+      }
+    },
+    "inbound" : [
+      {
+        "uuid" : "C5FA8B15-63F6-49C5-AA3B-E11AB07ECB3E",
+        "src" : "C92D30D7-FEFB-46C8-9B9B-9DA2A3754722",
+        "dstPort" : 0
+      },
+      {
+        "uuid" : "A741A743-A734-4DC7-891E-EB5D7DFE827D",
+        "src" : "CE55533A-1655-45AC-8AB5-9BAAD333E43C",
+        "dstPort" : 0
+      }
+    ]
+  },
+  "6C49893C-2883-40FE-936F-1D93DA9E3CEA" : {
+    "x" : -363.2174,
+    "outbound" : [
+      {
+        "uuid" : "24479A19-55F1-46FC-AFFB-D7256F74F7DB",
+        "dst" : "CE55533A-1655-45AC-8AB5-9BAAD333E43C",
+        "dstPort" : 1
+      }
+    ],
+    "type" : "SineWave",
+    "y" : 151.0435,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 3.57
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 106
+      }
+    },
+    "inbound" : [
+
+    ]
+  },
+  "9469719E-1444-4E5B-8D56-118CDDD30CA8" : {
+    "x" : -235.6207,
+    "outbound" : [
+      {
+        "uuid" : "9C93CCC9-383A-4EB2-BFB4-12FC57F965F2",
+        "dst" : "C92D30D7-FEFB-46C8-9B9B-9DA2A3754722",
+        "dstPort" : 1
+      }
+    ],
+    "type" : "SineWave",
+    "y" : -156.4483,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 0.6800003
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 0.1009943
+      }
+    },
+    "inbound" : [
+
+    ]
+  },
+  "6DBED61D-1806-456D-8FB8-40698F6A9FC4" : {
+    "x" : -265.2083,
+    "outbound" : [
+      {
+        "uuid" : "4DB4200E-6139-4585-BF4B-EFF05755B087",
+        "dst" : "C92D30D7-FEFB-46C8-9B9B-9DA2A3754722",
+        "dstPort" : 0
+      }
+    ],
+    "type" : "SineWave",
+    "y" : 1.125013,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 5267.75
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 680
+      }
+    },
+    "inbound" : [
+      {
+        "uuid" : "65361822-22CE-43B3-BC71-8113FB11ADEC",
+        "src" : "B0559535-CE9D-4348-AD63-8162C6D1FDEF",
+        "dstPort" : 1
+      }
+    ]
+  },
+  "B0559535-CE9D-4348-AD63-8162C6D1FDEF" : {
+    "x" : -452.8529,
+    "outbound" : [
+      {
+        "uuid" : "65361822-22CE-43B3-BC71-8113FB11ADEC",
+        "dst" : "6DBED61D-1806-456D-8FB8-40698F6A9FC4",
+        "dstPort" : 1
+      }
+    ],
+    "type" : "SineWave",
+    "y" : -42.85291,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 4366.96
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 0.123009
+      }
+    },
+    "inbound" : [
+
+    ]
+  },
+  "C92D30D7-FEFB-46C8-9B9B-9DA2A3754722" : {
+    "x" : -12.76315,
+    "outbound" : [
+      {
+        "uuid" : "C5FA8B15-63F6-49C5-AA3B-E11AB07ECB3E",
+        "dst" : "4CD1B31A-6544-4C7B-BB8C-3DF58E515F76",
+        "dstPort" : 0
+      }
+    ],
+    "type" : "SineWave",
+    "y" : -5.210485,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 1
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 220
+      }
+    },
+    "inbound" : [
+      {
+        "uuid" : "4DB4200E-6139-4585-BF4B-EFF05755B087",
+        "src" : "6DBED61D-1806-456D-8FB8-40698F6A9FC4",
+        "dstPort" : 0
+      },
+      {
+        "uuid" : "9C93CCC9-383A-4EB2-BFB4-12FC57F965F2",
+        "src" : "9469719E-1444-4E5B-8D56-118CDDD30CA8",
+        "dstPort" : 1
+      },
+      {
+        "uuid" : "C723E8C6-4610-4052-BC4C-616F2BE24F37",
+        "src" : "57BAE878-2BE4-4CC9-ABBA-0B53C1C9B990",
+        "dstPort" : 1
+      }
+    ]
+  },
+  "57BAE878-2BE4-4CC9-ABBA-0B53C1C9B990" : {
+    "x" : -22.3158,
+    "outbound" : [
+      {
+        "uuid" : "C723E8C6-4610-4052-BC4C-616F2BE24F37",
+        "dst" : "C92D30D7-FEFB-46C8-9B9B-9DA2A3754722",
+        "dstPort" : 1
+      }
+    ],
+    "type" : "SineWave",
+    "y" : -233,
+    "object" : "node",
+    "z" : 0.1000002,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 2.460016
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 1096760
+      }
+    },
+    "inbound" : [
+
+    ]
+  }
+}
