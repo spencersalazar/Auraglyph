@@ -35,13 +35,10 @@ public:
         GLuint _iconGeoType() const override;
     };
     
-//    using AGControlNode::AGControlNode;
-    
-    AGControlSequencerNode(const AGNodeManifest *mf, const GLvertex3f &pos);
-    AGControlSequencerNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
-    ~AGControlSequencerNode();
+    using AGControlNode::AGControlNode;
     
     void initFinal() override;
+    void deserializeFinal(const AGDocument::Node &docNode) override;
     
     virtual int numOutputPorts() const override;
     virtual void editPortValueChanged(int paramId) override;
@@ -63,7 +60,7 @@ public:
 private:
     static AGNodeInfo *s_nodeInfo;
     
-    AGTimer *m_timer;
+    AGTimer m_timer;
     
     int m_pos;
     int m_numSteps;

@@ -420,10 +420,7 @@ vector<GLvertex3f> AGControlSequencerNode::Manifest::_iconGeo() const
 
 GLuint AGControlSequencerNode::Manifest::_iconGeoType() const { return GL_LINES; };
 
-
-AGControlSequencerNode::AGControlSequencerNode(const AGNodeManifest *mf, const GLvertex3f &pos) :
-AGControlNode(mf, pos),
-m_timer(NULL)
+void AGControlSequencerNode::initFinal()
 {
     m_numSteps = 8;
     m_pos = 0;
@@ -432,11 +429,13 @@ m_timer(NULL)
     for(auto i = m_sequence.begin(); i != m_sequence.end(); i++)
         for(auto j = i->begin(); j != i->end(); j++)
             *j = Random::unit();
+    
+    m_timer = AGTimer(60.0/param(PARAM_BPM), ^(AGTimer *) {
+        updateStep();
+    });
 }
 
-AGControlSequencerNode::AGControlSequencerNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
-AGControlNode(mf, docNode),
-m_timer(NULL)
+void AGControlSequencerNode::deserializeFinal(const AGDocument::Node &docNode)
 {
     if(docNode.params.count("seq_steps"))
         m_numSteps = docNode.params.at("seq_steps").i;
@@ -464,19 +463,6 @@ m_timer(NULL)
     {
         m_sequence.push_back(std::vector<float>(m_numSteps, 0));
     }
-}
-
-AGControlSequencerNode::~AGControlSequencerNode()
-{
-    delete m_timer;
-    m_timer = NULL;
-}
-
-void AGControlSequencerNode::initFinal()
-{
-    m_timer = new AGTimer(60.0/param(PARAM_BPM), ^(AGTimer *) {
-        updateStep();
-    });
 }
 
 AGUINodeEditor *AGControlSequencerNode::createCustomEditor()
@@ -513,7 +499,7 @@ float AGControlSequencerNode::bpm()
 void AGControlSequencerNode::setBpm(float bpm)
 {
     setParam(PARAM_BPM, bpm);
-    m_timer->setInterval(60.0/param(PARAM_BPM));
+    m_timer.setInterval(60.0/param(PARAM_BPM));
 }
 
 void AGControlSequencerNode::updateStep()
@@ -536,8 +522,8 @@ float AGControlSequencerNode::getStepValue(int seq, int step)
 
 void AGControlSequencerNode::editPortValueChanged(int paramId)
 {
-    if(paramId == PARAM_BPM && m_timer != NULL)
-        m_timer->setInterval(60.0/param(PARAM_BPM));
+    if(paramId == PARAM_BPM)
+        m_timer.setInterval(60.0/param(PARAM_BPM));
 }
 
 AGDocument::Node AGControlSequencerNode::serialize()
