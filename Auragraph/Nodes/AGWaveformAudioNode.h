@@ -80,10 +80,10 @@ public:
     
     using AGAudioNode::AGAudioNode;
     
-    using AGAudioNode::init;
-    void init(const AGDocument::Node &docNode) override;
+    // void init(const AGDocument::Node &docNode) override;
     
     void initFinal() override;
+    void deserializeFinal(const AGDocument::Node &docNode) override;
     void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
     
     void _renderIcon() override;

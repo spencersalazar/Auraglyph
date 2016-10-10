@@ -105,7 +105,12 @@ public:
     AGNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
     virtual void init();
     virtual void init(const AGDocument::Node &docNode);
+    
+    // initialize final subclass
     virtual void initFinal() { }
+    // finish deserializing final subclass
+    virtual void deserializeFinal(const AGDocument::Node &docNode) { }
+    
     virtual ~AGNode();
     
     virtual const string &type() { return m_manifest->type(); }
