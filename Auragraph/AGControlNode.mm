@@ -271,6 +271,12 @@ private:
 class AGControlMidiToFreqNode : public AGControlNode
 {
 public:
+    
+    enum Param
+    {
+        PARAM_MIDI,
+    };
+    
     class Manifest : public AGStandardNodeManifest<AGControlMidiToFreqNode>
     {
     public:
@@ -280,7 +286,7 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { "midi", true, true },
+                { PARAM_MIDI, "midi", true, true },
             };
         };
         
@@ -321,11 +327,7 @@ public:
     
     using AGControlNode::AGControlNode;
     
-    void setDefaultPortValues() override { }
-    
     virtual int numOutputPorts() const override { return 1; }
-    virtual void setEditPortValue(int port, float value) override { }
-    virtual void getEditPortValue(int port, float &value) const override { }
     
     virtual void receiveControl(int port, const AGControl &control) override
     {

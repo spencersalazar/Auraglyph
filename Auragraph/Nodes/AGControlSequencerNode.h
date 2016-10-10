@@ -18,6 +18,12 @@ class AGControlSequencerNode : public AGControlNode
 {
 public:
     
+    enum PARAM
+    {
+        PARAM_ADVANCE,
+        PARAM_BPM,
+    };
+    
     class Manifest : public AGStandardNodeManifest<AGControlSequencerNode>
     {
     public:
@@ -35,9 +41,10 @@ public:
     AGControlSequencerNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
     ~AGControlSequencerNode();
     
+    void initFinal() override;
+    
     virtual int numOutputPorts() const override;
-    virtual void setEditPortValue(int port, float value) override;
-    virtual void getEditPortValue(int port, float &value) const override;
+    virtual void editPortValueChanged(int paramId) override;
     
     virtual AGUINodeEditor *createCustomEditor() override;
     
@@ -57,8 +64,6 @@ private:
     static AGNodeInfo *s_nodeInfo;
     
     AGTimer *m_timer;
-    
-    float m_bpm;
     
     int m_pos;
     int m_numSteps;

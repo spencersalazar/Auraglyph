@@ -378,15 +378,15 @@ string AGControlSequencerNode::Manifest::_name() const { return "Sequencer"; };
 vector<AGPortInfo> AGControlSequencerNode::Manifest::_inputPortInfo() const
 {
     return {
-        { "advance", true, true },
-        { "bpm", true, true }
+        { PARAM_ADVANCE, "advance", true, true },
+        { PARAM_BPM, "bpm", true, true, 120, 0, AGFloat_Max },
     };
 };
 
 vector<AGPortInfo> AGControlSequencerNode::Manifest::_editPortInfo() const
 {
     return {
-        { "bpm", true, true }
+        { PARAM_BPM, "bpm", true, true, 120, 0, AGFloat_Max },
     };
 };
 
@@ -422,28 +422,22 @@ GLuint AGControlSequencerNode::Manifest::_iconGeoType() const { return GL_LINES;
 
 
 AGControlSequencerNode::AGControlSequencerNode(const AGNodeManifest *mf, const GLvertex3f &pos) :
-AGControlNode(mf, pos)
+AGControlNode(mf, pos),
+m_timer(NULL)
 {
-    m_bpm = 120;
     m_numSteps = 8;
     m_pos = 0;
     // add default sequence
     m_sequence.push_back(std::vector<float>(m_numSteps, 0));
-//    m_sequence.push_back(std::vector<float>(m_numSteps, 0));
     for(auto i = m_sequence.begin(); i != m_sequence.end(); i++)
         for(auto j = i->begin(); j != i->end(); j++)
             *j = Random::unit();
-//    m_control.v = 0;
-    
-    m_timer = new AGTimer(60.0/m_bpm, ^(AGTimer *) {
-        updateStep();
-    });
 }
 
 AGControlSequencerNode::AGControlSequencerNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
-AGControlNode(mf, docNode)
+AGControlNode(mf, docNode),
+m_timer(NULL)
 {
-    m_bpm = 120;
     if(docNode.params.count("seq_steps"))
         m_numSteps = docNode.params.at("seq_steps").i;
     else
@@ -469,18 +463,20 @@ AGControlNode(mf, docNode)
     else
     {
         m_sequence.push_back(std::vector<float>(m_numSteps, 0));
-        m_sequence.push_back(std::vector<float>(m_numSteps, 0));
     }
-    
-    m_timer = new AGTimer(60.0/m_bpm, ^(AGTimer *) {
-        updateStep();
-    });
 }
 
 AGControlSequencerNode::~AGControlSequencerNode()
 {
     delete m_timer;
     m_timer = NULL;
+}
+
+void AGControlSequencerNode::initFinal()
+{
+    m_timer = new AGTimer(60.0/param(PARAM_BPM), ^(AGTimer *) {
+        updateStep();
+    });
 }
 
 AGUINodeEditor *AGControlSequencerNode::createCustomEditor()
@@ -511,20 +507,19 @@ int AGControlSequencerNode::numSteps()
 
 float AGControlSequencerNode::bpm()
 {
-    return m_bpm;
+    return param(PARAM_BPM);
 }
 
 void AGControlSequencerNode::setBpm(float bpm)
 {
-    m_bpm = bpm;
-    m_timer->setInterval(60.0/m_bpm);
+    setParam(PARAM_BPM, bpm);
+    m_timer->setInterval(60.0/param(PARAM_BPM));
 }
 
 void AGControlSequencerNode::updateStep()
 {
     m_pos = (m_pos + 1) % m_numSteps;
     
-//    m_control.v = m_sequence[0][m_pos];
     for(int seq = 0; seq < m_sequence.size(); seq++)
         pushControl(seq, AGControl(m_sequence[seq][m_pos]));
 }
@@ -539,20 +534,10 @@ float AGControlSequencerNode::getStepValue(int seq, int step)
     return m_sequence[seq][step];
 }
 
-void AGControlSequencerNode::setEditPortValue(int port, float value)
+void AGControlSequencerNode::editPortValueChanged(int paramId)
 {
-    switch(port)
-    {
-        case 0: m_bpm = value; m_timer->setInterval(60.0/m_bpm); break;
-    }
-}
-
-void AGControlSequencerNode::getEditPortValue(int port, float &value) const
-{
-    switch(port)
-    {
-        case 0: value = m_bpm; break;
-    }
+    if(paramId == PARAM_BPM && m_timer != NULL)
+        m_timer->setInterval(60.0/param(PARAM_BPM));
 }
 
 AGDocument::Node AGControlSequencerNode::serialize()
