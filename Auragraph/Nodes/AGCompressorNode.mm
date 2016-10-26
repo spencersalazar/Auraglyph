@@ -18,6 +18,7 @@ void AGAudioCompressorNode::initFinal()
 void AGAudioCompressorNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+    m_lastTime = t;
     pullInputPorts(t, nFrames);
     
     float gain = param(AUDIO_PARAM_GAIN);

@@ -235,7 +235,7 @@ void AGAudioNode::allocatePortBuffers()
 
 void AGAudioNode::pullInputPorts(sampletime t, int nFrames)
 {
-    if(t <= m_lastTime) return;
+//    if(t <= m_lastTime) return;
     
     this->lock();
     
@@ -269,6 +269,9 @@ void AGAudioNode::pullInputPorts(sampletime t, int nFrames)
         if(conn->rate() == RATE_AUDIO)
         {
             AGAudioRenderer *rndrr = dynamic_cast<AGAudioRenderer *>(conn->src());
+            AGAudioNode *node = dynamic_cast<AGAudioNode *>(rndrr);
+            if(node)
+                dbgprint_off("rendering '%s'\n", node->title().c_str());
             rndrr->renderAudio(t, NULL, m_inputPortBuffer[conn->dstPort()], nFrames);
         }
     }
@@ -398,6 +401,7 @@ public:
     void renderAudio(sampletime t, float *input, float *output, int nFrames) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
         // pullInputPorts(t, nFrames);
         
         float gain = param(AUDIO_PARAM_GAIN);
@@ -412,8 +416,6 @@ public:
                 *_outputBuffer = (*_input++)*gain;
                 *output++ += *_outputBuffer++;
             }
-            
-            m_lastTime = t;
         }
     }
     
@@ -500,6 +502,7 @@ public:
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
         pullInputPorts(t, nFrames);
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
@@ -512,8 +515,6 @@ public:
             
             m_phase = clipunit(m_phase + freqv[i]/sampleRate());
         }
-        
-        m_lastTime = t;
     }
     
 private:
@@ -592,6 +593,7 @@ public:
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
         pullInputPorts(t, nFrames);
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
@@ -605,8 +607,6 @@ public:
             
             m_phase = clipunit(m_phase + freqv[i]/sampleRate());
         }
-        
-        m_lastTime = t;
     }
     
 private:
@@ -681,6 +681,7 @@ public:
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
         pullInputPorts(t, nFrames);
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
@@ -693,8 +694,6 @@ public:
             
             m_phase = clipunit(m_phase + freqv[i]/sampleRate());
         }
-        
-        m_lastTime = t;
     }
     
 private:
@@ -769,6 +768,7 @@ public:
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
         pullInputPorts(t, nFrames);
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
@@ -784,8 +784,6 @@ public:
             
             m_phase = clipunit(m_phase + freqv[i]/sampleRate());
         }
-        
-        m_lastTime = t;
     }
     
 private:
@@ -886,6 +884,7 @@ public:
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
         pullInputPorts(t, nFrames);
         
         float *triggerv = inputPortVector(PARAM_TRIGGER);
@@ -906,8 +905,6 @@ public:
             m_outputBuffer[i] = m_adsr.tick() * inputv[i] * gainv[i];
             output[i] += m_outputBuffer[i];
         }
-        
-        m_lastTime = t;
     }
 
     virtual void receiveControl(int port, const AGControl &control) override
@@ -1123,6 +1120,7 @@ public:
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
         pullInputPorts(t, nFrames);
         
         float *inputv = inputPortVector(PARAM_INPUT);
@@ -1155,8 +1153,6 @@ public:
             m_outputBuffer[i] = samp;
             output[i] += m_outputBuffer[i];
         }
-        
-        m_lastTime = t;
     }
 
     
@@ -1246,6 +1242,7 @@ public:
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
         pullInputPorts(t, nFrames);
         
         float *inputv = inputPortVector(PARAM_INPUT);
