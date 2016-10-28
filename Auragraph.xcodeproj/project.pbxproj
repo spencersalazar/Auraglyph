@@ -22,6 +22,7 @@
 		09412E061A205A070065598D /* AGDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09412E041A205A070065598D /* AGDocument.mm */; };
 		09412E091A210B630065598D /* sputil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09412E071A210B630065598D /* sputil.cpp */; };
 		09412E0C1A2112300065598D /* NSString+STLString.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09412E0B1A2112300065598D /* NSString+STLString.mm */; };
+		0944E8A91DC4082900EB8087 /* GeometricRecognizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0944E8A31DC4082900EB8087 /* GeometricRecognizer.cpp */; };
 		095D12C417ACA36C0048A012 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C317ACA36C0048A012 /* UIKit.framework */; };
 		095D12C617ACA36C0048A012 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C517ACA36C0048A012 /* Foundation.framework */; };
 		095D12C817ACA36C0048A012 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C717ACA36C0048A012 /* CoreGraphics.framework */; };
@@ -138,6 +139,12 @@
 		09412E081A210B630065598D /* sputil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sputil.h; sourceTree = "<group>"; };
 		09412E0A1A2112300065598D /* NSString+STLString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+STLString.h"; sourceTree = "<group>"; };
 		09412E0B1A2112300065598D /* NSString+STLString.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSString+STLString.mm"; sourceTree = "<group>"; };
+		0944E8A31DC4082900EB8087 /* GeometricRecognizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeometricRecognizer.cpp; sourceTree = "<group>"; };
+		0944E8A41DC4082900EB8087 /* GeometricRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeometricRecognizer.h; sourceTree = "<group>"; };
+		0944E8A51DC4082900EB8087 /* GeometricRecognizerTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeometricRecognizerTypes.h; sourceTree = "<group>"; };
+		0944E8A61DC4082900EB8087 /* GestureTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GestureTemplate.h; sourceTree = "<group>"; };
+		0944E8A71DC4082900EB8087 /* PathWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathWriter.h; sourceTree = "<group>"; };
+		0944E8A81DC4082900EB8087 /* SampleGestures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleGestures.h; sourceTree = "<group>"; };
 		095D12C017ACA36C0048A012 /* AURAGLPH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AURAGLPH.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		095D12C317ACA36C0048A012 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		095D12C517ACA36C0048A012 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -360,6 +367,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0944E8A21DC4082900EB8087 /* DollarRecognizer */ = {
+			isa = PBXGroup;
+			children = (
+				0944E8A31DC4082900EB8087 /* GeometricRecognizer.cpp */,
+				0944E8A41DC4082900EB8087 /* GeometricRecognizer.h */,
+				0944E8A51DC4082900EB8087 /* GeometricRecognizerTypes.h */,
+				0944E8A61DC4082900EB8087 /* GestureTemplate.h */,
+				0944E8A71DC4082900EB8087 /* PathWriter.h */,
+				0944E8A81DC4082900EB8087 /* SampleGestures.h */,
+			);
+			name = DollarRecognizer;
+			path = libs/DollarRecognizer;
+			sourceTree = "<group>";
+		};
 		095D12B717ACA36C0048A012 = {
 			isa = PBXGroup;
 			children = (
@@ -382,6 +403,7 @@
 		095D12C217ACA36C0048A012 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0944E8A21DC4082900EB8087 /* DollarRecognizer */,
 				099AF12B17D1A6EE000BAB7B /* libz.dylib */,
 				099AF11917D1A6DA000BAB7B /* zip */,
 				098740BC17BCD9810098511A /* CoreText.framework */,
@@ -802,6 +824,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0944E8A91DC4082900EB8087 /* GeometricRecognizer.cpp in Sources */,
 				09F2D53B1D7EA33400F537C7 /* DelayA.cpp in Sources */,
 				091C70CC1C48A9A600B513C2 /* AGUINodeEditor.mm in Sources */,
 				095D12D417ACA36C0048A012 /* main.m in Sources */,
