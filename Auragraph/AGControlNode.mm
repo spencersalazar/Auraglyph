@@ -318,7 +318,7 @@ public:
     
     virtual void receiveControl(int port, const AGControl &control) override
     {
-        AGControl c;
+        AGControl c = control;
         float add = param(PARAM_ADD);
         switch(c.type)
         {
@@ -333,6 +333,8 @@ public:
             default:
                 c = AGControl(control.getInt() + add);
         }
+        
+        dbgprint("%s: push %f\n", this->title().c_str(), c.getFloat());
         
         pushControl(0, c);
     }
@@ -358,8 +360,8 @@ public:
     class Manifest : public AGStandardNodeManifest<AGControlMultiplyNode>
     {
     public:
-        string _type() const override { return "Add"; };
-        string _name() const override { return "Add"; };
+        string _type() const override { return "Multiply"; };
+        string _name() const override { return "Multiply"; };
         
         vector<AGPortInfo> _inputPortInfo() const override
         {
@@ -394,9 +396,9 @@ public:
     
     using AGControlNode::AGControlNode;
     
-    virtual void receiveControl(int port, const AGControl &control) override
+    void receiveControl(int port, const AGControl &control) override
     {
-        AGControl c;
+        AGControl c = control;
         float mult = param(PARAM_MULTIPLY);
         switch(c.type)
         {
@@ -411,6 +413,8 @@ public:
             default:
                 c = AGControl(control.getInt() * mult);
         }
+        
+        dbgprint("%s: push %f\n", this->title().c_str(), c.getFloat());
         
         pushControl(0, c);
     }
