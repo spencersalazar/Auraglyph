@@ -9,14 +9,9 @@
 /* Begin PBXBuildFile section */
 		0900A3821B04A10800C249D9 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0900A3811B04A10800C249D9 /* Images.xcassets */; };
 		0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0901C1BA17BE2F970032904B /* AGGenericShader.mm */; };
-		0901C1C017BE3C460032904B /* SourceCodePro-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0901C1BF17BE3C460032904B /* SourceCodePro-Regular.ttf */; };
-		0901C1C217BE3C4B0032904B /* eichante.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0901C1C117BE3C4B0032904B /* eichante.ttf */; };
-		090354F51A325CCD00F68107 /* Microgramma.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 090354F41A325CCD00F68107 /* Microgramma.ttf */; };
-		090354F71A329EAA00F68107 /* bankgthd.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 090354F61A329EAA00F68107 /* bankgthd.ttf */; };
 		091081801A0B63DB0063028B /* AGStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0910817E1A0B63DB0063028B /* AGStyle.mm */; };
 		091C70CC1C48A9A600B513C2 /* AGUINodeEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */; };
 		0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */; };
-		093395671A00FABC009E4802 /* Endzone Tech.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 093395661A00FABC009E4802 /* Endzone Tech.ttf */; };
 		093395691A019D43009E4802 /* Orbitron-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 093395681A019D43009E4802 /* Orbitron-Regular.ttf */; };
 		0933956B1A019E4F009E4802 /* Orbitron-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */; };
 		0933956E1A08799A009E4802 /* AGFormulaNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0933956C1A08799A009E4802 /* AGFormulaNode.mm */; };
@@ -63,9 +58,7 @@
 		098740AD17BC377E0098511A /* AGAudioNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740AB17BC377E0098511A /* AGAudioNode.mm */; };
 		098740B017BC527E0098511A /* ES2Render.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740AE17BC527E0098511A /* ES2Render.mm */; };
 		098740B317BC61410098511A /* AGUserInterface.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740B117BC61410098511A /* AGUserInterface.mm */; };
-		098740B517BCBA4C0098511A /* Consolas.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 098740B417BCBA4C0098511A /* Consolas.ttf */; };
 		098740BD17BCD9820098511A /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 098740BC17BCD9810098511A /* CoreText.framework */; };
-		098740BF17BCE0130098511A /* Perfect DOS VGA 437.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 098740BE17BCE0130098511A /* Perfect DOS VGA 437.ttf */; };
 		09891313189F6D3A00AB98AD /* trash.png in Resources */ = {isa = PBXBuildFile; fileRef = 09891311189F6D3A00AB98AD /* trash.png */; };
 		09891316189F70D200AB98AD /* AGTouchHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09891315189F70D200AB98AD /* AGTouchHandler.mm */; };
 		0989131C18A086E800AB98AD /* TexFont.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 098740B717BCC16B0098511A /* TexFont.vsh */; };
@@ -808,17 +801,10 @@
 				095D12DE17ACA36C0048A012 /* Default-568h@2x.png in Resources */,
 				095D12E817ACA36C0048A012 /* AGViewController.xib in Resources */,
 				09891313189F6D3A00AB98AD /* trash.png in Resources */,
-				098740B517BCBA4C0098511A /* Consolas.ttf in Resources */,
-				093395671A00FABC009E4802 /* Endzone Tech.ttf in Resources */,
-				098740BF17BCE0130098511A /* Perfect DOS VGA 437.ttf in Resources */,
-				0901C1C017BE3C460032904B /* SourceCodePro-Regular.ttf in Resources */,
-				0901C1C217BE3C4B0032904B /* eichante.ttf in Resources */,
 				099AF10F17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png in Resources */,
 				099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */,
 				099AF11617D13365000BAB7B /* AGTrainerViewCell.xib in Resources */,
 				099AF11817D157C5000BAB7B /* AGTrainerHeaderView.xib in Resources */,
-				090354F71A329EAA00F68107 /* bankgthd.ttf in Resources */,
-				090354F51A325CCD00F68107 /* Microgramma.ttf in Resources */,
 				099AF12E17D1A892000BAB7B /* projects.zip in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
