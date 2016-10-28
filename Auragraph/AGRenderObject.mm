@@ -125,6 +125,7 @@ void AGRenderInfoVC::set()
 GLKMatrix4 AGRenderObject::s_projectionMatrix = GLKMatrix4Identity;
 GLKMatrix4 AGRenderObject::s_modelViewMatrix = GLKMatrix4Identity;
 GLKMatrix4 AGRenderObject::s_fixedModelViewMatrix = GLKMatrix4Identity;
+GLKMatrix4 AGRenderObject::s_camera = GLKMatrix4Identity;
 
 AGRenderObject::AGRenderObject() : m_parent(NULL), m_alpha(powcurvef(0, 1, 0.5, 4))
 {

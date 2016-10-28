@@ -536,11 +536,13 @@ static AGViewController * g_instance = nil;
 //    else
 //        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f)/aspect, aspect, 0.1f, 100.0f);
     
+    _fixedModelView = GLKMatrix4MakeTranslation(0, 0, -10.1f);
+    
     _cameraZ.interp();
     if(_cameraZ < 0)
         _camera.z = _cameraZ;
     
-    GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z-10.1f);
+    GLKMatrix4 baseModelViewMatrix = GLKMatrix4Translate(_fixedModelView, _camera.x, _camera.y, _camera.z);
     if(_interfaceMode == INTERFACEMODE_USER)
         baseModelViewMatrix = GLKMatrix4Translate(baseModelViewMatrix, 0, 0, -(G_RATIO-1));
     
@@ -552,12 +554,12 @@ static AGViewController * g_instance = nil;
     
     _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
     _modelView = modelViewMatrix;
-    _fixedModelView = GLKMatrix4MakeTranslation(0, 0, -10.1f);
     _projection = projectionMatrix;
     
     AGRenderObject::setProjectionMatrix(projectionMatrix);
     AGRenderObject::setGlobalModelViewMatrix(modelViewMatrix);
     AGRenderObject::setFixedModelViewMatrix(_fixedModelView);
+    AGRenderObject::setCameraMatrix(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z));
 }
 
 - (GLvertex3f)worldCoordinateForScreenCoordinate:(CGPoint)p
