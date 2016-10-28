@@ -404,6 +404,14 @@ void AGUIStandardNodeEditor::render()
 
 AGInteractiveObject *AGUIStandardNodeEditor::hitTest(const GLvertex3f &t)
 {
+    if(m_editingPort >= 0)
+    {
+        bool inBbox = false;
+        hitTestX(t, &inBbox);
+        if(inBbox)
+            return this;
+    }
+    
     return AGInteractiveObject::hitTest(t);
 }
 
