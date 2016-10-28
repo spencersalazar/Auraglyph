@@ -310,7 +310,14 @@ void AGAudioNode::pullPortInput(int portId, int num, sampletime t, float *output
                     AGAudioRenderer *rndrr = dynamic_cast<AGAudioRenderer *>(conn->src());
                     rndrr->renderAudio(t, NULL, output, nFrames);
                 }
-                // TODO: control-rate
+                else
+                {
+                    // get last port value
+                    float val = conn->src()->lastControlOutput(portNum).getFloat();
+                    //
+                    for(int i = 0; i < nFrames; i++)
+                        output[i] = val;
+                }
                 
                 break;
             }
