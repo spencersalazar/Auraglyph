@@ -429,7 +429,15 @@ void AGNode::touchUp(const GLvertex3f &t)
 
 void AGNode::pushControl(int port, const AGControl &control)
 {
+    assert(port >= 0 && port < numOutputPorts());
+    
     this->lock();
+    
+    // ensure correct size
+    if(port >= m_lastControlOutput.size())
+        m_lastControlOutput.resize(numOutputPorts());
+    
+    m_lastControlOutput[port] = control;
     
     float f;
     control.mapTo(f);
@@ -445,6 +453,23 @@ void AGNode::pushControl(int port, const AGControl &control)
     };
     
     this->unlock();
+}
+
+AGControl AGNode::lastControlOutput(int port)
+{
+    assert(port >= 0 && port < numOutputPorts());
+    
+    this->lock();
+    
+    // ensure correct size
+    if(port >= m_lastControlOutput.size())
+        m_lastControlOutput.resize(numOutputPorts());
+    
+    AGControl c = m_lastControlOutput[port];
+    
+    this->unlock();
+    
+    return c;
 }
 
 void AGNode::receiveControl_internal(int port, const AGControl &control)

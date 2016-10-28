@@ -767,6 +767,11 @@
 				CLASSPREFIX = AG;
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "Spencer Salazar";
+				TargetAttributes = {
+					095D12BF17ACA36C0048A012 = {
+						DevelopmentTeam = 9GU9FHJ3JC;
+					};
+				};
 			};
 			buildConfigurationList = 095D12BB17ACA36C0048A012 /* Build configuration list for PBXProject "Auragraph" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -982,6 +987,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LIBRARY = "libc++";
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = 9GU9FHJ3JC;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Auragraph/Auragraph-Prefix.pch";
@@ -1007,6 +1013,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LIBRARY = "libc++";
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = 9GU9FHJ3JC;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Auragraph/Auragraph-Prefix.pch";

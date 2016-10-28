@@ -235,7 +235,7 @@ void AGAudioNode::allocatePortBuffers()
 
 void AGAudioNode::pullInputPorts(sampletime t, int nFrames)
 {
-    if(t <= m_lastTime) return;
+//    if(t <= m_lastTime) return;
     
     this->lock();
     
@@ -269,6 +269,9 @@ void AGAudioNode::pullInputPorts(sampletime t, int nFrames)
         if(conn->rate() == RATE_AUDIO)
         {
             AGAudioRenderer *rndrr = dynamic_cast<AGAudioRenderer *>(conn->src());
+            AGAudioNode *node = dynamic_cast<AGAudioNode *>(rndrr);
+            if(node)
+                dbgprint_off("rendering '%s'\n", node->title().c_str());
             rndrr->renderAudio(t, NULL, m_inputPortBuffer[conn->dstPort()], nFrames);
         }
     }
@@ -276,14 +279,62 @@ void AGAudioNode::pullInputPorts(sampletime t, int nFrames)
     this->unlock();
 }
 
-void AGAudioNode::finalPortValue(float &value, int portId, int sample) const
+int AGAudioNode::numInputsForPort(int portId)
 {
-    int index = m_param2InputPort.at(portId);
-    if(m_controlPortBuffer[index])
-        value = m_controlPortBuffer[index].getFloat();
-    if(sample >= 0)
-        value += m_inputPortBuffer[index][sample];
+    int portNum = m_param2InputPort[portId];
+    int numInputs = 0;
+    for(auto conn : m_inbound)
+    {
+        if(conn->dstPort() == portNum)
+            numInputs++;
+    }
+    
+    return numInputs;
 }
+
+void AGAudioNode::pullPortInput(int portId, int num, sampletime t, float *output, int nFrames)
+{
+    if(m_param2InputPort.count(portId) == 0) return;
+    
+    int portNum = m_param2InputPort.at(portId);
+    
+    int i = 0;
+    for(auto conn : m_inbound)
+    {
+        if(conn->dstPort() == portNum)
+        {
+            if(i == portNum)
+            {
+                if(conn->rate() == RATE_AUDIO)
+                {
+                    AGAudioRenderer *rndrr = dynamic_cast<AGAudioRenderer *>(conn->src());
+                    rndrr->renderAudio(t, NULL, output, nFrames);
+                }
+                else
+                {
+                    // get last port value
+                    float val = conn->src()->lastControlOutput(portNum).getFloat();
+                    //
+                    for(int i = 0; i < nFrames; i++)
+                        output[i] = val;
+                }
+                
+                break;
+            }
+            
+            i++;
+        }
+    }
+}
+
+//void AGAudioNode::finalPortValue(float &value, int portId, int sample) const
+//{
+//    int index = m_param2InputPort.at(portId);
+//    if(m_controlPortBuffer[index])
+//        value = m_controlPortBuffer[index].getFloat();
+//    if(sample >= 0)
+//        value += m_inputPortBuffer[index][sample];
+//}
 
 void AGAudioNode::renderLast(float *output, int nFrames)
 {
@@ -398,6 +449,7 @@ public:
     void renderAudio(sampletime t, float *input, float *output, int nFrames) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
         // pullInputPorts(t, nFrames);
         
         float gain = param(AUDIO_PARAM_GAIN);
@@ -412,8 +464,6 @@ public:
                 *_outputBuffer = (*_input++)*gain;
                 *output++ += *_outputBuffer++;
             }
-            
-            m_lastTime = t;
         }
     }
     
@@ -500,6 +550,7 @@ public:
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
         pullInputPorts(t, nFrames);
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
@@ -512,8 +563,6 @@ public:
             
             m_phase = clipunit(m_phase + freqv[i]/sampleRate());
         }
-        
-        m_lastTime = t;
     }
     
 private:
@@ -592,6 +641,7 @@ public:
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
         pullInputPorts(t, nFrames);
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
@@ -605,8 +655,6 @@ public:
             
             m_phase = clipunit(m_phase + freqv[i]/sampleRate());
         }
-        
-        m_lastTime = t;
     }
     
 private:
@@ -681,6 +729,7 @@ public:
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
         pullInputPorts(t, nFrames);
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
@@ -693,8 +742,6 @@ public:
             
             m_phase = clipunit(m_phase + freqv[i]/sampleRate());
         }
-        
-        m_lastTime = t;
     }
     
 private:
@@ -769,6 +816,7 @@ public:
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
         pullInputPorts(t, nFrames);
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
@@ -784,8 +832,6 @@ public:
             
             m_phase = clipunit(m_phase + freqv[i]/sampleRate());
         }
-        
-        m_lastTime = t;
     }
     
 private:
@@ -886,6 +932,7 @@ public:
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
         pullInputPorts(t, nFrames);
         
         float *triggerv = inputPortVector(PARAM_TRIGGER);
@@ -906,8 +953,6 @@ public:
             m_outputBuffer[i] = m_adsr.tick() * inputv[i] * gainv[i];
             output[i] += m_outputBuffer[i];
         }
-        
-        m_lastTime = t;
     }
 
     virtual void receiveControl(int port, const AGControl &control) override
@@ -1123,6 +1168,7 @@ public:
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
         pullInputPorts(t, nFrames);
         
         float *inputv = inputPortVector(PARAM_INPUT);
@@ -1155,8 +1201,6 @@ public:
             m_outputBuffer[i] = samp;
             output[i] += m_outputBuffer[i];
         }
-        
-        m_lastTime = t;
     }
 
     
@@ -1241,11 +1285,12 @@ public:
     {
         if(paramId == PARAM_DELAY)
             _setDelay(param(PARAM_DELAY));
-    }
+            }
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
         pullInputPorts(t, nFrames);
         
         float *inputv = inputPortVector(PARAM_INPUT);
@@ -1289,6 +1334,212 @@ private:
 
 
 //------------------------------------------------------------------------------
+// ### AGAudioAddNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioAddNode
+
+class AGAudioAddNode : public AGAudioNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_ADD,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGAudioAddNode>
+    {
+    public:
+        string _type() const override { return "Add"; };
+        string _name() const override { return "Add"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_INPUT, "add", true, false },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { PARAM_ADD, "add", true, true, 0 },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1 },
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x;
+            
+            // add icon
+            vector<GLvertex3f> iconGeo = {
+                { -radius_x, 0, 0 }, { radius_x, 0, 0 },
+                { 0, radius_y, 0 }, { 0, -radius_y, 0 },
+            };
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINES; };
+    };
+    
+    using AGAudioNode::AGAudioNode;
+    
+    void initFinal() override
+    {
+        m_inputBuffer.resize(bufferSize());
+    }
+    
+    virtual int numOutputPorts() const override { return 1; }
+    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
+    {
+        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
+        
+        this->lock();
+        
+        int numInputs = numInputsForPort(PARAM_INPUT);
+        // if only one input, process with edit port value
+        float base = 0;
+        if(numInputs == 1)
+        {
+            if(m_params.count(PARAM_ADD))
+                base = m_params.at(PARAM_ADD);
+        }
+        
+        // set to base value
+        for(int i = 0; i < nFrames; i++)
+            m_outputBuffer[i] = base;
+        
+        for(int j = 0; j < numInputs; j++)
+        {
+            m_inputBuffer.clear();
+            pullPortInput(PARAM_INPUT, j, t, m_inputBuffer, nFrames);
+            
+            for(int i = 0; i < nFrames; i++)
+                m_outputBuffer[i] += m_inputBuffer[i];
+        }
+        
+        for(int i = 0; i < nFrames; i++)
+            output[i] += m_outputBuffer[i];
+        
+        this->unlock();
+    }
+    
+private:
+    Buffer<float> m_inputBuffer;
+};
+
+
+
+
+//------------------------------------------------------------------------------
+// ### AGAudioMultiplyNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioMultiplyNode
+
+class AGAudioMultiplyNode : public AGAudioNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_MULTIPLY,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGAudioMultiplyNode>
+    {
+    public:
+        string _type() const override { return "Multiply"; };
+        string _name() const override { return "Multiply"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_INPUT, "multiply", true, false },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { PARAM_MULTIPLY, "multiply", true, true, 1 },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1 },
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x;
+            
+            // x icon
+            vector<GLvertex3f> iconGeo = {
+                { -radius_x, radius_y, 0 }, { radius_x, -radius_y, 0 },
+                { -radius_x, -radius_y, 0 }, { radius_x, radius_y, 0 },
+            };
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINES; };
+    };
+    
+    using AGAudioNode::AGAudioNode;
+    
+    void initFinal() override
+    {
+        m_inputBuffer.resize(bufferSize());
+    }
+    
+    virtual int numOutputPorts() const override { return 1; }
+    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
+    {
+        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
+        
+        this->lock();
+        
+        int numInputs = numInputsForPort(PARAM_INPUT);
+        // if only one input, process with edit port value
+        float base = 1;
+        if(numInputs == 1)
+        {
+            if(m_params.count(PARAM_MULTIPLY))
+                base = m_params.at(PARAM_MULTIPLY);
+        }
+        
+        // set to base value
+        for(int i = 0; i < nFrames; i++)
+            m_outputBuffer[i] = base;
+
+        for(int j = 0; j < numInputs; j++)
+        {
+            m_inputBuffer.clear();
+            pullPortInput(PARAM_INPUT, j, t, m_inputBuffer, nFrames);
+            
+            for(int i = 0; i < nFrames; i++)
+                m_outputBuffer[i] *= m_inputBuffer[i];
+        }
+        
+        for(int i = 0; i < nFrames; i++)
+            output[i] += m_outputBuffer[i];
+        
+        this->unlock();
+    }
+    
+private:
+    Buffer<float> m_inputBuffer;
+};
+
+
+//------------------------------------------------------------------------------
 // ### AGNodeManager ###
 //------------------------------------------------------------------------------
 #pragma mark - AGNodeManager
@@ -1303,16 +1554,25 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         
         nodeTypes.push_back(new AGAudioSineWaveNode::Manifest);
         nodeTypes.push_back(new AGAudioSquareWaveNode::Manifest);
+        
         nodeTypes.push_back(new AGAudioSawtoothWaveNode::Manifest);
         nodeTypes.push_back(new AGAudioTriangleWaveNode::Manifest);
+        
         nodeTypes.push_back(new AGAudioWaveformNode::Manifest);
         nodeTypes.push_back(new AGAudioADSRNode::Manifest);
+        
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RLPF>::ManifestLPF);
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RHPF>::ManifestHPF);
+        
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2BPF>::ManifestBPF);
         nodeTypes.push_back(new AGAudioFeedbackNode::Manifest);
+        
+        nodeTypes.push_back(new AGAudioAddNode::Manifest);
+        nodeTypes.push_back(new AGAudioMultiplyNode::Manifest);
+        
         nodeTypes.push_back(new AGAudioCompressorNode::Manifest);
         nodeTypes.push_back(new AGAudioInputNode::Manifest);
+        
         nodeTypes.push_back(new AGAudioOutputNode::Manifest);
         nodeTypes.push_back(new AGAudioCompositeNode::Manifest);
         

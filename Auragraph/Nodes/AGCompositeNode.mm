@@ -38,6 +38,7 @@ int AGAudioCompositeNode::numOutputPorts() const
 void AGAudioCompositeNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+    m_lastTime = t;
     pullInputPorts(t, nFrames);
     
     m_outputBuffer.clear();
@@ -57,6 +58,4 @@ void AGAudioCompositeNode::renderAudio(sampletime t, float *input, float *output
     
     for(int i = 0; i < nFrames; i++)
         output[i] += m_outputBuffer[i]*gain;
-    
-    m_lastTime = t;
 }

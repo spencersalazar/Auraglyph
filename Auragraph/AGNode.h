@@ -125,6 +125,7 @@ public:
     // control
     void pushControl(int port, const AGControl &control);
     virtual void receiveControl(int port, const AGControl &control) { }
+    AGControl lastControlOutput(int port);
 
     enum HitTestResult
     {
@@ -241,6 +242,7 @@ protected:
     std::list<AGConnection *> m_outbound;
     
     vector<AGControl> m_controlPortBuffer;
+    vector<AGControl> m_lastControlOutput;
     
 //    AGPortInfo * m_inputPortInfo;
     

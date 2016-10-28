@@ -311,6 +311,7 @@ float AGAudioWaveformNode::get(float phase)
 void AGAudioWaveformNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
 {
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+    m_lastTime = t;
     pullInputPorts(t, nFrames);
     
     float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
@@ -323,8 +324,6 @@ void AGAudioWaveformNode::renderAudio(sampletime t, float *input, float *output,
         
         m_phase = clipunit(m_phase + freqv[i]/sampleRate());
     }
-    
-    m_lastTime = t;
 }
 
 void AGAudioWaveformNode::_renderIcon()

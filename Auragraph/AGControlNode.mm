@@ -194,7 +194,7 @@ public:
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_INTERVAL, "interval", true, true, 0.5, 0.00001, AGFloat_Max },
+                { PARAM_INTERVAL, "interval", true, true, 0.5, 0.001, AGFloat_Max },
             };
         };
         
@@ -261,6 +261,162 @@ private:
     bool m_value;
     float m_lastTime;
     float m_lastFire;
+};
+
+
+//------------------------------------------------------------------------------
+// ### AGControlAddNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGControlAddNode
+
+class AGControlAddNode : public AGControlNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_ADD,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGControlAddNode>
+    {
+    public:
+        string _type() const override { return "Add"; };
+        string _name() const override { return "Add"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_ADD, "add", true, true },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { PARAM_ADD, "add", true, true, 0 },
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x;
+            
+            // add icon
+            vector<GLvertex3f> iconGeo = {
+                { -radius_x, 0, 0 }, { radius_x, 0, 0 },
+                { 0, radius_y, 0 }, { 0, -radius_y, 0 },
+            };
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINES; };
+    };
+    
+    using AGControlNode::AGControlNode;
+    
+    virtual void receiveControl(int port, const AGControl &control) override
+    {
+        AGControl c;
+        float add = param(PARAM_ADD);
+        switch(c.type)
+        {
+            case AGControl::TYPE_FLOAT:
+                c = control;
+                c.vfloat += add;
+                break;
+            case AGControl::TYPE_INT:
+                c = control;
+                c.vint += add;
+                break;
+            default:
+                c = AGControl(control.getInt() + add);
+        }
+        
+        pushControl(0, c);
+    }
+    
+    virtual int numOutputPorts() const override { return 1; }
+};
+
+
+//------------------------------------------------------------------------------
+// ### AGControlMultiplyNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGControlMultiplyNode
+
+class AGControlMultiplyNode : public AGControlNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_MULTIPLY,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGControlMultiplyNode>
+    {
+    public:
+        string _type() const override { return "Add"; };
+        string _name() const override { return "Add"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_MULTIPLY, "mult", true, true },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { PARAM_MULTIPLY, "mult", true, true, 0 },
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x;
+            
+            // x icon
+            vector<GLvertex3f> iconGeo = {
+                { -radius_x, radius_y, 0 }, { radius_x, -radius_y, 0 },
+                { -radius_x, -radius_y, 0 }, { radius_x, radius_y, 0 },
+            };
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINES; };
+    };
+    
+    using AGControlNode::AGControlNode;
+    
+    virtual void receiveControl(int port, const AGControl &control) override
+    {
+        AGControl c;
+        float mult = param(PARAM_MULTIPLY);
+        switch(c.type)
+        {
+            case AGControl::TYPE_FLOAT:
+                c = control;
+                c.vfloat *= mult;
+                break;
+            case AGControl::TYPE_INT:
+                c = control;
+                c.vint *= mult;
+                break;
+            default:
+                c = AGControl(control.getInt() * mult);
+        }
+        
+        pushControl(0, c);
+    }
+    
+    virtual int numOutputPorts() const override { return 1; }
 };
 
 //------------------------------------------------------------------------------
@@ -356,6 +512,9 @@ const AGNodeManager &AGNodeManager::controlNodeManager()
         nodeTypes.push_back(new AGControlArrayNode::Manifest);
         nodeTypes.push_back(new AGControlSequencerNode::Manifest);
         nodeTypes.push_back(new AGControlMidiToFreqNode::Manifest);
+        
+        nodeTypes.push_back(new AGControlAddNode::Manifest);
+        nodeTypes.push_back(new AGControlMultiplyNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();
