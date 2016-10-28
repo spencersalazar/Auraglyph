@@ -182,12 +182,6 @@ static AGViewController * g_instance = nil;
     /* preload hw recognizer */
     (void) [AGHandwritingRecognizer instance];
     
-//    _testButton = new AGUIButton("Trainer", [self worldCoordinateForScreenCoordinate:CGPointMake(10, self.view.bounds.size.height-10)], GLvertex2f(0.028, 0.007));
-//    _testButton->setAction(^{
-//        [self presentViewController:self.trainer animated:YES completion:nil];
-//    });
-//    _objects.push_back(_testButton);
-    
     [self initUI];
     
     /* load default program */
@@ -280,6 +274,18 @@ static AGViewController * g_instance = nil;
         [weakSelf save];
     });
     [self addTopLevelObject:saveButton];
+    
+    float testButtonWidth = saveButtonWidth;
+    float testButtonHeight = saveButtonHeight;
+    _testButton = new AGUIButton("Trainer",
+                                 [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-testButtonWidth-10, 20+testButtonHeight/2)],
+                                 GLvertex2f(testButtonWidth, testButtonHeight));
+    _testButton->init();
+    _testButton->setRenderFixed(true);
+    _testButton->setAction(^{
+        [self presentViewController:self.trainer animated:YES completion:nil];
+    });
+    [self addTopLevelObject:_testButton];
     
     AGUIButtonGroup *modeButtonGroup = new AGUIButtonGroup();
     modeButtonGroup->init();
