@@ -204,12 +204,20 @@ static AGHandwritingRecognizer * g_instance = NULL;
 
 - (void)loadData
 {
-    NSLog(@"unzipping LipiTk model data");
+    NSLog(@"copying LipiTk model data");
     
-    [[NSFileManager defaultManager] removeItemAtPath:[AGHandwritingRecognizer projectPath] error:NULL];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
     
-    [SSZipArchive unzipFileAtPath:[[NSBundle mainBundle] pathForResource:@"projects.zip" ofType:@""]
-                    toDestination:[[AGHandwritingRecognizer projectPath] stringByDeletingLastPathComponent]];
+    [fileManager removeItemAtPath:[AGHandwritingRecognizer projectPath] error:NULL];
+    
+//    [SSZipArchive unzipFileAtPath:[[NSBundle mainBundle] pathForResource:@"projects.zip" ofType:@""]
+//                    toDestination:[[AGHandwritingRecognizer projectPath] stringByDeletingLastPathComponent]];
+    NSError *error = NULL;
+    NSString *projectSrcPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"projects"];
+    NSString *projectDstPath = [AGHandwritingRecognizer projectPath];
+    [fileManager copyItemAtPath:projectSrcPath toPath:projectDstPath error:&error];
+    if(error != NULL)
+        NSLog(@"-[AGHandwritingRecognizer loadData]: error copying model data");
 }
 
 
