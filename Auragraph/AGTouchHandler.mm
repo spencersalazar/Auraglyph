@@ -404,14 +404,11 @@
     }
     
     AGUITrash &trash = AGUITrash::instance();
-    if(trash.hitTest(pos))
-    {
+    GLvertex3f fixedPos = GLKMatrix4MultiplyVector4(AGNode::cameraMatrix(), pos.asGLKVector4());
+    if(trash.hitTest(fixedPos))
         trash.activate();
-    }
     else
-    {
         trash.deactivate();
-    }
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
@@ -429,7 +426,8 @@
     }
     else
     {
-        if(trash.hitTest(pos))
+        GLvertex3f fixedPos = GLKMatrix4MultiplyVector4(AGNode::cameraMatrix(), pos.asGLKVector4());
+        if(trash.hitTest(fixedPos))
         {
             _moveNode->fadeOutAndRemove();
         }
