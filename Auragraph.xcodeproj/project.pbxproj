@@ -953,6 +953,7 @@
 				GCC_PREFIX_HEADER = "Auragraph/Auragraph-Prefix.pch";
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/LipiTk/include\"";
 				INFOPLIST_FILE = "Auragraph/Auragraph-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				KEEP_PRIVATE_EXTERNS = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -979,6 +980,7 @@
 				GCC_PREFIX_HEADER = "Auragraph/Auragraph-Prefix.pch";
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/LipiTk/include\"";
 				INFOPLIST_FILE = "Auragraph/Auragraph-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				KEEP_PRIVATE_EXTERNS = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
