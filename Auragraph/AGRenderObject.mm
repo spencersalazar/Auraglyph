@@ -148,7 +148,7 @@ AGRenderObject::~AGRenderObject()
 
 void AGRenderObject::addChild(AGRenderObject *child)
 {
-    m_children.push_back(child);
+    m_children.push_front(child);
     child->m_parent = this;
 }
 
