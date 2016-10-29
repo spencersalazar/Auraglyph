@@ -96,6 +96,11 @@ public:
     virtual void touchMove(const GLvertex3f &t);
     virtual void touchUp(const GLvertex3f &t);
     
+    GLvertex3f position() { return m_pos; }
+    void setPosition(const GLvertex3f &pos) { m_pos = pos; }
+    
+    virtual GLvertex2f size() { return m_size.xy(); }
+    
     void setAction(void (^action)());
     bool isPressed();
     void setLatched(bool latched);
