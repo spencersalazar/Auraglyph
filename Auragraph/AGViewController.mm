@@ -407,10 +407,20 @@ static AGViewController * g_instance = nil;
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
+    _saveButton->hide();
+    _testButton->hide();
+    _freedrawButton->hide();
+    _nodeButton->hide();
+    
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         [self _updateFixedUIPosition];
+        
+        _saveButton->unhide();
+        _testButton->unhide();
+        _freedrawButton->unhide();
+        _nodeButton->unhide();
     }];
 }
 

@@ -58,6 +58,7 @@ AGUIButton::~AGUIButton()
 
 void AGUIButton::update(float t, float dt)
 {
+    AGInteractiveObject::update(t, dt);
 }
 
 void AGUIButton::render()
@@ -88,10 +89,13 @@ void AGUIButton::render()
     shader.setModelViewMatrix(modelView);
     shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));
     
+    GLcolor4f color = GLcolor4f::white;
+    color.a = m_renderState.alpha;
+
     glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
     glDisableVertexAttribArray(GLKVertexAttribColor);
     
     glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
@@ -102,7 +106,10 @@ void AGUIButton::render()
         glLineWidth(4.0);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
         
-        text->render(m_title, AGStyle::darkColor(), textMV, proj);
+        color = AGStyle::darkColor();
+        color.a = m_renderState.alpha;
+        
+        text->render(m_title, color, textMV, proj);
     }
     else
     {
@@ -111,8 +118,11 @@ void AGUIButton::render()
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::black);
         glLineWidth(2.0);
         glDrawArrays(GL_LINE_LOOP, 4, 4);
-
-        text->render(m_title, AGStyle::lightColor(), textMV, proj);
+        
+        color = AGStyle::lightColor();
+        color.a = m_renderState.alpha;
+        
+        text->render(m_title, color, textMV, proj);
     }
 }
 
@@ -345,6 +355,7 @@ void AGUIButtonGroup::addButton(AGUIButton *button, void (^action)(), bool isDef
 AGUITrash &AGUITrash::instance()
 {
     static AGUITrash s_trash;
+    s_trash.init();
     
     return s_trash;
 }
@@ -378,6 +389,8 @@ AGUITrash::~AGUITrash()
 
 void AGUITrash::update(float t, float dt)
 {
+    AGInteractiveObject::update(t, dt);
+    
     if(m_active)
         m_scale = 1.25;
     else
@@ -406,11 +419,18 @@ void AGUITrash::render()
     glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     
+    GLcolor4f color;
+    if(m_active)
+        color = GLcolor4f::red;
+    else
+        color = GLcolor4f::white;
+    color.a = m_renderState.alpha;
+
     glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
     if(m_active)
-        glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::red);
+        glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &color);
     else
-        glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::white);
+        glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &color);
     
     glEnable(GL_TEXTURE_2D);
     glActiveTexture(GL_TEXTURE0);
