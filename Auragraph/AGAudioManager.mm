@@ -41,8 +41,6 @@ private:
 };
 
 
-static float g_audio_buf[1024];
-
 @interface AGAudioManager ()
 {
     sampletime t;
@@ -55,6 +53,7 @@ static float g_audio_buf[1024];
     Mutex _timersMutex;
     
     float _inputBuffer[1024];
+    Buffer<float> _outputBuffer;
 }
 
 - (void)renderAudio:(Float32 *)buffer numFrames:(UInt32)numFrames;
@@ -87,7 +86,9 @@ static AGAudioManager *g_audioManager;
         
         t = 0;
         
-        memset(g_audio_buf, 0, sizeof(float)*1024);
+        _outputBuffer.resize(1024*2);
+        _outputBuffer.clear();
+        
         memset(_inputBuffer, 0, sizeof(float)*1024);
         
         MoAudio::init(AGAudioNode::sampleRate(), AGAudioNode::bufferSize(), 2);
@@ -147,7 +148,7 @@ static AGAudioManager *g_audioManager;
 
 - (void)renderAudio:(Float32 *)buffer numFrames:(UInt32)numFrames
 {
-    memset(g_audio_buf, 0, sizeof(float)*1024);
+    _outputBuffer.clear();
     
     _timersMutex.lock();
     for(AGTimer *timer : _timers )
@@ -170,13 +171,13 @@ static AGAudioManager *g_audioManager;
     
     _renderersMutex.lock();
     for(AGAudioRenderer *renderer : _renderers)
-        renderer->renderAudio(t, NULL, g_audio_buf, numFrames, 0, 1);
+        renderer->renderAudio(t, NULL, _outputBuffer, numFrames, 0, 2);
     _renderersMutex.unlock();
     
     for(int i = 0; i < numFrames; i++)
     {
-        buffer[i*2] = g_audio_buf[i];
-        buffer[i*2+1] = g_audio_buf[i];
+        buffer[i*2] = _outputBuffer[i*2];
+        buffer[i*2+1] = _outputBuffer[i*2+1];
     }
     
     t += numFrames;

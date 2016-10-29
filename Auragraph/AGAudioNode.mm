@@ -351,6 +351,12 @@ float *AGAudioNode::inputPortVector(int paramId)
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioOutputNode
 
+void AGAudioOutputNode::initFinal()
+{
+    m_inputBuffer[0].resize(bufferSize());
+    m_inputBuffer[1].resize(bufferSize());
+}
+
 AGAudioOutputNode::~AGAudioOutputNode()
 {
     if(m_destination)
@@ -371,18 +377,27 @@ void AGAudioOutputNode::setOutputDestination(AGAudioOutputDestination *destinati
 
 void AGAudioOutputNode::renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans)
 {
-    m_outputBuffer.clear();
+    assert(nChans == 2);
     
-    for(std::list<AGConnection *>::iterator i = m_inbound.begin(); i != m_inbound.end(); i++)
+    m_inputBuffer[0].clear();
+    m_inputBuffer[1].clear();
+    
+    for(auto conn : m_inbound)
     {
-        if((*i)->rate() == RATE_AUDIO)
-            ((AGAudioNode *)(*i)->src())->renderAudio(t, input, m_outputBuffer, nFrames, 0, 1);
+        if(conn->rate() == RATE_AUDIO)
+        {
+            assert(conn->dstPort() == 0 || conn->dstPort() == 1);
+            ((AGAudioNode *)conn->src())->renderAudio(t, input, m_inputBuffer[conn->dstPort()], nFrames, 0, 1);
+        }
     }
     
     float gain = param(AUDIO_PARAM_GAIN);
     
     for(int i = 0; i < nFrames; i++)
-        output[i] = m_outputBuffer[i]*gain;
+    {
+        output[i*2] = m_inputBuffer[0][i]*gain;
+        output[i*2+1] = m_inputBuffer[1][i]*gain;
+    }
 }
 
 //------------------------------------------------------------------------------
