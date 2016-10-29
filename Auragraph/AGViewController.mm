@@ -120,7 +120,6 @@ enum InterfaceMode
 }
 
 @property (strong, nonatomic) EAGLContext *context;
-@property (strong, nonatomic) GLKBaseEffect *effect;
 @property (strong, nonatomic) AGAudioManager *audioManager;
 
 @property (strong) IBOutlet AGTrainerViewController *trainer;
