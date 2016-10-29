@@ -54,7 +54,7 @@ public:
     virtual void update(float t, float dt) override;
     virtual void render() override;
     // audio
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override { assert(0); }
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override { assert(0); }
     
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t) override;
     
@@ -172,7 +172,7 @@ public:
     virtual int numOutputPorts() const override { return 0; }
     virtual int numInputPorts() const override { return 1; }
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override;
     
 private:
     AGAudioOutputDestination *m_destination = NULL;

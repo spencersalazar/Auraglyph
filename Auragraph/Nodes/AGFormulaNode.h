@@ -24,7 +24,7 @@ public:
     virtual int numOutputPorts() const;
     virtual int numInputPorts() const;
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames);
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans);
     
     static void renderIcon();
     

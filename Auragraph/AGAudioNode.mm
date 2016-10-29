@@ -272,7 +272,7 @@ void AGAudioNode::pullInputPorts(sampletime t, int nFrames)
             AGAudioNode *node = dynamic_cast<AGAudioNode *>(rndrr);
             if(node)
                 dbgprint_off("rendering '%s'\n", node->title().c_str());
-            rndrr->renderAudio(t, NULL, m_inputPortBuffer[conn->dstPort()], nFrames);
+            rndrr->renderAudio(t, NULL, m_inputPortBuffer[conn->dstPort()], nFrames, 0, 1);
         }
     }
     
@@ -308,7 +308,7 @@ void AGAudioNode::pullPortInput(int portId, int num, sampletime t, float *output
                 if(conn->rate() == RATE_AUDIO)
                 {
                     AGAudioRenderer *rndrr = dynamic_cast<AGAudioRenderer *>(conn->src());
-                    rndrr->renderAudio(t, NULL, output, nFrames);
+                    rndrr->renderAudio(t, NULL, output, nFrames, 0, 1);
                 }
                 else
                 {
@@ -369,14 +369,14 @@ void AGAudioOutputNode::setOutputDestination(AGAudioOutputDestination *destinati
         m_destination->addOutput(this);
 }
 
-void AGAudioOutputNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
+void AGAudioOutputNode::renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans)
 {
     m_outputBuffer.clear();
     
     for(std::list<AGConnection *>::iterator i = m_inbound.begin(); i != m_inbound.end(); i++)
     {
         if((*i)->rate() == RATE_AUDIO)
-            ((AGAudioNode *)(*i)->src())->renderAudio(t, input, m_outputBuffer, nFrames);
+            ((AGAudioNode *)(*i)->src())->renderAudio(t, input, m_outputBuffer, nFrames, 0, 1);
     }
     
     float gain = param(AUDIO_PARAM_GAIN);
@@ -446,7 +446,7 @@ public:
     int numOutputPorts() const override { return 1; }
     int numInputPorts() const override { return 0; }
     
-    void renderAudio(sampletime t, float *input, float *output, int nFrames) override
+    void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
         m_lastTime = t;
@@ -547,7 +547,7 @@ public:
     
     virtual int numOutputPorts() const override { return 1; }
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
         m_lastTime = t;
@@ -638,7 +638,7 @@ public:
     
     virtual int numOutputPorts() const override { return 1; }
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
         m_lastTime = t;
@@ -726,7 +726,7 @@ public:
     
     virtual int numOutputPorts() const override { return 1; }
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
         m_lastTime = t;
@@ -813,7 +813,7 @@ public:
 
     virtual int numOutputPorts() const override { return 1; }
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
         m_lastTime = t;
@@ -929,7 +929,7 @@ public:
         }
     }
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
         m_lastTime = t;
@@ -1165,7 +1165,7 @@ public:
         return AGNode::validateEditPortValue(port, value);
     }
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
         m_lastTime = t;
@@ -1287,7 +1287,7 @@ public:
             _setDelay(param(PARAM_DELAY));
             }
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
         m_lastTime = t;
@@ -1395,7 +1395,7 @@ public:
     
     virtual int numOutputPorts() const override { return 1; }
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
         m_lastTime = t;
@@ -1499,7 +1499,7 @@ public:
     
     virtual int numOutputPorts() const override { return 1; }
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
         m_lastTime = t;

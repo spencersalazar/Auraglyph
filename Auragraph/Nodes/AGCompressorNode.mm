@@ -15,7 +15,7 @@ void AGAudioCompressorNode::initFinal()
     m_detector.setTauRelease(0.100, sampleRate());
 }
 
-void AGAudioCompressorNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
+void AGAudioCompressorNode::renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans)
 {
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     m_lastTime = t;

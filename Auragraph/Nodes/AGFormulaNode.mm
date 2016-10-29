@@ -31,7 +31,7 @@ int AGAudioFormulaNode::numInputPorts() const
     return 0;
 }
 
-void AGAudioFormulaNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
+void AGAudioFormulaNode::renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans)
 {
     
 }

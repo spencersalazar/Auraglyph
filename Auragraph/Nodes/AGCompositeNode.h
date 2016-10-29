@@ -77,7 +77,7 @@ public:
     
     virtual int numOutputPorts() const override;
         
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override;
     
 //    void addOutputNode(AGAudioNode *outputNode);
 //    void addInputNode(AGAudioCapturer *inputNode);

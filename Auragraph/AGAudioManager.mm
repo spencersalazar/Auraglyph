@@ -170,7 +170,7 @@ static AGAudioManager *g_audioManager;
     
     _renderersMutex.lock();
     for(AGAudioRenderer *renderer : _renderers)
-        renderer->renderAudio(t, NULL, g_audio_buf, numFrames);
+        renderer->renderAudio(t, NULL, g_audio_buf, numFrames, 0, 1);
     _renderersMutex.unlock();
     
     for(int i = 0; i < numFrames; i++)
