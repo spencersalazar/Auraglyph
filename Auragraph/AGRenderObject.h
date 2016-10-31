@@ -98,6 +98,7 @@ public:
     
     void addChild(AGRenderObject *child);
     void removeChild(AGRenderObject *child);
+    const list<AGRenderObject *> &children() { return m_children; }
     
     list<AGRenderInfo *> m_renderList;
     AGRenderState m_renderState;
