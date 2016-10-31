@@ -16,11 +16,6 @@ class AGConnection;
 class AGFreeDraw;
 class AGInteractiveObject;
 
-class AGTouchOutsideListener
-{
-public:
-    virtual void touchOutside() = 0;
-};
 
 @interface AGViewController : GLKViewController
 
@@ -39,8 +34,8 @@ public:
 - (void)addFreeDraw:(AGFreeDraw *)freedraw;
 - (void)removeFreeDraw:(AGFreeDraw *)freedraw;
 
-- (void)addTouchOutsideListener:(AGTouchOutsideListener *)listener;
-- (void)removeTouchOutsideListener:(AGTouchOutsideListener *)listener;
+- (void)addTouchOutsideListener:(AGInteractiveObject *)listener;
+- (void)removeTouchOutsideListener:(AGInteractiveObject *)listener;
 
 - (GLKMatrix4)modelViewMatrix;
 - (GLKMatrix4)fixedModelViewMatrix;

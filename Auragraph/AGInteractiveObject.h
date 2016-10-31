@@ -52,7 +52,8 @@ public:
     virtual void touchDown(const AGTouchInfo &t) = 0;
     virtual void touchMove(const AGTouchInfo &t) = 0;
     virtual void touchUp(const AGTouchInfo &t) = 0;
-    
+    virtual void touchOutside() { };
+
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t) = 0;
 };
 
@@ -84,6 +85,9 @@ public:
     virtual AGInteractiveObject *userInterface() { return NULL; }
     
     void removeFromTopLevel();
+    
+    static void addTouchOutsideListener(AGInteractiveObject *);
+    static void removeTouchOutsideListener(AGInteractiveObject *);
 };
 
 

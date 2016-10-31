@@ -135,12 +135,17 @@ m_lastTraceWasRecognized(true)
         m_editSliders.push_back(slider);
         this->addChild(slider);
     }
+    
+    AGInteractiveObject::addTouchOutsideListener(this);
 }
 
 AGUIStandardNodeEditor::~AGUIStandardNodeEditor()
 {
     m_editSliders.clear();
+    
     // sliders are child objects, so they get deleted automatically by AGRenderObject
+    
+    AGInteractiveObject::removeTouchOutsideListener(this);
 }
 
 GLvertex3f AGUIStandardNodeEditor::position()
@@ -668,6 +673,11 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
             }
         }
     }
+}
+
+void AGUIStandardNodeEditor::touchOutside()
+{
+    removeFromTopLevel();
 }
 
 GLvrectf AGUIStandardNodeEditor::effectiveBounds()

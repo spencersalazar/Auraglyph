@@ -101,7 +101,7 @@ enum InterfaceMode
     std::list<AGInteractiveObject *> _interfaceObjects;
     std::list<AGInteractiveObject *> _removeList;
     
-    list<AGTouchOutsideListener *> _touchOutsideListeners;
+    list<AGInteractiveObject *> _touchOutsideListeners;
     
 //    AGDocument _defaultDocument;
 //    AGDocument *_currentDocument;
@@ -125,7 +125,7 @@ enum InterfaceMode
 
 @property (strong) IBOutlet AGTrainerViewController *trainer;
 
-
+- (void)removeFromTouchCapture:(AGInteractiveObject *)object;
 - (void)setupGL;
 - (void)tearDownGL;
 - (void)initUI;
@@ -158,6 +158,8 @@ static AGViewController * g_instance = nil;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    g_instance = self;
         
     _t = 0;
     
@@ -241,8 +243,6 @@ static AGViewController * g_instance = nil;
         outputNode->setOutputDestination([AGAudioManager instance].masterOut);
         _nodes.push_back(node);
     }
-    
-    g_instance = self;
     
     if(AG_DO_TRAINER)
     {
@@ -476,6 +476,8 @@ static AGViewController * g_instance = nil;
     
     if(hasNode)
     {
+        [self removeFromTouchCapture:node];
+        
         AGInteractiveObject * ui = node->userInterface();
         if(ui)
             _interfaceObjects.remove(ui);
@@ -493,11 +495,7 @@ static AGViewController * g_instance = nil;
     
     if(hasNode)
     {
-        for(auto kv : _touchCaptures)
-        {
-            if(_touchCaptures[kv.first] == node)
-                _touchCaptures[kv.first] = NULL;
-        }
+        [self removeFromTouchCapture:node];
         
         AGInteractiveObject * ui = node->userInterface();
         if(ui)
@@ -550,20 +548,34 @@ static AGViewController * g_instance = nil;
 
 - (void)fadeOutAndDelete:(AGInteractiveObject *)object
 {
-    for(auto kv : _touchCaptures)
+    if(find(_removeList.begin(), _removeList.end(), object) == _removeList.end())
     {
-        if(_touchCaptures[kv.first] == object)
-            _touchCaptures[kv.first] = NULL;
+        [self removeFromTouchCapture:object];
+        
+        AGInteractiveObject * ui = object->userInterface();
+        if(ui)
+            _interfaceObjects.remove(ui);
+        
+        object->renderOut();
+        _removeList.push_back(object);
+        
+        _objects.remove(object);
     }
+}
+
+- (void)removeFromTouchCapture:(AGInteractiveObject *)object
+{
+    // remove object and all children from touch capture
+    std::function<void (AGRenderObject *obj)> removeAll = [&removeAll, object, self] (AGRenderObject *obj)
+    {
+        AGInteractiveObject *intObj = dynamic_cast<AGInteractiveObject *>(obj);
+        if(intObj)
+            removevalues(_touchCaptures, intObj);
+        for(auto child : obj->children())
+            removeAll(child);
+    };
     
-    AGInteractiveObject * ui = object->userInterface();
-    if(ui)
-        _interfaceObjects.remove(ui);
-    
-    object->renderOut();
-    _removeList.push_back(object);
-    
-    _objects.remove(object);
+    removeAll(object);
 }
 
 - (void)addFreeDraw:(AGFreeDraw *)freedraw
@@ -576,12 +588,12 @@ static AGViewController * g_instance = nil;
     _removeList.push_back(freedraw);
 }
 
-- (void)addTouchOutsideListener:(AGTouchOutsideListener *)listener
+- (void)addTouchOutsideListener:(AGInteractiveObject *)listener
 {
     _touchOutsideListeners.push_back(listener);
 }
 
-- (void)removeTouchOutsideListener:(AGTouchOutsideListener *)listener
+- (void)removeTouchOutsideListener:(AGInteractiveObject *)listener
 {
     _touchOutsideListeners.remove(listener);
 }
@@ -896,6 +908,7 @@ static AGViewController * g_instance = nil;
         GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:p];
         AGTouchHandler *handler = nil;
         AGInteractiveObject *touchCapture = NULL;
+        AGInteractiveObject *touchCaptureTopLevelObject = NULL;
         
         // search in reverse order
         for(auto i = _objects.rbegin(); i != _objects.rend(); i++)
@@ -907,6 +920,7 @@ static AGViewController * g_instance = nil;
             if(node)
             {
                 // nodes require special hit testing
+                // in addition to regular hit testing
                 int port;
                 AGNode::HitTestResult result = node->hit(pos, &port);
                 if(result != AGNode::HIT_NONE)
@@ -915,19 +929,22 @@ static AGViewController * g_instance = nil;
                         handler = [[AGConnectTouchHandler alloc] initWithViewController:self];
                     else if(result == AGNode::HIT_MAIN_NODE)
                         handler = [[AGMoveNodeTouchHandler alloc] initWithViewController:self node:node];
+                    
+                    break;
                 }
             }
-            else
-            {
-                // check regular interactive object
-                if(object->renderFixed())
-                    touchCapture = object->hitTest(fixedPos);
-                else
-                    touchCapture = object->hitTest(pos);
-            }
             
-            if(handler || touchCapture)
+            // check regular interactive object
+            if(object->renderFixed())
+                touchCapture = object->hitTest(fixedPos);
+            else
+                touchCapture = object->hitTest(pos);
+        
+            if(touchCapture)
+            {
+                touchCaptureTopLevelObject = object;
                 break;
+            }
         }
         
         if(handler == NULL && touchCapture == NULL)
@@ -967,6 +984,23 @@ static AGViewController * g_instance = nil;
             _touchCaptures[touch] = touchCapture;
             touchCapture->touchDown(AGTouchInfo(pos, p, (TouchID) touch));
         }
+        
+        // has
+        // is obj or one of its N-children equal to test?
+        std::function<bool (AGRenderObject *obj, AGRenderObject *test)> has = [&has] (AGRenderObject *obj, AGRenderObject *test)
+        {
+            if(obj == test) return true;
+            for(auto child : obj->children())
+                if(has(child, test))
+                    return true;
+            return false;
+        };
+        
+        for(auto touchOutsideListener : _touchOutsideListeners)
+        {
+            if(!has(touchOutsideListener, touchCapture))
+                touchOutsideListener->touchOutside();
+        }
     }
 }
 
@@ -979,10 +1013,13 @@ static AGViewController * g_instance = nil;
         if(_touchCaptures.count(touch))
         {
             AGInteractiveObject *touchCapture = _touchCaptures[touch];
-            CGPoint p = [touch locationInView:self.view];
-            GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
-
-            touchCapture->touchMove(AGTouchInfo(pos, p, (TouchID) touch));
+            if(touchCapture != NULL)
+            {
+                CGPoint p = [touch locationInView:self.view];
+                GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
+                
+                touchCapture->touchMove(AGTouchInfo(pos, p, (TouchID) touch));
+            }
         }
         else if(_touchHandlers.count(touch))
         {
@@ -1047,11 +1084,14 @@ static AGViewController * g_instance = nil;
         if(_touchCaptures.count(touch))
         {
             AGInteractiveObject *touchCapture = _touchCaptures[touch];
-            CGPoint p = [touch locationInView:self.view];
-            GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
-            
-            touchCapture->touchUp(AGTouchInfo(pos, p, (TouchID) touch));
-            _touchCaptures.erase(touch);
+            if(touchCapture != NULL)
+            {
+                CGPoint p = [touch locationInView:self.view];
+                GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
+                
+                touchCapture->touchUp(AGTouchInfo(pos, p, (TouchID) touch));
+                _touchCaptures.erase(touch);
+            }
         }
         else if(_touchHandlers.count(touch))
         {

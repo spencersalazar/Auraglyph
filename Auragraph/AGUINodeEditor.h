@@ -64,6 +64,8 @@ public:
     
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
 
+    virtual void touchOutside();
+    
     virtual bool doneEditing() { return m_doneEditing; }
     bool shouldRenderDrawline() { return false; }
     
