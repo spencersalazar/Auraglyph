@@ -422,7 +422,16 @@
     if(_moveNode && _maxTouchTravel < 2*2)
     {
         _moveNode->activate(0);
-        _nextHandler = [[AGEditTouchHandler alloc] initWithViewController:_viewController node:_moveNode];
+        // _nextHandler = [[AGEditTouchHandler alloc] initWithViewController:_viewController node:_moveNode];
+        
+        AGUINodeEditor *nodeEditor = _moveNode->createCustomEditor();
+        if(nodeEditor == NULL)
+        {
+            nodeEditor = new AGUIStandardNodeEditor(_moveNode);
+            nodeEditor->init();
+        }
+        
+        [_viewController addTopLevelObject:nodeEditor over:_moveNode];
     }
     else
     {
