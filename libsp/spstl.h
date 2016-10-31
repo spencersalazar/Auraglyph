@@ -70,4 +70,20 @@ void itfilter(T &container, bool (^func)(typename T::reference v))
     }
 }
 
+/*------------------------------------------------------------------------------
+ removevalues()
+ Remove all keys from a map with the specified value
+ -----------------------------------------------------------------------------*/
+template<class T>
+void removevalues(T &map, const typename T::mapped_type &value)
+{
+    for(auto kv = map.begin(); kv != map.end(); )
+    {
+        auto kv2 = kv;
+        kv++;
+        if(kv2->second == value)
+            map.erase(kv2);
+    }
+}
+
 #endif
