@@ -635,7 +635,7 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                         break;
                         
                     case AG_FIGURE_PERIOD:
-                        //AGAnalytics::instance().eventMoveNode(_moveNode->type());
+                        //AGAnalytics::instance().eventDrawNumeral();
                         if(m_decimal)
                         {
                             m_lastTraceWasRecognized = false;
