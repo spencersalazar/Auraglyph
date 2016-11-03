@@ -580,6 +580,7 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
             {
                 //                m_doneEditing = true;
                 m_node->setEditPortValue(m_editingPort, m_currentValue);
+                m_editSliders[m_editingPort]->setValue(m_currentValue);
                 m_editingPort = -1;
                 m_hitAccept = false;
                 m_drawline.clear();
