@@ -204,6 +204,9 @@ public:
     
     virtual AGDocument::Node serialize();
     
+    /* overridden by direct subclass */
+    virtual AGDocument::Node::Class nodeClass() const = 0;
+
 private:
     static bool s_initNode;
     
@@ -225,9 +228,6 @@ protected:
     virtual void removeInbound(AGConnection *connection);
     virtual void removeOutbound(AGConnection *connection);
     
-    /* overridden by direct subclass */
-    virtual AGDocument::Node::Class nodeClass() const = 0;
-
     AGInteractiveObject *_hitTestConnections(const GLvertex3f &t);
     void _updateConnections(float t, float dt);
     void _renderConnections();

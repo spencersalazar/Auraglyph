@@ -28,6 +28,7 @@
 #import "GeoGenerator.h"
 #import "AGSlider.h"
 #import "spstl.h"
+#import "AGAnalytics.h"
 
 #import <list>
 #import <map>
@@ -278,6 +279,7 @@ static AGViewController * g_instance = nil;
     _saveButton->init();
     _saveButton->setRenderFixed(true);
     _saveButton->setAction(^{
+        AGAnalytics::instance().eventSave();
         [weakSelf save];
     });
     [self addTopLevelObject:_saveButton];
@@ -290,6 +292,7 @@ static AGViewController * g_instance = nil;
     _testButton->init();
     _testButton->setRenderFixed(true);
     _testButton->setAction(^{
+        AGAnalytics::instance().eventTrainer();
         [self presentViewController:self.trainer animated:YES completion:nil];
     });
     [self addTopLevelObject:_testButton];
@@ -320,6 +323,7 @@ static AGViewController * g_instance = nil;
     _freedrawButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
     modeButtonGroup->addButton(_freedrawButton, ^{
         //NSLog(@"freedraw");
+        AGAnalytics::instance().eventFreedrawMode();
         _drawMode = DRAWMODE_FREEDRAW;
     }, false);
     
@@ -339,6 +343,7 @@ static AGViewController * g_instance = nil;
     _nodeButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
     modeButtonGroup->addButton(_nodeButton, ^{
         //NSLog(@"node");
+        AGAnalytics::instance().eventNodeMode();
         _drawMode = DRAWMODE_NODE;
     }, true);
     

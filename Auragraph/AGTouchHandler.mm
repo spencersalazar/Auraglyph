@@ -25,6 +25,7 @@
 #import "AGNodeSelector.h"
 #import "AGUINodeEditor.h"
 #import "AGGenericShader.h"
+#import "AGAnalytics.h"
 
 #import "GeoGenerator.h"
 #import "spMath.h"
@@ -183,6 +184,9 @@
 //            [_viewController addNode:compositeNode];
 //        }
 //        else
+        
+        AGAnalytics::instance().eventDrawNodeCircle();
+        
         {
             AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::audioNodeSelector(centroidMVP);
             _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
@@ -190,18 +194,28 @@
     }
     else if(figure == AG_FIGURE_SQUARE)
     {
+        AGAnalytics::instance().eventDrawNodeSquare();
+        
         AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::controlNodeSelector(centroidMVP);
         _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
     }
     else if(figure == AG_FIGURE_TRIANGLE_DOWN)
     {
+        AGAnalytics::instance().eventDrawNodeTriangleDown();
+        
         AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::inputNodeSelector(centroidMVP);
         _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
     }
     else if(figure == AG_FIGURE_TRIANGLE_UP)
     {
+        AGAnalytics::instance().eventDrawNodeTriangleUp();
+        
         AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::outputNodeSelector(centroidMVP);
         _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
+    }
+    else
+    {
+        AGAnalytics::instance().eventDrawNodeUnrecognized();
     }
     
     _trace->removeFromTopLevel();
@@ -322,6 +336,8 @@
 {
     if(_linePoints.size() > 1)
     {
+        AGAnalytics::instance().eventDrawFreedraw();
+        
         AGFreeDraw *freeDraw = new AGFreeDraw(&_linePoints[0], _linePoints.size());
         freeDraw->init();
         [_viewController addFreeDraw:freeDraw];
@@ -421,6 +437,8 @@
     
     if(_moveNode && _maxTouchTravel < 2*2)
     {
+        AGAnalytics::instance().eventOpenNodeEditor(_moveNode->type());
+        
         _moveNode->activate(0);
         // _nextHandler = [[AGEditTouchHandler alloc] initWithViewController:_viewController node:_moveNode];
         
@@ -435,9 +453,12 @@
     }
     else
     {
+        AGAnalytics::instance().eventMoveNode(_moveNode->type());
+        
         GLvertex3f fixedPos = GLKMatrix4MultiplyVector4(AGNode::cameraMatrix(), pos.asGLKVector4());
         if(trash.hitTest(fixedPos))
         {
+            AGAnalytics::instance().eventDeleteNode(_moveNode->type());
             _moveNode->fadeOutAndRemove();
         }
     }
@@ -894,6 +915,7 @@ private:
         int port = _browser->selectedPort();
         if(port != -1)
         {
+            AGAnalytics::instance().eventConnectNode(_originalHit->type(), _currentHit->type());
             AGConnection::connect(_originalHit, srcPort, _currentHit, port);
         }
     }
@@ -964,6 +986,8 @@ private:
     AGNode * newNode = _nodeSelector->createNode();
     if(newNode)
     {
+        AGAnalytics::instance().eventCreateNode(newNode->nodeClass(), newNode->type());
+        
         [_viewController addNode:newNode];
         
         if(newNode->type() == "Output")
