@@ -96,6 +96,11 @@ public:
     virtual void touchMove(const GLvertex3f &t);
     virtual void touchUp(const GLvertex3f &t);
     
+    GLvertex3f position() { return m_pos; }
+    void setPosition(const GLvertex3f &pos) { m_pos = pos; }
+    
+    virtual GLvertex2f size() { return m_size.xy(); }
+    
     void setAction(void (^action)());
     bool isPressed();
     void setLatched(bool latched);
@@ -220,21 +225,21 @@ class AGUITrash : public AGUIObject
 public:
     static AGUITrash &instance();
     
-    virtual void update(float t, float dt);
-    virtual void render();
+    virtual void update(float t, float dt) override;
+    virtual void render() override;
     
-    virtual void touchDown(const GLvertex3f &t);
-    virtual void touchMove(const GLvertex3f &t);
-    virtual void touchUp(const GLvertex3f &t);
+    virtual void touchDown(const GLvertex3f &t) override;
+    virtual void touchMove(const GLvertex3f &t) override;
+    virtual void touchUp(const GLvertex3f &t) override;
     
     void activate();
     void deactivate();
     
-    virtual AGUIObject *hitTest(const GLvertex3f &t);
+    virtual AGUIObject *hitTest(const GLvertex3f &t) override;
     
     virtual void setPosition(const GLvertex3f &pos) { m_position = pos; }
     
-    virtual bool renderFixed() { return true; }
+    virtual bool renderFixed() override { return true; }
     
 private:
     AGUITrash();

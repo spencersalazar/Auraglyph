@@ -28,6 +28,7 @@
 #import "GeoGenerator.h"
 #import "AGSlider.h"
 #import "spstl.h"
+#import "AGAnalytics.h"
 
 #import <list>
 #import <map>
@@ -110,7 +111,10 @@ enum InterfaceMode
     
     TexFont * _font;
     
-    AGUIButton * _testButton;
+    AGUIButton *_saveButton;
+    AGUIButton *_testButton;
+    AGUIIconButton *_nodeButton;
+    AGUIIconButton *_freedrawButton;
     
     NSMutableSet *_activeTouches;
     AGInteractiveObject * _touchCapture;
@@ -126,6 +130,7 @@ enum InterfaceMode
 - (void)setupGL;
 - (void)tearDownGL;
 - (void)initUI;
+- (void)_updateFixedUIPosition;
 - (void)updateMatrices;
 - (void)renderEdit;
 - (void)renderUser;
@@ -181,12 +186,6 @@ static AGViewController * g_instance = nil;
     
     /* preload hw recognizer */
     (void) [AGHandwritingRecognizer instance];
-    
-//    _testButton = new AGUIButton("Trainer", [self worldCoordinateForScreenCoordinate:CGPointMake(10, self.view.bounds.size.height-10)], GLvertex2f(0.028, 0.007));
-//    _testButton->setAction(^{
-//        [self presentViewController:self.trainer animated:YES completion:nil];
-//    });
-//    _objects.push_back(_testButton);
     
     [self initUI];
     
@@ -256,9 +255,12 @@ static AGViewController * g_instance = nil;
 {
     __weak typeof(self) weakSelf = self;
     
+    // needed for worldCoordinateForScreenCoordinate to work
+    [self updateMatrices];
+    
     /* about button */
-    float aboutButtonWidth = _font->width("AURAGLYPH")*1.05;
-    float aboutButtonHeight = _font->height()*1.05;
+//    float aboutButtonWidth = _font->width("AURAGLYPH")*1.05;
+//    float aboutButtonHeight = _font->height()*1.05;
 //    AGUITextButton *aboutButton = new AGUITextButton("AURAGLYPH",
 //                                                     GLvertex3f(-aboutButtonWidth/2, 0, 0) + [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height-10)],
 //                                                     GLvertex2f(aboutButtonWidth, aboutButtonHeight));
@@ -271,15 +273,29 @@ static AGViewController * g_instance = nil;
     /* save button */
     float saveButtonWidth = _font->width("  Save  ")*1.05;
     float saveButtonHeight = _font->height()*1.05;
-    AGUIButton *saveButton = new AGUIButton("Save",
-                                            [self worldCoordinateForScreenCoordinate:CGPointMake(10, 20+saveButtonHeight/2)],
-                                            GLvertex2f(saveButtonWidth, saveButtonHeight));
-    saveButton->init();
-    saveButton->setRenderFixed(true);
-    saveButton->setAction(^{
+    _saveButton = new AGUIButton("Save",
+                                 [self worldCoordinateForScreenCoordinate:CGPointMake(10, 20+saveButtonHeight/2)],
+                                 GLvertex2f(saveButtonWidth, saveButtonHeight));
+    _saveButton->init();
+    _saveButton->setRenderFixed(true);
+    _saveButton->setAction(^{
+        AGAnalytics::instance().eventSave();
         [weakSelf save];
     });
-    [self addTopLevelObject:saveButton];
+    [self addTopLevelObject:_saveButton];
+    
+    float testButtonWidth = saveButtonWidth;
+    float testButtonHeight = saveButtonHeight;
+    _testButton = new AGUIButton("Trainer",
+                                 [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-testButtonWidth-10, 20+testButtonHeight/2)],
+                                 GLvertex2f(testButtonWidth, testButtonHeight));
+    _testButton->init();
+    _testButton->setRenderFixed(true);
+    _testButton->setAction(^{
+        AGAnalytics::instance().eventTrainer();
+        [self presentViewController:self.trainer animated:YES completion:nil];
+    });
+    [self addTopLevelObject:_testButton];
     
     AGUIButtonGroup *modeButtonGroup = new AGUIButtonGroup();
     modeButtonGroup->init();
@@ -299,14 +315,15 @@ static AGViewController * g_instance = nil;
     freedrawRenderInfo.geo[3] = rotateZ(GLvertex2f( w/2-t,  h/2), rot);
     freedrawRenderInfo.geo[4] = rotateZ(GLvertex2f(-w/2,    h/2), rot);
     freedrawRenderInfo.color = AGStyle::lightColor();
-    AGUIIconButton *freedrawButton = new AGUIIconButton(modeButtonStartPos,
-                                                        GLvertex2f(freedrawButtonWidth, freedrawButtonWidth),
-                                                        freedrawRenderInfo);
-    freedrawButton->init();
-    freedrawButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
-    freedrawButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
-    modeButtonGroup->addButton(freedrawButton, ^{
+    _freedrawButton = new AGUIIconButton(modeButtonStartPos,
+                                         GLvertex2f(freedrawButtonWidth, freedrawButtonWidth),
+                                         freedrawRenderInfo);
+    _freedrawButton->init();
+    _freedrawButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
+    _freedrawButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
+    modeButtonGroup->addButton(_freedrawButton, ^{
         //NSLog(@"freedraw");
+        AGAnalytics::instance().eventFreedrawMode();
         _drawMode = DRAWMODE_FREEDRAW;
     }, false);
     
@@ -318,14 +335,15 @@ static AGViewController * g_instance = nil;
     nodeRenderInfo.geo = new GLvertex3f[nodeRenderInfo.numVertex];
     GeoGen::makeCircleStroke(nodeRenderInfo.geo, nodeRenderInfo.numVertex, nodeButtonWidth/2*(G_RATIO-1));
     nodeRenderInfo.color = AGStyle::lightColor();
-    AGUIIconButton *nodeButton = new AGUIIconButton(modeButtonStartPos + GLvertex3f(0, nodeButtonWidth*1.25, 0),
-                                                    GLvertex2f(nodeButtonWidth, nodeButtonWidth),
-                                                    nodeRenderInfo);
-    nodeButton->init();
-    nodeButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
-    nodeButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
-    modeButtonGroup->addButton(nodeButton, ^{
+    _nodeButton = new AGUIIconButton(modeButtonStartPos + GLvertex3f(0, nodeButtonWidth*1.25, 0),
+                                     GLvertex2f(nodeButtonWidth, nodeButtonWidth),
+                                     nodeRenderInfo);
+    _nodeButton->init();
+    _nodeButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
+    _nodeButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
+    modeButtonGroup->addButton(_nodeButton, ^{
         //NSLog(@"node");
+        AGAnalytics::instance().eventNodeMode();
         _drawMode = DRAWMODE_NODE;
     }, true);
     
@@ -338,13 +356,31 @@ static AGViewController * g_instance = nil;
     /* trash */
     AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
     
-    GLvertex3f vert = [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)];
+//    GLvertex3f vert = [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)];
     
     // test slider
 //    AGSlider *testSlider = new AGSlider(vert, 1.2);
 //    testSlider->init();
 //    testSlider->setSize(GLvertex2f(64, 32));
 //    _objects.push_back(testSlider);
+}
+
+- (void)_updateFixedUIPosition
+{
+    // needed for worldCoordinateForScreenCoordinate to work
+    [self updateMatrices];
+    
+    CGPoint savePos = CGPointMake(10, 20+_saveButton->size().y/2);
+    _saveButton->setPosition([self worldCoordinateForScreenCoordinate:savePos]);
+    
+    CGPoint testPos = CGPointMake(self.view.bounds.size.width-_testButton->size().x-10, 20+_testButton->size().y/2);
+    _testButton->setPosition([self worldCoordinateForScreenCoordinate:testPos]);
+    
+    GLvertex3f modeButtonStartPos = [self worldCoordinateForScreenCoordinate:CGPointMake(27.5, self.view.bounds.size.height-7.5-_freedrawButton->size().y/2)];
+    _freedrawButton->setPosition(modeButtonStartPos);
+    _nodeButton->setPosition(modeButtonStartPos + GLvertex3f(0, _freedrawButton->size().y*1.25, 0));
+    
+    AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-30)]);
 }
 
 - (void)dealloc
@@ -372,6 +408,30 @@ static AGViewController * g_instance = nil;
     }
 
     // Dispose of any resources that can be recreated.
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    _saveButton->hide();
+    _testButton->hide();
+    _freedrawButton->hide();
+    _nodeButton->hide();
+    
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        
+    } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        [self _updateFixedUIPosition];
+        
+        _saveButton->unhide();
+        _testButton->unhide();
+        _freedrawButton->unhide();
+        _nodeButton->unhide();
+    }];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [self _updateFixedUIPosition];
 }
 
 - (void)setupGL
@@ -530,11 +590,12 @@ static AGViewController * g_instance = nil;
 //    else
 //        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f)/aspect, aspect, 0.1f, 100.0f);
     
-    _cameraZ.interp();
+    _fixedModelView = GLKMatrix4MakeTranslation(0, 0, -10.1f);
+    
     if(_cameraZ < 0)
         _camera.z = _cameraZ;
     
-    GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z-10.1f);
+    GLKMatrix4 baseModelViewMatrix = GLKMatrix4Translate(_fixedModelView, _camera.x, _camera.y, _camera.z);
     if(_interfaceMode == INTERFACEMODE_USER)
         baseModelViewMatrix = GLKMatrix4Translate(baseModelViewMatrix, 0, 0, -(G_RATIO-1));
     
@@ -546,12 +607,12 @@ static AGViewController * g_instance = nil;
     
     _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
     _modelView = modelViewMatrix;
-    _fixedModelView = GLKMatrix4MakeTranslation(0, 0, -10.1f);
     _projection = projectionMatrix;
     
     AGRenderObject::setProjectionMatrix(projectionMatrix);
     AGRenderObject::setGlobalModelViewMatrix(modelViewMatrix);
     AGRenderObject::setFixedModelViewMatrix(_fixedModelView);
+    AGRenderObject::setCameraMatrix(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z));
 }
 
 - (GLvertex3f)worldCoordinateForScreenCoordinate:(CGPoint)p
@@ -605,6 +666,8 @@ static AGViewController * g_instance = nil;
             }
         }
     }
+    
+    _cameraZ.interp();
     
     [self updateMatrices];
     

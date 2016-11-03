@@ -14,7 +14,7 @@ class AGAudioRenderer
 public:
     virtual ~AGAudioRenderer() { }
 
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) = 0;
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) = 0;
 };
 
 

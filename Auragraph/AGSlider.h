@@ -64,6 +64,8 @@ public:
     void setAlignment(Alignment alignment) { m_alignment = alignment; }
     
     void onUpdate(const std::function<void (float)> &update);
+    void onStartStopUpdating(const std::function<void (void)> &start,
+                             const std::function<void (void)> &stop);
     
     /* 
      Validator function takes two arguments (old and new value) and returns
@@ -96,6 +98,8 @@ private:
     AGTouchInfo m_lastPosition;
     
     std::function<void (float)> m_update;
+    std::function<void (void)> m_start;
+    std::function<void (void)> m_stop;
     std::function<float (float, float)> m_validator;
 };
 

@@ -308,7 +308,7 @@ float AGAudioWaveformNode::get(float phase)
     return m_waveform[whole]*(1-fract) + m_waveform[(whole+1)%m_waveform.size()]*(fract);
 }
 
-void AGAudioWaveformNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
+void AGAudioWaveformNode::renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans)
 {
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
     m_lastTime = t;

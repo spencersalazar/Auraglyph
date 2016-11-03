@@ -75,6 +75,8 @@ public:
     static GLKMatrix4 globalModelViewMatrix() { return s_modelViewMatrix; }
     static void setFixedModelViewMatrix(const GLKMatrix4 &modelview) { s_fixedModelViewMatrix = modelview; }
     static GLKMatrix4 fixedModelViewMatrix() { return s_fixedModelViewMatrix; }
+    static void setCameraMatrix(const GLKMatrix4 &camera) { s_camera = camera; }
+    static GLKMatrix4 cameraMatrix() { return s_camera; }
     
     AGRenderObject();
     virtual ~AGRenderObject();
@@ -123,6 +125,7 @@ protected:
     static GLKMatrix4 s_projectionMatrix;
     static GLKMatrix4 s_modelViewMatrix;
     static GLKMatrix4 s_fixedModelViewMatrix;
+    static GLKMatrix4 s_camera;
     
     void updateChildren(float t, float dt);
     void renderPrimitive(AGRenderInfo *info);

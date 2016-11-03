@@ -128,7 +128,7 @@ public:
     
     void initFinal() override;
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override;
     
 private:
     PeakDetector m_detector;

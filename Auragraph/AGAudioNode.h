@@ -54,7 +54,7 @@ public:
     virtual void update(float t, float dt) override;
     virtual void render() override;
     // audio
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override { assert(0); }
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override { assert(0); }
     
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t) override;
     
@@ -111,7 +111,8 @@ public:
     
     enum Param
     {
-        PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_LEFT = AUDIO_PARAM_LAST+1,
+        PARAM_RIGHT
     };
     
     class Manifest : public AGStandardNodeManifest<AGAudioOutputNode>
@@ -123,7 +124,8 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", true, false }
+                { PARAM_LEFT, "left", true, false },
+                { PARAM_RIGHT, "right", true, false }
             };
         }
         
@@ -137,18 +139,6 @@ public:
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius = 0.0066*AGStyle::oldGlobalScale;
-            
-            // speaker icon
-            //            vector<GLvertex3f> iconGeo = {
-            //                { -radius*0.5f*0.16f, radius*0.5f, 0 },
-            //                { -radius*0.5f, radius*0.5f, 0 },
-            //                { -radius*0.5f, -radius*0.5f, 0 },
-            //                { -radius*0.5f*0.16f, -radius*0.5f, 0 },
-            //                { radius*0.5f, -radius, 0 },
-            //                { radius*0.5f, radius, 0 },
-            //                { -radius*0.5f*0.16f, radius*0.5f, 0 },
-            //                { -radius*0.5f*0.16f, -radius*0.5f, 0 },
-            //            };
             
             // arrow/chevron
             vector<GLvertex3f> iconGeo = {
@@ -167,15 +157,17 @@ public:
     using AGAudioNode::AGAudioNode;
     ~AGAudioOutputNode();
     
+    void initFinal() override;
+    
     void setOutputDestination(AGAudioOutputDestination *destination);
     
     virtual int numOutputPorts() const override { return 0; }
-    virtual int numInputPorts() const override { return 1; }
     
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override;
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override;
     
 private:
     AGAudioOutputDestination *m_destination = NULL;
+    Buffer<float> m_inputBuffer[2];
 };
 
 

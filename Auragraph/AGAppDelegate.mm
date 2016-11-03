@@ -10,6 +10,8 @@
 
 #import "AGViewController.h"
 
+#include "AGAnalytics.h"
+
 extern "C" int shaperecst(int argc, const char** argv);
 
 
@@ -35,6 +37,8 @@ extern "C" int shaperecst(int argc, const char** argv);
     self.viewController = [[AGViewController alloc] initWithNibName:@"AGViewController" bundle:nil];
     self.window.rootViewController = self.viewController;
     [self.window makeKeyAndVisible];
+    
+    AGAnalytics::instance().eventAppLaunch();
     
 //    [self testHWR];
     
