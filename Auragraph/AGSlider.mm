@@ -19,7 +19,8 @@
 #define AGSlider_HitOffset (10)
 
 AGSlider::AGSlider(const GLvertex3f &position, float value)
-: m_value(value), m_position(position), m_update([](float){}),
+: m_value(value), m_position(position),
+m_update([](float){}), m_start([](){}), m_stop([](){}),
 m_validator([](float _old, float _new) { return _new; })
 {
     _updateValue(value);
@@ -97,6 +98,8 @@ void AGSlider::touchDown(const AGTouchInfo &t)
     m_lastPosition = t;
     m_ytravel = 0;
     m_active = true;
+    
+    m_start();
 }
 
 void AGSlider::touchMove(const AGTouchInfo &t)
@@ -148,6 +151,7 @@ void AGSlider::touchMove(const AGTouchInfo &t)
 void AGSlider::touchUp(const AGTouchInfo &t)
 {
     m_active = false;
+    m_stop();
 }
 
 AGInteractiveObject *AGSlider::hitTest(const GLvertex3f &t)
@@ -190,6 +194,12 @@ void AGSlider::setType(Type type)
 void AGSlider::onUpdate(const std::function<void (float)> &update)
 {
     m_update = update;
+}
+
+void AGSlider::onStartStopUpdating(const std::function<void (void)> &start, const std::function<void (void)> &stop)
+{
+    m_start = start;
+    m_stop = stop;
 }
 
 void AGSlider::setValidator(const std::function<float (float, float)> &validator)

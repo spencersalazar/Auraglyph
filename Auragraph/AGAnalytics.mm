@@ -100,6 +100,14 @@ public:
                                                                  value:@1] build]];
     }
     
+    void eventDeleteNode(const std::string &type) override
+    {
+        [tracker() send:[[GAIDictionaryBuilder createEventWithCategory:@"UI"
+                                                                action:@"DeleteNode"
+                                                                 label:[NSString stringWithSTLString:type]
+                                                                 value:@1] build]];
+    }
+    
     void eventDrawNodeCircle() override
     {
         [tracker() send:[[GAIDictionaryBuilder createEventWithCategory:@"Interaction"
@@ -141,39 +149,38 @@ public:
     }
 
     
-    void eventCreateAudioNode(const std::string &type) override
+    void eventCreateNode(AGDocument::Node::Class _class, const std::string &type) override
     {
+        NSString *action = nil;
+        NSString *label = nil;
+        switch(_class)
+        {
+            case AGDocument::Node::AUDIO:
+                action = @"CreateNodeAudio";
+                label = [NSString stringWithFormat:@"Audio:%s", type.c_str()];
+                break;
+            case AGDocument::Node::CONTROL:
+                action = @"CreateNodeControl";
+                label = [NSString stringWithFormat:@"Control:%s", type.c_str()];
+                break;
+            case AGDocument::Node::INPUT:
+                action = @"CreateNodeInput";
+                label = [NSString stringWithFormat:@"Input:%s", type.c_str()];
+                break;
+            case AGDocument::Node::OUTPUT:
+                action = @"CreateNodeOuptut";
+                label = [NSString stringWithFormat:@"Output:%s", type.c_str()];
+                break;
+        }
+        
+        assert(action != nil && label != nil);
+        
         [tracker() send:[[GAIDictionaryBuilder createEventWithCategory:@"Interaction"
-                                                                action:@"CreateAudioNode"
+                                                                action:action
                                                                  label:[NSString stringWithSTLString:type]
                                                                  value:@1] build]];
     }
 
-    void eventCreateControlNode(const std::string &type) override
-    {
-        [tracker() send:[[GAIDictionaryBuilder createEventWithCategory:@"Interaction"
-                                                                action:@"CreateControlNode"
-                                                                 label:[NSString stringWithSTLString:type]
-                                                                 value:@1] build]];
-    }
-
-    void eventCreateInputNode(const std::string &type) override
-    {
-        [tracker() send:[[GAIDictionaryBuilder createEventWithCategory:@"Interaction"
-                                                                action:@"CreateInputNode"
-                                                                 label:[NSString stringWithSTLString:type]
-                                                                 value:@1] build]];
-    }
-
-    void eventCreateOutputNode(const std::string &type) override
-    {
-        [tracker() send:[[GAIDictionaryBuilder createEventWithCategory:@"Interaction"
-                                                                action:@"CreateOutputNode"
-                                                                 label:[NSString stringWithSTLString:type]
-                                                                 value:@1] build]];
-    }
-
-    
     void eventDrawFreedraw() override
     {
         [tracker() send:[[GAIDictionaryBuilder createEventWithCategory:@"Interaction"
@@ -181,7 +188,14 @@ public:
                                                                  label:@""
                                                                  value:@1] build]];
     }
-
+    
+    void eventMoveNode(const std::string &type) override
+    {
+        [tracker() send:[[GAIDictionaryBuilder createEventWithCategory:@"Interaction"
+                                                                action:@"MoveNode"
+                                                                 label:[NSString stringWithSTLString:type]
+                                                                 value:@1] build]];
+    }
     
     void eventConnectNode(const std::string &srcType, const std::string &dstType) override
     {
@@ -191,7 +205,7 @@ public:
                                                                  label:[NSString stringWithSTLString:label]
                                                                  value:@1] build]];
     }
-
+    
     void eventOpenNodeEditor(const std::string &type) override
     {
         [tracker() send:[[GAIDictionaryBuilder createEventWithCategory:@"Interaction"

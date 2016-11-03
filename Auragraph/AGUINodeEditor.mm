@@ -12,6 +12,7 @@
 #import "AGGenericShader.h"
 #import "AGHandwritingRecognizer.h"
 #import "AGSlider.h"
+#include "AGAnalytics.h"
 
 #import "TexFont.h"
 
@@ -127,6 +128,9 @@ m_lastTraceWasRecognized(true)
         slider->setSize(GLvertex2f(s_radius, rowHeight));
         slider->onUpdate([port, node] (float value) {
             node->setEditPortValue(port, value);
+        });
+        slider->onStartStopUpdating([](){}, [port, node](){
+            AGAnalytics::instance().eventEditNodeParamSlider(node->type(), node->editPortInfo(port).name);
         });
         slider->setValidator([port, node] (float _old, float _new) {
             return node->validateEditPortValue(port, _new);
@@ -578,6 +582,8 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
         {
             if(m_hitAccept)
             {
+                AGAnalytics::instance().eventEditNodeParamDrawAccept(m_node->type(), m_node->editPortInfo(m_editingPort).name);
+                
                 //                m_doneEditing = true;
                 m_node->setEditPortValue(m_editingPort, m_currentValue);
                 m_editSliders[m_editingPort]->setValue(m_currentValue);
@@ -587,6 +593,8 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
             }
             else if(m_hitDiscard)
             {
+                AGAnalytics::instance().eventEditNodeParamDrawDiscard(m_node->type(), m_node->editPortInfo(m_editingPort).name);
+                
                 //                m_doneEditing = true;
                 m_editingPort = -1;
                 m_hitDiscard = false;
@@ -611,6 +619,7 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                     case AG_FIGURE_8:
                     case AG_FIGURE_9:
                         digit = (figure-'0');
+                        AGAnalytics::instance().eventDrawNumeral(digit);
                         if(m_decimal)
                         {
                             m_currentValue = m_currentValue + digit*m_decimalFactor;
@@ -626,6 +635,7 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                         break;
                         
                     case AG_FIGURE_PERIOD:
+                        //AGAnalytics::instance().eventMoveNode(_moveNode->type());
                         if(m_decimal)
                         {
                             m_lastTraceWasRecognized = false;
@@ -642,6 +652,7 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                         break;
                         
                     default:
+                        AGAnalytics::instance().eventDrawNumeralUnrecognized();
                         m_lastTraceWasRecognized = false;
                 }
                 
@@ -658,6 +669,8 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
             
             if(m_hit >= 0)
             {
+                AGAnalytics::instance().eventEditNodeParamDrawOpen(m_node->type(), m_node->editPortInfo(m_hit).name);
+                
                 m_editingPort = m_hit;
                 m_hit = -1;
                 m_currentValue = 0;
