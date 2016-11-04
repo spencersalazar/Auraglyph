@@ -30,4 +30,6 @@
 typedef long long sampletime;
 #define AUDIO_BUFFER_MAX (1024)
 
+#define AG_USER_TEST_1
+
 #endif
