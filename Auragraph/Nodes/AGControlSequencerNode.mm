@@ -254,6 +254,7 @@ public:
                 float stepVal = 0;
                 if(i < numSeq && j < numStep)
                     stepVal = m_node->getStepValue(i, j);
+                assert(stepVal >= 0 && stepVal <= 1);
                 
                 stepMV = GLKMatrix4Translate(m_renderState.modelview,
                                              -m_width/2+AGUISequencerEditor_stepSize*0.75+AGUISequencerEditor_stepSize*j,
@@ -290,9 +291,9 @@ public:
         
         GLcolor4f::white.set();
         drawTriangleFan((GLvertex3f[]) {
-            (GLvertex2f)m_pullTabDistance+(GLvertex3f){ m_width/2, -m_height/2, 0 },
-            (GLvertex2f)m_pullTabDistance+(GLvertex3f){ m_width/2-m_pullTabSize, -m_height/2, 0 },
-            (GLvertex2f)m_pullTabDistance+(GLvertex3f){ m_width/2, -m_height/2+m_pullTabSize, 0 },
+            m_boxGeo[2],
+            m_boxGeo[2]+GLvertex3f(-m_pullTabSize, 0, 0),
+            m_boxGeo[2]+GLvertex3f( 0, m_pullTabSize, 0),
         }, 3);
         
         renderChildren();
@@ -305,9 +306,9 @@ public:
         AGInteractiveObject::touchDown(t);
         
         if(pointInTriangle(t.position.xy(),
-                           m_node->position().xy()+(GLvertex2f){ m_width/2, -m_height/2 },
-                           m_node->position().xy()+(GLvertex2f){ m_width/2-m_pullTabSize, -m_height/2 },
-                           m_node->position().xy()+(GLvertex2f){ m_width/2, -m_height/2+m_pullTabSize }))
+                           (position() + (GLvertex2f)m_pullTabDistance + m_boxGeo[2]).xy(),
+                           (position() + (GLvertex2f)m_pullTabDistance + m_boxGeo[2] + GLvertex3f(-m_pullTabSize, 0, 0)).xy(),
+                           (position() + (GLvertex2f)m_pullTabDistance + m_boxGeo[2] + GLvertex3f( 0, m_pullTabSize, 0)).xy()))
         {
             m_pullTabCapture = true;
             m_pullTabStartTouch = t;
@@ -382,8 +383,29 @@ public:
         
         if(m_pullTabCapture && t.touchId == m_pullTabStartTouch.touchId)
         {
-            GLvertex2f distance = t.position.xy() - m_pullTabStartTouch.position.xy();
+            //GLvertex2f distance = t.position.xy() - m_pullTabStartTouch.position.xy();
+            GLvertex2f origBRCorner = m_defaultBoxGeo[2].xy();
+            
+            float distX = ((GLvertex2f)m_pullTabDistance).x/AGUISequencerEditor_stepSize;
+            float distY = -((GLvertex2f)m_pullTabDistance).y/AGUISequencerEditor_stepSize;
+            int newStep = (int) roundf(distX);
+            int newSeq = (int) roundf(distY);
+            
+            int numSteps = m_node->numSteps();
+            int numSeqs = m_node->numSequences();
+            
+            m_node->setNumSteps(numSteps+newStep);
+            m_node->setNumSequences(numSeqs+newSeq);
+            
+            float xdiff = AGUISequencerEditor_stepSize*(m_node->numSteps()-numSteps);
+            float ydiff = -AGUISequencerEditor_stepSize*(m_node->numSequences()-numSeqs);
+            m_defaultBoxGeo[1].y += ydiff;
+            m_defaultBoxGeo[2].x += xdiff;
+            m_defaultBoxGeo[2].y += ydiff;
+            m_defaultBoxGeo[3].x += xdiff;
+            
             m_pullTabCapture = false;
+            m_pullTabDistance.reset(m_pullTabDistance-(m_defaultBoxGeo[2].xy()-origBRCorner));
             m_pullTabDistance = GLvertex2f(0, 0);
         }
     }
@@ -404,6 +426,11 @@ public:
     
     virtual GLvertex3f position() { return m_node->position(); }
     virtual GLvertex2f size() { return GLvertex2f(m_width, m_height); }
+    
+    virtual GLvrectf effectiveBounds()
+    {
+        return GLvrectf(position()+m_boxGeo[1], position()+m_boxGeo[3]);
+    }
     
 private:
     
@@ -525,6 +552,7 @@ void AGControlSequencerNode::deserializeFinal(const AGDocument::Node &docNode)
     if(docNode.params.count("num_seqs"))
     {
         int num_seqs = docNode.params.at("num_seqs").i;
+        m_sequence.clear();
         for(int seq = 0; seq < num_seqs; seq++)
         {
             m_sequence.push_back(std::vector<float>(m_numSteps, 0));
@@ -565,10 +593,43 @@ int AGControlSequencerNode::numSequences()
     return m_sequence.size();
 }
 
+void AGControlSequencerNode::setNumSequences(int num)
+{
+    m_seqLock.lock();
+    
+    if(num < 1)
+        num = 1;
+    
+    if(num < m_sequence.size())
+        m_sequence.resize(num);
+    else if(num > m_sequence.size())
+        m_sequence.resize(num, std::vector<float>(m_numSteps, 0));
+    
+    m_seqLock.unlock();
+}
+
 int AGControlSequencerNode::numSteps()
 {
     return m_numSteps;
 }
+
+void AGControlSequencerNode::setNumSteps(int num)
+{
+    m_seqLock.lock();
+    
+    if(num < 4)
+        num = 4;
+    
+    if(m_numSteps != num)
+    {
+        for(int i = 0; i < m_sequence.size(); i++)
+            m_sequence[i].resize(num, 0);
+        m_numSteps = num;
+    }
+    
+    m_seqLock.unlock();
+}
+
 
 float AGControlSequencerNode::bpm()
 {
@@ -583,15 +644,23 @@ void AGControlSequencerNode::setBpm(float bpm)
 
 void AGControlSequencerNode::updateStep()
 {
+    m_seqLock.lock();
+    
     m_pos = (m_pos + 1) % m_numSteps;
     
     for(int seq = 0; seq < m_sequence.size(); seq++)
         pushControl(seq, AGControl(m_sequence[seq][m_pos]));
+    
+    m_seqLock.unlock();
 }
 
 void AGControlSequencerNode::setStepValue(int seq, int step, float value)
 {
+    m_seqLock.lock();
+    
     m_sequence[seq][step] = value;
+    
+    m_seqLock.unlock();
 }
 
 float AGControlSequencerNode::getStepValue(int seq, int step)

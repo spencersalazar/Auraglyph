@@ -47,7 +47,9 @@ public:
     
     int currentStep();
     int numSequences();
+    void setNumSequences(int num);
     int numSteps();
+    void setNumSteps(int num);
     
     void setStepValue(int seq, int step, float value);
     float getStepValue(int seq, int step);
@@ -64,6 +66,7 @@ private:
     
     int m_pos;
     int m_numSteps;
+    Mutex m_seqLock;
     std::vector<std::vector<float> > m_sequence;
     
     void updateStep();
