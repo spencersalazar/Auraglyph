@@ -455,31 +455,12 @@ public:
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius = 0.005*AGStyle::oldGlobalScale;
-            int circleSize = 48;
-            int GEO_SIZE = circleSize*2 + 4;
-            vector<GLvertex3f> iconGeo = vector<GLvertex3f>(GEO_SIZE);
             
-            // TODO: multiple geoTypes (GL_LINE_LOOP + GL_LINE_STRIP) instead of wasteful GL_LINES
-            
-            for(int i = 0; i < circleSize; i++)
-            {
-                float theta0 = 2*M_PI*((float)i)/((float)(circleSize));
-                float theta1 = 2*M_PI*((float)(i+1))/((float)(circleSize));
-                iconGeo[i*2+0] = GLvertex3f(radius*cosf(theta0), radius*sinf(theta0), 0);
-                iconGeo[i*2+1] = GLvertex3f(radius*cosf(theta1), radius*sinf(theta1), 0);
-            }
-            
-            float minute = 47;
-            float minuteAngle = M_PI/2.0 + (minute/60.0)*(-2.0*M_PI);
-            float hour = 1;
-            float hourAngle = M_PI/2.0 + (hour/12.0 + minute/60.0/12.0)*(-2.0*M_PI);
-            
-            iconGeo[circleSize*2+0] = GLvertex3f(0, 0, 0);
-            iconGeo[circleSize*2+1] = GLvertex3f(radius/G_RATIO*cosf(hourAngle), radius/G_RATIO*sinf(hourAngle), 0);
-            iconGeo[circleSize*2+2] = GLvertex3f(0, 0, 0);
-            iconGeo[circleSize*2+3] = GLvertex3f(radius*0.925*cosf(minuteAngle), radius*0.925*sinf(minuteAngle), 0);
-            
-            return iconGeo;
+            return {
+                { -radius, 0, 0 }, {  radius, 0, 0 },
+                {  radius*0.38f,  radius*0.38f, 0 }, { radius, 0, 0 },
+                {  radius*0.38f, -radius*0.38f, 0 }, { radius, 0, 0 },
+            };
         };
         
         GLuint _iconGeoType() const override { return GL_LINES; };
