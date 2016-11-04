@@ -371,16 +371,16 @@ static AGViewController * g_instance = nil;
     [self updateMatrices];
     
     CGPoint savePos = CGPointMake(10, 20+_saveButton->size().y/2);
-    _saveButton->setPosition([self worldCoordinateForScreenCoordinate:savePos]);
+    _saveButton->setPosition([self fixedCoordinateForScreenCoordinate:savePos]);
     
     CGPoint testPos = CGPointMake(self.view.bounds.size.width-_testButton->size().x-10, 20+_testButton->size().y/2);
-    _testButton->setPosition([self worldCoordinateForScreenCoordinate:testPos]);
+    _testButton->setPosition([self fixedCoordinateForScreenCoordinate:testPos]);
     
-    GLvertex3f modeButtonStartPos = [self worldCoordinateForScreenCoordinate:CGPointMake(27.5, self.view.bounds.size.height-7.5-_freedrawButton->size().y/2)];
+    GLvertex3f modeButtonStartPos = [self fixedCoordinateForScreenCoordinate:CGPointMake(27.5, self.view.bounds.size.height-7.5-_freedrawButton->size().y/2)];
     _freedrawButton->setPosition(modeButtonStartPos);
     _nodeButton->setPosition(modeButtonStartPos + GLvertex3f(0, _freedrawButton->size().y*1.25, 0));
     
-    AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-30)]);
+    AGUITrash::instance().setPosition([self fixedCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-30)]);
 }
 
 - (void)dealloc
