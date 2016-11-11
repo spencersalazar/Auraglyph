@@ -1229,6 +1229,122 @@ private:
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioFeedbackNode
 
+class AllPass1
+{
+public:
+    AllPass1(float g = 1)
+    {
+        _g = g;
+        _yn_1 = 0;
+        _xn_1 = 0;
+    }
+    
+    float tick(float xn)
+    {
+        // process output
+        float yn = xn*_g + _xn_1 + _yn_1*-_g;
+        
+        // process delays
+        _yn_1 = yn;
+        _xn_1 = xn;
+        
+        return yn;
+    }
+    
+    float g(float g)
+    {
+        _g = g;
+        return g;
+    }
+    
+    float delay(float d)
+    {
+        _g = (1-d)/(1+d);
+        return d;
+    }
+    
+    void clear()
+    {
+        _yn_1 = _xn_1 = 0;
+    }
+    
+    float last()
+    {
+        return _yn_1;
+    }
+    
+private:
+    float _yn_1, _xn_1;
+    float _g;
+};
+
+class DelayA
+{
+public:
+    DelayA(float max = 44100, float delay = 22050) : m_index(0)
+    {
+        this->maxdelay(max);
+        this->delay(delay);
+    }
+    
+    float tick(float xn)
+    {
+        m_buffer[m_index] = xn;
+        
+        int delay_index = m_index-m_delayint;
+        if(delay_index < 0)
+            delay_index += m_buffer.size;
+        float samp = m_ap.tick(m_buffer[delay_index]);
+        
+        m_index = (m_index+1)%m_buffer.size;
+        
+        return samp;
+    }
+    
+    float delay(float dsamps)
+    {
+        assert(dsamps >= 0);
+        
+        m_delayint = (int)floorf(dsamps);
+        m_delayfract = dsamps-m_delayint;
+        m_ap.delay(m_delayfract);
+        return dsamps;
+    }
+    
+    float maxdelay()
+    {
+        return m_buffer.size-1;
+    }
+    
+    float maxdelay(float dsamps)
+    {
+        assert(dsamps >= 0);
+        
+        m_buffer.resize((int)floorf(dsamps)+1);
+        return dsamps;
+    }
+    
+    void clear()
+    {
+        m_buffer.clear();
+        m_ap.clear();
+    }
+    
+    float last()
+    {
+        return m_ap.last();
+    }
+    
+private:
+    int m_delayint;
+    float m_delayfract;
+    
+    Buffer<float> m_buffer;
+    int m_index;
+    
+    AllPass1 m_ap;
+};
+
 class AGAudioFeedbackNode : public AGAudioNode
 {
 public:
@@ -1300,7 +1416,7 @@ public:
     {
         if(paramId == PARAM_DELAY)
             _setDelay(param(PARAM_DELAY));
-            }
+    }
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
@@ -1317,7 +1433,7 @@ public:
         {
             _setDelay(delayLengthv[i]);
             
-            float delaySamp = m_delay.tick(inputv[i] + m_delay.lastOut()*feedbackGainv[i]);
+            float delaySamp = m_delay.tick(inputv[i] + m_delay.last()*feedbackGainv[i]);
             m_outputBuffer[i] = (inputv[i] + delaySamp)*gainv[i];
             output[i] += m_outputBuffer[i];
         }
@@ -1330,21 +1446,23 @@ private:
         if(force || m_currentDelayLength != delaySecs)
         {
             float delaySamps = delaySecs*sampleRate();
-            if(delaySamps > m_delay.getMaximumDelay())
+            if(delaySamps < 0)
+                delaySamps = 0;
+            if(delaySamps > m_delay.maxdelay())
             {
-                int _max = m_delay.getMaximumDelay();
+                int _max = m_delay.maxdelay();
                 while(delaySamps > _max)
                     _max *= 2;
-                m_delay.setMaximumDelay(_max);
+                m_delay.maxdelay(_max);
                 m_delay.clear();
             }
-            m_delay.setDelay(delaySamps);
+            m_delay.delay(delaySamps);
             m_currentDelayLength = delaySecs;
         }
     }
     
     float m_currentDelayLength;
-    stk::DelayA m_delay;
+    DelayA m_delay;
 };
 
 
