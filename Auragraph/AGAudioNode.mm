@@ -303,7 +303,7 @@ void AGAudioNode::pullPortInput(int portId, int num, sampletime t, float *output
     {
         if(conn->dstPort() == portNum)
         {
-            if(i == portNum)
+            if(i == num)
             {
                 if(conn->rate() == RATE_AUDIO)
                 {
@@ -1543,10 +1543,10 @@ public:
                 m_outputBuffer[i] *= m_inputBuffer[i];
         }
         
+        this->unlock();
+        
         for(int i = 0; i < nFrames; i++)
             output[i] += m_outputBuffer[i];
-        
-        this->unlock();
     }
     
 private:
