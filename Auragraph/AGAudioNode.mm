@@ -313,7 +313,8 @@ void AGAudioNode::pullPortInput(int portId, int num, sampletime t, float *output
                 else
                 {
                     // get last port value
-                    float val = conn->src()->lastControlOutput(portNum).getFloat();
+                    float val = conn->src()->lastControlOutput(conn->srcPort()).getFloat();
+                    //dbgprint("pullPortInput-control %i:%f\n", conn->srcPort(), val);
                     //
                     for(int i = 0; i < nFrames; i++)
                         output[i] = val;

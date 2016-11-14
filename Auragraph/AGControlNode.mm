@@ -13,7 +13,7 @@
 #include "AGTimer.h"
 #include "spstl.h"
 #include "AGStyle.h"
-
+#include "AGControlOrientationNode.h"
 
 //------------------------------------------------------------------------------
 // ### AGControlNode ###
@@ -440,6 +440,8 @@ const AGNodeManager &AGNodeManager::controlNodeManager()
         
         nodeTypes.push_back(new AGControlAddNode::Manifest);
         nodeTypes.push_back(new AGControlMultiplyNode::Manifest);
+
+        nodeTypes.push_back(new AGControlOrientationNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();
