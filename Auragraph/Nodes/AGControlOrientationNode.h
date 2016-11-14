@@ -10,16 +10,19 @@
 #define AGControlOrientationNode_hpp
 
 #include "AGControlNode.h"
+#include "AGTimer.h"
 
-#include "AGStyle.h"
-#import <CoreMotion/CoreMotion.h>
+#ifdef __OBJC__
+@class CMMotionManager;
+#else
+typedef void CMMotionManager;
+#endif
 
-/*** TODO: move into ***/
 
 //------------------------------------------------------------------------------
-// ### AGControlMultiplyNode ###
+// ### AGControlOrientationNode ###
 //------------------------------------------------------------------------------
-#pragma mark - AGControlMultiplyNode
+#pragma mark - AGControlOrientationNode
 
 class AGControlOrientationNode : public AGControlNode
 {
@@ -28,6 +31,7 @@ public:
     enum Param
     {
         PARAM_READ,
+        PARAM_RATE,
     };
     
     class Manifest : public AGStandardNodeManifest<AGControlOrientationNode>
@@ -45,84 +49,33 @@ public:
         
         vector<AGPortInfo> _editPortInfo() const override
         {
-            return { };
+            return {
+                { PARAM_RATE, "rate", true, true, 60, 0, 100, AGPortInfo::LIN },
+            };
         };
         
-        vector<GLvertex3f> _iconGeo() const override
-        {
-            float radius = 0.005*AGStyle::oldGlobalScale;
-            float squash = 1.0f/3.0f;
-            
-            // icon
-            int ptsPerCircle = 32;
-            vector<GLvertex3f> iconGeo(ptsPerCircle*3*2);
-            
-            // regular circle around center
-            for(int i = 0; i < ptsPerCircle; i++)
-            {
-                float theta0 = ((float)i)/(ptsPerCircle)*2.0f*M_PI;
-                float theta1 = ((float)i+1)/(ptsPerCircle)*2.0f*M_PI;
-                iconGeo[i*2+0] = GLvertex3f(radius*cosf(theta0), radius*sinf(theta0), 0);
-                iconGeo[i*2+1] = GLvertex3f(radius*cosf(theta1), radius*sinf(theta1), 0);
-            }
-            
-            // circle around center squashed on x-axis
-            for(int i = 0; i < ptsPerCircle; i++)
-            {
-                float theta0 = ((float)i)/(ptsPerCircle)*2.0f*M_PI;
-                float theta1 = ((float)i+1)/(ptsPerCircle)*2.0f*M_PI;
-                iconGeo[ptsPerCircle*2+i*2+0] = GLvertex3f(radius*squash*cosf(theta0), radius*sinf(theta0), 0);
-                iconGeo[ptsPerCircle*2+i*2+1] = GLvertex3f(radius*squash*cosf(theta1), radius*sinf(theta1), 0);
-            }
-            
-            // circle around center squashed on y-axis
-            for(int i = 0; i < ptsPerCircle; i++)
-            {
-                float theta0 = ((float)i)/(ptsPerCircle)*2.0f*M_PI;
-                float theta1 = ((float)i+1)/(ptsPerCircle)*2.0f*M_PI;
-                iconGeo[ptsPerCircle*4+i*2+0] = GLvertex3f(radius*cosf(theta0), radius*squash*sinf(theta0), 0);
-                iconGeo[ptsPerCircle*4+i*2+1] = GLvertex3f(radius*cosf(theta1), radius*squash*sinf(theta1), 0);
-            }
-            
-            return iconGeo;
-        };
+        vector<GLvertex3f> _iconGeo() const override;
         
         GLuint _iconGeoType() const override { return GL_LINES; };
     };
     
     using AGControlNode::AGControlNode;
     
-    void initFinal() override
-    {
-        m_manager = [[CMMotionManager alloc] init];
-        [m_manager startDeviceMotionUpdates];
-    }
+    void initFinal() override;
     
-    ~AGControlOrientationNode()
-    {
-        [m_manager stopDeviceMotionUpdates];
-        m_manager = nil;
-    }
+    ~AGControlOrientationNode();
     
-    void receiveControl(int port, const AGControl &control) override
-    {
-        AGControl roll = AGControl((float) m_manager.deviceMotion.attitude.roll);
-        AGControl pitch = AGControl((float) m_manager.deviceMotion.attitude.pitch);
-        AGControl yaw = AGControl((float) m_manager.deviceMotion.attitude.yaw);
-        
-        dbgprint("%s: push %f\n", this->title().c_str(), roll.getFloat());
-        dbgprint("%s: push %f\n", this->title().c_str(), pitch.getFloat());
-        dbgprint("%s: push %f\n", this->title().c_str(), yaw.getFloat());
-        
-        pushControl(0, roll);
-        pushControl(1, pitch);
-        pushControl(2, yaw);
-    }
+    void editPortValueChanged(int paramId) override;
+    
+    void receiveControl(int port, const AGControl &control) override;
     
     virtual int numOutputPorts() const override { return 3; }
     
 private:
     CMMotionManager *m_manager;
+    AGTimer m_timer;
+    
+    void _pushData();
 };
 
 
