@@ -396,8 +396,8 @@ void AGAudioOutputNode::renderAudio(sampletime t, float *input, float *output, i
     
     for(int i = 0; i < nFrames; i++)
     {
-        output[i*2] = m_inputBuffer[0][i]*gain;
-        output[i*2+1] = m_inputBuffer[1][i]*gain;
+        output[i*2] += m_inputBuffer[0][i]*gain;
+        output[i*2+1] += m_inputBuffer[1][i]*gain;
     }
 }
 
