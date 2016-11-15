@@ -110,13 +110,16 @@ void AGUIButton::render()
         color.a = m_renderState.alpha;
         
         text->render(m_title, color, textMV, proj);
+        
+        // restore "default" line width
+        glLineWidth(2.0);
     }
     else
     {
+        glLineWidth(2.0);
         glDrawArrays(GL_LINE_LOOP, 0, 4);
         
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::black);
-        glLineWidth(2.0);
         glDrawArrays(GL_LINE_LOOP, 4, 4);
         
         color = AGStyle::lightColor();
