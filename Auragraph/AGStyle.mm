@@ -12,7 +12,8 @@ const float AGStyle::open_squeezeHeight = 0.00125;
 const float AGStyle::open_animTimeX = 0.4;
 const float AGStyle::open_animTimeY = 0.15;
 
-const GLcolor4f AGStyle::foregroundColor = GLcolor4f(0.75f, 0.5f, 0.0f, 1.0f);
+//const GLcolor4f AGStyle::foregroundColor = GLcolor4f(0.75f, 0.5f, 0.0f, 1.0f);
+const GLcolor4f AGStyle::foregroundColor = GLcolor4f(1.0f, 1.0f, 1.0f, 1.0f);
 const GLcolor4f AGStyle::backgroundColor = GLcolor4f(12.0f/255.0f, 16.0f/255.0f, 33.0f/255.0f, 1.0f);
 
 const string &AGStyle::standardFontPath()

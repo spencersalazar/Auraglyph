@@ -79,8 +79,10 @@ public:
     
     void create();
     void load(const string &title);
-    void save();
+    void loadFromPath(const string &path);
+    void save() const;
     void saveTo(const string &title);
+    void saveToPath(const string &path) const;
     
     void recreate(void (^createNode)(const Node &node),
                   void (^createConnection)(const Connection &connection),

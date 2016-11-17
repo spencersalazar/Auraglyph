@@ -26,9 +26,9 @@
 #import "AGAboutBox.h"
 #import "AGDocument.h"
 #import "GeoGenerator.h"
-#import "AGSlider.h"
 #import "spstl.h"
 #import "AGAnalytics.h"
+#import "AGUISaveLoadDialog.h"
 
 #import <list>
 #import <map>
@@ -112,6 +112,8 @@ enum InterfaceMode
     TexFont * _font;
     
     AGUIButton *_saveButton;
+    AGUIButton *_loadButton;
+    AGUIButton *_newButton;
     AGUIButton *_testButton;
     AGUIIconButton *_nodeButton;
     AGUIIconButton *_freedrawButton;
@@ -134,7 +136,10 @@ enum InterfaceMode
 - (void)updateMatrices;
 - (void)renderEdit;
 - (void)renderUser;
+
 - (void)save;
+- (void)loadDocument;
+- (void)newDocument;
 
 @end
 
@@ -284,10 +289,38 @@ static AGViewController * g_instance = nil;
     });
     [self addTopLevelObject:_saveButton];
     
+    /* load button */
+    float loadButtonWidth = saveButtonWidth;
+    float loadButtonHeight = saveButtonHeight;
+    _loadButton = new AGUIButton("Load",
+                                 [self fixedCoordinateForScreenCoordinate:CGPointMake(10, 20+saveButtonHeight*1+loadButtonHeight/2)],
+                                 GLvertex2f(loadButtonWidth, loadButtonHeight));
+    _loadButton->init();
+    _loadButton->setRenderFixed(true);
+    _loadButton->setAction(^{
+        // AGAnalytics::instance().eventSave();
+        [weakSelf loadDocument];
+    });
+    [self addTopLevelObject:_loadButton];
+    
+    /* new button */
+    float newButtonWidth = saveButtonWidth;
+    float newButtonHeight = saveButtonHeight;
+    _newButton = new AGUIButton("New",
+                                [self fixedCoordinateForScreenCoordinate:CGPointMake(10, 20+saveButtonHeight*1.05+loadButtonHeight*1.2+newButtonHeight/2)],
+                                GLvertex2f(newButtonWidth, newButtonHeight));
+    _newButton->init();
+    _newButton->setRenderFixed(true);
+    _newButton->setAction(^{
+        // AGAnalytics::instance().eventSave();
+        [weakSelf newDocument];
+    });
+    [self addTopLevelObject:_newButton];
+    
     float testButtonWidth = saveButtonWidth;
     float testButtonHeight = saveButtonHeight;
     _testButton = new AGUIButton("Trainer",
-                                 [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-testButtonWidth-10, 20+testButtonHeight/2)],
+                                 [self fixedCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-testButtonWidth-10, 20+testButtonHeight/2)],
                                  GLvertex2f(testButtonWidth, testButtonHeight));
     _testButton->init();
     _testButton->setRenderFixed(true);
@@ -302,7 +335,7 @@ static AGViewController * g_instance = nil;
     
     /* freedraw button */
     float freedrawButtonWidth = 0.0095*AGStyle::oldGlobalScale;
-    GLvertex3f modeButtonStartPos = [self worldCoordinateForScreenCoordinate:CGPointMake(27.5, self.view.bounds.size.height-20)];
+    GLvertex3f modeButtonStartPos = [self fixedCoordinateForScreenCoordinate:CGPointMake(27.5, self.view.bounds.size.height-20)];
     AGRenderInfoV freedrawRenderInfo;
     freedrawRenderInfo.numVertex = 5;
     freedrawRenderInfo.geoType = GL_LINE_LOOP;
@@ -354,15 +387,9 @@ static AGViewController * g_instance = nil;
     _interfaceMode = INTERFACEMODE_EDIT;
     
     /* trash */
-    AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
+    AGUITrash::instance().setPosition([self fixedCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
     
 //    GLvertex3f vert = [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)];
-    
-    // test slider
-//    AGSlider *testSlider = new AGSlider(vert, 1.2);
-//    testSlider->init();
-//    testSlider->setSize(GLvertex2f(64, 32));
-//    _objects.push_back(testSlider);
 }
 
 - (void)_updateFixedUIPosition
@@ -620,7 +647,7 @@ static AGViewController * g_instance = nil;
     int viewport[] = { (int)self.view.bounds.origin.x, (int)(self.view.bounds.origin.y),
         (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
     bool success;
-    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, 0.0f),
+    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, 0.01f),
                                       _modelView, _projection, viewport, &success);
     
     //    vec = GLKMatrix4MultiplyVector3(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z), vec);
@@ -1065,6 +1092,18 @@ static AGViewController * g_instance = nil;
     });
     
     doc.saveTo("_default");
+    
+    [self addTopLevelObject:AGUISaveDialog::save(doc)];
+}
+
+- (void)loadDocument
+{
+    
+}
+
+- (void)newDocument
+{
+    
 }
 
 
