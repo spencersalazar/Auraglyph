@@ -116,8 +116,10 @@ public:
     
     // draw functions
     void drawTriangleFan(GLvertex3f geo[], int size);
+    void drawTriangleFan(GLvertex3f geo[], int size, const GLKMatrix4 &xform);
     void drawLineLoop(GLvertex3f geo[], int size);
     void drawLineStrip(GLvertex2f geo[], int size);
+    void drawLineStrip(GLvertex2f geo[], int size, const GLKMatrix4 &xform);
     void drawLineStrip(GLvertex3f geo[], int size);
     void drawWaveform(float waveform[], int size, GLvertex2f from, GLvertex2f to, float gain = 1.0f, float yScale = 1.0f);
     

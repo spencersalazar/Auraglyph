@@ -29,7 +29,7 @@ public:
     
     virtual ~AGUILoadDialog() { }
     
-    virtual void onLoad(const std::function<void (const std::string &file, const AGDocument &doc)> &) = 0;
+    virtual void onLoad(const std::function<void (const std::string &file, AGDocument &doc)> &) = 0;
 };
 
 #endif /* AGUISaveLoadDialog_hpp */

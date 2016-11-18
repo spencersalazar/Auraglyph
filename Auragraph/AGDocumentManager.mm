@@ -62,7 +62,7 @@ AGDocument AGDocumentManager::load(const std::string &filename)
     return std::move(doc);
 }
 
-const std::list<AGDocumentManager::DocumentListing> &AGDocumentManager::list()
+const std::vector<AGDocumentManager::DocumentListing> &AGDocumentManager::list()
 {
     _loadList();
     return *m_list;
@@ -77,7 +77,7 @@ void AGDocumentManager::_loadList()
         if(![[NSFileManager defaultManager] fileExistsAtPath:libraryPath])
         {
             // library file doesn't exist - use default (empty) library
-            m_list = new std::list<DocumentListing>;
+            m_list = new std::vector<DocumentListing>;
             return;
         }
         
@@ -112,7 +112,7 @@ void AGDocumentManager::_loadList()
             return;
         }
         
-        auto list = new std::list<DocumentListing>;
+        auto list = new std::vector<DocumentListing>;
         
         for(NSDictionary *fileObj in listObj)
         {

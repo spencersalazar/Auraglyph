@@ -25,6 +25,7 @@
 #import "AGTouchHandler.h"
 #import "AGAboutBox.h"
 #import "AGDocument.h"
+#import "AGDocumentManager.h"
 #import "GeoGenerator.h"
 #import "spstl.h"
 #import "AGAnalytics.h"
@@ -122,6 +123,8 @@ enum InterfaceMode
     
     NSMutableSet *_activeTouches;
     AGInteractiveObject * _touchCapture;
+    
+    std::string _currentDocumentFilename;
 }
 
 @property (strong, nonatomic) EAGLContext *context;
@@ -139,9 +142,11 @@ enum InterfaceMode
 - (void)renderEdit;
 - (void)renderUser;
 
-- (void)save;
-- (void)loadDocument;
-- (void)newDocument;
+- (void)_save;
+- (void)_openLoad;
+- (void)_clearDocument;
+- (void)_newDocument;
+- (void)_loadDocument:(AGDocument &)doc;
 
 @end
 
@@ -201,45 +206,7 @@ static AGViewController * g_instance = nil;
     {
         AGDocument defaultDoc;
         defaultDoc.load(AG_DEFAULT_FILENAME);
-        
-        __block map<string, AGNode *> uuid2node;
-        
-        defaultDoc.recreate(^(const AGDocument::Node &docNode) {
-            AGNode *node = NULL;
-            if(docNode._class == AGDocument::Node::AUDIO)
-                node = AGNodeManager::audioNodeManager().createNodeType(docNode);
-            else if(docNode._class == AGDocument::Node::CONTROL)
-                node = AGNodeManager::controlNodeManager().createNodeType(docNode);
-            else if(docNode._class == AGDocument::Node::INPUT)
-                node = AGNodeManager::inputNodeManager().createNodeType(docNode);
-            else if(docNode._class == AGDocument::Node::OUTPUT)
-                node = AGNodeManager::outputNodeManager().createNodeType(docNode);
-            
-            if(node != NULL)
-            {
-                uuid2node[node->uuid()] = node;
-                [self addNode:node];
-                
-                if(node->type() == "Output")
-                {
-                    AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
-                    outputNode->setOutputDestination([AGAudioManager instance].masterOut);
-                }
-            }
-        }, ^(const AGDocument::Connection &docConnection) {
-            if(uuid2node.count(docConnection.srcUuid) && uuid2node.count(docConnection.dstUuid))
-            {
-                AGNode *srcNode = uuid2node[docConnection.srcUuid];
-                AGNode *dstNode = uuid2node[docConnection.dstUuid];
-                assert(docConnection.dstPort >= 0 && docConnection.dstPort < dstNode->numInputPorts());
-                assert(docConnection.srcPort >= 0 && docConnection.srcPort < srcNode->numOutputPorts());
-                AGConnection::connect(srcNode, docConnection.srcPort, dstNode, docConnection.dstPort);
-            }
-        }, ^(const AGDocument::Freedraw &docFreedraw) {
-            AGFreeDraw *freedraw = new AGFreeDraw(docFreedraw);
-            freedraw->init();
-            [self addTopLevelObject:freedraw];
-        });
+        [self _loadDocument:defaultDoc];
     }
     else
     {
@@ -287,7 +254,7 @@ static AGViewController * g_instance = nil;
     _saveButton->setRenderFixed(true);
     _saveButton->setAction(^{
         AGAnalytics::instance().eventSave();
-        [weakSelf save];
+        [weakSelf _save];
     });
     _dashboard.push_back(_saveButton);
     
@@ -301,7 +268,7 @@ static AGViewController * g_instance = nil;
     _loadButton->setRenderFixed(true);
     _loadButton->setAction(^{
         // AGAnalytics::instance().eventSave();
-        [weakSelf loadDocument];
+        [weakSelf _openLoad];
     });
     _dashboard.push_back(_loadButton);
     
@@ -315,7 +282,7 @@ static AGViewController * g_instance = nil;
     _newButton->setRenderFixed(true);
     _newButton->setAction(^{
         // AGAnalytics::instance().eventSave();
-        [weakSelf newDocument];
+        [weakSelf _newDocument];
     });
     _dashboard.push_back(_newButton);
     
@@ -1098,7 +1065,7 @@ static AGViewController * g_instance = nil;
 
 
 
-- (void)save
+- (void)_save
 {
     __block AGDocument doc;
     
@@ -1119,15 +1086,35 @@ static AGViewController * g_instance = nil;
     
     doc.saveTo("_default");
     
-    _dashboard.push_back(AGUISaveDialog::save(doc));
+    if(_currentDocumentFilename.size())
+    {
+        AGDocumentManager::instance().update(_currentDocumentFilename, doc);
+    }
+    else
+    {
+        AGUISaveDialog *saveDialog = AGUISaveDialog::save(doc);
+        
+        saveDialog->onSave([self](const std::string &filename){
+            _currentDocumentFilename = filename;
+        });
+        
+        _dashboard.push_back(saveDialog);
+    }
 }
 
-- (void)loadDocument
+- (void)_openLoad
 {
+    AGUILoadDialog *loadDialog = AGUILoadDialog::load();
     
+    loadDialog->onLoad([self](const std::string &filename, AGDocument &doc){
+        _currentDocumentFilename = filename;
+        [self _loadDocument:doc];
+    });
+    
+    _dashboard.push_back(loadDialog);
 }
 
-- (void)newDocument
+- (void)_clearDocument
 {
     // delete all nodes
     itmap_safe(_nodes, ^bool(AGNode *&node){
@@ -1139,12 +1126,61 @@ static AGViewController * g_instance = nil;
         [self fadeOutAndDelete:object];
         return true;
     });
+}
+
+- (void)_newDocument
+{
+    [self _clearDocument];
     
     // just create output node by itself
     AGNode *node = AGNodeManager::audioNodeManager().createNodeOfType("Output", GLvertex3f(0, 0, 0));
     AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
     outputNode->setOutputDestination([AGAudioManager instance].masterOut);
     _nodes.push_back(node);
+}
+
+- (void)_loadDocument:(AGDocument &)doc
+{
+    [self _clearDocument];
+    
+    __block map<string, AGNode *> uuid2node;
+    
+    doc.recreate(^(const AGDocument::Node &docNode) {
+        AGNode *node = NULL;
+        if(docNode._class == AGDocument::Node::AUDIO)
+            node = AGNodeManager::audioNodeManager().createNodeType(docNode);
+        else if(docNode._class == AGDocument::Node::CONTROL)
+            node = AGNodeManager::controlNodeManager().createNodeType(docNode);
+        else if(docNode._class == AGDocument::Node::INPUT)
+            node = AGNodeManager::inputNodeManager().createNodeType(docNode);
+        else if(docNode._class == AGDocument::Node::OUTPUT)
+            node = AGNodeManager::outputNodeManager().createNodeType(docNode);
+        
+        if(node != NULL)
+        {
+            uuid2node[node->uuid()] = node;
+            [self addNode:node];
+            
+            if(node->type() == "Output")
+            {
+                AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
+                outputNode->setOutputDestination([AGAudioManager instance].masterOut);
+            }
+        }
+    }, ^(const AGDocument::Connection &docConnection) {
+        if(uuid2node.count(docConnection.srcUuid) && uuid2node.count(docConnection.dstUuid))
+        {
+            AGNode *srcNode = uuid2node[docConnection.srcUuid];
+            AGNode *dstNode = uuid2node[docConnection.dstUuid];
+            assert(docConnection.dstPort >= 0 && docConnection.dstPort < dstNode->numInputPorts());
+            assert(docConnection.srcPort >= 0 && docConnection.srcPort < srcNode->numOutputPorts());
+            AGConnection::connect(srcNode, docConnection.srcPort, dstNode, docConnection.dstPort);
+        }
+    }, ^(const AGDocument::Freedraw &docFreedraw) {
+        AGFreeDraw *freedraw = new AGFreeDraw(docFreedraw);
+        freedraw->init();
+        [self addTopLevelObject:freedraw];
+    });
 }
 
 

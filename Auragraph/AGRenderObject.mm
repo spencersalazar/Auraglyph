@@ -276,6 +276,22 @@ void AGRenderObject::drawTriangleFan(GLvertex3f geo[], int size)
     glDrawArrays(GL_TRIANGLE_FAN, 0, size);
 }
 
+void AGRenderObject::drawTriangleFan(GLvertex3f geo[], int size, const GLKMatrix4 &xform)
+{
+    AGGenericShader &shader = AGGenericShader::instance();
+    
+    shader.useProgram();
+    
+    GLKMatrix4 modelview = GLKMatrix4Multiply(m_renderState.modelview, xform);
+    shader.setModelViewMatrix(modelview);
+    shader.setProjectionMatrix(m_renderState.projection);
+    
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    
+    glDrawArrays(GL_TRIANGLE_FAN, 0, size);
+}
+
 void AGRenderObject::drawLineLoop(GLvertex3f geo[], int size)
 {
     AGGenericShader &shader = AGGenericShader::instance();
@@ -298,6 +314,22 @@ void AGRenderObject::drawLineStrip(GLvertex2f geo[], int size)
     shader.useProgram();
     
     shader.setModelViewMatrix(m_renderState.modelview);
+    shader.setProjectionMatrix(m_renderState.projection);
+    
+    glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    
+    glDrawArrays(GL_LINE_STRIP, 0, size);
+}
+
+void AGRenderObject::drawLineStrip(GLvertex2f geo[], int size, const GLKMatrix4 &xform)
+{
+    AGGenericShader &shader = AGGenericShader::instance();
+    
+    shader.useProgram();
+    
+    GLKMatrix4 modelview = GLKMatrix4Multiply(m_renderState.modelview, xform);
+    shader.setModelViewMatrix(modelview);
     shader.setProjectionMatrix(m_renderState.projection);
     
     glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);

@@ -33,11 +33,11 @@ public:
     std::string save(const std::vector<std::vector<GLvertex2f>> &, const AGDocument &);
     void update(const std::string &, const AGDocument &);
     AGDocument load(const std::string &);
-    const std::list<DocumentListing> &list();
+    const std::vector<DocumentListing> &list();
     
 private:
     
-    std::list<DocumentListing> *m_list;
+    std::vector<DocumentListing> *m_list;
     
     void _loadList();
     void _saveList();
