@@ -21,7 +21,7 @@
 #endif // AG_USER_TEST_1
 
 
-#define VERBOSE_LOGGING (1)
+#define VERBOSE_LOGGING (0)
 
 #if TARGET_OS_SIMULATOR
 #define DISABLE_ANALYTICS (1)

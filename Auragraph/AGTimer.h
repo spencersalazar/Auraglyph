@@ -9,6 +9,8 @@
 #ifndef __Auragraph__AGTimer__
 #define __Auragraph__AGTimer__
 
+#include <functional>
+
 class AGTimer
 {
 public:
@@ -17,7 +19,8 @@ public:
     ~AGTimer();
     
     void setInterval(float interval) { m_interval = interval; }
-    
+    void setAction(void (^action)(AGTimer *timer)) { m_action = action; }
+
     void checkTimer(float t, float dt);
     
 private:
