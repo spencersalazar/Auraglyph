@@ -12,6 +12,11 @@
 #include "AGUserInterface.h"
 #include "AGDocument.h"
 
+//------------------------------------------------------------------------------
+// ### AGUISaveDialog ###
+//------------------------------------------------------------------------------
+#pragma mark - AGUISaveDialog
+
 class AGUISaveDialog : public AGInteractiveObject
 {
 public:
@@ -21,6 +26,11 @@ public:
     
     virtual void onSave(const std::function<void (const std::string &file)> &) = 0;
 };
+
+//------------------------------------------------------------------------------
+// ### AGUILoadDialog ###
+//------------------------------------------------------------------------------
+#pragma mark - AGUILoadDialog
 
 class AGUILoadDialog : public AGInteractiveObject
 {

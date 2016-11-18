@@ -37,6 +37,8 @@ public:
     constexpr static const float aspect16_9 = 16.0f/9.0f;
     
     constexpr static const float oldGlobalScale = 5000.0f;
+    
+    constexpr static const float maxTravel = 5.0f;
 };
 
 

@@ -10,6 +10,10 @@
 #include "AGDocumentManager.h"
 #include "AGStyle.h"
 
+//------------------------------------------------------------------------------
+// ### AGUIConcreteSaveDialog ###
+//------------------------------------------------------------------------------
+#pragma mark - AGUIConcreteSaveDialog
 
 class AGUIConcreteSaveDialog : public AGUISaveDialog
 {
@@ -166,6 +170,11 @@ AGUISaveDialog *AGUISaveDialog::save(const AGDocument &doc, const GLvertex3f &po
     return saveDialog;
 }
 
+
+//------------------------------------------------------------------------------
+// ### AGUIConcreteLoadDialog ###
+//------------------------------------------------------------------------------
+#pragma mark - AGUIConcreteLoadDialog
 
 class AGUIConcreteLoadDialog : public AGUILoadDialog
 {
@@ -328,8 +337,7 @@ public:
     virtual void touchMove(const AGTouchInfo &t) override
     {
         // TODO: pull max_travel out into AGStyle
-        float max_travel = m_size.x/2.0f*0.05;
-        if((m_touchStart-t.position).magnitudeSquared() > max_travel)
+        if((m_touchStart-t.position).magnitudeSquared() > AGStyle::maxTravel*AGStyle::maxTravel)
         {
             m_selection = -1;
         }
@@ -337,8 +345,7 @@ public:
     
     virtual void touchUp(const AGTouchInfo &t) override
     {
-        float max_travel = m_size.x/2.0f*0.05;
-        if((m_touchStart-t.position).magnitudeSquared() > max_travel)
+        if((m_touchStart-t.position).magnitudeSquared() > AGStyle::maxTravel*AGStyle::maxTravel)
         {
             m_selection = -1;
         }
