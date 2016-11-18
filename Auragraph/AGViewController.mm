@@ -96,6 +96,8 @@ enum InterfaceMode
 //    std::list<AGFreeDraw *> _freeDraws;
 //    std::list<AGConnection *> _connections;
     
+    std::list<AGInteractiveObject *> _dashboard;
+    
     std::list<AGInteractiveObject *> _objects;
     std::list<AGInteractiveObject *> _interfaceObjects;
     std::list<AGInteractiveObject *> _removeList;
@@ -287,7 +289,7 @@ static AGViewController * g_instance = nil;
         AGAnalytics::instance().eventSave();
         [weakSelf save];
     });
-    [self addTopLevelObject:_saveButton];
+    _dashboard.push_back(_saveButton);
     
     /* load button */
     float loadButtonWidth = saveButtonWidth;
@@ -301,7 +303,7 @@ static AGViewController * g_instance = nil;
         // AGAnalytics::instance().eventSave();
         [weakSelf loadDocument];
     });
-    [self addTopLevelObject:_loadButton];
+    _dashboard.push_back(_loadButton);
     
     /* new button */
     float newButtonWidth = saveButtonWidth;
@@ -315,7 +317,7 @@ static AGViewController * g_instance = nil;
         // AGAnalytics::instance().eventSave();
         [weakSelf newDocument];
     });
-    [self addTopLevelObject:_newButton];
+    _dashboard.push_back(_newButton);
     
     float testButtonWidth = saveButtonWidth;
     float testButtonHeight = saveButtonHeight;
@@ -328,7 +330,7 @@ static AGViewController * g_instance = nil;
         AGAnalytics::instance().eventTrainer();
         [self presentViewController:self.trainer animated:YES completion:nil];
     });
-    [self addTopLevelObject:_testButton];
+    _dashboard.push_back(_testButton);
     
     AGUIButtonGroup *modeButtonGroup = new AGUIButtonGroup();
     modeButtonGroup->init();
@@ -380,7 +382,7 @@ static AGViewController * g_instance = nil;
         _drawMode = DRAWMODE_NODE;
     }, true);
     
-    [self addTopLevelObject:modeButtonGroup];
+    _dashboard.push_back(modeButtonGroup);
     _drawMode = DRAWMODE_NODE;
     
 //    _interfaceMode = INTERFACEMODE_USER;
@@ -588,6 +590,7 @@ static AGViewController * g_instance = nil;
     _removeList.push_back(object);
     
     _objects.remove(object);
+    _dashboard.remove(object);
 }
 
 - (void)addFreeDraw:(AGFreeDraw *)freedraw
@@ -703,6 +706,8 @@ static AGViewController * g_instance = nil;
     _t += dt;
     
     AGUITrash::instance().update(_t, dt);
+    for(AGInteractiveObject *object : _dashboard)
+        object->update(_t, dt);
     for(AGInteractiveObject *object : _objects)
         object->update(_t, dt);
     for(AGInteractiveObject *removeObject : _removeList)
@@ -838,6 +843,9 @@ static AGViewController * g_instance = nil;
     // render removeList
     for(AGInteractiveObject *removeObject : _removeList)
         removeObject->render();
+    // render user interface
+    for(AGInteractiveObject *object : _dashboard)
+        object->render();
     
     [_touchHandler render];
     [_nextHandler render];
@@ -936,12 +944,30 @@ static AGViewController * g_instance = nil;
                     {
                         AGInteractiveObject *hit = NULL;
                         
-                        // check nodes for other possible hits
-                        for(AGNode *node : _nodes)
+                        // check dashboard
+                        if(hit == NULL)
                         {
-                            hit = node->hitTest(pos);
-                            if(hit != NULL)
-                                break;
+                            for(AGInteractiveObject *object : _dashboard)
+                            {
+                                if(object->renderFixed())
+                                    hit = object->hitTest(fixedPos);
+                                else
+                                    hit = object->hitTest(pos);
+                                
+                                if(hit != NULL)
+                                    break;
+                            }
+                        }
+                        
+                        if(hit == NULL)
+                        {
+                            // check nodes for other possible hits
+                            for(AGNode *node : _nodes)
+                            {
+                                hit = node->hitTest(pos);
+                                if(hit != NULL)
+                                    break;
+                            }
                         }
                         
                         // check objects for hits
@@ -1093,7 +1119,7 @@ static AGViewController * g_instance = nil;
     
     doc.saveTo("_default");
     
-    [self addTopLevelObject:AGUISaveDialog::save(doc)];
+    _dashboard.push_back(AGUISaveDialog::save(doc));
 }
 
 - (void)loadDocument
@@ -1103,7 +1129,22 @@ static AGViewController * g_instance = nil;
 
 - (void)newDocument
 {
+    // delete all nodes
+    itmap_safe(_nodes, ^bool(AGNode *&node){
+        [self removeNode:node];
+        return true;
+    });
+    // delete all objects
+    itmap_safe(_objects, ^bool(AGInteractiveObject *&object){
+        [self fadeOutAndDelete:object];
+        return true;
+    });
     
+    // just create output node by itself
+    AGNode *node = AGNodeManager::audioNodeManager().createNodeOfType("Output", GLvertex3f(0, 0, 0));
+    AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
+    outputNode->setOutputDestination([AGAudioManager instance].masterOut);
+    _nodes.push_back(node);
 }
 
 
