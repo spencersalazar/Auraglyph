@@ -1132,6 +1132,8 @@ static AGViewController * g_instance = nil;
 {
     [self _clearDocument];
     
+    _currentDocumentFilename = "";
+    
     // just create output node by itself
     AGNode *node = AGNodeManager::audioNodeManager().createNodeOfType("Output", GLvertex3f(0, 0, 0));
     AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
