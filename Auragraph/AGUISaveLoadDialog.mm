@@ -8,6 +8,7 @@
 
 #include "AGUISaveLoadDialog.h"
 #include "AGDocumentManager.h"
+#include "AGGenericShader.h"
 #include "AGStyle.h"
 
 //------------------------------------------------------------------------------
@@ -182,12 +183,17 @@ private:
     GLvertex3f m_pos;
     GLvertex2f m_size;
     
+    float m_itemStart;
+    float m_itemHeight;
+    clampf m_verticalScrollPos;
+
     lincurvef m_xScale;
     lincurvef m_yScale;
     
     AGUIButton *m_cancelButton;
     
     GLvertex3f m_touchStart;
+    GLvertex3f m_lastTouch;
     int m_selection;
     
     const std::vector<AGDocumentManager::DocumentListing> &m_documentList;
@@ -205,6 +211,10 @@ public:
         m_size = GLvertex2f(500, 2*500/AGStyle::aspect16_9);
         m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
         m_yScale = lincurvef(AGStyle::open_animTimeY, AGStyle::open_squeezeHeight, 1);
+        m_itemStart = m_size.y/3.0f;
+        m_itemHeight = m_size.y/3.0f;
+        
+        m_verticalScrollPos.clampTo(0, max(0.0f, (m_documentList.size()-3.0f)*m_itemHeight));
         
         float buttonWidth = 100;
         float buttonHeight = 25;
@@ -263,27 +273,33 @@ public:
         
         GLcolor4f whiteA = AGStyle::foregroundColor;
         whiteA.a = 0.75;
-        float yPos = m_size.y/3.0f;
-        float yInc = -m_size.y/3.0f;
+        float yPos = m_itemStart + m_verticalScrollPos;
         int i = 0;
+        int len = m_documentList.size();
         
         glLineWidth(4.0f);
+        
+        AGClipShader &shader = AGClipShader::instance();
+        shader.useProgram();
+        shader.setClip(m_pos.xy()-m_size/2, m_size);
         
         for(auto document : m_documentList)
         {
             GLKMatrix4 xform = GLKMatrix4MakeTranslation(0, yPos, 0);
+            shader.setLocalMatrix(xform);
             
             float margin = 0.95;
             
             if(i == m_selection)
             {
+                // draw selection box
                 glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor);
                 
-                drawTriangleFan((GLvertex3f[]){
-                    { -m_size.x/2*margin, -yInc/2*margin, 0 },
-                    { -m_size.x/2*margin,  yInc/2*margin, 0 },
-                    {  m_size.x/2*margin,  yInc/2*margin, 0 },
-                    {  m_size.x/2*margin, -yInc/2*margin, 0 },
+                drawTriangleFan(shader, (GLvertex3f[]){
+                    { -m_size.x/2*margin,  m_itemHeight/2*margin, 0 },
+                    { -m_size.x/2*margin, -m_itemHeight/2*margin, 0 },
+                    {  m_size.x/2*margin, -m_itemHeight/2*margin, 0 },
+                    {  m_size.x/2*margin,  m_itemHeight/2*margin, 0 },
                 }, 4, xform);
                 
                 glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &AGStyle::frameBackgroundColor());
@@ -293,15 +309,20 @@ public:
                 glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor);
             }
             
+            // draw each "figure" in the "name"
             for(auto figure : document.name)
-                drawLineStrip(figure.data(), figure.size(), xform);
+                drawLineStrip(shader, figure.data(), figure.size(), xform);
             
-            glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &whiteA);
-            drawLineStrip((GLvertex2f[]){
-                { -m_size.x/2*margin, yInc/2 }, { m_size.x/2*margin, yInc/2 },
-            }, 2, xform);
+            // draw separating line between rows
+            if(i != len-1 || len == 1)
+            {
+                glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &whiteA);
+                drawLineStrip(shader, (GLvertex2f[]){
+                    { -m_size.x/2*margin, -m_itemHeight/2 }, { m_size.x/2*margin, -m_itemHeight/2 },
+                }, 2, xform);
+            }
             
-            yPos += yInc;
+            yPos -= m_itemHeight;
             i++;
         }
         
@@ -317,21 +338,22 @@ public:
     
     virtual void touchDown(const AGTouchInfo &t) override
     {
-        float yPos = m_size.y/3.0f;
-        float yInc = -m_size.y/3.0f;
+        float yPos = m_itemStart+m_verticalScrollPos;
         
         for(int i = 0; i < m_documentList.size(); i++)
         {
-            if(t.position.y < yPos-yInc/2.0f && t.position.y > yPos+yInc/2.0f)
+            if(t.position.y < yPos+m_itemHeight/2.0f && t.position.y > yPos-m_itemHeight/2.0f &&
+               t.position.x > -m_size.x/2 && t.position.x < m_size.x/2)
             {
                 m_selection = i;
                 break;
             }
             
-            yPos += yInc;
+            yPos -= m_itemStart;
         }
         
         m_touchStart = t.position;
+        m_lastTouch = t.position;
     }
     
     virtual void touchMove(const AGTouchInfo &t) override
@@ -340,7 +362,11 @@ public:
         if((m_touchStart-t.position).magnitudeSquared() > AGStyle::maxTravel*AGStyle::maxTravel)
         {
             m_selection = -1;
+            // start scrolling
+            m_verticalScrollPos += (t.position.y - m_lastTouch.y);
         }
+        
+        m_lastTouch = t.position;
     }
     
     virtual void touchUp(const AGTouchInfo &t) override
