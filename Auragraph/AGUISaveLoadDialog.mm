@@ -126,10 +126,12 @@ public:
         AGInteractiveObject::render();
     }
     
-    virtual GLvrectf effectiveBounds() override
+    GLvrectf effectiveBounds() override
     {
         return GLvrectf(m_pos-m_size, m_pos+m_size);
     }
+    
+    bool renderFixed() override { return true; }
     
     virtual void touchDown(const AGTouchInfo &t) override
     {
@@ -355,19 +357,22 @@ public:
         AGInteractiveObject::render();
     }
     
-    virtual GLvrectf effectiveBounds() override
+    GLvrectf effectiveBounds() override
     {
         return GLvrectf(m_pos-m_size, m_pos+m_size);
     }
     
+    bool renderFixed() override { return true; }
+    
     virtual void touchDown(const AGTouchInfo &t) override
     {
+        GLvertex3f pos = t.position-m_pos;
         float yPos = m_itemStart+m_verticalScrollPos;
         
         for(int i = 0; i < m_documentList.size(); i++)
         {
-            if(t.position.y < yPos+m_itemHeight/2.0f && t.position.y > yPos-m_itemHeight/2.0f &&
-               t.position.x > -m_size.x/2 && t.position.x < m_size.x/2)
+            if(pos.y < yPos+m_itemHeight/2.0f && pos.y > yPos-m_itemHeight/2.0f &&
+               pos.x > -m_size.x/2 && pos.x < m_size.x/2)
             {
                 m_selection = i;
                 break;
