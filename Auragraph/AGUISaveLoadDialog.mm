@@ -288,7 +288,7 @@ public:
             GLKMatrix4 xform = GLKMatrix4MakeTranslation(0, yPos, 0);
             shader.setLocalMatrix(xform);
             
-            float margin = 0.95;
+            float margin = 0.9;
             
             if(i == m_selection)
             {
@@ -326,6 +326,30 @@ public:
             i++;
         }
         
+        /* draw scroll bar */
+        int nRows = m_documentList.size();
+        if(nRows > 3)
+        {
+            float scroll_bar_margin = 0.95;
+            // maximum distance that can be scrolled
+            float scroll_max_scroll = (nRows-3)*m_itemHeight;
+            // height of the scroll bar tray area
+            float scroll_bar_tray_height = m_size.y*scroll_bar_margin;
+            // percent of the total scroll area that is visible * tray height
+            float scroll_bar_height = scroll_bar_tray_height/ceilf(nRows-2);
+            // percent of scroll position * (tray height - bar height)
+            float scroll_bar_y = m_verticalScrollPos/scroll_max_scroll*(scroll_bar_tray_height-scroll_bar_height);
+            
+            // load it up and draw
+            glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+            glLineWidth(1.0);
+            drawLineStrip((GLvertex2f[]) {
+                { m_size.x/2*scroll_bar_margin, m_size.y/2*scroll_bar_margin-scroll_bar_y },
+                { m_size.x/2*scroll_bar_margin, m_size.y/2*scroll_bar_margin-(scroll_bar_y+scroll_bar_height) },
+            }, 2);
+        }
+        
+        // restore color
         glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor);
         
         AGInteractiveObject::render();
