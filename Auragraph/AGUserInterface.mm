@@ -102,6 +102,8 @@ void AGUIButton::render()
     
     GLcolor4f color = GLcolor4f::white;
     color.a = m_renderState.alpha;
+    GLcolor4f blackA = AGStyle::darkColor();
+    blackA.a = m_renderState.alpha*0.75;
 
     glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
     glEnableVertexAttribArray(GLKVertexAttribPosition);
@@ -127,7 +129,11 @@ void AGUIButton::render()
     }
     else
     {
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &blackA);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        
         glLineWidth(2.0);
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
         glDrawArrays(GL_LINE_LOOP, 0, 4);
         
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::black);
