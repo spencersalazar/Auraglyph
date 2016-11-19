@@ -45,6 +45,22 @@ void itmap(const T &container, bool (^func)(typename T::const_reference v))
     }
 }
 
+/*------------------------------------------------------------------------------
+ itmap_safe()
+ Map a block to every item in a C++/STL iterable container; safe to remove 
+ objects in the block.
+ (with shortcircuit)
+ -----------------------------------------------------------------------------*/
+template<class T>
+void itmap_safe(T &container, bool (^func)(typename T::reference v))
+{
+    for(auto i = container.begin(); i != container.end(); )
+    {
+        auto j = i;
+        i++;
+        if(!func(*j)) break;
+    }
+}
 
 /*------------------------------------------------------------------------------
  itfilter()
