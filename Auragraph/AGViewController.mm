@@ -891,90 +891,121 @@ static AGViewController * g_instance = nil;
                 CGPoint p = [[touches anyObject] locationInView:self.view];
                 GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
                 GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:p];
+                dbgprint("fixedPos: (%f,%f,%f)\n", fixedPos.x, fixedPos.y, fixedPos.z);
                 
-                AGNode * node = NULL;
-                int port;
-                AGNode::HitTestResult result = [self hitTest:pos node:&node port:&port];
+                AGInteractiveObject *hit = NULL;
                 
-                switch(result)
+                // check dashboard
+                if(hit == NULL)
                 {
-                    case AGNode::HIT_INPUT_NODE:
-                    case AGNode::HIT_OUTPUT_NODE:
-                        _touchHandler = [[AGConnectTouchHandler alloc] initWithViewController:self];
-                        break;
-                        
-                    case AGNode::HIT_MAIN_NODE:
-                        _touchHandler = [[AGMoveNodeTouchHandler alloc] initWithViewController:self node:node];
-                        break;
-                        
-                    case AGNode::HIT_NONE:
+                    for(AGInteractiveObject *object : _dashboard)
                     {
-                        AGInteractiveObject *hit = NULL;
+                        if(object->renderFixed())
+                            hit = object->hitTest(fixedPos);
+                        else
+                            hit = object->hitTest(pos);
                         
-                        // check dashboard
-                        if(hit == NULL)
-                        {
-                            for(AGInteractiveObject *object : _dashboard)
-                            {
-                                if(object->renderFixed())
-                                    hit = object->hitTest(fixedPos);
-                                else
-                                    hit = object->hitTest(pos);
-                                
-                                if(hit != NULL)
-                                    break;
-                            }
-                        }
-                        
-                        if(hit == NULL)
-                        {
-                            // check nodes for other possible hits
-                            for(AGNode *node : _nodes)
-                            {
-                                hit = node->hitTest(pos);
-                                if(hit != NULL)
-                                    break;
-                            }
-                        }
-                        
-                        // check objects for hits
-                        if(hit == NULL)
-                        {
-                            for(AGInteractiveObject *object : _objects)
-                            {
-                                if(object->renderFixed())
-                                    hit = object->hitTest(fixedPos);
-                                else
-                                    hit = object->hitTest(pos);
-                                
-                                if(hit != NULL)
-                                    break;
-                            }
-                        }
-                        
-                        if(hit)
+                        if(hit != NULL)
                         {
                             _touchCapture = hit;
-                            _touchCapture->touchDown(AGTouchInfo(pos, p, (TouchID) touch));
-                        }
-                        else
-                        {
-                            switch (_drawMode)
-                            {
-                                case DRAWMODE_NODE:
-                                    _touchHandler = [[AGDrawNodeTouchHandler alloc] initWithViewController:self];
-                                    break;
-                                case DRAWMODE_FREEDRAW:
-                                    _touchHandler = [[AGDrawFreedrawTouchHandler alloc] initWithViewController:self];
-                                    break;
-                            }
+                            if(_touchCapture->renderFixed())
+                                _touchCapture->touchDown(AGTouchInfo(fixedPos, p, (TouchID) touch));
+                            else
+                                _touchCapture->touchDown(AGTouchInfo(pos, p, (TouchID) touch));
+                            break;
                         }
                     }
-                        break;
                 }
+                
+                if(hit == NULL)
+                {
+                    AGNode * node = NULL;
+                    int port;
+                    AGNode::HitTestResult result = [self hitTest:pos node:&node port:&port];
+                    
+                    switch(result)
+                    {
+                        case AGNode::HIT_INPUT_NODE:
+                        case AGNode::HIT_OUTPUT_NODE:
+                            _touchHandler = [[AGConnectTouchHandler alloc] initWithViewController:self];
+                            break;
+                            
+                        case AGNode::HIT_MAIN_NODE:
+                            _touchHandler = [[AGMoveNodeTouchHandler alloc] initWithViewController:self node:node];
+                            break;
+                            
+                        case AGNode::HIT_NONE:
+                        {
+                            AGInteractiveObject *hit = NULL;
+                            
+                            // check dashboard
+                            if(hit == NULL)
+                            {
+                                for(AGInteractiveObject *object : _dashboard)
+                                {
+                                    if(object->renderFixed())
+                                        hit = object->hitTest(fixedPos);
+                                    else
+                                        hit = object->hitTest(pos);
+                                    
+                                    if(hit != NULL)
+                                        break;
+                                }
+                            }
+                            
+                            if(hit == NULL)
+                            {
+                                // check nodes for other possible hits
+                                for(AGNode *node : _nodes)
+                                {
+                                    hit = node->hitTest(pos);
+                                    if(hit != NULL)
+                                        break;
+                                }
+                            }
+                            
+                            // check objects for hits
+                            if(hit == NULL)
+                            {
+                                for(AGInteractiveObject *object : _objects)
+                                {
+                                    if(object->renderFixed())
+                                        hit = object->hitTest(fixedPos);
+                                    else
+                                        hit = object->hitTest(pos);
+                                    
+                                    if(hit != NULL)
+                                        break;
+                                }
+                            }
+                            
+                            if(hit)
+                            {
+                                _touchCapture = hit;
+                                if(_touchCapture->renderFixed())
+                                    _touchCapture->touchDown(AGTouchInfo(fixedPos, p, (TouchID) touch));
+                                else
+                                    _touchCapture->touchDown(AGTouchInfo(pos, p, (TouchID) touch));
+                            }
+                            else
+                            {
+                                switch (_drawMode)
+                                {
+                                    case DRAWMODE_NODE:
+                                        _touchHandler = [[AGDrawNodeTouchHandler alloc] initWithViewController:self];
+                                        break;
+                                    case DRAWMODE_FREEDRAW:
+                                        _touchHandler = [[AGDrawFreedrawTouchHandler alloc] initWithViewController:self];
+                                        break;
+                                }
+                            }
+                        }
+                            break;
+                    }
+                }
+                
+                [_touchHandler touchesBegan:touches withEvent:event];
             }
-
-            [_touchHandler touchesBegan:touches withEvent:event];
         }
     }
 }
@@ -991,8 +1022,12 @@ static AGViewController * g_instance = nil;
             UITouch *touch = [touches anyObject];
             CGPoint p = [touch locationInView:self.view];
             GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
+            GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:p];
             
-            _touchCapture->touchMove(AGTouchInfo(pos, p, (TouchID) touch));
+            if(_touchCapture->renderFixed())
+                _touchCapture->touchMove(AGTouchInfo(fixedPos, p, (TouchID) touch));
+            else
+                _touchCapture->touchMove(AGTouchInfo(pos, p, (TouchID) touch));
         }
         else
             [_touchHandler touchesMoved:touches withEvent:event];
@@ -1042,8 +1077,12 @@ static AGViewController * g_instance = nil;
             UITouch *touch = [touches anyObject];
             CGPoint p = [touch locationInView:self.view];
             GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
+            GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:p];
             
-            _touchCapture->touchUp(AGTouchInfo(pos, p, (TouchID) touch));
+            if(_touchCapture->renderFixed())
+                _touchCapture->touchUp(AGTouchInfo(fixedPos, p, (TouchID) touch));
+            else
+                _touchCapture->touchUp(AGTouchInfo(pos, p, (TouchID) touch));
             _touchCapture = NULL;
         }
         else
