@@ -71,7 +71,14 @@ public:
     const float *lastOutputBuffer() const { return m_outputBuffer; }
     
     static int sampleRate() { return s_sampleRate; }
-    static int bufferSize() { return 1024; }
+    static int bufferSize()
+    {
+#ifdef TARGET_IPHONE_SIMULATOR
+        return 512;
+#else
+        return 256;
+#endif
+    }
     
 private:
     
