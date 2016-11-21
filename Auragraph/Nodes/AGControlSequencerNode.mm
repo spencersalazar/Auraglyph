@@ -75,7 +75,9 @@ public:
         m_lastStepAlpha = expcurvef(1, 0, 4, 2);
         m_lastStepAlpha.finish();
         
-        m_bpmSlider = new AGSlider(GLvertex3f(m_width/2-75, m_height/2-AGUISequencerEditor_stepSize/2, 0));
+        TexFont *text = AGStyle::standardFont64();
+        float bpmSliderX = 10+text->width("bpm")*0.61+5+m_width/7/2;
+        m_bpmSlider = new AGSlider(GLvertex3f(-m_width/2+bpmSliderX, m_height/2-AGUISequencerEditor_stepSize/2, 0));
         m_bpmSlider->init();
         
         m_bpmSlider->setSize(GLvertex2f(m_width/7, AGUISequencerEditor_stepSize*0.6));
@@ -281,7 +283,7 @@ public:
         proj = m_renderState.projection;
         
         titleMV = GLKMatrix4Translate(m_renderState.modelview,
-                                      m_width/2-50,
+                                      -m_width/2+10,
                                       m_height/2-AGUISequencerEditor_stepSize/2-text->height()*0.61/2,
                                       0);
         titleMV = GLKMatrix4Scale(titleMV, 0.61, 0.61, 0.61);
