@@ -502,6 +502,19 @@ void AGNode::finalPortValue(float &value, int portId, int sample) const
         value = m_params.at(portId);
 }
 
+int AGNode::numInputsForPort(int portId)
+{
+    int portNum = m_param2InputPort[portId];
+    int numInputs = 0;
+    for(auto conn : m_inbound)
+    {
+        if(conn->dstPort() == portNum)
+            numInputs++;
+    }
+    
+    return numInputs;
+}
+
 AGDocument::Node AGNode::serialize()
 {
     assert(type().length());

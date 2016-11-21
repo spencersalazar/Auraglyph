@@ -279,19 +279,6 @@ void AGAudioNode::pullInputPorts(sampletime t, int nFrames)
     this->unlock();
 }
 
-int AGAudioNode::numInputsForPort(int portId)
-{
-    int portNum = m_param2InputPort[portId];
-    int numInputs = 0;
-    for(auto conn : m_inbound)
-    {
-        if(conn->dstPort() == portNum)
-            numInputs++;
-    }
-    
-    return numInputs;
-}
-
 void AGAudioNode::pullPortInput(int portId, int num, sampletime t, float *output, int nFrames)
 {
     if(m_param2InputPort.count(portId) == 0) return;

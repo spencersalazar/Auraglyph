@@ -61,7 +61,6 @@ public:
     virtual GLvertex3f relativePositionForInputPort(int port) const override;
     virtual GLvertex3f relativePositionForOutputPort(int port) const override;
     
-    int numInputsForPort(int portId);
     void pullPortInput(int portId, int num, sampletime t, float *output, int nFrames);
 //    virtual void finalPortValue(float &value, int portId, int sample = -1) const override;
     
