@@ -589,6 +589,8 @@ void AGControlSequencerNode::receiveControl(int port, const AGControl &control)
 {
     if(port == m_param2InputPort[PARAM_ADVANCE] && control.getFloat() > 0)
         updateStep();
+    else if (port == m_param2InputPort[PARAM_BPM])
+        setBpm(control.getFloat());
 }
 
 int AGControlSequencerNode::currentStep()
@@ -646,7 +648,7 @@ float AGControlSequencerNode::bpm()
 
 void AGControlSequencerNode::setBpm(float bpm)
 {
-    setParam(PARAM_BPM, bpm);
+    setParam(PARAM_BPM, validateParam(PARAM_BPM, bpm));
     m_timer.setInterval(60.0/param(PARAM_BPM));
 }
 
