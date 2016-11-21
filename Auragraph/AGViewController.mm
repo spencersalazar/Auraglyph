@@ -8,14 +8,11 @@
 
 #import "AGViewController.h"
 #import "Geometry.h"
-#import "ShaderHelper.h"
-#import "hsv.h"
-#import "ES2Render.h"
+//#import "ShaderHelper.h"
+//#import "ES2Render.h"
 #import "AGHandwritingRecognizer.h"
 #import "AGInteractiveObject.h"
 #import "AGNode.h"
-#import "AGAudioNode.h"
-#import "AGControlNode.h"
 #import "AGAudioManager.h"
 #import "AGUserInterface.h"
 #import "TexFont.h"
@@ -30,6 +27,7 @@
 #import "spstl.h"
 #import "AGAnalytics.h"
 #import "AGUISaveLoadDialog.h"
+#import "AGPreferences.h"
 
 #import <list>
 #import <map>
@@ -202,11 +200,11 @@ static AGViewController * g_instance = nil;
     [self initUI];
     
     /* load default program */
-    if(!AG_RESET_DOCUMENT && AGDocument::existsForTitle(AG_DEFAULT_FILENAME))
+    std::string _lastOpened = AGPreferences::instance().lastOpenedDocument();
+    if(_lastOpened.size() != 0)
     {
-        AGDocument defaultDoc;
-        defaultDoc.load(AG_DEFAULT_FILENAME);
-        [self _loadDocument:defaultDoc];
+        AGDocument doc = AGDocumentManager::instance().load(_lastOpened);
+        [self _loadDocument:doc];
     }
     else
     {
@@ -218,11 +216,6 @@ static AGViewController * g_instance = nil;
     }
     
     g_instance = self;
-    
-    if(AG_DO_TRAINER)
-    {
-        [self presentViewController:self.trainer animated:YES completion:nil];
-    }
 }
 
 - (void)initUI
@@ -1123,8 +1116,6 @@ static AGViewController * g_instance = nil;
         }
     });
     
-    doc.saveTo("_default");
-    
     if(_currentDocumentFilename.size())
     {
         AGDocumentManager::instance().update(_currentDocumentFilename, doc);
@@ -1135,6 +1126,7 @@ static AGViewController * g_instance = nil;
         
         saveDialog->onSave([self](const std::string &filename){
             _currentDocumentFilename = filename;
+            AGPreferences::instance().setLastOpenedDocument(_currentDocumentFilename);
         });
         
         _dashboard.push_back(saveDialog);
@@ -1147,6 +1139,7 @@ static AGViewController * g_instance = nil;
     
     loadDialog->onLoad([self](const std::string &filename, AGDocument &doc){
         _currentDocumentFilename = filename;
+        AGPreferences::instance().setLastOpenedDocument(_currentDocumentFilename);
         [self _loadDocument:doc];
     });
     

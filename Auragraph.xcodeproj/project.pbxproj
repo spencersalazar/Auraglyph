@@ -91,14 +91,13 @@
 		099AF12817D1A6DA000BAB7B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 099AF12017D1A6DA000BAB7B /* unzip.c */; };
 		099AF12917D1A6DA000BAB7B /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 099AF12217D1A6DA000BAB7B /* zip.c */; };
 		099AF12A17D1A6DA000BAB7B /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 099AF12517D1A6DA000BAB7B /* SSZipArchive.m */; };
-		099AF12C17D1A6EE000BAB7B /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 099AF12B17D1A6EE000BAB7B /* libz.dylib */; };
-		099AF12E17D1A892000BAB7B /* projects.zip in Resources */ = {isa = PBXBuildFile; fileRef = 099AF12D17D1A892000BAB7B /* projects.zip */; };
-		09BE8B9B1C952386002097F0 /* AGControlSequencerNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09BE8B991C952386002097F0 /* AGControlSequencerNode.mm */; };
 		09B674441D6D9E8700F84E09 /* AGCompositeNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */; };
 		09B962501DD839A0001DCFB1 /* AGControlOrientationNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B9624E1DD839A0001DCFB1 /* AGControlOrientationNode.mm */; };
 		09B962521DD872C0001DCFB1 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09B962511DD872C0001DCFB1 /* CoreMotion.framework */; };
 		09B962551DDB1488001DCFB1 /* AGUISaveLoadDialog.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B962531DDB1488001DCFB1 /* AGUISaveLoadDialog.mm */; };
 		09B9626E1DDE3F1E001DCFB1 /* AGDocumentManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B9626C1DDE3F1E001DCFB1 /* AGDocumentManager.mm */; };
+		09B962871DE2ED38001DCFB1 /* AGPreferences.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B962851DE2ED38001DCFB1 /* AGPreferences.mm */; };
+		09BE8B9B1C952386002097F0 /* AGControlSequencerNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09BE8B991C952386002097F0 /* AGControlSequencerNode.mm */; };
 		09C7C3E618CF2B8E0099CE88 /* Waveform.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 09C7C3E318CF27AC0099CE88 /* Waveform.vsh */; };
 		09C7C3E718CF2B8E0099CE88 /* Waveform.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 09C7C3E218CF27AC0099CE88 /* Waveform.fsh */; };
 		09D8C3FF1A0A4DF2008D788A /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 09D8C3FE1A0A4DF2008D788A /* OFL.txt */; };
@@ -320,10 +319,6 @@
 		099AF12517D1A6DA000BAB7B /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
 		099AF12D17D1A892000BAB7B /* projects.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = projects.zip; sourceTree = "<group>"; };
 		09A8BB4019F9E39E00E15BF7 /* spMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spMath.h; sourceTree = "<group>"; };
-		09BE8B991C952386002097F0 /* AGControlSequencerNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGControlSequencerNode.mm; sourceTree = "<group>"; };
-		09BE8B9A1C952386002097F0 /* AGControlSequencerNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGControlSequencerNode.h; sourceTree = "<group>"; };
-		09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGCompositeNode.mm; sourceTree = "<group>"; };
-		09B674431D6D9E8700F84E09 /* AGCompositeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGCompositeNode.h; sourceTree = "<group>"; };
 		09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = AGCompositeNode.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		09B674431D6D9E8700F84E09 /* AGCompositeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AGCompositeNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		09B674461D6DA2B200F84E09 /* AGAudioCapturer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAudioCapturer.h; sourceTree = "<group>"; };
@@ -334,6 +329,10 @@
 		09B962541DDB1488001DCFB1 /* AGUISaveLoadDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGUISaveLoadDialog.h; sourceTree = "<group>"; };
 		09B9626C1DDE3F1E001DCFB1 /* AGDocumentManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGDocumentManager.mm; sourceTree = "<group>"; };
 		09B9626D1DDE3F1E001DCFB1 /* AGDocumentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGDocumentManager.h; sourceTree = "<group>"; };
+		09B962851DE2ED38001DCFB1 /* AGPreferences.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGPreferences.mm; sourceTree = "<group>"; };
+		09B962861DE2ED38001DCFB1 /* AGPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGPreferences.h; sourceTree = "<group>"; };
+		09BE8B991C952386002097F0 /* AGControlSequencerNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGControlSequencerNode.mm; sourceTree = "<group>"; };
+		09BE8B9A1C952386002097F0 /* AGControlSequencerNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGControlSequencerNode.h; sourceTree = "<group>"; };
 		09C7C3E218CF27AC0099CE88 /* Waveform.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Waveform.fsh; path = Shaders/Waveform.fsh; sourceTree = "<group>"; };
 		09C7C3E318CF27AC0099CE88 /* Waveform.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Waveform.vsh; path = Shaders/Waveform.vsh; sourceTree = "<group>"; };
 		09D8C3FE1A0A4DF2008D788A /* OFL.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
@@ -539,6 +538,8 @@
 				09412E041A205A070065598D /* AGDocument.mm */,
 				09B9626D1DDE3F1E001DCFB1 /* AGDocumentManager.h */,
 				09B9626C1DDE3F1E001DCFB1 /* AGDocumentManager.mm */,
+				09B962861DE2ED38001DCFB1 /* AGPreferences.h */,
+				09B962851DE2ED38001DCFB1 /* AGPreferences.mm */,
 				0944E8C51DCB325D00EB8087 /* AGAnalytics.h */,
 				0944E8C41DCB325D00EB8087 /* AGAnalytics.mm */,
 				099AF11017D12DD9000BAB7B /* AGTrainerViewController.h */,
@@ -938,6 +939,7 @@
 				0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */,
 				09412E061A205A070065598D /* AGDocument.mm in Sources */,
 				091081801A0B63DB0063028B /* AGStyle.mm in Sources */,
+				09B962871DE2ED38001DCFB1 /* AGPreferences.mm in Sources */,
 				099AF11317D12DD9000BAB7B /* AGTrainerViewController.mm in Sources */,
 				09F2D53A1D7EA33400F537C7 /* Delay.cpp in Sources */,
 				099AF12617D1A6DA000BAB7B /* ioapi.c in Sources */,
