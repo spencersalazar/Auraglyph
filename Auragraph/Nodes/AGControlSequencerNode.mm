@@ -539,7 +539,8 @@ void AGControlSequencerNode::initFinal()
             *j = Random::unit();
     
     m_timer = AGTimer(60.0/param(PARAM_BPM), ^(AGTimer *) {
-        updateStep();
+        if(numInputsForPort(PARAM_ADVANCE) == 0)
+            updateStep();
     });
 }
 
@@ -584,6 +585,11 @@ int AGControlSequencerNode::numOutputPorts() const
     return m_sequence.size();
 }
 
+void AGControlSequencerNode::receiveControl(int port, const AGControl &control)
+{
+    if(port == m_param2InputPort[PARAM_ADVANCE] && control.getFloat() > 0)
+        updateStep();
+}
 
 int AGControlSequencerNode::currentStep()
 {

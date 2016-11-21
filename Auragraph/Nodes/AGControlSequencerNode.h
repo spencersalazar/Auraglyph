@@ -54,6 +54,8 @@ public:
     void setStepValue(int seq, int step, float value);
     float getStepValue(int seq, int step);
     
+    void receiveControl(int port, const AGControl &control) override;
+    
     float bpm();
     void setBpm(float bpm);
     
