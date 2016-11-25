@@ -26,19 +26,24 @@ public:
     AGUINodeSelector(const GLvertex3f &pos);
     virtual ~AGUINodeSelector();
     
-    virtual void update(float t, float dt);
-    virtual void render();
+    virtual void update(float t, float dt) override;
+    virtual void render() override;
     
-    virtual void touchDown(const GLvertex3f &t);
-    virtual void touchMove(const GLvertex3f &t);
-    virtual void touchUp(const GLvertex3f &t);
+    virtual void touchDown(const GLvertex3f &t) override;
+    virtual void touchMove(const GLvertex3f &t) override;
+    virtual void touchUp(const GLvertex3f &t) override;
     
-    virtual AGNode *createNode();
+    virtual AGNode *createNode() override;
     
-    virtual bool done() { return m_done; }
+    virtual bool done() override { return m_done; }
     
-    virtual void renderOut();
-    virtual bool finishedRenderingOut();
+    GLvrectf effectiveBounds() override
+    {
+        return GLvrectf(m_pos-GLvertex2f(m_radius, m_radius), m_pos+GLvertex2f(m_radius, m_radius));
+    }
+    
+    virtual void renderOut() override;
+    virtual bool finishedRenderingOut() override;
     
 private:
     const ManagerType &m_manager;

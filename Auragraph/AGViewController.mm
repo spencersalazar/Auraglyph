@@ -91,6 +91,7 @@ enum InterfaceMode
     map<UITouch *, UITouch *> _freeTouches;
     map<UITouch *, AGTouchHandler *> _touchHandlers;
     map<UITouch *, AGInteractiveObject *> _touchCaptures;
+    AGTouchHandler *_touchHandlerQueue;
     
     std::list<AGNode *> _nodes;
     std::list<AGNode *> _nodeRemoveList;
@@ -465,21 +466,7 @@ static AGViewController * g_instance = nil;
 
 - (void)removeNode:(AGNode *)node
 {
-    //    _defaultDocument.removeNode(node->uuid());
-    
-    // only process for removal if it is part of the node list in the first place
-    bool hasNode = (std::find(_nodes.begin(), _nodes.end(), node) != _nodes.end());
-    
-    if(hasNode)
-    {
-        [self removeFromTouchCapture:node];
-        
-        AGInteractiveObject * ui = node->userInterface();
-        if(ui)
-            _interfaceObjects.remove(ui);
-        
-        _nodeRemoveList.push_back(node);
-    }
+    [self fadeOutAndDelete:node];
 }
 
 - (void)resignNode:(AGNode *)node
@@ -544,7 +531,18 @@ static AGViewController * g_instance = nil;
 
 - (void)fadeOutAndDelete:(AGInteractiveObject *)object
 {
-    if(find(_removeList.begin(), _removeList.end(), object) == _removeList.end())
+    assert(object);
+    assert(dynamic_cast<AGConnection *>(object) == NULL);
+    
+    bool isObject = false;
+    bool isDash = false;
+    
+    if(find(_objects.begin(), _objects.end(), object) != _objects.end())
+        isObject = true;
+    else if(find(_dashboard.begin(), _dashboard.end(), object) != _dashboard.end())
+        isDash = true;
+    
+    if(isObject || isDash)
     {
         [self removeFromTouchCapture:object];
         
@@ -555,8 +553,17 @@ static AGViewController * g_instance = nil;
         object->renderOut();
         _removeList.push_back(object);
         
-        _objects.remove(object);
-        _dashboard.remove(object);
+        if(isObject)
+        {
+            _objects.remove(object);
+            AGNode *node = dynamic_cast<AGNode *>(object);
+            if(node)
+                _nodes.remove(node);
+        }
+        else if(isDash)
+        {
+            _dashboard.remove(object);
+        }
     }
 }
 
@@ -582,6 +589,7 @@ static AGViewController * g_instance = nil;
 
 - (void)removeFreeDraw:(AGFreeDraw *)freedraw
 {
+    assert(freedraw);
     _removeList.push_back(freedraw);
 }
 
@@ -682,7 +690,9 @@ static AGViewController * g_instance = nil;
         {
             std::list<AGInteractiveObject *>::iterator j = i++; // copy iterator to allow removal
             
-            if((*j)->finishedRenderingOut())
+            AGInteractiveObject *obj = *j;
+            assert(obj);
+            if(obj->finishedRenderingOut())
             {
                 delete *j;
                 _removeList.erase(j);
@@ -912,36 +922,18 @@ static AGViewController * g_instance = nil;
         AGInteractiveObject *touchCapture = NULL;
         AGInteractiveObject *touchCaptureTopLevelObject = NULL;
         
+        // search dashboard items
         // search in reverse order
-        for(auto i = _objects.rbegin(); i != _objects.rend(); i++)
+        for(auto i = _dashboard.rbegin(); i != _dashboard.rend(); i++)
         {
             AGInteractiveObject *object = *i;
-            
-            // check if its a node
-            AGNode *node = dynamic_cast<AGNode *>(object);
-            if(node)
-            {
-                // nodes require special hit testing
-                // in addition to regular hit testing
-                int port;
-                AGNode::HitTestResult result = node->hit(pos, &port);
-                if(result != AGNode::HIT_NONE)
-                {
-                    if(result == AGNode::HIT_INPUT_NODE || result == AGNode::HIT_OUTPUT_NODE)
-                        handler = [[AGConnectTouchHandler alloc] initWithViewController:self];
-                    else if(result == AGNode::HIT_MAIN_NODE)
-                        handler = [[AGMoveNodeTouchHandler alloc] initWithViewController:self node:node];
-                    
-                    break;
-                }
-            }
             
             // check regular interactive object
             if(object->renderFixed())
                 touchCapture = object->hitTest(fixedPos);
             else
                 touchCapture = object->hitTest(pos);
-        
+            
             if(touchCapture)
             {
                 touchCaptureTopLevelObject = object;
@@ -949,7 +941,59 @@ static AGViewController * g_instance = nil;
             }
         }
         
-        if(handler == NULL && touchCapture == NULL)
+        // search pending handlers
+        if(touchCapture == NULL)
+        {
+            if(_touchHandlerQueue && [_touchHandlerQueue hitTest:pos])
+            {
+                handler = _touchHandlerQueue;
+                _touchHandlerQueue = nil;
+            }
+        }
+        
+        // search the rest of the objects
+        if(touchCapture == NULL && handler == nil)
+        {
+            // search in reverse order
+            for(auto i = _objects.rbegin(); i != _objects.rend(); i++)
+            {
+                AGInteractiveObject *object = *i;
+                
+                // check if its a node
+                // todo: check node ports first
+                AGNode *node = dynamic_cast<AGNode *>(object);
+                if(node)
+                {
+                    // nodes require special hit testing
+                    // in addition to regular hit testing
+                    int port;
+                    AGNode::HitTestResult result = node->hit(pos, &port);
+                    if(result != AGNode::HIT_NONE)
+                    {
+                        if(result == AGNode::HIT_INPUT_NODE || result == AGNode::HIT_OUTPUT_NODE)
+                            handler = [[AGConnectTouchHandler alloc] initWithViewController:self];
+                        else if(result == AGNode::HIT_MAIN_NODE)
+                            handler = [[AGMoveNodeTouchHandler alloc] initWithViewController:self node:node];
+                        
+                        break;
+                    }
+                }
+                
+                // check regular interactive object
+                if(object->renderFixed())
+                    touchCapture = object->hitTest(fixedPos);
+                else
+                    touchCapture = object->hitTest(pos);
+                
+                if(touchCapture)
+                {
+                    touchCaptureTopLevelObject = object;
+                    break;
+                }
+            }
+        }
+        
+        if(touchCapture == NULL && handler == nil)
         {
             if(_freeTouches.size() == 1)
             {
@@ -1021,8 +1065,12 @@ static AGViewController * g_instance = nil;
             {
                 CGPoint p = [touch locationInView:self.view];
                 GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
+                GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:p];
                 
-                touchCapture->touchMove(AGTouchInfo(pos, p, (TouchID) touch));
+                if(touchCapture->renderFixed())
+                    touchCapture->touchMove(AGTouchInfo(fixedPos, p, (TouchID) touch));
+                else
+                    touchCapture->touchMove(AGTouchInfo(pos, p, (TouchID) touch));
             }
         }
         else if(_touchHandlers.count(touch))
@@ -1092,8 +1140,13 @@ static AGViewController * g_instance = nil;
             {
                 CGPoint p = [touch locationInView:self.view];
                 GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
+                GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:p];
                 
-                touchCapture->touchUp(AGTouchInfo(pos, p, (TouchID) touch));
+                if(touchCapture->renderFixed())
+                    touchCapture->touchUp(AGTouchInfo(fixedPos, p, (TouchID) touch));
+                else
+                    touchCapture->touchUp(AGTouchInfo(pos, p, (TouchID) touch));
+
                 _touchCaptures.erase(touch);
             }
         }
@@ -1101,6 +1154,9 @@ static AGViewController * g_instance = nil;
         {
             AGTouchHandler *touchHandler = _touchHandlers[touch];
             [touchHandler touchesEnded:[NSSet setWithObject:touch] withEvent:event];
+            AGTouchHandler *nextHandler = [touchHandler nextHandler];
+            if(nextHandler)
+                _touchHandlerQueue = nextHandler;
             _touchHandlers.erase(touch);
         }
         

@@ -26,6 +26,8 @@
 - (id)initWithViewController:(AGViewController *)viewController;
 - (AGTouchHandler *)nextHandler;
 
+- (BOOL)hitTest:(GLvertex3f)t;
+
 - (void)update:(float)t dt:(float)dt;
 - (void)render;
 

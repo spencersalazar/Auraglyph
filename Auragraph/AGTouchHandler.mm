@@ -55,6 +55,11 @@
 
 - (AGTouchHandler *)nextHandler { return _nextHandler; }
 
+- (BOOL)hitTest:(GLvertex3f)t
+{
+    return NO;
+}
+
 - (void)update:(float)t dt:(float)dt { }
 - (void)render { }
 
@@ -956,6 +961,11 @@ private:
 - (void)dealloc
 {
 //    SAFE_DELETE(_nodeSelector);
+}
+
+- (BOOL)hitTest:(GLvertex3f)t
+{
+    return _nodeSelector->hitTest(t) != NULL;
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
