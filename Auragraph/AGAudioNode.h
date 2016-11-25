@@ -61,7 +61,6 @@ public:
     virtual GLvertex3f relativePositionForInputPort(int port) const override;
     virtual GLvertex3f relativePositionForOutputPort(int port) const override;
     
-    int numInputsForPort(int portId);
     void pullPortInput(int portId, int num, sampletime t, float *output, int nFrames);
 //    virtual void finalPortValue(float &value, int portId, int sample = -1) const override;
     
@@ -71,7 +70,14 @@ public:
     const float *lastOutputBuffer() const { return m_outputBuffer; }
     
     static int sampleRate() { return s_sampleRate; }
-    static int bufferSize() { return 1024; }
+    static int bufferSize()
+    {
+#ifdef TARGET_IPHONE_SIMULATOR
+        return 512;
+#else
+        return 256;
+#endif
+    }
     
 private:
     

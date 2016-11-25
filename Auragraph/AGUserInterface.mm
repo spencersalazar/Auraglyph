@@ -70,12 +70,23 @@ void AGUIButton::render()
     
     float textScale = 0.5;
     
-    GLKMatrix4 proj = AGNode::projectionMatrix();
+    GLKMatrix4 proj;
     GLKMatrix4 modelView;
-    if(renderFixed())
-        modelView = AGNode::fixedModelViewMatrix();
+    
+    if(parent())
+    {
+        modelView = parent()->m_renderState.modelview;
+        proj = parent()->m_renderState.projection;
+    }
     else
-        modelView = AGNode::globalModelViewMatrix();
+    {
+        proj = projectionMatrix();
+        if(renderFixed())
+            modelView = AGNode::fixedModelViewMatrix();
+        else
+            modelView = AGNode::globalModelViewMatrix();
+    }
+    
     modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
     GLKMatrix4 textMV = GLKMatrix4Translate(modelView, m_size.x/2-text->width(m_title)*textScale/2, m_size.y/2-text->height()*textScale/2*1.25, 0);
 //    GLKMatrix4 textMV = modelView;
@@ -91,6 +102,8 @@ void AGUIButton::render()
     
     GLcolor4f color = GLcolor4f::white;
     color.a = m_renderState.alpha;
+    GLcolor4f blackA = AGStyle::darkColor();
+    blackA.a = m_renderState.alpha*0.75;
 
     glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
     glEnableVertexAttribArray(GLKVertexAttribPosition);
@@ -110,13 +123,20 @@ void AGUIButton::render()
         color.a = m_renderState.alpha;
         
         text->render(m_title, color, textMV, proj);
+        
+        // restore "default" line width
+        glLineWidth(2.0);
     }
     else
     {
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &blackA);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        
+        glLineWidth(2.0);
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
         glDrawArrays(GL_LINE_LOOP, 0, 4);
         
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::black);
-        glLineWidth(2.0);
         glDrawArrays(GL_LINE_LOOP, 4, 4);
         
         color = AGStyle::lightColor();

@@ -192,6 +192,11 @@ void AGNode::addOutbound(AGConnection *connection)
 
 void AGNode::removeInbound(AGConnection *connection)
 {
+    // clear m_controlPortBuffer for this connection since it may point to an
+    // AGControl that will continue to be updated
+    // TODO: consider making m_controlPortBuffer single-indirection array
+    // requiring a copy on each push, but making this awkward step unnecessary
+    m_controlPortBuffer[connection->dstPort()] = NULL;
     m_inbound.remove(connection);
 }
 
@@ -440,7 +445,7 @@ void AGNode::pushControl(int port, const AGControl &control)
     
     for(AGConnection *conn : m_outbound)
     {
-        if(conn->rate() == RATE_CONTROL)
+        if(conn->rate() == RATE_CONTROL && conn->srcPort() == port)
         {
             conn->dst()->receiveControl_internal(conn->dstPort(), control);
             conn->controlActivate(control);
@@ -495,6 +500,19 @@ void AGNode::finalPortValue(float &value, int portId, int sample) const
         value = m_controlPortBuffer[index].getFloat();
     else
         value = m_params.at(portId);
+}
+
+int AGNode::numInputsForPort(int portId)
+{
+    int portNum = m_param2InputPort[portId];
+    int numInputs = 0;
+    for(auto conn : m_inbound)
+    {
+        if(conn->dstPort() == portNum)
+            numInputs++;
+    }
+    
+    return numInputs;
 }
 
 AGDocument::Node AGNode::serialize()
@@ -689,6 +707,8 @@ void AGFreeDraw::touchUp(const GLvertex3f &t)
 
 AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
 {
+    return NULL;
+    
     if(!m_active)
         return NULL;
     

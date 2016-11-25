@@ -31,10 +31,16 @@ public:
     static const float open_animTimeX;
     static const float open_animTimeY;
     
+    static const GLvertex2f editor_titleInset;
+    
     static const GLcolor4f foregroundColor;
     static const GLcolor4f backgroundColor;
     
+    constexpr static const float aspect16_9 = 16.0f/9.0f;
+    
     constexpr static const float oldGlobalScale = 5000.0f;
+    
+    constexpr static const float maxTravel = 5.0f;
 };
 
 

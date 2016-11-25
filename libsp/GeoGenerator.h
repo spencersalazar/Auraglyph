@@ -40,6 +40,16 @@ namespace GeoGen
      - Generate vertices for rect centered at (0,0,0) and with specified width/height
      - points must have sufficient space for 4 GLvertex3f's
      - Draw as stroke with GL_LINE_LOOP or fill with GL_TRIANGLE_FAN
+     
+     |---width---|
+     +-----+-----+ -
+     |           | |
+     |           | |
+     +     •     + | height
+     |   (0,0)   | |
+     |           | |
+     +-----+-----+ -
+
      */
     void makeRect(GLvertex3f *points, float width, float height);
     

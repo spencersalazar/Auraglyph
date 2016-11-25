@@ -176,7 +176,8 @@ public:
     float param(int paramId) const { return m_params.at(paramId); }
     void setParam(int paramId, float value) { m_params[paramId] = value; editPortValueChanged(paramId); }
     float validateParam(int paramId, float value) const { return validateEditPortValue(m_param2EditPort.at(paramId), value); }
-    
+    int numInputsForPort(int portId);
+
     /*** Subclassing note: override information as described ***/
     
     /* can be overridden by final subclass */

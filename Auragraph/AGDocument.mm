@@ -79,7 +79,12 @@ void AGDocument::load(const string &title)
     m_title = title;
     
     NSString *filename = filenameForTitle(m_title);
-    NSData *data = [NSData dataWithContentsOfFile:filename];
+    loadFromPath([filename stlString]);
+}
+
+void AGDocument::loadFromPath(const string &path)
+{
+    NSData *data = [NSData dataWithContentsOfFile:[NSString stringWithSTLString:path]];
     NSDictionary *doc = [NSJSONSerialization JSONObjectWithData:data options:0 error:NULL];
     
     if(doc)
@@ -190,7 +195,19 @@ void AGDocument::load(const string &title)
     }
 }
 
-void AGDocument::save()
+void AGDocument::save() const
+{
+    NSString *filepath = filenameForTitle(m_title);
+    saveToPath([filepath stlString]);
+}
+
+void AGDocument::saveTo(const string &title)
+{
+    m_title = title;
+    save();
+}
+
+void AGDocument::saveToPath(const std::string &path) const
 {
     NSMutableDictionary *doc = [NSMutableDictionary new];
     
@@ -283,15 +300,9 @@ void AGDocument::save()
     NSData *data = [NSJSONSerialization dataWithJSONObject:doc
                                                    options:NSJSONWritingPrettyPrinted
                                                      error:NULL];
-    NSString *filepath = filenameForTitle(m_title);
+    NSString *filepath = [NSString stringWithSTLString:path];
     NSLog(@"Saving to %@", filepath);
     [data writeToFile:filepath atomically:YES];
-}
-
-void AGDocument::saveTo(const string &title)
-{
-    m_title = title;
-    save();
 }
 
 void AGDocument::recreate(void (^createNode)(const Node &node),

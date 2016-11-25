@@ -8,14 +8,11 @@
 
 #import "AGViewController.h"
 #import "Geometry.h"
-#import "ShaderHelper.h"
-#import "hsv.h"
-#import "ES2Render.h"
+//#import "ShaderHelper.h"
+//#import "ES2Render.h"
 #import "AGHandwritingRecognizer.h"
 #import "AGInteractiveObject.h"
 #import "AGNode.h"
-#import "AGAudioNode.h"
-#import "AGControlNode.h"
 #import "AGAudioManager.h"
 #import "AGUserInterface.h"
 #import "TexFont.h"
@@ -25,10 +22,12 @@
 #import "AGTouchHandler.h"
 #import "AGAboutBox.h"
 #import "AGDocument.h"
+#import "AGDocumentManager.h"
 #import "GeoGenerator.h"
-#import "AGSlider.h"
 #import "spstl.h"
 #import "AGAnalytics.h"
+#import "AGUISaveLoadDialog.h"
+#import "AGPreferences.h"
 
 #import <list>
 #import <map>
@@ -98,6 +97,8 @@ enum InterfaceMode
 //    std::list<AGFreeDraw *> _freeDraws;
 //    std::list<AGConnection *> _connections;
     
+    std::list<AGInteractiveObject *> _dashboard;
+    
     std::list<AGInteractiveObject *> _objects;
     std::list<AGInteractiveObject *> _interfaceObjects;
     std::list<AGInteractiveObject *> _removeList;
@@ -116,9 +117,13 @@ enum InterfaceMode
     TexFont * _font;
     
     AGUIButton *_saveButton;
+    AGUIButton *_loadButton;
+    AGUIButton *_newButton;
     AGUIButton *_testButton;
     AGUIIconButton *_nodeButton;
     AGUIIconButton *_freedrawButton;
+    
+    std::string _currentDocumentFilename;
 }
 
 @property (strong, nonatomic) EAGLContext *context;
@@ -134,7 +139,12 @@ enum InterfaceMode
 - (void)updateMatrices;
 - (void)renderEdit;
 - (void)renderUser;
-- (void)save;
+
+- (void)_save;
+- (void)_openLoad;
+- (void)_clearDocument;
+- (void)_newDocument;
+- (void)_loadDocument:(AGDocument &)doc;
 
 @end
 
@@ -192,49 +202,11 @@ static AGViewController * g_instance = nil;
     [self initUI];
     
     /* load default program */
-    if(!AG_RESET_DOCUMENT && AGDocument::existsForTitle(AG_DEFAULT_FILENAME))
+    std::string _lastOpened = AGPreferences::instance().lastOpenedDocument();
+    if(_lastOpened.size() != 0)
     {
-        AGDocument defaultDoc;
-        defaultDoc.load(AG_DEFAULT_FILENAME);
-        
-        __block map<string, AGNode *> uuid2node;
-        
-        defaultDoc.recreate(^(const AGDocument::Node &docNode) {
-            AGNode *node = NULL;
-            if(docNode._class == AGDocument::Node::AUDIO)
-                node = AGNodeManager::audioNodeManager().createNodeType(docNode);
-            else if(docNode._class == AGDocument::Node::CONTROL)
-                node = AGNodeManager::controlNodeManager().createNodeType(docNode);
-            else if(docNode._class == AGDocument::Node::INPUT)
-                node = AGNodeManager::inputNodeManager().createNodeType(docNode);
-            else if(docNode._class == AGDocument::Node::OUTPUT)
-                node = AGNodeManager::outputNodeManager().createNodeType(docNode);
-            
-            if(node != NULL)
-            {
-                uuid2node[node->uuid()] = node;
-                [self addNode:node];
-                
-                if(node->type() == "Output")
-                {
-                    AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
-                    outputNode->setOutputDestination([AGAudioManager instance].masterOut);
-                }
-            }
-        }, ^(const AGDocument::Connection &docConnection) {
-            if(uuid2node.count(docConnection.srcUuid) && uuid2node.count(docConnection.dstUuid))
-            {
-                AGNode *srcNode = uuid2node[docConnection.srcUuid];
-                AGNode *dstNode = uuid2node[docConnection.dstUuid];
-                assert(docConnection.dstPort >= 0 && docConnection.dstPort < dstNode->numInputPorts());
-                assert(docConnection.srcPort >= 0 && docConnection.srcPort < srcNode->numOutputPorts());
-                AGConnection::connect(srcNode, docConnection.srcPort, dstNode, docConnection.dstPort);
-            }
-        }, ^(const AGDocument::Freedraw &docFreedraw) {
-            AGFreeDraw *freedraw = new AGFreeDraw(docFreedraw);
-            freedraw->init();
-            [self addTopLevelObject:freedraw];
-        });
+        AGDocument doc = AGDocumentManager::instance().load(_lastOpened);
+        [self _loadDocument:doc];
     }
     else
     {
@@ -245,10 +217,7 @@ static AGViewController * g_instance = nil;
         _nodes.push_back(node);
     }
     
-    if(AG_DO_TRAINER)
-    {
-        [self presentViewController:self.trainer animated:YES completion:nil];
-    }
+    g_instance = self;
 }
 
 - (void)initUI
@@ -280,14 +249,42 @@ static AGViewController * g_instance = nil;
     _saveButton->setRenderFixed(true);
     _saveButton->setAction(^{
         AGAnalytics::instance().eventSave();
-        [weakSelf save];
+        [weakSelf _save];
     });
-    [self addTopLevelObject:_saveButton];
+    _dashboard.push_back(_saveButton);
+    
+    /* load button */
+    float loadButtonWidth = saveButtonWidth;
+    float loadButtonHeight = saveButtonHeight;
+    _loadButton = new AGUIButton("Load",
+                                 [self fixedCoordinateForScreenCoordinate:CGPointMake(10, 20+saveButtonHeight*1+loadButtonHeight/2)],
+                                 GLvertex2f(loadButtonWidth, loadButtonHeight));
+    _loadButton->init();
+    _loadButton->setRenderFixed(true);
+    _loadButton->setAction(^{
+        // AGAnalytics::instance().eventSave();
+        [weakSelf _openLoad];
+    });
+    _dashboard.push_back(_loadButton);
+    
+    /* new button */
+    float newButtonWidth = saveButtonWidth;
+    float newButtonHeight = saveButtonHeight;
+    _newButton = new AGUIButton("New",
+                                [self fixedCoordinateForScreenCoordinate:CGPointMake(10, 20+saveButtonHeight*1.05+loadButtonHeight*1.2+newButtonHeight/2)],
+                                GLvertex2f(newButtonWidth, newButtonHeight));
+    _newButton->init();
+    _newButton->setRenderFixed(true);
+    _newButton->setAction(^{
+        // AGAnalytics::instance().eventSave();
+        [weakSelf _newDocument];
+    });
+    _dashboard.push_back(_newButton);
     
     float testButtonWidth = saveButtonWidth;
     float testButtonHeight = saveButtonHeight;
     _testButton = new AGUIButton("Trainer",
-                                 [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-testButtonWidth-10, 20+testButtonHeight/2)],
+                                 [self fixedCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-testButtonWidth-10, 20+testButtonHeight/2)],
                                  GLvertex2f(testButtonWidth, testButtonHeight));
     _testButton->init();
     _testButton->setRenderFixed(true);
@@ -295,14 +292,14 @@ static AGViewController * g_instance = nil;
         AGAnalytics::instance().eventTrainer();
         [self presentViewController:self.trainer animated:YES completion:nil];
     });
-    [self addTopLevelObject:_testButton];
+    _dashboard.push_back(_testButton);
     
     AGUIButtonGroup *modeButtonGroup = new AGUIButtonGroup();
     modeButtonGroup->init();
     
     /* freedraw button */
     float freedrawButtonWidth = 0.0095*AGStyle::oldGlobalScale;
-    GLvertex3f modeButtonStartPos = [self worldCoordinateForScreenCoordinate:CGPointMake(27.5, self.view.bounds.size.height-20)];
+    GLvertex3f modeButtonStartPos = [self fixedCoordinateForScreenCoordinate:CGPointMake(27.5, self.view.bounds.size.height-20)];
     AGRenderInfoV freedrawRenderInfo;
     freedrawRenderInfo.numVertex = 5;
     freedrawRenderInfo.geoType = GL_LINE_LOOP;
@@ -347,22 +344,16 @@ static AGViewController * g_instance = nil;
         _drawMode = DRAWMODE_NODE;
     }, true);
     
-    [self addTopLevelObject:modeButtonGroup];
+    _dashboard.push_back(modeButtonGroup);
     _drawMode = DRAWMODE_NODE;
     
 //    _interfaceMode = INTERFACEMODE_USER;
     _interfaceMode = INTERFACEMODE_EDIT;
     
     /* trash */
-    AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
+    AGUITrash::instance().setPosition([self fixedCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
     
 //    GLvertex3f vert = [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)];
-    
-    // test slider
-//    AGSlider *testSlider = new AGSlider(vert, 1.2);
-//    testSlider->init();
-//    testSlider->setSize(GLvertex2f(64, 32));
-//    _objects.push_back(testSlider);
 }
 
 - (void)_updateFixedUIPosition
@@ -371,16 +362,16 @@ static AGViewController * g_instance = nil;
     [self updateMatrices];
     
     CGPoint savePos = CGPointMake(10, 20+_saveButton->size().y/2);
-    _saveButton->setPosition([self worldCoordinateForScreenCoordinate:savePos]);
+    _saveButton->setPosition([self fixedCoordinateForScreenCoordinate:savePos]);
     
     CGPoint testPos = CGPointMake(self.view.bounds.size.width-_testButton->size().x-10, 20+_testButton->size().y/2);
-    _testButton->setPosition([self worldCoordinateForScreenCoordinate:testPos]);
+    _testButton->setPosition([self fixedCoordinateForScreenCoordinate:testPos]);
     
-    GLvertex3f modeButtonStartPos = [self worldCoordinateForScreenCoordinate:CGPointMake(27.5, self.view.bounds.size.height-7.5-_freedrawButton->size().y/2)];
+    GLvertex3f modeButtonStartPos = [self fixedCoordinateForScreenCoordinate:CGPointMake(27.5, self.view.bounds.size.height-7.5-_freedrawButton->size().y/2)];
     _freedrawButton->setPosition(modeButtonStartPos);
     _nodeButton->setPosition(modeButtonStartPos + GLvertex3f(0, _freedrawButton->size().y*1.25, 0));
     
-    AGUITrash::instance().setPosition([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-30)]);
+    AGUITrash::instance().setPosition([self fixedCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-30)]);
 }
 
 - (void)dealloc
@@ -565,6 +556,7 @@ static AGViewController * g_instance = nil;
         _removeList.push_back(object);
         
         _objects.remove(object);
+        _dashboard.remove(object);
     }
 }
 
@@ -650,7 +642,7 @@ static AGViewController * g_instance = nil;
     int viewport[] = { (int)self.view.bounds.origin.x, (int)(self.view.bounds.origin.y),
         (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
     bool success;
-    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, 0.0f),
+    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, 0.01f),
                                       _modelView, _projection, viewport, &success);
     
     //    vec = GLKMatrix4MultiplyVector3(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z), vec);
@@ -707,6 +699,8 @@ static AGViewController * g_instance = nil;
     _t += dt;
     
     AGUITrash::instance().update(_t, dt);
+    for(AGInteractiveObject *object : _dashboard)
+        object->update(_t, dt);
     for(AGInteractiveObject *object : _objects)
         object->update(_t, dt);
     for(AGInteractiveObject *removeObject : _removeList)
@@ -843,6 +837,9 @@ static AGViewController * g_instance = nil;
     // render removeList
     for(AGInteractiveObject *removeObject : _removeList)
         removeObject->render();
+    // render user interface
+    for(AGInteractiveObject *object : _dashboard)
+        object->render();
     
     for(auto kv : _touchHandlers)
         [_touchHandlers[kv.first] render];
@@ -969,6 +966,8 @@ static AGViewController * g_instance = nil;
                         handler = [[AGDrawFreedrawTouchHandler alloc] initWithViewController:self];
                         break;
                 }
+                
+                [handler touchesBegan:touches withEvent:event];
             }
             
             _freeTouches[touch] = touch;
@@ -1116,7 +1115,7 @@ static AGViewController * g_instance = nil;
 
 
 
-- (void)save
+- (void)_save
 {
     __block AGDocument doc;
     
@@ -1135,7 +1134,105 @@ static AGViewController * g_instance = nil;
         }
     });
     
-    doc.saveTo("_default");
+    if(_currentDocumentFilename.size())
+    {
+        AGDocumentManager::instance().update(_currentDocumentFilename, doc);
+    }
+    else
+    {
+        AGUISaveDialog *saveDialog = AGUISaveDialog::save(doc);
+        
+        saveDialog->onSave([self](const std::string &filename){
+            _currentDocumentFilename = filename;
+            AGPreferences::instance().setLastOpenedDocument(_currentDocumentFilename);
+        });
+        
+        _dashboard.push_back(saveDialog);
+    }
+}
+
+- (void)_openLoad
+{
+    AGUILoadDialog *loadDialog = AGUILoadDialog::load();
+    
+    loadDialog->onLoad([self](const std::string &filename, AGDocument &doc){
+        _currentDocumentFilename = filename;
+        AGPreferences::instance().setLastOpenedDocument(_currentDocumentFilename);
+        [self _loadDocument:doc];
+    });
+    
+    _dashboard.push_back(loadDialog);
+}
+
+- (void)_clearDocument
+{
+    // delete all nodes
+    itmap_safe(_nodes, ^bool(AGNode *&node){
+        [self removeNode:node];
+        return true;
+    });
+    // delete all objects
+    itmap_safe(_objects, ^bool(AGInteractiveObject *&object){
+        [self fadeOutAndDelete:object];
+        return true;
+    });
+}
+
+- (void)_newDocument
+{
+    [self _clearDocument];
+    
+    _currentDocumentFilename = "";
+    
+    // just create output node by itself
+    AGNode *node = AGNodeManager::audioNodeManager().createNodeOfType("Output", GLvertex3f(0, 0, 0));
+    AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
+    outputNode->setOutputDestination([AGAudioManager instance].masterOut);
+    _nodes.push_back(node);
+}
+
+- (void)_loadDocument:(AGDocument &)doc
+{
+    [self _clearDocument];
+    
+    __block map<string, AGNode *> uuid2node;
+    
+    doc.recreate(^(const AGDocument::Node &docNode) {
+        AGNode *node = NULL;
+        if(docNode._class == AGDocument::Node::AUDIO)
+            node = AGNodeManager::audioNodeManager().createNodeType(docNode);
+        else if(docNode._class == AGDocument::Node::CONTROL)
+            node = AGNodeManager::controlNodeManager().createNodeType(docNode);
+        else if(docNode._class == AGDocument::Node::INPUT)
+            node = AGNodeManager::inputNodeManager().createNodeType(docNode);
+        else if(docNode._class == AGDocument::Node::OUTPUT)
+            node = AGNodeManager::outputNodeManager().createNodeType(docNode);
+        
+        if(node != NULL)
+        {
+            uuid2node[node->uuid()] = node;
+            [self addNode:node];
+            
+            if(node->type() == "Output")
+            {
+                AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
+                outputNode->setOutputDestination([AGAudioManager instance].masterOut);
+            }
+        }
+    }, ^(const AGDocument::Connection &docConnection) {
+        if(uuid2node.count(docConnection.srcUuid) && uuid2node.count(docConnection.dstUuid))
+        {
+            AGNode *srcNode = uuid2node[docConnection.srcUuid];
+            AGNode *dstNode = uuid2node[docConnection.dstUuid];
+            assert(docConnection.dstPort >= 0 && docConnection.dstPort < dstNode->numInputPorts());
+            assert(docConnection.srcPort >= 0 && docConnection.srcPort < srcNode->numOutputPorts());
+            AGConnection::connect(srcNode, docConnection.srcPort, dstNode, docConnection.dstPort);
+        }
+    }, ^(const AGDocument::Freedraw &docFreedraw) {
+        AGFreeDraw *freedraw = new AGFreeDraw(docFreedraw);
+        freedraw->init();
+        [self addTopLevelObject:freedraw];
+    });
 }
 
 

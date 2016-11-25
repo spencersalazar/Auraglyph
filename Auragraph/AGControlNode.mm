@@ -10,10 +10,11 @@
 #include "AGGenericShader.h"
 #include "AGNode.h"
 #include "AGArrayNode.h"
+#include "AGControlSequencerNode.h"
 #include "AGTimer.h"
 #include "spstl.h"
 #include "AGStyle.h"
-
+#include "AGControlOrientationNode.h"
 
 //------------------------------------------------------------------------------
 // ### AGControlNode ###
@@ -423,6 +424,63 @@ public:
 };
 
 //------------------------------------------------------------------------------
+// ### AGControlMidiToFreqNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGControlMidiToFreqNode
+
+class AGControlMidiToFreqNode : public AGControlNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_MIDI,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGControlMidiToFreqNode>
+    {
+    public:
+        string _type() const override { return "midi2freq"; };
+        string _name() const override { return "midi2freq"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_MIDI, "midi", true, true },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override { return { }; };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius = 0.005*AGStyle::oldGlobalScale;
+            
+            return {
+                { -radius, 0, 0 }, {  radius, 0, 0 },
+                {  radius*0.38f,  radius*0.38f, 0 }, { radius, 0, 0 },
+                {  radius*0.38f, -radius*0.38f, 0 }, { radius, 0, 0 },
+            };
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINES; };
+    };
+    
+    using AGControlNode::AGControlNode;
+    
+    virtual int numOutputPorts() const override { return 1; }
+    
+    virtual void receiveControl(int port, const AGControl &control) override
+    {
+        float m = control.getFloat();
+        AGControl freqControl = powf(2.0f, (m-69.0f)/12.0f)*440.0f;
+        pushControl(0, freqControl);
+    }
+    
+private:
+};
+
+//------------------------------------------------------------------------------
 // ### AGNodeManager ###
 //------------------------------------------------------------------------------
 #pragma mark - AGNodeManager
@@ -437,9 +495,13 @@ const AGNodeManager &AGNodeManager::controlNodeManager()
         
         nodeTypes.push_back(new AGControlTimerNode::Manifest);
         nodeTypes.push_back(new AGControlArrayNode::Manifest);
+        nodeTypes.push_back(new AGControlSequencerNode::Manifest);
+        nodeTypes.push_back(new AGControlMidiToFreqNode::Manifest);
         
         nodeTypes.push_back(new AGControlAddNode::Manifest);
         nodeTypes.push_back(new AGControlMultiplyNode::Manifest);
+
+        nodeTypes.push_back(new AGControlOrientationNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();

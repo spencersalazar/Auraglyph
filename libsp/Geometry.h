@@ -123,6 +123,13 @@ struct GLcolor4f
         this->a = a;
     }
     
+#if ENABLE_GLKIT
+    inline void set(GLKVertexAttrib attrib = GLKVertexAttribColor) const
+    {
+        glVertexAttrib4fv(attrib, (const GLfloat *) this);
+    }
+#endif // ENABLE_GLKIT
+    
     static const GLcolor4f white;
     static const GLcolor4f red;
     static const GLcolor4f green;
