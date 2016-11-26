@@ -222,6 +222,9 @@ const std::list<AGConnection *> AGNode::inbound() const
 
 AGInteractiveObject *AGNode::_hitTestConnections(const GLvertex3f &t)
 {
+    // disable (connections are hit-tested explicitly in the view controller)
+    return NULL;
+    
     AGInteractiveObject *hit = NULL;
     
     // a node is only responsible for hittest/update/rendering inbound connections
@@ -385,7 +388,8 @@ void AGNode::unhit()
 
 AGInteractiveObject *AGNode::hitTest(const GLvertex3f &t)
 {
-    return _hitTestConnections(t);
+//    return _hitTestConnections(t);
+    return NULL;
 }
 
 void AGNode::touchDown(const GLvertex3f &t)

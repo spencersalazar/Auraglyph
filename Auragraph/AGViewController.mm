@@ -989,6 +989,21 @@ static AGViewController * g_instance = nil;
             }
         }
         
+        // search node connections
+        if(touchCapture == NULL && handler == nil)
+        {
+            for(AGNode *node : _nodes)
+            {
+                for(AGConnection *connection : node->outbound())
+                {
+                    touchCapture = connection->hitTest(pos);
+                    if(touchCapture)
+                        break;
+                }
+            }
+        }
+        
+        // deal with drawing
         if(touchCapture == NULL && handler == nil)
         {
             if(_freeTouches.size() == 1)
