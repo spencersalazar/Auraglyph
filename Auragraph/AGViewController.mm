@@ -541,7 +541,7 @@ static AGViewController * g_instance = nil;
 {
     assert([NSThread isMainThread]);
     assert(object);
-    assert(dynamic_cast<AGConnection *>(object) == NULL);
+//    assert(dynamic_cast<AGConnection *>(object) == NULL);
     
     dbgprint("fadeOutAndDelete: %s 0x%08x\n", typeid(*object).name(), (unsigned int) object);
     

@@ -159,6 +159,13 @@ void AGNode::fadeOutAndRemove()
 {
     m_active = false;
     m_fadeOut.reset();
+    
+    itmap_safe(m_inbound, ^(AGConnection *&connection){
+        [[AGViewController instance] fadeOutAndDelete:connection];
+    });
+    itmap_safe(m_outbound, ^(AGConnection *&connection){
+        [[AGViewController instance] fadeOutAndDelete:connection];
+    });
 }
 
 void AGNode::renderOut()
