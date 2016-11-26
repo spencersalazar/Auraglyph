@@ -94,15 +94,10 @@ enum InterfaceMode
     AGTouchHandler *_touchHandlerQueue;
     
     std::list<AGNode *> _nodes;
-    std::list<AGNode *> _nodeRemoveList;
-//    std::list<AGFreeDraw *> _freeDraws;
-//    std::list<AGConnection *> _connections;
-    
     std::list<AGInteractiveObject *> _dashboard;
-    
     std::list<AGInteractiveObject *> _objects;
     std::list<AGInteractiveObject *> _interfaceObjects;
-    std::list<AGInteractiveObject *> _removeList;
+    std::list<AGInteractiveObject *> _fadingOut;
     
     list<AGInteractiveObject *> _touchOutsideListeners;
     
@@ -453,6 +448,8 @@ static AGViewController * g_instance = nil;
 
 - (void)addNode:(AGNode *)node
 {
+    assert([NSThread isMainThread]);
+    
     _nodes.push_back(node);
     _objects.push_back(node);
     
@@ -471,6 +468,8 @@ static AGViewController * g_instance = nil;
 
 - (void)resignNode:(AGNode *)node
 {
+    assert([NSThread isMainThread]);
+    
     // remove without fading out or destroying
     
     // only process for removal if it is part of the node list in the first place
@@ -496,6 +495,9 @@ static AGViewController * g_instance = nil;
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object
 {
+    assert([NSThread isMainThread]);
+    assert(object);
+    
     _objects.push_back(object);
     
     AGInteractiveObject * ui = object->userInterface();
@@ -505,6 +507,9 @@ static AGViewController * g_instance = nil;
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object over:(AGInteractiveObject *)over
 {
+    assert([NSThread isMainThread]);
+    assert(object);
+    
     list<AGInteractiveObject *>::iterator ov = find(_objects.begin(), _objects.end(), over);
     if(ov != _objects.end())
         _objects.insert(++ov, object);
@@ -518,6 +523,9 @@ static AGViewController * g_instance = nil;
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object under:(AGInteractiveObject *)under
 {
+    assert([NSThread isMainThread]);
+    assert(object);
+    
     list<AGInteractiveObject *>::iterator un = find(_objects.begin(), _objects.end(), under);
     if(un != _objects.end())
         _objects.insert(un, object);
@@ -531,40 +539,30 @@ static AGViewController * g_instance = nil;
 
 - (void)fadeOutAndDelete:(AGInteractiveObject *)object
 {
+    assert([NSThread isMainThread]);
     assert(object);
     assert(dynamic_cast<AGConnection *>(object) == NULL);
     
-    bool isObject = false;
-    bool isDash = false;
+    dbgprint("fadeOutAndDelete: %s 0x%08x\n", typeid(*object).name(), (unsigned int) object);
     
-    if(find(_objects.begin(), _objects.end(), object) != _objects.end())
-        isObject = true;
-    else if(find(_dashboard.begin(), _dashboard.end(), object) != _dashboard.end())
-        isDash = true;
+    [self removeFromTouchCapture:object];
     
-    if(isObject || isDash)
+    AGInteractiveObject * ui = object->userInterface();
+    if(ui)
+        _interfaceObjects.remove(ui);
+    
+    assert(find(_fadingOut.begin(), _fadingOut.end(), object) == _fadingOut.end());
+    if(find(_fadingOut.begin(), _fadingOut.end(), object) == _fadingOut.end())
     {
-        [self removeFromTouchCapture:object];
-        
-        AGInteractiveObject * ui = object->userInterface();
-        if(ui)
-            _interfaceObjects.remove(ui);
-        
         object->renderOut();
-        _removeList.push_back(object);
-        
-        if(isObject)
-        {
-            _objects.remove(object);
-            AGNode *node = dynamic_cast<AGNode *>(object);
-            if(node)
-                _nodes.remove(node);
-        }
-        else if(isDash)
-        {
-            _dashboard.remove(object);
-        }
+        _fadingOut.push_back(object);
     }
+    
+    _objects.remove(object);
+    AGNode *node = dynamic_cast<AGNode *>(object);
+    if(node)
+        _nodes.remove(node);
+    _dashboard.remove(object);
 }
 
 - (void)removeFromTouchCapture:(AGInteractiveObject *)object
@@ -584,22 +582,30 @@ static AGViewController * g_instance = nil;
 
 - (void)addFreeDraw:(AGFreeDraw *)freedraw
 {
+    assert([NSThread isMainThread]);
+    
     _objects.push_back(freedraw);
 }
 
 - (void)removeFreeDraw:(AGFreeDraw *)freedraw
 {
+    assert([NSThread isMainThread]);
     assert(freedraw);
-    _removeList.push_back(freedraw);
+    
+    _fadingOut.push_back(freedraw);
 }
 
 - (void)addTouchOutsideListener:(AGInteractiveObject *)listener
 {
+    assert([NSThread isMainThread]);
+    
     _touchOutsideListeners.push_back(listener);
 }
 
 - (void)removeTouchOutsideListener:(AGInteractiveObject *)listener
 {
+    assert([NSThread isMainThread]);
+    
     _touchOutsideListeners.remove(listener);
 }
 
@@ -673,20 +679,9 @@ static AGViewController * g_instance = nil;
 
 - (void)update
 {
-    if(_nodeRemoveList.size())
+    if(_fadingOut.size() > 0)
     {
-        for(std::list<AGNode *>::iterator i = _nodeRemoveList.begin(); i != _nodeRemoveList.end(); i++)
-        {
-            _nodes.remove(*i);
-            _objects.remove(*i);
-            delete *i;
-        }
-        _nodeRemoveList.clear();
-    }
-    
-    if(_removeList.size() > 0)
-    {
-        for(std::list<AGInteractiveObject *>::iterator i = _removeList.begin(); i != _removeList.end(); )
+        for(std::list<AGInteractiveObject *>::iterator i = _fadingOut.begin(); i != _fadingOut.end(); )
         {
             std::list<AGInteractiveObject *>::iterator j = i++; // copy iterator to allow removal
             
@@ -695,7 +690,7 @@ static AGViewController * g_instance = nil;
             if(obj->finishedRenderingOut())
             {
                 delete *j;
-                _removeList.erase(j);
+                _fadingOut.erase(j);
             }
         }
     }
@@ -709,20 +704,23 @@ static AGViewController * g_instance = nil;
     _t += dt;
     
     AGUITrash::instance().update(_t, dt);
-    for(AGInteractiveObject *object : _dashboard)
-        object->update(_t, dt);
-    for(AGInteractiveObject *object : _objects)
-        object->update(_t, dt);
-    for(AGInteractiveObject *removeObject : _removeList)
-        removeObject->update(_t, dt);
-//    for(AGNode *node : _nodes)
-//        node->update(_t, dt);
-    for(AGInteractiveObject *interfaceObject : _interfaceObjects)
-        interfaceObject->update(_t, dt);
+    
+    itmap_safe(_dashboard, ^bool(AGInteractiveObject *&object){
+        object->update(_t, dt); return true;
+    });
+    itmap_safe(_objects, ^bool(AGInteractiveObject *&object){
+        object->update(_t, dt); return true;
+    });
+    itmap_safe(_fadingOut, ^bool(AGInteractiveObject *&object){
+        object->update(_t, dt); return true;
+    });
+    itmap_safe(_interfaceObjects, ^bool(AGInteractiveObject *&object){
+        object->update(_t, dt); return true;
+    });
     
     for(auto kv : _touchHandlers)
         [_touchHandlers[kv.first] update:_t dt:dt];
-    //[_nextHandler update:_t dt:dt];
+    [_touchHandlerQueue update:_t dt:dt];
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
@@ -838,14 +836,11 @@ static AGViewController * g_instance = nil;
     // render trash icon
     AGUITrash::instance().render();
     
-    // render nodes
-//    for(AGNode *node : _nodes)
-//        node->render();
     // render objects
     for(AGInteractiveObject *object : _objects)
         object->render();
     // render removeList
-    for(AGInteractiveObject *removeObject : _removeList)
+    for(AGInteractiveObject *removeObject : _fadingOut)
         removeObject->render();
     // render user interface
     for(AGInteractiveObject *object : _dashboard)
@@ -853,6 +848,7 @@ static AGViewController * g_instance = nil;
     
     for(auto kv : _touchHandlers)
         [_touchHandlers[kv.first] render];
+    [_touchHandlerQueue render];
 }
 
 - (void)renderUser
@@ -1222,11 +1218,6 @@ static AGViewController * g_instance = nil;
 
 - (void)_clearDocument
 {
-    // delete all nodes
-    itmap_safe(_nodes, ^bool(AGNode *&node){
-        [self removeNode:node];
-        return true;
-    });
     // delete all objects
     itmap_safe(_objects, ^bool(AGInteractiveObject *&object){
         [self fadeOutAndDelete:object];

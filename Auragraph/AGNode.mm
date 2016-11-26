@@ -159,16 +159,6 @@ void AGNode::fadeOutAndRemove()
 {
     m_active = false;
     m_fadeOut.reset();
-    
-    // this part is kinda hairy
-    // this should remove the connections from the visuals
-    // which then deletes them
-    // which then breaks the connections between this node and any other node
-    // so we shouldnt need to delete connections or break them here
-    
-    // work on copy of lists
-    std::list<AGConnection *> _inbound = m_inbound;
-    std::list<AGConnection *> _outbound = m_outbound;
 }
 
 void AGNode::renderOut()
@@ -264,11 +254,16 @@ void AGNode::update(float t, float dt)
     if(!m_active)
     {
         m_fadeOut.update(dt);
-        if(m_fadeOut < 0.01)
-            [[AGViewController instance] removeNode:this];
+//        if(m_fadeOut < 0.01)
+//            [[AGViewController instance] removeNode:this];
     }
     
     _updateConnections(t, dt);
+}
+
+bool AGNode::finishedRenderingOut()
+{
+    return m_fadeOut < 0.01;
 }
 
 void AGNode::render()
