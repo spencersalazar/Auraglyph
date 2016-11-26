@@ -705,17 +705,17 @@ static AGViewController * g_instance = nil;
     
     AGUITrash::instance().update(_t, dt);
     
-    itmap_safe(_dashboard, ^bool(AGInteractiveObject *&object){
-        object->update(_t, dt); return true;
+    itmap_safe(_dashboard, ^(AGInteractiveObject *&object){
+        object->update(_t, dt);
     });
-    itmap_safe(_objects, ^bool(AGInteractiveObject *&object){
-        object->update(_t, dt); return true;
+    itmap_safe(_objects, ^(AGInteractiveObject *&object){
+        object->update(_t, dt);
     });
-    itmap_safe(_fadingOut, ^bool(AGInteractiveObject *&object){
-        object->update(_t, dt); return true;
+    itmap_safe(_fadingOut, ^(AGInteractiveObject *&object){
+        object->update(_t, dt);
     });
-    itmap_safe(_interfaceObjects, ^bool(AGInteractiveObject *&object){
-        object->update(_t, dt); return true;
+    itmap_safe(_interfaceObjects, ^(AGInteractiveObject *&object){
+        object->update(_t, dt);
     });
     
     for(auto kv : _touchHandlers)
@@ -1219,9 +1219,8 @@ static AGViewController * g_instance = nil;
 - (void)_clearDocument
 {
     // delete all objects
-    itmap_safe(_objects, ^bool(AGInteractiveObject *&object){
+    itmap_safe(_objects, ^(AGInteractiveObject *&object){
         [self fadeOutAndDelete:object];
-        return true;
     });
 }
 
