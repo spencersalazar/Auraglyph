@@ -62,6 +62,17 @@ void itmap_safe(T &container, bool (^func)(typename T::reference v))
     }
 }
 
+template<class T>
+void itmap_safe(T &container, void (^func)(typename T::reference v))
+{
+    for(auto i = container.begin(); i != container.end(); )
+    {
+        auto j = i;
+        i++;
+        func(*j);
+    }
+}
+
 /*------------------------------------------------------------------------------
  itfilter()
  Use a block to remove/filter elements from a C++/STL iterable container
