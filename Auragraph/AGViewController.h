@@ -15,6 +15,7 @@
 class AGConnection;
 class AGFreeDraw;
 class AGInteractiveObject;
+@class AGTouchHandler;
 
 
 @interface AGViewController : GLKViewController
@@ -35,7 +36,11 @@ class AGInteractiveObject;
 - (void)removeFreeDraw:(AGFreeDraw *)freedraw;
 
 - (void)addTouchOutsideListener:(AGInteractiveObject *)listener;
+- (void)addTouchOutsideHandler:(AGTouchHandler *)listener;
 - (void)removeTouchOutsideListener:(AGInteractiveObject *)listener;
+- (void)removeTouchOutsideHandler:(AGTouchHandler *)listener;
+
+- (void)resignTouchHandler:(AGTouchHandler *)handler;
 
 - (GLKMatrix4)modelViewMatrix;
 - (GLKMatrix4)fixedModelViewMatrix;

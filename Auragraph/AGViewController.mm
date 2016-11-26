@@ -100,6 +100,7 @@ enum InterfaceMode
     std::list<AGInteractiveObject *> _fadingOut;
     
     list<AGInteractiveObject *> _touchOutsideListeners;
+    list<AGTouchHandler *> _touchOutsideHandlers;
     
 //    AGDocument _defaultDocument;
 //    AGDocument *_currentDocument;
@@ -609,6 +610,28 @@ static AGViewController * g_instance = nil;
     _touchOutsideListeners.remove(listener);
 }
 
+- (void)addTouchOutsideHandler:(AGTouchHandler *)listener
+{
+    dbgprint("addTouchOutsideHandler: %s 0x%08x\n", [NSStringFromClass([listener class]) UTF8String], (unsigned int) listener);
+    
+    _touchOutsideHandlers.push_back(listener);
+}
+
+- (void)removeTouchOutsideHandler:(AGTouchHandler *)listener
+{
+    dbgprint("removeTouchOutsideHandler: %s 0x%08x\n", [NSStringFromClass([listener class]) UTF8String], (unsigned int) listener);
+
+    _touchOutsideHandlers.remove(listener);
+}
+
+- (void)resignTouchHandler:(AGTouchHandler *)handler
+{
+    removevalues(_touchHandlers, handler);
+    _touchOutsideHandlers.remove(handler);
+    if(handler == _touchHandlerQueue)
+        _touchHandlerQueue = nil;
+}
+
 #pragma mark - GLKView and GLKViewController delegate methods
 
 - (void)updateMatrices
@@ -1060,6 +1083,13 @@ static AGViewController * g_instance = nil;
             if(!has(touchOutsideListener, touchCapture))
                 touchOutsideListener->touchOutside();
         }
+        
+        // TODO: what does __strong here really mean
+        // TODO: convert AGTouchHandler to C++ class
+        itmap_safe(_touchOutsideHandlers, ^(__strong AGTouchHandler *&outsideHandler){
+            if(handler != outsideHandler)
+                [outsideHandler touchOutside];
+        });
     }
 }
 
@@ -1167,7 +1197,10 @@ static AGViewController * g_instance = nil;
             [touchHandler touchesEnded:[NSSet setWithObject:touch] withEvent:event];
             AGTouchHandler *nextHandler = [touchHandler nextHandler];
             if(nextHandler)
+            {
+                dbgprint("queuing touchHandler: %s 0x%08x\n", [NSStringFromClass([nextHandler class]) UTF8String], (unsigned int) nextHandler);
                 _touchHandlerQueue = nextHandler;
+            }
             _touchHandlers.erase(touch);
         }
         

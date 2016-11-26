@@ -53,6 +53,11 @@
     return self;
 }
 
+- (void)touchOutside
+{
+    
+}
+
 - (AGTouchHandler *)nextHandler { return _nextHandler; }
 
 - (BOOL)hitTest:(GLvertex3f)t
@@ -953,6 +958,7 @@ private:
     {
         _nodeSelector = selector;
         [_viewController addTopLevelObject:_nodeSelector];
+        [_viewController addTouchOutsideHandler:self];
     }
     
     return self;
@@ -1010,7 +1016,18 @@ private:
     if(!_nodeSelector->done())
         _nextHandler = self;
     else
+    {
+        [_viewController removeTouchOutsideHandler:self];
         [_viewController fadeOutAndDelete:_nodeSelector];
+    }
+}
+
+- (void)touchOutside
+{
+    _nextHandler = nil;
+    [_viewController fadeOutAndDelete:_nodeSelector];
+    [_viewController removeTouchOutsideHandler:self];
+    [_viewController resignTouchHandler:self];
 }
 
 //- (void)update:(float)t dt:(float)dt
