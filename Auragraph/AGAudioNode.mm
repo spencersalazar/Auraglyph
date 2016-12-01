@@ -370,6 +370,8 @@ void AGAudioOutputNode::renderAudio(sampletime t, float *input, float *output, i
     m_inputBuffer[0].clear();
     m_inputBuffer[1].clear();
     
+    this->lock();
+    
     for(auto conn : m_inbound)
     {
         if(conn->rate() == RATE_AUDIO)
@@ -378,6 +380,8 @@ void AGAudioOutputNode::renderAudio(sampletime t, float *input, float *output, i
             ((AGAudioNode *)conn->src())->renderAudio(t, input, m_inputBuffer[conn->dstPort()], nFrames, 0, 1);
         }
     }
+    
+    this->unlock();
     
     float gain = param(AUDIO_PARAM_GAIN);
     
