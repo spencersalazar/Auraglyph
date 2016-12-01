@@ -259,7 +259,7 @@ void AGAudioNode::pullInputPorts(sampletime t, int nFrames)
             }
         }
     }
-    
+        
     for(std::list<AGConnection *>::iterator c = m_inbound.begin(); c != m_inbound.end(); c++)
     {
         AGConnection *conn = *c;
