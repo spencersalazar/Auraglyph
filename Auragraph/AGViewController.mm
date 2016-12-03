@@ -1034,6 +1034,9 @@ static AGViewController * g_instance = nil;
                     if(touchCapture)
                         break;
                 }
+                
+                if(touchCapture)
+                    break;
             }
         }
         
