@@ -459,7 +459,7 @@
             nodeEditor->init();
         }
         
-        [_viewController addTopLevelObject:nodeEditor over:_moveNode];
+        [_viewController addTopLevelObject:nodeEditor over:NULL];
     }
     else
     {
