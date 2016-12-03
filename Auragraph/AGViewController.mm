@@ -180,7 +180,11 @@ static AGViewController * g_instance = nil;
     GLKView *view = (GLKView *)self.view;
     view.context = self.context;
     view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
-    
+#ifdef RENDER_HIGHQUALITY
+    view.drawableMultisample = GLKViewDrawableMultisample4X;
+    self.preferredFramesPerSecond = 60;
+#endif
+
     [self setupGL];
     
     _camera = GLvertex3f(0, 0, 0);
@@ -360,6 +364,12 @@ static AGViewController * g_instance = nil;
     
     CGPoint savePos = CGPointMake(10, 20+_saveButton->size().y/2);
     _saveButton->setPosition([self fixedCoordinateForScreenCoordinate:savePos]);
+    
+    CGPoint loadPos = CGPointMake(10, 20+_saveButton->size().y*1.1+_loadButton->size().y/2);
+    _loadButton->setPosition([self fixedCoordinateForScreenCoordinate:loadPos]);
+    
+    CGPoint newPos = CGPointMake(10, 20+_saveButton->size().y*1.05+_loadButton->size().y*1.2+_newButton->size().y/2);
+    _newButton->setPosition([self fixedCoordinateForScreenCoordinate:newPos]);
     
     CGPoint testPos = CGPointMake(self.view.bounds.size.width-_testButton->size().x-10, 20+_testButton->size().y/2);
     _testButton->setPosition([self fixedCoordinateForScreenCoordinate:testPos]);

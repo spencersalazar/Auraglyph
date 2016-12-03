@@ -161,9 +161,11 @@ void AGNode::fadeOutAndRemove()
     m_fadeOut.reset();
     
     itmap_safe(m_inbound, ^(AGConnection *&connection){
+        AGNode::disconnect(connection);
         [[AGViewController instance] fadeOutAndDelete:connection];
     });
     itmap_safe(m_outbound, ^(AGConnection *&connection){
+        AGNode::disconnect(connection);
         [[AGViewController instance] fadeOutAndDelete:connection];
     });
 }
@@ -185,12 +187,23 @@ void AGNode::addOutbound(AGConnection *connection)
 
 void AGNode::removeInbound(AGConnection *connection)
 {
-    // clear m_controlPortBuffer for this connection since it may point to an
-    // AGControl that will continue to be updated
-    // TODO: consider making m_controlPortBuffer single-indirection array
-    // requiring a copy on each push, but making this awkward step unnecessary
-    m_controlPortBuffer[connection->dstPort()] = NULL;
+    int inputPort = connection->dstPort();
+    
     m_inbound.remove(connection);
+    
+    // clear m_controlPortBuffer for this connection if no control connections remain
+    bool hasCtlLeft = false;
+    for(auto inboundConn : m_inbound)
+    {
+        if(inboundConn->dstPort() == inputPort && inboundConn->rate() == RATE_CONTROL)
+        {
+            hasCtlLeft = true;
+            break;
+        }
+    }
+    
+    if(!hasCtlLeft)
+        m_controlPortBuffer[connection->dstPort()] = AGControl();
 }
 
 void AGNode::removeOutbound(AGConnection *connection)
