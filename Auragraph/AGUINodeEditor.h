@@ -33,9 +33,13 @@ class AGSlider;
 class AGUINodeEditor : public AGUIObject
 {
 public:
-    virtual ~AGUINodeEditor() { }
+    AGUINodeEditor();
+    virtual ~AGUINodeEditor();
     
     virtual bool doneEditing() = 0;
+    
+    /* by default will close on touchOutside */
+    virtual void touchOutside();
 };
 
 
@@ -63,8 +67,6 @@ public:
     virtual void touchUp(const AGTouchInfo &t);
     
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
-
-    virtual void touchOutside();
     
     virtual bool doneEditing() { return m_doneEditing; }
     bool shouldRenderDrawline() { return false; }

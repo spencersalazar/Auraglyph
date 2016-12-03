@@ -18,6 +18,27 @@
 
 static const float AGNODESELECTOR_RADIUS = 0.02*AGStyle::oldGlobalScale;
 
+/*------------------------------------------------------------------------------
+ - AGUINodeEditor -
+ Abstract base class of node editors.
+ -----------------------------------------------------------------------------*/
+#pragma mark - AGUINodeEditor
+
+AGUINodeEditor::AGUINodeEditor()
+{
+    AGInteractiveObject::addTouchOutsideListener(this);
+}
+
+AGUINodeEditor::~AGUINodeEditor()
+{
+    AGInteractiveObject::removeTouchOutsideListener(this);
+}
+
+void AGUINodeEditor::touchOutside()
+{
+    removeFromTopLevel();
+    AGInteractiveObject::removeTouchOutsideListener(this);
+}
 
 //------------------------------------------------------------------------------
 // ### AGUIStandardNodeEditor ###
@@ -139,8 +160,6 @@ m_lastTraceWasRecognized(true)
         m_editSliders.push_back(slider);
         this->addChild(slider);
     }
-    
-    AGInteractiveObject::addTouchOutsideListener(this);
 }
 
 AGUIStandardNodeEditor::~AGUIStandardNodeEditor()
@@ -148,8 +167,6 @@ AGUIStandardNodeEditor::~AGUIStandardNodeEditor()
     m_editSliders.clear();
     
     // sliders are child objects, so they get deleted automatically by AGRenderObject
-    
-    AGInteractiveObject::removeTouchOutsideListener(this);
 }
 
 GLvertex3f AGUIStandardNodeEditor::position()
@@ -687,11 +704,6 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
             }
         }
     }
-}
-
-void AGUIStandardNodeEditor::touchOutside()
-{
-    removeFromTopLevel();
 }
 
 GLvrectf AGUIStandardNodeEditor::effectiveBounds()

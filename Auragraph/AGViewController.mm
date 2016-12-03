@@ -1101,11 +1101,10 @@ static AGViewController * g_instance = nil;
             return false;
         };
         
-        for(auto touchOutsideListener : _touchOutsideListeners)
-        {
+        itmap_safe(_touchOutsideListeners, ^(AGInteractiveObject *&touchOutsideListener){
             if(!has(touchOutsideListener, touchCapture))
                 touchOutsideListener->touchOutside();
-        }
+        });
         
         // TODO: what does __strong here really mean
         // TODO: convert AGTouchHandler to C++ class
