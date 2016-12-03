@@ -89,6 +89,7 @@ enum InterfaceMode
     
     map<UITouch *, UITouch *> _touches;
     map<UITouch *, UITouch *> _freeTouches;
+    UITouch *_scrollZoomTouches[2];
     map<UITouch *, AGTouchHandler *> _touchHandlers;
     map<UITouch *, AGInteractiveObject *> _touchCaptures;
     AGTouchHandler *_touchHandlerQueue;
@@ -1042,6 +1043,18 @@ static AGViewController * g_instance = nil;
             if(_freeTouches.size() == 1)
             {
                 // zoom gesture
+                UITouch *firstTouch = _freeTouches.begin()->first;
+                UITouch *secondTouch = touch;
+                
+                _scrollZoomTouches[0] = firstTouch;
+                _freeTouches.erase(firstTouch);
+                if(_touchHandlers.count(firstTouch))
+                {
+                    [_touchHandlers[firstTouch] touchesCancelled:[NSSet setWithObject:secondTouch] withEvent:event];
+                    _touchHandlers.erase(firstTouch);
+                }
+                
+                _scrollZoomTouches[1] = secondTouch;
             }
             else
             {
@@ -1056,9 +1069,9 @@ static AGViewController * g_instance = nil;
                 }
                 
                 [handler touchesBegan:touches withEvent:event];
+                
+                _freeTouches[touch] = touch;
             }
-            
-            _freeTouches[touch] = touch;
         }
         
         // record touch
@@ -1107,6 +1120,7 @@ static AGViewController * g_instance = nil;
 {
     dbgprint("touchesMoved, count = %i\n", [touches count]);
     
+    BOOL didScroll = NO;
     for(UITouch *touch in touches)
     {
         if(_touchCaptures.count(touch))
@@ -1129,53 +1143,32 @@ static AGViewController * g_instance = nil;
             AGTouchHandler *touchHandler = _touchHandlers[touch];
             [touchHandler touchesMoved:[NSSet setWithObject:touch] withEvent:event];
         }
+        else if(_scrollZoomTouches[0] == touch || _scrollZoomTouches[1] == touch)
+        {
+            if(!didScroll)
+            {
+                didScroll = YES;
+                CGPoint p1 = [_scrollZoomTouches[0] locationInView:self.view];
+                CGPoint p1_1 = [_scrollZoomTouches[0] previousLocationInView:self.view];
+                CGPoint p2 = [_scrollZoomTouches[1] locationInView:self.view];
+                CGPoint p2_1 = [_scrollZoomTouches[1] previousLocationInView:self.view];
+                
+                CGPoint centroid = CGPointMake((p1.x+p2.x)/2, (p1.y+p2.y)/2);
+                CGPoint centroid_1 = CGPointMake((p1_1.x+p2_1.x)/2, (p1_1.y+p2_1.y)/2);
+                
+                GLvertex3f pos = [self worldCoordinateForScreenCoordinate:centroid];
+                GLvertex3f pos_1 = [self worldCoordinateForScreenCoordinate:centroid_1];
+                
+                _camera = _camera + (pos.xy() - pos_1.xy());
+                dbgprint("camera: %f, %f, %f\n", _camera.x, _camera.y, _camera.z);
+                
+//                float dist = GLvertex2f(p1).distanceTo(GLvertex2f(p2));
+//                float dist_1 = GLvertex2f(p1_1).distanceTo(GLvertex2f(p2_1));
+//                float zoom = (dist - dist_1)*0.05;
+//                _cameraZ += zoom;
+            }
+        }
     }
-    
-//    if([touches count] == 1)
-//    {
-//        if(_touchCapture)
-//        {
-//            UITouch *touch = [touches anyObject];
-//            CGPoint p = [touch locationInView:self.view];
-//            GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
-//
-//            _touchCapture->touchMove(AGTouchInfo(pos, p, (TouchID) touch));
-//        }
-//        else
-//            [_touchHandler touchesMoved:touches withEvent:event];
-//    }
-//    else if([touches count] == 2)
-//    {
-//        if(_touchHandler)
-//        {
-//            [_touchHandler touchesCancelled:touches withEvent:event];
-//            _touchHandler = nil;
-//        }
-//
-//        UITouch *t1 = [[touches allObjects] objectAtIndex:0];
-//        UITouch *t2 = [[touches allObjects] objectAtIndex:1];
-//        CGPoint p1 = [t1 locationInView:self.view];
-//        CGPoint p1_1 = [t1 previousLocationInView:self.view];
-//        CGPoint p2 = [t2 locationInView:self.view];
-//        CGPoint p2_1 = [t2 previousLocationInView:self.view];
-//
-//        CGPoint centroid = CGPointMake((p1.x+p2.x)/2, (p1.y+p2.y)/2);
-//        CGPoint centroid_1 = CGPointMake((p1_1.x+p2_1.x)/2, (p1_1.y+p2_1.y)/2);
-//
-//        float dist = GLvertex2f(p1).distanceTo(GLvertex2f(p2));
-//        float dist_1 = GLvertex2f(p1_1).distanceTo(GLvertex2f(p2_1));
-//
-//        GLvertex3f pos = [self worldCoordinateForScreenCoordinate:centroid];
-//        GLvertex3f pos_1 = [self worldCoordinateForScreenCoordinate:centroid_1];
-//        GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p1];
-//        GLvertex3f pos_1 = [self worldCoordinateForScreenCoordinate:p1_1];
-//
-//        _camera = _camera + (pos.xy() - pos_1.xy());
-//        dbgprint("camera: %f, %f, %f\n", _camera.x, _camera.y, _camera.z);
-//
-//        float zoom = (dist - dist_1)*0.05;
-//        _cameraZ += zoom;
-//    }
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
@@ -1213,7 +1206,17 @@ static AGViewController * g_instance = nil;
             }
             _touchHandlers.erase(touch);
         }
+        else if(touch == _scrollZoomTouches[0] || touch == _scrollZoomTouches[1])
+        {
+            // return remaining touch to freetouches
+            if(touch == _scrollZoomTouches[0])
+                _freeTouches[_scrollZoomTouches[1]] = _scrollZoomTouches[1];
+            else
+                _freeTouches[_scrollZoomTouches[0]] = _scrollZoomTouches[0];
+            _scrollZoomTouches[0] = _scrollZoomTouches[1] = NULL;
+        }
         
+        _freeTouches.erase(touch);
         _touches.erase(touch);
     }
 }
