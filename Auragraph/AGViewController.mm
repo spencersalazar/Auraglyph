@@ -181,7 +181,11 @@ static AGViewController * g_instance = nil;
     GLKView *view = (GLKView *)self.view;
     view.context = self.context;
     view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
-    
+#ifdef RENDER_HIGHQUALITY
+    view.drawableMultisample = GLKViewDrawableMultisample4X;
+    self.preferredFramesPerSecond = 60;
+#endif
+
     [self setupGL];
     
     _camera = GLvertex3f(0, 0, 0);
