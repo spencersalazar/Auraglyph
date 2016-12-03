@@ -169,10 +169,18 @@ void AGNode::fadeOutAndRemove()
     // work on copy of lists
     std::list<AGConnection *> _inbound = m_inbound;
     std::list<AGConnection *> _outbound = m_outbound;
+    
     for(std::list<AGConnection *>::iterator i = _inbound.begin(); i != _inbound.end(); i++)
+    {
+        AGNode::disconnect(*i);
         (*i)->removeFromTopLevel();
+    }
+    
     for(std::list<AGConnection *>::iterator i = _outbound.begin(); i != _outbound.end(); i++)
+    {
+        AGNode::disconnect(*i);
         (*i)->removeFromTopLevel();
+    }
 }
 
 void AGNode::renderOut()
