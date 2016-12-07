@@ -38,8 +38,15 @@ public:
     
     virtual bool doneEditing() = 0;
     
-    /* by default will close on touchOutside */
+    void pin(bool _pin = true);
+    void unpin();
+    bool isPinned() { return m_pinned; }
+    
+    /* will close on touchOutside unless pinned */
     virtual void touchOutside();
+    
+private:
+    bool m_pinned;
 };
 
 
@@ -104,6 +111,8 @@ private:
     lincurvef m_yScale;
     
     std::vector<AGSlider *> m_editSliders;
+    std::vector<GLvertex3f> m_pinInfoGeo;
+    AGUIIconButton *m_pinButton;
     
     int m_hit;
     int m_editingPort;

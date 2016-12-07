@@ -34,10 +34,23 @@ AGUINodeEditor::~AGUINodeEditor()
     AGInteractiveObject::removeTouchOutsideListener(this);
 }
 
+void AGUINodeEditor::pin(bool _pin)
+{
+    m_pinned = _pin;
+}
+
+void AGUINodeEditor::unpin()
+{
+    m_pinned = false;
+}
+
 void AGUINodeEditor::touchOutside()
 {
-    removeFromTopLevel();
-    AGInteractiveObject::removeTouchOutsideListener(this);
+    if(!m_pinned)
+    {
+        removeFromTopLevel();
+        AGInteractiveObject::removeTouchOutsideListener(this);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -160,12 +173,35 @@ m_lastTraceWasRecognized(true)
         m_editSliders.push_back(slider);
         this->addChild(slider);
     }
+    
+    float pinButtonWidth = 20;
+    float pinButtonHeight = 20;
+    float pinButtonX = s_radius-10-pinButtonWidth/2;
+    float pinButtonY = s_radius-10-pinButtonHeight/2;
+    AGRenderInfoV pinInfo;
+    float pinRadius = (pinButtonWidth*0.9)/2;
+    m_pinInfoGeo = std::vector<GLvertex3f>({{ pinRadius, pinRadius, 0 }, { -pinRadius, -pinRadius, 0 }});
+    pinInfo.geo = m_pinInfoGeo.data();
+    pinInfo.numVertex = 2;
+    pinInfo.geoType = GL_LINES;
+    pinInfo.color = AGStyle::foregroundColor;
+    m_pinButton = new AGUIIconButton(GLvertex3f(pinButtonX, pinButtonY, 0),
+                                     GLvertex2f(pinButtonWidth, pinButtonHeight),
+                                     pinInfo);
+    m_pinButton->init();
+    m_pinButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
+    m_pinButton->setIconMode(AGUIIconButton::ICONMODE_SQUARE);
+    m_pinButton->setAction(^{
+        dbgprint("pin!\n");
+        pin(!isPinned());
+    });
+    addChild(m_pinButton);
 }
 
 AGUIStandardNodeEditor::~AGUIStandardNodeEditor()
 {
     m_editSliders.clear();
-    
+    m_pinButton = NULL;
     // sliders are child objects, so they get deleted automatically by AGRenderObject
 }
 
@@ -202,6 +238,7 @@ void AGUIStandardNodeEditor::update(float t, float dt)
     
     for(auto slider : m_editSliders)
         slider->update(t, dt);
+    m_pinButton->update(t, dt);
     
     m_t += dt;
 }
@@ -310,6 +347,8 @@ void AGUIStandardNodeEditor::render()
     
     for(auto slider : m_editSliders)
         slider->render();
+    
+    m_pinButton->render();
     
     /* draw item editor */
     
