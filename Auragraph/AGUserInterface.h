@@ -173,7 +173,7 @@ public:
     virtual void update(float t, float dt);
     virtual void render();
     
-    virtual GLvertex3f position() { GLvertex3f parentPos = GLvertex3f(0, 0, 0); if(parent()) parentPos = parent()->position(); return parentPos+m_pos; }
+    virtual GLvertex3f position() { return m_pos; }
     virtual GLvertex2f size() { return m_size.xy(); }
     virtual GLvrectf effectiveBounds() { return GLvrectf(position()-size()*0.5, position()+size()*0.5); }
     
