@@ -24,7 +24,7 @@ static const float AGNODESELECTOR_RADIUS = 0.02*AGStyle::oldGlobalScale;
  -----------------------------------------------------------------------------*/
 #pragma mark - AGUINodeEditor
 
-AGUINodeEditor::AGUINodeEditor()
+AGUINodeEditor::AGUINodeEditor() : m_pinned(false)
 {
     AGInteractiveObject::addTouchOutsideListener(this);
 }
@@ -193,7 +193,7 @@ m_lastTraceWasRecognized(true)
     m_pinButton->setIconMode(AGUIIconButton::ICONMODE_SQUARE);
     m_pinButton->setAction(^{
         dbgprint("pin!\n");
-        pin(!isPinned());
+        pin(m_pinButton->isPressed());
     });
     addChild(m_pinButton);
 }
