@@ -1643,7 +1643,7 @@ public:
         // set to base value
         for(int i = 0; i < nFrames; i++)
             m_outputBuffer[i] = base;
-
+        
         for(int j = 0; j < numInputs; j++)
         {
             m_inputBuffer.clear();
@@ -1661,6 +1661,91 @@ public:
     
 private:
     Buffer<float> m_inputBuffer;
+};
+
+
+
+//------------------------------------------------------------------------------
+// ### AGAudioNoiseNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioNoiseNode
+
+class AGAudioNoiseNode : public AGAudioNode
+{
+public:
+    
+    enum Param { };
+    
+    class Manifest : public AGStandardNodeManifest<AGAudioNoiseNode>
+    {
+    public:
+        string _type() const override { return "Noise"; };
+        string _name() const override { return "Noise"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { AUDIO_PARAM_GAIN, "gain", true, true },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1 },
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            int NUM_SAMPS = 25;
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x;
+            
+            // x icon
+            vector<GLvertex3f> iconGeo;
+            iconGeo.resize(NUM_SAMPS);
+            
+            for(int i = 0; i < NUM_SAMPS; i++)
+            {
+                float randomSample = arc4random()*ONE_OVER_RAND_MAX*2-1;
+                iconGeo[i].x = (((float)i)/(NUM_SAMPS-1)*2-1)*radius_x;
+                iconGeo[i].y = randomSample*radius_y;
+            }
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+    };
+    
+    using AGAudioNode::AGAudioNode;
+    
+    void initFinal() override
+    {
+        srandom(time(NULL));
+    }
+    
+    virtual int numOutputPorts() const override { return 1; }
+    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
+    {
+        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
+        pullInputPorts(t, nFrames);
+        
+        float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        
+        for(int i = 0; i < nFrames; i++)
+        {
+            float randomSample = arc4random()*ONE_OVER_RAND_MAX*2-1;
+            m_outputBuffer[i] = randomSample*gainv[i];
+            output[i] += m_outputBuffer[i];
+        }
+    }
+    
+private:
+    constexpr static const float ONE_OVER_RAND_MAX = 1.0/4294967295.0;
 };
 
 
@@ -1684,21 +1769,23 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioTriangleWaveNode::Manifest);
         
         nodeTypes.push_back(new AGAudioWaveformNode::Manifest);
-        nodeTypes.push_back(new AGAudioADSRNode::Manifest);
+        nodeTypes.push_back(new AGAudioNoiseNode::Manifest);
         
+        nodeTypes.push_back(new AGAudioADSRNode::Manifest);
+        nodeTypes.push_back(new AGAudioFeedbackNode::Manifest);
+
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RLPF>::ManifestLPF);
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RHPF>::ManifestHPF);
         
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2BPF>::ManifestBPF);
-        nodeTypes.push_back(new AGAudioFeedbackNode::Manifest);
-        
+        nodeTypes.push_back(new AGAudioCompressorNode::Manifest);
+
         nodeTypes.push_back(new AGAudioAddNode::Manifest);
         nodeTypes.push_back(new AGAudioMultiplyNode::Manifest);
         
-        nodeTypes.push_back(new AGAudioCompressorNode::Manifest);
         nodeTypes.push_back(new AGAudioInputNode::Manifest);
-        
         nodeTypes.push_back(new AGAudioOutputNode::Manifest);
+        
         nodeTypes.push_back(new AGAudioCompositeNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
