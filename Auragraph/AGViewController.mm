@@ -193,6 +193,7 @@ static AGViewController * g_instance = nil;
     _cameraZ.reset(0);
     
     self.audioManager = [AGAudioManager new];
+    // update matrices so that worldCoordinateForScreenCoordinate works
     [self updateMatrices];
     
     const char *fontPath = [[AGViewController styleFontPath] UTF8String];
@@ -213,10 +214,12 @@ static AGViewController * g_instance = nil;
     else
     {
         // just create output node by itself
-        AGNode *node = AGNodeManager::audioNodeManager().createNodeOfType("Output", GLvertex3f(0, 0, 0));
+        GLvertex3f pos = [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)];
+        AGNode *node = AGNodeManager::audioNodeManager().createNodeOfType("Output", pos);
         AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
         outputNode->setOutputDestination([AGAudioManager instance].masterOut);
-        _nodes.push_back(node);
+        
+        [self addNode:node];
     }
     
     g_instance = self;
