@@ -51,6 +51,8 @@ struct clamp
 {
     clamp(T _min = 0, T _max = 1) { value = 0; clampTo(_min, _max); }
     
+    clamp(T _value, T _min = 0, T _max = 1) { clampTo(_min, _max); *this = _value; }
+    
     inline void clampTo(T _min, T _max) { min = _min; max = _max; }
     
     inline operator const T &() const { return value; }
@@ -144,7 +146,7 @@ public:
     expcurvef(float _start, float _end, float _k = 10, float _rate = 1) :
     curvef(_start, _end, _rate), k(_k) { }
     
-    virtual float evaluate(float t) const { return start + (end-start)*(1-powf(k, -t)); }
+    virtual float evaluate(float t) const { return (1-powf(k, -t)); }
     
     float k;
 };

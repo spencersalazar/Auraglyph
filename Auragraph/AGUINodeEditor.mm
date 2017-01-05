@@ -12,11 +12,46 @@
 #import "AGGenericShader.h"
 #import "AGHandwritingRecognizer.h"
 #import "AGSlider.h"
+#include "AGAnalytics.h"
 
 #import "TexFont.h"
 
 static const float AGNODESELECTOR_RADIUS = 0.02*AGStyle::oldGlobalScale;
 
+/*------------------------------------------------------------------------------
+ - AGUINodeEditor -
+ Abstract base class of node editors.
+ -----------------------------------------------------------------------------*/
+#pragma mark - AGUINodeEditor
+
+AGUINodeEditor::AGUINodeEditor() : m_pinned(false)
+{
+    AGInteractiveObject::addTouchOutsideListener(this);
+}
+
+AGUINodeEditor::~AGUINodeEditor()
+{
+    AGInteractiveObject::removeTouchOutsideListener(this);
+}
+
+void AGUINodeEditor::pin(bool _pin)
+{
+    m_pinned = _pin;
+}
+
+void AGUINodeEditor::unpin()
+{
+    m_pinned = false;
+}
+
+void AGUINodeEditor::touchOutside()
+{
+    if(!m_pinned)
+    {
+        removeFromTopLevel();
+        AGInteractiveObject::removeTouchOutsideListener(this);
+    }
+}
 
 //------------------------------------------------------------------------------
 // ### AGUIStandardNodeEditor ###
@@ -128,6 +163,9 @@ m_lastTraceWasRecognized(true)
         slider->onUpdate([port, node] (float value) {
             node->setEditPortValue(port, value);
         });
+        slider->onStartStopUpdating([](){}, [port, node](){
+            AGAnalytics::instance().eventEditNodeParamSlider(node->type(), node->editPortInfo(port).name);
+        });
         slider->setValidator([port, node] (float _old, float _new) {
             return node->validateEditPortValue(port, _new);
         });
@@ -135,11 +173,35 @@ m_lastTraceWasRecognized(true)
         m_editSliders.push_back(slider);
         this->addChild(slider);
     }
+    
+    float pinButtonWidth = 20;
+    float pinButtonHeight = 20;
+    float pinButtonX = s_radius-10-pinButtonWidth/2;
+    float pinButtonY = s_radius-10-pinButtonHeight/2;
+    AGRenderInfoV pinInfo;
+    float pinRadius = (pinButtonWidth*0.9)/2;
+    m_pinInfoGeo = std::vector<GLvertex3f>({{ pinRadius, pinRadius, 0 }, { -pinRadius, -pinRadius, 0 }});
+    pinInfo.geo = m_pinInfoGeo.data();
+    pinInfo.numVertex = 2;
+    pinInfo.geoType = GL_LINES;
+    pinInfo.color = AGStyle::foregroundColor;
+    m_pinButton = new AGUIIconButton(GLvertex3f(pinButtonX, pinButtonY, 0),
+                                     GLvertex2f(pinButtonWidth, pinButtonHeight),
+                                     pinInfo);
+    m_pinButton->init();
+    m_pinButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
+    m_pinButton->setIconMode(AGUIIconButton::ICONMODE_SQUARE);
+    m_pinButton->setAction(^{
+        dbgprint("pin!\n");
+        pin(m_pinButton->isPressed());
+    });
+    addChild(m_pinButton);
 }
 
 AGUIStandardNodeEditor::~AGUIStandardNodeEditor()
 {
     m_editSliders.clear();
+    m_pinButton = NULL;
     // sliders are child objects, so they get deleted automatically by AGRenderObject
 }
 
@@ -176,6 +238,7 @@ void AGUIStandardNodeEditor::update(float t, float dt)
     
     for(auto slider : m_editSliders)
         slider->update(t, dt);
+    m_pinButton->update(t, dt);
     
     m_t += dt;
 }
@@ -284,6 +347,8 @@ void AGUIStandardNodeEditor::render()
     
     for(auto slider : m_editSliders)
         slider->render();
+    
+    m_pinButton->render();
     
     /* draw item editor */
     
@@ -404,6 +469,14 @@ void AGUIStandardNodeEditor::render()
 
 AGInteractiveObject *AGUIStandardNodeEditor::hitTest(const GLvertex3f &t)
 {
+    if(m_editingPort >= 0)
+    {
+        bool inBbox = false;
+        hitTestX(t, &inBbox);
+        if(inBbox)
+            return this;
+    }
+    
     return AGInteractiveObject::hitTest(t);
 }
 
@@ -570,14 +643,19 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
         {
             if(m_hitAccept)
             {
+                AGAnalytics::instance().eventEditNodeParamDrawAccept(m_node->type(), m_node->editPortInfo(m_editingPort).name);
+                
                 //                m_doneEditing = true;
                 m_node->setEditPortValue(m_editingPort, m_currentValue);
+                m_editSliders[m_editingPort]->setValue(m_currentValue);
                 m_editingPort = -1;
                 m_hitAccept = false;
                 m_drawline.clear();
             }
             else if(m_hitDiscard)
             {
+                AGAnalytics::instance().eventEditNodeParamDrawDiscard(m_node->type(), m_node->editPortInfo(m_editingPort).name);
+                
                 //                m_doneEditing = true;
                 m_editingPort = -1;
                 m_hitDiscard = false;
@@ -602,6 +680,7 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                     case AG_FIGURE_8:
                     case AG_FIGURE_9:
                         digit = (figure-'0');
+                        AGAnalytics::instance().eventDrawNumeral(digit);
                         if(m_decimal)
                         {
                             m_currentValue = m_currentValue + digit*m_decimalFactor;
@@ -617,6 +696,7 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                         break;
                         
                     case AG_FIGURE_PERIOD:
+                        //AGAnalytics::instance().eventDrawNumeral();
                         if(m_decimal)
                         {
                             m_lastTraceWasRecognized = false;
@@ -633,6 +713,7 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                         break;
                         
                     default:
+                        AGAnalytics::instance().eventDrawNumeralUnrecognized();
                         m_lastTraceWasRecognized = false;
                 }
                 
@@ -649,6 +730,8 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
             
             if(m_hit >= 0)
             {
+                AGAnalytics::instance().eventEditNodeParamDrawOpen(m_node->type(), m_node->editPortInfo(m_hit).name);
+                
                 m_editingPort = m_hit;
                 m_hit = -1;
                 m_currentValue = 0;

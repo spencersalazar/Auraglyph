@@ -45,6 +45,33 @@ void itmap(const T &container, bool (^func)(typename T::const_reference v))
     }
 }
 
+/*------------------------------------------------------------------------------
+ itmap_safe()
+ Map a block to every item in a C++/STL iterable container; safe to remove 
+ objects in the block.
+ (with shortcircuit)
+ -----------------------------------------------------------------------------*/
+template<class T>
+void itmap_safe(T &container, bool (^func)(typename T::reference v))
+{
+    for(auto i = container.begin(); i != container.end(); )
+    {
+        auto j = i;
+        i++;
+        if(!func(*j)) break;
+    }
+}
+
+template<class T>
+void itmap_safe(T &container, void (^func)(typename T::reference v))
+{
+    for(auto i = container.begin(); i != container.end(); )
+    {
+        auto j = i;
+        i++;
+        func(*j);
+    }
+}
 
 /*------------------------------------------------------------------------------
  itfilter()
@@ -67,6 +94,22 @@ void itfilter(T &container, bool (^func)(typename T::reference v))
         {
             i++;
         }
+    }
+}
+
+/*------------------------------------------------------------------------------
+ removevalues()
+ Remove all keys from a map with the specified value
+ -----------------------------------------------------------------------------*/
+template<class T>
+void removevalues(T &map, const typename T::mapped_type &value)
+{
+    for(auto kv = map.begin(); kv != map.end(); )
+    {
+        auto kv2 = kv;
+        kv++;
+        if(kv2->second == value)
+            map.erase(kv2);
     }
 }
 

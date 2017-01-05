@@ -12,6 +12,7 @@
 #include "AGHandwritingRecognizer.h"
 #include "AGGenericShader.h"
 #include "AGUINodeEditor.h"
+#include "AGInteractiveObject.h"
 
 #include "GeoGenerator.h"
 
@@ -600,7 +601,7 @@ string AGControlArrayNode::Manifest::_name() const { return "Array"; };
 vector<AGPortInfo> AGControlArrayNode::Manifest::_inputPortInfo() const
 {
     return {
-        { "iterate", true, true }
+        { PARAM_ITERATE, "iterate", true, true }
     };
 };
 
@@ -633,24 +634,10 @@ vector<GLvertex3f> AGControlArrayNode::Manifest::_iconGeo() const
 
 GLuint AGControlArrayNode::Manifest::_iconGeoType() const { return GL_LINES; };
 
-void AGControlArrayNode::setDefaultPortValues()
+void AGControlArrayNode::initFinal()
 {
     m_lastTime = 0;
     m_position = m_items.begin();
-}
-
-void AGControlArrayNode::setEditPortValue(int port, float value)
-{
-    switch(port)
-    {
-    }
-}
-
-void AGControlArrayNode::getEditPortValue(int port, float &value) const
-{
-    switch(port)
-    {
-    }
 }
 
 AGUINodeEditor *AGControlArrayNode::createCustomEditor()

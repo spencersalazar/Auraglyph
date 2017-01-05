@@ -169,7 +169,7 @@ public:
         v = getInt();
     }
     
-    operator bool()
+    operator bool() const
     {
         return type != TYPE_NONE;
     }

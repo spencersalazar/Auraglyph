@@ -58,6 +58,7 @@ AGUIButton::~AGUIButton()
 
 void AGUIButton::update(float t, float dt)
 {
+    AGInteractiveObject::update(t, dt);
 }
 
 void AGUIButton::render()
@@ -69,12 +70,23 @@ void AGUIButton::render()
     
     float textScale = 0.5;
     
-    GLKMatrix4 proj = AGNode::projectionMatrix();
+    GLKMatrix4 proj;
     GLKMatrix4 modelView;
-    if(renderFixed())
-        modelView = AGNode::fixedModelViewMatrix();
+    
+    if(parent())
+    {
+        modelView = parent()->m_renderState.modelview;
+        proj = parent()->m_renderState.projection;
+    }
     else
-        modelView = AGNode::globalModelViewMatrix();
+    {
+        proj = projectionMatrix();
+        if(renderFixed())
+            modelView = AGNode::fixedModelViewMatrix();
+        else
+            modelView = AGNode::globalModelViewMatrix();
+    }
+    
     modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
     GLKMatrix4 textMV = GLKMatrix4Translate(modelView, m_size.x/2-text->width(m_title)*textScale/2, m_size.y/2-text->height()*textScale/2*1.25, 0);
 //    GLKMatrix4 textMV = modelView;
@@ -88,10 +100,15 @@ void AGUIButton::render()
     shader.setModelViewMatrix(modelView);
     shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));
     
+    GLcolor4f color = GLcolor4f::white;
+    color.a = m_renderState.alpha;
+    GLcolor4f blackA = AGStyle::darkColor();
+    blackA.a = m_renderState.alpha*0.75;
+
     glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
     glDisableVertexAttribArray(GLKVertexAttribColor);
     
     glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
@@ -102,17 +119,30 @@ void AGUIButton::render()
         glLineWidth(4.0);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
         
-        text->render(m_title, AGStyle::darkColor(), textMV, proj);
+        color = AGStyle::darkColor();
+        color.a = m_renderState.alpha;
+        
+        text->render(m_title, color, textMV, proj);
+        
+        // restore "default" line width
+        glLineWidth(2.0);
     }
     else
     {
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &blackA);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        
+        glLineWidth(2.0);
+        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
         glDrawArrays(GL_LINE_LOOP, 0, 4);
         
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::black);
-        glLineWidth(2.0);
         glDrawArrays(GL_LINE_LOOP, 4, 4);
-
-        text->render(m_title, AGStyle::lightColor(), textMV, proj);
+        
+        color = AGStyle::lightColor();
+        color.a = m_renderState.alpha;
+        
+        text->render(m_title, color, textMV, proj);
     }
 }
 
@@ -345,6 +375,7 @@ void AGUIButtonGroup::addButton(AGUIButton *button, void (^action)(), bool isDef
 AGUITrash &AGUITrash::instance()
 {
     static AGUITrash s_trash;
+    s_trash.init();
     
     return s_trash;
 }
@@ -378,6 +409,8 @@ AGUITrash::~AGUITrash()
 
 void AGUITrash::update(float t, float dt)
 {
+    AGInteractiveObject::update(t, dt);
+    
     if(m_active)
         m_scale = 1.25;
     else
@@ -406,11 +439,18 @@ void AGUITrash::render()
     glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     
+    GLcolor4f color;
+    if(m_active)
+        color = GLcolor4f::red;
+    else
+        color = GLcolor4f::white;
+    color.a = m_renderState.alpha;
+
     glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
     if(m_active)
-        glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::red);
+        glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &color);
     else
-        glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::white);
+        glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &color);
     
     glEnable(GL_TEXTURE_2D);
     glActiveTexture(GL_TEXTURE0);
@@ -482,6 +522,87 @@ void AGUITrace::addPoint(const GLvertex3f &v)
 const vector<GLvertex3f> AGUITrace::points() const
 {
     return m_traceGeo;
+}
+
+
+
+/*------------------------------------------------------------------------------
+ - AGUILabel -
+ -----------------------------------------------------------------------------*/
+#pragma mark - AGUILabel
+
+static const float AGUILabel_TextScale = 0.61f;
+
+AGUILabel::AGUILabel(const GLvertex3f &position, const string &text)
+: m_text(text), m_position(position)
+{
+    TexFont *texFont = AGStyle::standardFont64();
+    
+    m_textSize.x = texFont->width(m_text)*AGUILabel_TextScale;
+    m_textSize.y = texFont->height()*AGUILabel_TextScale;
+}
+
+AGUILabel::~AGUILabel()
+{
+    
+}
+
+void AGUILabel::update(float t, float dt)
+{
+    AGRenderObject::update(t, dt);
+}
+
+void AGUILabel::render()
+{
+    TexFont *text = AGStyle::standardFont64();
+    
+    GLKMatrix4 modelView;
+    GLKMatrix4 proj;
+    
+    if(parent())
+    {
+        modelView = parent()->m_renderState.modelview;
+        proj = parent()->m_renderState.projection;
+    }
+    else
+    {
+        modelView = globalModelViewMatrix();
+        proj = projectionMatrix();
+    }
+    
+    GLcolor4f valueColor = GLcolor4f::white;
+    valueColor.a = m_renderState.alpha;
+    
+    GLKMatrix4 valueMV = modelView;
+    valueMV = GLKMatrix4Translate(valueMV, m_position.x, m_position.y, m_position.z);
+    valueMV = GLKMatrix4Translate(valueMV, -m_textSize.x/2, -m_textSize.y/2, 0);
+    valueMV = GLKMatrix4Scale(valueMV, AGUILabel_TextScale, AGUILabel_TextScale, AGUILabel_TextScale);
+    text->render(m_text, valueColor, valueMV, proj);
+}
+
+void AGUILabel::setPosition(const GLvertex3f &position)
+{
+    m_position = position;
+}
+
+GLvertex3f AGUILabel::position()
+{
+    return m_position;
+}
+
+GLvertex2f AGUILabel::size()
+{
+    return m_size;
+}
+
+void AGUILabel::setSize(const GLvertex2f &size)
+{
+    m_size = size;
+}
+
+GLvertex2f AGUILabel::naturalSize() const
+{
+    return m_textSize;
 }
 
 

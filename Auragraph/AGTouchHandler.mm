@@ -25,6 +25,7 @@
 #import "AGNodeSelector.h"
 #import "AGUINodeEditor.h"
 #import "AGGenericShader.h"
+#import "AGAnalytics.h"
 
 #import "GeoGenerator.h"
 #import "spMath.h"
@@ -52,7 +53,17 @@
     return self;
 }
 
+- (void)touchOutside
+{
+    
+}
+
 - (AGTouchHandler *)nextHandler { return _nextHandler; }
+
+- (BOOL)hitTest:(GLvertex3f)t
+{
+    return NO;
+}
 
 - (void)update:(float)t dt:(float)dt { }
 - (void)render { }
@@ -161,8 +172,6 @@
     
     AGHandwritingRecognizerFigure figure = [[AGHandwritingRecognizer instance] recognizeShape:_currentTrace];
     
-    BOOL animateOut = NO;
-    
     if(figure == AG_FIGURE_CIRCLE)
     {
 //        // first check average polar length
@@ -185,6 +194,9 @@
 //            [_viewController addNode:compositeNode];
 //        }
 //        else
+        
+        AGAnalytics::instance().eventDrawNodeCircle();
+        
         {
             AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::audioNodeSelector(centroidMVP);
             _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
@@ -192,24 +204,35 @@
     }
     else if(figure == AG_FIGURE_SQUARE)
     {
+        AGAnalytics::instance().eventDrawNodeSquare();
+        
         AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::controlNodeSelector(centroidMVP);
         _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
     }
     else if(figure == AG_FIGURE_TRIANGLE_DOWN)
     {
+        AGAnalytics::instance().eventDrawNodeTriangleDown();
+        
         AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::inputNodeSelector(centroidMVP);
         _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
     }
     else if(figure == AG_FIGURE_TRIANGLE_UP)
     {
+        AGAnalytics::instance().eventDrawNodeTriangleUp();
+        
         AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::outputNodeSelector(centroidMVP);
         _nextHandler = [[AGSelectNodeTouchHandler alloc] initWithViewController:_viewController nodeSelector:nodeSelector];
     }
     else
     {
-        animateOut = YES;
+        AGAnalytics::instance().eventDrawNodeUnrecognized();
     }
     
+    _trace->removeFromTopLevel();
+}
+
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
     _trace->removeFromTopLevel();
 }
 
@@ -219,8 +242,8 @@
 - (void)coalesceComposite:(AGAudioCompositeNode *)compositeNode withNodes:(const set<AGNode *> &)subnodes
 {
     // save broken input/output connections
-    list<tuple<AGNode *, AGNode *, int>> inbound;
-    list<tuple<AGNode *, AGNode *, int>> outbound;
+    list<tuple<AGNode *, int, AGNode *, int>> inbound;
+    list<tuple<AGNode *, int, AGNode *, int>> outbound;
     
     for(AGNode *node : subnodes)
     {
@@ -233,7 +256,7 @@
             auto j = i++;
             if(!subnodes.count((*j)->src()))
             {
-                outbound.push_back(std::make_tuple((*j)->src(), node, (*j)->dstPort()));
+                outbound.push_back(std::make_tuple((*j)->src(), (*j)->srcPort(), node, (*j)->dstPort()));
                 (*j)->removeFromTopLevel();
             }
         }
@@ -243,7 +266,7 @@
             auto j = i++;
             if(!subnodes.count((*j)->dst()))
             {
-                outbound.push_back(std::make_tuple(node, (*j)->dst(), (*j)->dstPort()));
+                outbound.push_back(std::make_tuple(node, (*j)->srcPort(), (*j)->dst(), (*j)->dstPort()));
                 (*j)->removeFromTopLevel();
             }
         }
@@ -267,19 +290,20 @@
     if(outbound.size() && compositeNode->numOutputPorts() == 0)
     {
         AGNode *src = std::get<0>(outbound.front());
-        AGNode *dst = std::get<1>(outbound.front());
-        int port = std::get<2>(outbound.front());
+        int srcPort = std::get<1>(outbound.front());
+        AGNode *dst = std::get<2>(outbound.front());
+        int dstPort = std::get<3>(outbound.front());
         
         // create output within composite
-        AGNode *newNode = AGNodeManager::audioNodeManager().createNodeOfType("Output", dst->position());
-        AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(newNode);
+        AGNode *internalNode = AGNodeManager::audioNodeManager().createNodeOfType("Output", dst->position());
+        AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(internalNode);
         outputNode->setOutputDestination(compositeNode);
         
         // make connection within composite
-        AGConnection *internalConnection = new AGConnection(src, newNode, 0);
+        AGConnection *internalConnection = new AGConnection(src, srcPort, internalNode, 0);
         internalConnection->init();
         // make connection outside composite
-        AGConnection *externalConnection = new AGConnection(compositeNode, dst, port);
+        AGConnection *externalConnection = new AGConnection(compositeNode, 0, dst, dstPort);
         externalConnection->init();
     }
 }
@@ -322,6 +346,8 @@
 {
     if(_linePoints.size() > 1)
     {
+        AGAnalytics::instance().eventDrawFreedraw();
+        
         AGFreeDraw *freeDraw = new AGFreeDraw(&_linePoints[0], _linePoints.size());
         freeDraw->init();
         [_viewController addFreeDraw:freeDraw];
@@ -404,14 +430,11 @@
     }
     
     AGUITrash &trash = AGUITrash::instance();
-    if(trash.hitTest(pos))
-    {
+    GLvertex3f fixedPos = GLKMatrix4MultiplyVector4(AGNode::cameraMatrix(), pos.asGLKVector4());
+    if(trash.hitTest(fixedPos))
         trash.activate();
-    }
     else
-    {
         trash.deactivate();
-    }
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
@@ -424,13 +447,28 @@
     
     if(_moveNode && _maxTouchTravel < 2*2)
     {
+        AGAnalytics::instance().eventOpenNodeEditor(_moveNode->type());
+        
         _moveNode->activate(0);
-        _nextHandler = [[AGEditTouchHandler alloc] initWithViewController:_viewController node:_moveNode];
+        // _nextHandler = [[AGEditTouchHandler alloc] initWithViewController:_viewController node:_moveNode];
+        
+        AGUINodeEditor *nodeEditor = _moveNode->createCustomEditor();
+        if(nodeEditor == NULL)
+        {
+            nodeEditor = new AGUIStandardNodeEditor(_moveNode);
+            nodeEditor->init();
+        }
+        
+        [_viewController addTopLevelObject:nodeEditor over:NULL];
     }
     else
     {
-        if(trash.hitTest(pos))
+        AGAnalytics::instance().eventMoveNode(_moveNode->type());
+        
+        GLvertex3f fixedPos = GLKMatrix4MultiplyVector4(AGNode::cameraMatrix(), pos.asGLKVector4());
+        if(trash.hitTest(fixedPos))
         {
+            AGAnalytics::instance().eventDeleteNode(_moveNode->type());
             _moveNode->fadeOutAndRemove();
         }
     }
@@ -887,7 +925,8 @@ private:
         int port = _browser->selectedPort();
         if(port != -1)
         {
-            AGConnection::connect(_originalHit, _currentHit, port);
+            AGAnalytics::instance().eventConnectNode(_originalHit->type(), _currentHit->type());
+            AGConnection::connect(_originalHit, srcPort, _currentHit, port);
         }
     }
     
@@ -919,6 +958,7 @@ private:
     {
         _nodeSelector = selector;
         [_viewController addTopLevelObject:_nodeSelector];
+        [_viewController addTouchOutsideHandler:self];
     }
     
     return self;
@@ -927,6 +967,11 @@ private:
 - (void)dealloc
 {
 //    SAFE_DELETE(_nodeSelector);
+}
+
+- (BOOL)hitTest:(GLvertex3f)t
+{
+    return _nodeSelector->hitTest(t) != NULL;
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
@@ -957,6 +1002,8 @@ private:
     AGNode * newNode = _nodeSelector->createNode();
     if(newNode)
     {
+        AGAnalytics::instance().eventCreateNode(newNode->nodeClass(), newNode->type());
+        
         [_viewController addNode:newNode];
         
         if(newNode->type() == "Output")
@@ -969,7 +1016,18 @@ private:
     if(!_nodeSelector->done())
         _nextHandler = self;
     else
+    {
+        [_viewController removeTouchOutsideHandler:self];
         [_viewController fadeOutAndDelete:_nodeSelector];
+    }
+}
+
+- (void)touchOutside
+{
+    _nextHandler = nil;
+    [_viewController fadeOutAndDelete:_nodeSelector];
+    [_viewController removeTouchOutsideHandler:self];
+    [_viewController resignTouchHandler:self];
 }
 
 //- (void)update:(float)t dt:(float)dt

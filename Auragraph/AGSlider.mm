@@ -15,10 +15,12 @@
 #include <sstream>
 
 #define AGSlider_TextScale (0.61f)
+#define AGSlider_TextMargin (4)
 #define AGSlider_HitOffset (10)
 
-AGSlider::AGSlider(GLvertex3f position, float value)
-: m_value(value), m_position(position), m_update([](float){}),
+AGSlider::AGSlider(const GLvertex3f &position, float value)
+: m_value(value), m_position(position),
+m_update([](float){}), m_start([](){}), m_stop([](){}),
 m_validator([](float _old, float _new) { return _new; })
 {
     _updateValue(value);
@@ -57,7 +59,12 @@ void AGSlider::render()
     
     GLKMatrix4 valueMV = modelView;
     valueMV = GLKMatrix4Translate(valueMV, m_position.x, m_position.y, m_position.z);
-    valueMV = GLKMatrix4Translate(valueMV, -m_textSize.x/2, -m_textSize.y/2, 0);
+    if(m_alignment == ALIGN_CENTER)
+        valueMV = GLKMatrix4Translate(valueMV, -m_textSize.x/2, -m_textSize.y/2, 0);
+    else if(m_alignment == ALIGN_RIGHT)
+        valueMV = GLKMatrix4Translate(valueMV, m_size.x/2-m_textSize.x/2-AGSlider_TextMargin, -m_textSize.y/2, 0);
+    else if(m_alignment == ALIGN_LEFT)
+        valueMV = GLKMatrix4Translate(valueMV, -m_size.x/2+AGSlider_TextMargin, -m_textSize.y/2, 0);
     valueMV = GLKMatrix4Scale(valueMV, AGSlider_TextScale, AGSlider_TextScale, AGSlider_TextScale);
     text->render(m_str, valueColor, valueMV, proj);
     
@@ -91,6 +98,8 @@ void AGSlider::touchDown(const AGTouchInfo &t)
     m_lastPosition = t;
     m_ytravel = 0;
     m_active = true;
+    
+    m_start();
 }
 
 void AGSlider::touchMove(const AGTouchInfo &t)
@@ -142,11 +151,17 @@ void AGSlider::touchMove(const AGTouchInfo &t)
 void AGSlider::touchUp(const AGTouchInfo &t)
 {
     m_active = false;
+    m_stop();
 }
 
 AGInteractiveObject *AGSlider::hitTest(const GLvertex3f &t)
 {
     return AGInteractiveObject::hitTest(t);
+}
+
+void AGSlider::setPosition(const GLvertex3f &position)
+{
+    m_position = position;
 }
 
 GLvertex3f AGSlider::position()
@@ -179,6 +194,12 @@ void AGSlider::setType(Type type)
 void AGSlider::onUpdate(const std::function<void (float)> &update)
 {
     m_update = update;
+}
+
+void AGSlider::onStartStopUpdating(const std::function<void (void)> &start, const std::function<void (void)> &stop)
+{
+    m_start = start;
+    m_stop = stop;
 }
 
 void AGSlider::setValidator(const std::function<float (float, float)> &validator)

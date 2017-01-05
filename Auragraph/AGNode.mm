@@ -88,7 +88,7 @@ m_fadeOut(1, 0, 0.5, 2),
 m_uuid(docNode.uuid)
 { }
 
-void AGNode::init()
+void AGNode::_initBase()
 {
     AGRenderObject::init();
     
@@ -97,16 +97,44 @@ void AGNode::init()
     
     if(numInputPorts() > 0)
         m_controlPortBuffer.resize(numInputPorts());
-//        m_controlPortBuffer = new AGControl[numInputPorts()];
+    //        m_controlPortBuffer = new AGControl[numInputPorts()];
     
-    setDefaultPortValues();
+    int numInput = numInputPorts();
+    for(int i = 0; i < numInput; i++)
+    {
+        const AGPortInfo &info = inputPortInfo(i);
+        m_param2InputPort[info.portId] = i;
+    }
+    
+    int numEdit = numEditPorts();
+    for(int i = 0; i < numEdit; i++)
+    {
+        const AGPortInfo &info = editPortInfo(i);
+        m_param2EditPort[info.portId] = i;
+        m_params[info.portId] = getDefaultParamValue(info.portId);
+    }
+}
+
+void AGNode::init()
+{
+    _initBase();
+    
+    initFinal();
 }
 
 void AGNode::init(const AGDocument::Node &docNode)
 {
-    AGNode::init();
+    // initialize base class
+    _initBase();
     
+    // initialize final subclass
+    initFinal();
+
+    // load standard edit params from seralization structure
     loadEditPortValues(docNode);
+    
+    // load any custom data to final subclass
+    deserializeFinal(docNode);
 }
 
 void AGNode::loadEditPortValues(const AGDocument::Node &docNode)
@@ -132,19 +160,14 @@ void AGNode::fadeOutAndRemove()
     m_active = false;
     m_fadeOut.reset();
     
-    // this part is kinda hairy
-    // this should remove the connections from the visuals
-    // which then deletes them
-    // which then breaks the connections between this node and any other node
-    // so we shouldnt need to delete connections or break them here
-    
-    // work on copy of lists
-    std::list<AGConnection *> _inbound = m_inbound;
-    std::list<AGConnection *> _outbound = m_outbound;
-    for(std::list<AGConnection *>::iterator i = _inbound.begin(); i != _inbound.end(); i++)
-        (*i)->removeFromTopLevel();
-    for(std::list<AGConnection *>::iterator i = _outbound.begin(); i != _outbound.end(); i++)
-        (*i)->removeFromTopLevel();
+    itmap_safe(m_inbound, ^(AGConnection *&connection){
+        AGNode::disconnect(connection);
+        [[AGViewController instance] fadeOutAndDelete:connection];
+    });
+    itmap_safe(m_outbound, ^(AGConnection *&connection){
+        AGNode::disconnect(connection);
+        [[AGViewController instance] fadeOutAndDelete:connection];
+    });
 }
 
 void AGNode::renderOut()
@@ -164,7 +187,23 @@ void AGNode::addOutbound(AGConnection *connection)
 
 void AGNode::removeInbound(AGConnection *connection)
 {
+    int inputPort = connection->dstPort();
+    
     m_inbound.remove(connection);
+    
+    // clear m_controlPortBuffer for this connection if no control connections remain
+    bool hasCtlLeft = false;
+    for(auto inboundConn : m_inbound)
+    {
+        if(inboundConn->dstPort() == inputPort && inboundConn->rate() == RATE_CONTROL)
+        {
+            hasCtlLeft = true;
+            break;
+        }
+    }
+    
+    if(!hasCtlLeft)
+        m_controlPortBuffer[connection->dstPort()] = AGControl();
 }
 
 void AGNode::removeOutbound(AGConnection *connection)
@@ -203,6 +242,9 @@ const std::list<AGConnection *> AGNode::inbound() const
 
 AGInteractiveObject *AGNode::_hitTestConnections(const GLvertex3f &t)
 {
+    // disable (connections are hit-tested explicitly in the view controller)
+    return NULL;
+    
     AGInteractiveObject *hit = NULL;
     
     // a node is only responsible for hittest/update/rendering inbound connections
@@ -235,11 +277,16 @@ void AGNode::update(float t, float dt)
     if(!m_active)
     {
         m_fadeOut.update(dt);
-        if(m_fadeOut < 0.01)
-            [[AGViewController instance] removeNode:this];
+//        if(m_fadeOut < 0.01)
+//            [[AGViewController instance] removeNode:this];
     }
     
     _updateConnections(t, dt);
+}
+
+bool AGNode::finishedRenderingOut()
+{
+    return m_fadeOut < 0.01;
 }
 
 void AGNode::render()
@@ -252,21 +299,21 @@ void AGNode::render()
     shader.setNormalMatrix(m_normalMatrix);
     
     int numOut = numOutputPorts();
-    if(numOut)
+    for(int port = 0; port < numOut; port++)
     {
         // draw output port
         glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_portGeo);
         glEnableVertexAttribArray(GLKVertexAttribPosition);
         
-        GLvertex3f portPos = relativePositionForOutputPort(0);
+        GLvertex3f portPos = relativePositionForOutputPort(port);
         GLKMatrix4 mvpOutputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, portPos.x, portPos.y, portPos.z);
         mvpOutputPort = GLKMatrix4Scale(mvpOutputPort, 0.8, 0.8, 0.8);
         shader.setMVPMatrix(mvpOutputPort);
         
         GLcolor4f color;
-        if(m_outputActivation == 1)       color = GLcolor4f(0, 1, 0, 1);
-        else if(m_outputActivation == -1) color = GLcolor4f(1, 0, 0, 1);
-        else                              color = GLcolor4f(1, 1, 1, 1);
+        if(m_outputActivation == 1+port)       color = GLcolor4f(0, 1, 0, 1);
+        else if(m_outputActivation == -1-port) color = GLcolor4f(1, 0, 0, 1);
+        else                                   color = GLcolor4f(1, 1, 1, 1);
         color.a = m_fadeOut;
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
         
@@ -275,21 +322,21 @@ void AGNode::render()
     }
     
     int numIn = numInputPorts();
-    for(int i = 0; i < numIn; i++)
+    for(int port = 0; port < numIn; port++)
     {
         // draw input port
         glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_portGeo);
         glEnableVertexAttribArray(GLKVertexAttribPosition);
 
-        GLvertex3f portPos = relativePositionForInputPort(i);
+        GLvertex3f portPos = relativePositionForInputPort(port);
         GLKMatrix4 mvpInputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, portPos.x, portPos.y, portPos.z);
         mvpInputPort = GLKMatrix4Scale(mvpInputPort, 0.8, 0.8, 0.8);
         shader.setMVPMatrix(mvpInputPort);
         
         GLcolor4f color;
-        if(m_inputActivation == 1+i)       color = GLcolor4f(0, 1, 0, 1);
-        else if(m_inputActivation == -1-i) color = GLcolor4f(1, 0, 0, 1);
-        else                               color = GLcolor4f(1, 1, 1, 1);
+        if(m_inputActivation == 1+port)       color = GLcolor4f(0, 1, 0, 1);
+        else if(m_inputActivation == -1-port) color = GLcolor4f(1, 0, 0, 1);
+        else                                  color = GLcolor4f(1, 1, 1, 1);
         color.a = m_fadeOut;
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
         
@@ -361,7 +408,8 @@ void AGNode::unhit()
 
 AGInteractiveObject *AGNode::hitTest(const GLvertex3f &t)
 {
-    return _hitTestConnections(t);
+//    return _hitTestConnections(t);
+    return NULL;
 }
 
 void AGNode::touchDown(const GLvertex3f &t)
@@ -396,7 +444,15 @@ void AGNode::touchUp(const GLvertex3f &t)
 
 void AGNode::pushControl(int port, const AGControl &control)
 {
+    assert(port >= 0 && port < numOutputPorts());
+    
     this->lock();
+    
+    // ensure correct size
+    if(port >= m_lastControlOutput.size())
+        m_lastControlOutput.resize(numOutputPorts());
+    
+    m_lastControlOutput[port] = control;
     
     float f;
     control.mapTo(f);
@@ -404,7 +460,7 @@ void AGNode::pushControl(int port, const AGControl &control)
     
     for(AGConnection *conn : m_outbound)
     {
-        if(conn->rate() == RATE_CONTROL)
+        if(conn->rate() == RATE_CONTROL && conn->srcPort() == port)
         {
             conn->dst()->receiveControl_internal(conn->dstPort(), control);
             conn->controlActivate(control);
@@ -412,6 +468,23 @@ void AGNode::pushControl(int port, const AGControl &control)
     };
     
     this->unlock();
+}
+
+AGControl AGNode::lastControlOutput(int port)
+{
+    assert(port >= 0 && port < numOutputPorts());
+    
+    this->lock();
+    
+    // ensure correct size
+    if(port >= m_lastControlOutput.size())
+        m_lastControlOutput.resize(numOutputPorts());
+    
+    AGControl c = m_lastControlOutput[port];
+    
+    this->unlock();
+    
+    return c;
 }
 
 void AGNode::receiveControl_internal(int port, const AGControl &control)
@@ -433,6 +506,28 @@ float AGNode::validateEditPortValue(int port, float _new) const
     }
     
     return _new;
+}
+
+void AGNode::finalPortValue(float &value, int portId, int sample) const
+{
+    int index = m_param2InputPort.at(portId);
+    if(m_controlPortBuffer[index])
+        value = m_controlPortBuffer[index].getFloat();
+    else
+        value = m_params.at(portId);
+}
+
+int AGNode::numInputsForPort(int portId)
+{
+    int portNum = m_param2InputPort[portId];
+    int numInputs = 0;
+    for(auto conn : m_inbound)
+    {
+        if(conn->dstPort() == portNum)
+            numInputs++;
+    }
+    
+    return numInputs;
 }
 
 AGDocument::Node AGNode::serialize()
@@ -459,6 +554,7 @@ AGDocument::Node AGNode::serialize()
         docNode.inbound.push_back({
             conn->uuid(),
             conn->src()->uuid(),
+            conn->srcPort(),
             conn->dst()->uuid(),
             conn->dstPort()
         });
@@ -469,12 +565,13 @@ AGDocument::Node AGNode::serialize()
         docNode.outbound.push_back({
             conn->uuid(),
             conn->src()->uuid(),
+            conn->srcPort(),
             conn->dst()->uuid(),
             conn->dstPort()
         });
     }
     
-    return docNode;
+    return std::move(docNode);
 }
 
 
@@ -625,6 +722,8 @@ void AGFreeDraw::touchUp(const GLvertex3f &t)
 
 AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
 {
+    return NULL;
+    
     if(!m_active)
         return NULL;
     

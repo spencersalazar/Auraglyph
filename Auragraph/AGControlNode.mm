@@ -10,10 +10,11 @@
 #include "AGGenericShader.h"
 #include "AGNode.h"
 #include "AGArrayNode.h"
+#include "AGControlSequencerNode.h"
 #include "AGTimer.h"
 #include "spstl.h"
 #include "AGStyle.h"
-
+#include "AGControlOrientationNode.h"
 
 //------------------------------------------------------------------------------
 // ### AGControlNode ###
@@ -75,6 +76,18 @@ AGNode(mf, docNode)
     initializeControlNode();
 }
 
+GLvertex3f AGControlNode::relativePositionForInputPort(int port) const
+{
+    int numIn = numInputPorts();
+    return GLvertex3f(-s_radius, s_portRadius*(numIn-1)-s_portRadius*2*port, 0);
+}
+
+GLvertex3f AGControlNode::relativePositionForOutputPort(int port) const
+{
+    int numOut = numOutputPorts();
+    return GLvertex3f(s_radius, s_portRadius*(numOut-1)-s_portRadius*2*port, 0);
+}
+
 void AGControlNode::update(float t, float dt)
 {
     AGNode::update(t, dt);
@@ -87,6 +100,9 @@ void AGControlNode::update(float t, float dt)
     m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
     
     m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, modelView);
+    
+    m_renderState.modelview = modelView;
+    m_renderState.projection = projection;
 }
 
 void AGControlNode::render()
@@ -156,6 +172,12 @@ AGInteractiveObject *AGControlNode::hitTest(const GLvertex3f &t)
 class AGControlTimerNode : public AGControlNode
 {
 public:
+    
+    enum Param
+    {
+        PARAM_INTERVAL,
+    };
+    
     class Manifest : public AGStandardNodeManifest<AGControlTimerNode>
     {
     public:
@@ -165,14 +187,14 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { "interval", true, true },
+                { PARAM_INTERVAL, "interval", true, true },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { "interval", true, true },
+                { PARAM_INTERVAL, "interval", true, true, 0.5, 0.001, AGFloat_Max },
             };
         };
         
@@ -212,14 +234,19 @@ public:
     using AGControlNode::AGControlNode;
     virtual ~AGControlTimerNode() { dbgprint_off("AGControlTimerNode::~AGControlTimerNode()\n"); }
     
-    void setDefaultPortValues() override
+    void editPortValueChanged(int paramId) override
     {
-        m_interval = 0.5;
+        if(paramId == PARAM_INTERVAL)
+            m_timer.setInterval(param(PARAM_INTERVAL));
+    }
+    
+    void initFinal() override
+    {
         m_lastFire = 0;
         m_lastTime = 0;
         m_value = false;
         
-        m_timer = AGTimer(m_interval, ^(AGTimer *) {
+        m_timer = AGTimer(param(PARAM_INTERVAL), ^(AGTimer *) {
             // flip
             m_value = !m_value;
             pushControl(0, AGControl(m_value));
@@ -227,8 +254,6 @@ public:
     }
     
     virtual int numOutputPorts() const override { return 1; }
-    virtual void setEditPortValue(int port, float value) override;
-    virtual void getEditPortValue(int port, float &value) const override;
     
 private:
     AGTimer m_timer;
@@ -236,25 +261,224 @@ private:
     bool m_value;
     float m_lastTime;
     float m_lastFire;
-    float m_interval;
 };
 
-void AGControlTimerNode::setEditPortValue(int port, float value)
-{
-    switch(port)
-    {
-        case 0: m_interval = value; m_timer.setInterval(m_interval); break;
-    }
-}
 
-void AGControlTimerNode::getEditPortValue(int port, float &value) const
-{
-    switch(port)
-    {
-        case 0: value = m_interval; break;
-    }
-}
+//------------------------------------------------------------------------------
+// ### AGControlAddNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGControlAddNode
 
+class AGControlAddNode : public AGControlNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_ADD,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGControlAddNode>
+    {
+    public:
+        string _type() const override { return "Add"; };
+        string _name() const override { return "Add"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_ADD, "add", true, true },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { PARAM_ADD, "add", true, true, 0 },
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x;
+            
+            // add icon
+            vector<GLvertex3f> iconGeo = {
+                { -radius_x, 0, 0 }, { radius_x, 0, 0 },
+                { 0, radius_y, 0 }, { 0, -radius_y, 0 },
+            };
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINES; };
+    };
+    
+    using AGControlNode::AGControlNode;
+    
+    virtual void receiveControl(int port, const AGControl &control) override
+    {
+        AGControl c = control;
+        float add = param(PARAM_ADD);
+        switch(c.type)
+        {
+            case AGControl::TYPE_FLOAT:
+                c = control;
+                c.vfloat += add;
+                break;
+            case AGControl::TYPE_INT:
+                c = control;
+                c.vint += add;
+                break;
+            default:
+                c = AGControl(control.getInt() + add);
+        }
+        
+        dbgprint("%s: push %f\n", this->title().c_str(), c.getFloat());
+        
+        pushControl(0, c);
+    }
+    
+    virtual int numOutputPorts() const override { return 1; }
+};
+
+
+//------------------------------------------------------------------------------
+// ### AGControlMultiplyNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGControlMultiplyNode
+
+class AGControlMultiplyNode : public AGControlNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_MULTIPLY,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGControlMultiplyNode>
+    {
+    public:
+        string _type() const override { return "Multiply"; };
+        string _name() const override { return "Multiply"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_MULTIPLY, "mult", true, true },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { PARAM_MULTIPLY, "mult", true, true, 0 },
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x;
+            
+            // x icon
+            vector<GLvertex3f> iconGeo = {
+                { -radius_x, radius_y, 0 }, { radius_x, -radius_y, 0 },
+                { -radius_x, -radius_y, 0 }, { radius_x, radius_y, 0 },
+            };
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINES; };
+    };
+    
+    using AGControlNode::AGControlNode;
+    
+    void receiveControl(int port, const AGControl &control) override
+    {
+        AGControl c = control;
+        float mult = param(PARAM_MULTIPLY);
+        switch(c.type)
+        {
+            case AGControl::TYPE_FLOAT:
+                c = control;
+                c.vfloat *= mult;
+                break;
+            case AGControl::TYPE_INT:
+                c = control;
+                c.vint *= mult;
+                break;
+            default:
+                c = AGControl(control.getInt() * mult);
+        }
+        
+        dbgprint("%s: push %f\n", this->title().c_str(), c.getFloat());
+        
+        pushControl(0, c);
+    }
+    
+    virtual int numOutputPorts() const override { return 1; }
+};
+
+//------------------------------------------------------------------------------
+// ### AGControlMidiToFreqNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGControlMidiToFreqNode
+
+class AGControlMidiToFreqNode : public AGControlNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_MIDI,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGControlMidiToFreqNode>
+    {
+    public:
+        string _type() const override { return "midi2freq"; };
+        string _name() const override { return "midi2freq"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_MIDI, "midi", true, true },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override { return { }; };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius = 0.005*AGStyle::oldGlobalScale;
+            
+            return {
+                { -radius, 0, 0 }, {  radius, 0, 0 },
+                {  radius*0.38f,  radius*0.38f, 0 }, { radius, 0, 0 },
+                {  radius*0.38f, -radius*0.38f, 0 }, { radius, 0, 0 },
+            };
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINES; };
+    };
+    
+    using AGControlNode::AGControlNode;
+    
+    virtual int numOutputPorts() const override { return 1; }
+    
+    virtual void receiveControl(int port, const AGControl &control) override
+    {
+        float m = control.getFloat();
+        AGControl freqControl = powf(2.0f, (m-69.0f)/12.0f)*440.0f;
+        pushControl(0, freqControl);
+    }
+    
+private:
+};
 
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
@@ -271,6 +495,13 @@ const AGNodeManager &AGNodeManager::controlNodeManager()
         
         nodeTypes.push_back(new AGControlTimerNode::Manifest);
         nodeTypes.push_back(new AGControlArrayNode::Manifest);
+        nodeTypes.push_back(new AGControlSequencerNode::Manifest);
+        nodeTypes.push_back(new AGControlMidiToFreqNode::Manifest);
+        
+        nodeTypes.push_back(new AGControlAddNode::Manifest);
+        nodeTypes.push_back(new AGControlMultiplyNode::Manifest);
+
+        nodeTypes.push_back(new AGControlOrientationNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();

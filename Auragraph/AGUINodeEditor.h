@@ -13,7 +13,7 @@
 #import <GLKit/GLKit.h>
 #import "Geometry.h"
 #import "Animation.h"
-#import "AGRenderObject.h"
+#include "AGInteractiveObject.h"
 #import "AGUserInterface.h"
 
 #include "LTKTypes.h"
@@ -33,9 +33,20 @@ class AGSlider;
 class AGUINodeEditor : public AGUIObject
 {
 public:
-    virtual ~AGUINodeEditor() { }
+    AGUINodeEditor();
+    virtual ~AGUINodeEditor();
     
     virtual bool doneEditing() = 0;
+    
+    void pin(bool _pin = true);
+    void unpin();
+    bool isPinned() { return m_pinned; }
+    
+    /* will close on touchOutside unless pinned */
+    virtual void touchOutside();
+    
+private:
+    bool m_pinned;
 };
 
 
@@ -63,7 +74,7 @@ public:
     virtual void touchUp(const AGTouchInfo &t);
     
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
-
+    
     virtual bool doneEditing() { return m_doneEditing; }
     bool shouldRenderDrawline() { return false; }
     
@@ -100,6 +111,8 @@ private:
     lincurvef m_yScale;
     
     std::vector<AGSlider *> m_editSliders;
+    std::vector<GLvertex3f> m_pinInfoGeo;
+    AGUIIconButton *m_pinButton;
     
     int m_hit;
     int m_editingPort;

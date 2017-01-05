@@ -14,6 +14,7 @@
 #include "AGConnection.h"
 #include "AGDocument.h"
 //#include "AGUserInterface.h"
+#include "AGInteractiveObject.h"
 
 #include "Geometry.h"
 #include "Animation.h"
@@ -39,12 +40,23 @@ class AGUINodeEditor;
 
 struct AGPortInfo
 {
+    int portId;
+    
     string name;
     bool canConnect; // can create connection btw this port and another port
     bool canEdit; // should this port appear in the node's editor window
     
+    float _default;
     float min;
     float max;
+    
+    enum Mode
+    {
+        LIN,
+        LOG,
+    };
+    
+    Mode mode;
     
     // TODO: min, max, units label, rate, etc.
 };
@@ -93,6 +105,12 @@ public:
     AGNode(const AGNodeManifest *mf, const AGDocument::Node &docNode);
     virtual void init();
     virtual void init(const AGDocument::Node &docNode);
+    
+    // initialize final subclass
+    virtual void initFinal() { }
+    // finish deserializing final subclass
+    virtual void deserializeFinal(const AGDocument::Node &docNode) { }
+    
     virtual ~AGNode();
     
     virtual const string &type() { return m_manifest->type(); }
@@ -107,6 +125,7 @@ public:
     // control
     void pushControl(int port, const AGControl &control);
     virtual void receiveControl(int port, const AGControl &control) { }
+    AGControl lastControlOutput(int port);
 
     enum HitTestResult
     {
@@ -145,21 +164,28 @@ public:
     virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const { return m_pos + relativePositionForInboundConnection(connection); }
     virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const { return m_pos + relativePositionForOutboundConnection(connection); }
     virtual GLvertex3f relativePositionForInboundConnection(AGConnection * connection) const { return relativePositionForInputPort(connection->dstPort()); }
-    virtual GLvertex3f relativePositionForOutboundConnection(AGConnection * connection) const { return relativePositionForOutputPort(0); }
+    virtual GLvertex3f relativePositionForOutboundConnection(AGConnection * connection) const { return relativePositionForOutputPort(connection->srcPort()); }
     
     void trimConnectionsToNodes(const set<AGNode *> &nodes);
     const std::list<AGConnection *> outbound() const;
     const std::list<AGConnection *> inbound() const;
     
-    /*** Subclassing note: the following public functions should be overridden ***/
+    void setEditPortValue(int port, float value) { m_params[editPortInfo(port).portId] = value; editPortValueChanged(editPortInfo(port).portId); }
+    void getEditPortValue(int port, float &value) const { value = m_params.at(editPortInfo(port).portId); }
+    virtual float getDefaultParamValue(int paramId) const { return editPortInfo(m_param2EditPort.at(paramId))._default; }
+    float param(int paramId) const { return m_params.at(paramId); }
+    void setParam(int paramId, float value) { m_params[paramId] = value; editPortValueChanged(paramId); }
+    float validateParam(int paramId, float value) const { return validateEditPortValue(m_param2EditPort.at(paramId), value); }
+    int numInputsForPort(int portId);
+
+    /*** Subclassing note: override information as described ***/
     
-    /* overridden by final subclass */
-    // TODO: should be pure virtual
-    virtual void setEditPortValue(int port, float value) { }
-    /* overridden by final subclass */
-    virtual void getEditPortValue(int port, float &value) const { }
     /* can be overridden by final subclass */
     virtual float validateEditPortValue(int port, float _new) const;
+    /* can be overridden by direct subclass */
+    virtual void finalPortValue(float &value, int portId, int sample = -1) const;
+    /* can be overridden by final subclass */
+    virtual void editPortValueChanged(int paramId) { }
 
     void loadEditPortValues(const AGDocument::Node &docNode);
     
@@ -176,14 +202,19 @@ public:
     /* overridden by final or direct subclass */
     virtual void fadeOutAndRemove();
     virtual void renderOut();
-    
-    /* serialization - overridden by direct subclass */
+    bool finishedRenderingOut();
+
     virtual AGDocument::Node serialize();
     
+    /* overridden by direct subclass */
+    virtual AGDocument::Node::Class nodeClass() const = 0;
+
 private:
     static bool s_initNode;
     
     Mutex m_mutex;
+    
+    void _initBase();
     virtual void receiveControl_internal(int port, const AGControl &control);
     
 protected:
@@ -199,16 +230,11 @@ protected:
     virtual void removeInbound(AGConnection *connection);
     virtual void removeOutbound(AGConnection *connection);
     
-    /* overridden by final subclass */
-    virtual void setDefaultPortValues() { }
-    /* overridden by direct subclass */
-    virtual AGDocument::Node::Class nodeClass() const = 0;
-
     AGInteractiveObject *_hitTestConnections(const GLvertex3f &t);
     void _updateConnections(float t, float dt);
     void _renderConnections();
     
-    void _renderIcon();
+    virtual void _renderIcon();
     
     const AGNodeManifest *m_manifest;
     string m_title;
@@ -218,6 +244,7 @@ protected:
     std::list<AGConnection *> m_outbound;
     
     vector<AGControl> m_controlPortBuffer;
+    vector<AGControl> m_lastControlOutput;
     
 //    AGPortInfo * m_inputPortInfo;
     
@@ -234,6 +261,10 @@ protected:
     
     bool m_active;
     powcurvef m_fadeOut;
+    
+    map<int, int> m_param2InputPort;
+    map<int, int> m_param2EditPort;
+    map<int, float> m_params;
 };
 
 

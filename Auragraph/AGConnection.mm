@@ -62,15 +62,15 @@ void AGConnection::initalize()
     }
 }
 
-AGConnection *AGConnection::connect(AGNode *src, AGNode *dst, int dstPort)
+AGConnection *AGConnection::connect(AGNode *src, int srcPort, AGNode *dst, int dstPort)
 {
-    AGConnection *conn = new AGConnection(src, dst, dstPort);
+    AGConnection *conn = new AGConnection(src, srcPort, dst, dstPort);
     conn->init();
     return conn;
 }
 
-AGConnection::AGConnection(AGNode * src, AGNode * dst, int dstPort) :
-m_src(src), m_dst(dst), m_dstPort(dstPort),
+AGConnection::AGConnection(AGNode * src, int srcPort, AGNode * dst, int dstPort) :
+m_src(src), m_srcPort(srcPort), m_dst(dst), m_dstPort(dstPort),
 m_rate((src->rate() == RATE_AUDIO && dst->rate() == RATE_AUDIO) ? RATE_AUDIO : RATE_CONTROL),
 m_geoSize(0), m_hit(false), m_stretch(false), m_active(true),
 m_stretchPoint(0.25, GLvertex3f()), m_controlVisScale(0.07, 0), m_uuid(makeUUID())
@@ -159,6 +159,9 @@ void AGConnection::update(float t, float dt)
     itfilter(m_flares, ^bool (float &f){
         return f >= 1;
     });
+    
+    // relax to zero
+    m_controlVisScale = 0;
 }
 
 void AGConnection::render()
@@ -220,7 +223,8 @@ void AGConnection::render()
         // move a to edge of port circle
         modelView = GLKMatrix4Translate(modelView, 0.002*AGStyle::oldGlobalScale, 0, 0);
         // scale [0,1] to length of connection (minus port circle radius)
-        modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004*AGStyle::oldGlobalScale), 0.001*AGStyle::oldGlobalScale, 1);
+        // also flip y axis (somehow is necessary for correct visuals)
+        modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004*AGStyle::oldGlobalScale), -1*0.001*AGStyle::oldGlobalScale, 1);
         
         waveformShader.setProjectionMatrix(projection);
         waveformShader.setModelViewMatrix(modelView);
@@ -263,7 +267,7 @@ void AGConnection::render()
         // scale x = [0,1] to length of connection (minus port circle radius)
         modelView = GLKMatrix4Scale(modelView, (vec.xy().magnitude()-0.004*AGStyle::oldGlobalScale), 0.0025*AGStyle::oldGlobalScale, 1);
         // scale height to control activation
-        modelView = GLKMatrix4Scale(modelView, 1, powf(10, -2*(1-m_controlVisScale)), 1);
+        modelView = GLKMatrix4Scale(modelView, 1, m_controlVisScale*0.5, 1);
 //        modelView = GLKMatrix4Scale(modelView, 1, 1, 1);
         
         shader.setProjectionMatrix(projection);
@@ -344,10 +348,14 @@ void AGConnection::controlActivate(const AGControl &ctrl)
 //    // set target to 0 - slowly contract
 //    m_controlVisScale = 0;
     
+    bool set = false;
+    float val = 0;
+    
     switch(ctrl.type)
     {
         case AGControl::TYPE_NONE:
-            m_controlVisScale = 0;
+            val = 0;
+            set = true;
             break;
         case AGControl::TYPE_BIT:
             if(ctrl.vbit)
@@ -356,14 +364,29 @@ void AGConnection::controlActivate(const AGControl &ctrl)
                 m_controlVisScale = 0; // relax to off
             break;
         case AGControl::TYPE_INT:
-            m_controlVisScale = 1+log10(fabsf((float)ctrl.vint)+0.00001);
+            val = ctrl.vint;
+            set = true;
+//            m_controlVisScale = 1+log10(fabsf((float)ctrl.vint)+0.00001);
             break;
         case AGControl::TYPE_FLOAT:
-            m_controlVisScale = 1+log10(fabsf(ctrl.vfloat)+0.00001);
+            val = ctrl.vfloat;
+            set = true;
+//            m_controlVisScale = 1+log10(fabsf(ctrl.vfloat)+0.00001);
             break;
         case AGControl::TYPE_STRING:
             m_controlVisScale = ctrl.vstring.length() > 0 ? 1 : 0;
             break;
+    }
+    
+    if(set)
+    {
+        val = fabsf(val);
+        if(val >= 1)
+            m_controlVisScale.reset(1+(log10f(val)));
+        else if(val > 0)
+            m_controlVisScale.reset(1/(1-log10(val)));
+        else
+            m_controlVisScale = 0;
     }
     
     m_activation = ctrl;
@@ -375,6 +398,7 @@ AGDocument::Connection AGConnection::serialize()
     AGDocument::Connection docConnection;
     docConnection.uuid = m_uuid;
     docConnection.srcUuid = src()->uuid();
+    docConnection.srcPort = srcPort();
     docConnection.dstUuid = dst()->uuid();
     docConnection.dstPort = dstPort();
     

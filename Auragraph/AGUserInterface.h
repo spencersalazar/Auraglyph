@@ -10,9 +10,9 @@
 #define __Auragraph__AGUserInterface__
 
 #import <GLKit/GLKit.h>
-#import "Geometry.h"
-#import "Animation.h"
-#import "AGRenderObject.h"
+#include "Geometry.h"
+#include "Animation.h"
+#include "AGInteractiveObject.h"
 
 #include <string>
 #include <vector>
@@ -51,6 +51,33 @@ private:
     GLvertex2f m_geo[4];
 };
 
+/*------------------------------------------------------------------------------
+ - AGUILabel -
+ Text label
+ -----------------------------------------------------------------------------*/
+class AGUILabel : public AGRenderObject
+{
+public:
+    AGUILabel(const GLvertex3f &position = GLvertex3f(), const string &text = "");
+    ~AGUILabel();
+    
+    virtual void update(float t, float dt);
+    virtual void render();
+    
+    void setPosition(const GLvertex3f &position);
+    virtual GLvertex3f position();
+    virtual GLvertex2f size();
+    void setSize(const GLvertex2f &size);
+    GLvertex2f naturalSize() const;
+    
+private:
+    GLvertex3f m_position;
+    GLvertex2f m_size;
+    GLvertex2f m_textSize;
+    
+    string m_text;
+};
+
 
 /*------------------------------------------------------------------------------
  - AGUIButton -
@@ -68,6 +95,11 @@ public:
     virtual void touchDown(const GLvertex3f &t);
     virtual void touchMove(const GLvertex3f &t);
     virtual void touchUp(const GLvertex3f &t);
+    
+    GLvertex3f position() { return m_pos; }
+    void setPosition(const GLvertex3f &pos) { m_pos = pos; }
+    
+    virtual GLvertex2f size() { return m_size.xy(); }
     
     void setAction(void (^action)());
     bool isPressed();
@@ -141,7 +173,7 @@ public:
     virtual void update(float t, float dt);
     virtual void render();
     
-    virtual GLvertex3f position() { GLvertex3f parentPos = GLvertex3f(0, 0, 0); if(parent()) parentPos = parent()->position(); return parentPos+m_pos; }
+    virtual GLvertex3f position() { return m_pos; }
     virtual GLvertex2f size() { return m_size.xy(); }
     virtual GLvrectf effectiveBounds() { return GLvrectf(position()-size()*0.5, position()+size()*0.5); }
     
@@ -193,21 +225,21 @@ class AGUITrash : public AGUIObject
 public:
     static AGUITrash &instance();
     
-    virtual void update(float t, float dt);
-    virtual void render();
+    virtual void update(float t, float dt) override;
+    virtual void render() override;
     
-    virtual void touchDown(const GLvertex3f &t);
-    virtual void touchMove(const GLvertex3f &t);
-    virtual void touchUp(const GLvertex3f &t);
+    virtual void touchDown(const GLvertex3f &t) override;
+    virtual void touchMove(const GLvertex3f &t) override;
+    virtual void touchUp(const GLvertex3f &t) override;
     
     void activate();
     void deactivate();
     
-    virtual AGUIObject *hitTest(const GLvertex3f &t);
+    virtual AGUIObject *hitTest(const GLvertex3f &t) override;
     
     virtual void setPosition(const GLvertex3f &pos) { m_position = pos; }
     
-    virtual bool renderFixed() { return true; }
+    virtual bool renderFixed() override { return true; }
     
 private:
     AGUITrash();

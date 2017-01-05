@@ -20,4 +20,9 @@
 #define dB2lin(x)           pow( 10.0, (x) / 20.0 )
 #endif
 
+#include <cmath>
+
+template<typename T>
+inline T clipunit(T x) { return x-std::floor(x); }
+
 #endif /* spdsp_hpp */

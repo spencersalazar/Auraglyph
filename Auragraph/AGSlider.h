@@ -9,13 +9,13 @@
 #ifndef AGSlider_h
 #define AGSlider_h
 
-#include "AGRenderObject.h"
-#include <sstream>
+#include "AGInteractiveObject.h"
+#include <functional>
 
 class AGSlider : public AGInteractiveObject
 {
 public:
-    AGSlider(GLvertex3f position, float value = 0);
+    AGSlider(const GLvertex3f &position = GLvertex3f(), float value = 0);
     ~AGSlider();
     
     virtual void update(float t, float dt);
@@ -27,6 +27,7 @@ public:
     
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
     
+    void setPosition(const GLvertex3f &position);
     virtual GLvertex3f position();
     virtual GLvertex2f size();
     void setSize(const GLvertex2f &size);
@@ -52,7 +53,19 @@ public:
     Type type() const { return m_type; }
     void setType(Type type);
     
+    enum Alignment
+    {
+        ALIGN_CENTER,
+        ALIGN_LEFT,
+        ALIGN_RIGHT,
+    };
+    
+    Alignment alignment() const { return m_alignment; }
+    void setAlignment(Alignment alignment) { m_alignment = alignment; }
+    
     void onUpdate(const std::function<void (float)> &update);
+    void onStartStopUpdating(const std::function<void (void)> &start,
+                             const std::function<void (void)> &stop);
     
     /* 
      Validator function takes two arguments (old and new value) and returns
@@ -72,6 +85,8 @@ private:
     Scale m_scale = LINEAR;
     Type m_type = DISCRETE;
     
+    Alignment m_alignment = ALIGN_CENTER;
+    
     constexpr const static size_t BUF_SIZE = 32;
     char m_str[BUF_SIZE];
     
@@ -83,6 +98,8 @@ private:
     AGTouchInfo m_lastPosition;
     
     std::function<void (float)> m_update;
+    std::function<void (void)> m_start;
+    std::function<void (void)> m_stop;
     std::function<float (float, float)> m_validator;
 };
 

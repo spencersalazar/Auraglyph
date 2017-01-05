@@ -79,7 +79,12 @@ void AGDocument::load(const string &title)
     m_title = title;
     
     NSString *filename = filenameForTitle(m_title);
-    NSData *data = [NSData dataWithContentsOfFile:filename];
+    loadFromPath([filename stlString]);
+}
+
+void AGDocument::loadFromPath(const string &path)
+{
+    NSData *data = [NSData dataWithContentsOfFile:[NSString stringWithSTLString:path]];
     NSDictionary *doc = [NSJSONSerialization JSONObjectWithData:data options:0 error:NULL];
     
     if(doc)
@@ -107,6 +112,12 @@ void AGDocument::load(const string &title)
                         if([value[@"type"] isEqualToString:@"int"]) { pv.type = ParamValue::INT; pv.i = [value[@"value"] intValue]; }
                         else if([value[@"type"] isEqualToString:@"float"]) { pv.type = ParamValue::FLOAT; pv.f = [value[@"value"] floatValue]; }
                         else if([value[@"type"] isEqualToString:@"string"]) { pv.type = ParamValue::STRING; pv.s = [[value[@"value"] stringValue] UTF8String]; }
+                        else if([value[@"type"] isEqualToString:@"array_float"])
+                        {
+                            pv.type = ParamValue::FLOAT_ARRAY;
+                            for(id v in value[@"value"])
+                                pv.fa.push_back([v floatValue]);
+                        }
                         else assert(0); // unhandled
                         
                         n.params[[param UTF8String]] = pv;
@@ -121,6 +132,10 @@ void AGDocument::load(const string &title)
                         
                         c.uuid = [conn[@"uuid"] stlString];
                         c.srcUuid = [conn[@"src"] stlString];
+                        if([conn objectForKey:@"srcPort"])
+                            c.srcPort = [[conn objectForKey:@"srcPort"] intValue];
+                        else
+                            c.srcPort = 0;
                         c.dstUuid = n.uuid;
                         c.dstPort = [conn[@"dstPort"] intValue];
                         
@@ -136,6 +151,10 @@ void AGDocument::load(const string &title)
                         
                         c.uuid = [conn[@"uuid"] stlString];
                         c.srcUuid = n.uuid;
+                        if([conn objectForKey:@"srcPort"])
+                            c.srcPort = [[conn objectForKey:@"srcPort"] intValue];
+                        else
+                            c.srcPort = 0;
                         c.dstUuid = [conn[@"dst"] stlString];
                         c.dstPort = [conn[@"dstPort"] intValue];
                         
@@ -176,7 +195,19 @@ void AGDocument::load(const string &title)
     }
 }
 
-void AGDocument::save()
+void AGDocument::save() const
+{
+    NSString *filepath = filenameForTitle(m_title);
+    saveToPath([filepath stlString]);
+}
+
+void AGDocument::saveTo(const string &title)
+{
+    m_title = title;
+    save();
+}
+
+void AGDocument::saveToPath(const std::string &path) const
 {
     NSMutableDictionary *doc = [NSMutableDictionary new];
     
@@ -214,12 +245,14 @@ void AGDocument::save()
         for(const Connection &conn : node.inbound)
             [inbound addObject:@{ @"uuid": [NSString stringWithSTLString:conn.uuid],
                                   @"src": [NSString stringWithSTLString:conn.srcUuid],
+                                  @"srcPort": @(conn.srcPort),
                                   @"dstPort": @(conn.dstPort)
                                   }];
         
         NSMutableArray *outbound = [NSMutableArray arrayWithCapacity:node.outbound.size()];
         for(const Connection &conn : node.outbound)
             [outbound addObject:@{ @"uuid": [NSString stringWithSTLString:conn.uuid],
+                                   @"srcPort": @(conn.srcPort),
                                    @"dst": [NSString stringWithSTLString:conn.dstUuid],
                                    @"dstPort": @(conn.dstPort)
                                    }];
@@ -267,15 +300,9 @@ void AGDocument::save()
     NSData *data = [NSJSONSerialization dataWithJSONObject:doc
                                                    options:NSJSONWritingPrettyPrinted
                                                      error:NULL];
-    NSString *filepath = filenameForTitle(m_title);
+    NSString *filepath = [NSString stringWithSTLString:path];
     NSLog(@"Saving to %@", filepath);
     [data writeToFile:filepath atomically:YES];
-}
-
-void AGDocument::saveTo(const string &title)
-{
-    m_title = title;
-    save();
 }
 
 void AGDocument::recreate(void (^createNode)(const Node &node),
@@ -295,5 +322,34 @@ bool AGDocument::existsForTitle(const string &title)
 {
     NSString *filename = filenameForTitle(title);
     return [[NSFileManager defaultManager] fileExistsAtPath:filename isDirectory:NULL];
+}
+
+void AGDocument::Node::saveParam(const string &name, int p)
+{
+    params[name] = AGDocument::ParamValue(p);
+}
+
+void AGDocument::Node::saveParam(const string &name, float p)
+{
+    params[name] = AGDocument::ParamValue(p);
+}
+
+void AGDocument::Node::saveParam(const string &name, const vector<float> &p)
+{
+    params[name].type = ParamValue::FLOAT_ARRAY;
+    for(float f : p)
+        params[name].fa.push_back(f);
+}
+
+void AGDocument::Node::loadParam(const string &name, vector<float> &p) const
+{
+    if(params.count(name) && params.at(name).type == ParamValue::FLOAT_ARRAY)
+    {
+        p.clear();
+        p.reserve(params.at(name).fa.size());
+        
+        for(float f : params.at(name).fa)
+            p.push_back(f);
+    }
 }
 

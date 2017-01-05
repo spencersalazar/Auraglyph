@@ -332,7 +332,7 @@ protected:
 class Butter2RLPF : public Butter2Filter
 {
 public:
-    Butter2RLPF(float srate) : Butter2Filter(srate) { }
+    Butter2RLPF(float srate = 44100) : Butter2Filter(srate) { }
     virtual void set(float freq, float Q) { m_filter.set_rlpf(freq, Q); }
     virtual float tick(float input) { return m_filter.tick_rlpf(input); }
 };
@@ -340,7 +340,7 @@ public:
 class Butter2RHPF : public Butter2Filter
 {
 public:
-    Butter2RHPF(float srate) : Butter2Filter(srate) { }
+    Butter2RHPF(float srate = 44100) : Butter2Filter(srate) { }
     virtual void set(float freq, float Q) { m_filter.set_rhpf(freq, Q); }
     virtual float tick(float input) { return m_filter.tick_rhpf(input); }
 };
@@ -348,7 +348,7 @@ public:
 class Butter2BPF : public Butter2Filter
 {
 public:
-    Butter2BPF(float srate) : Butter2Filter(srate) { }
+    Butter2BPF(float srate = 44100) : Butter2Filter(srate) { }
     virtual void set(float freq, float Q) { m_filter.set_bpf(freq, Q); }
     virtual float tick(float input) { return m_filter.tick_bpf(input); }
 };

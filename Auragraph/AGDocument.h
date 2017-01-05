@@ -44,6 +44,7 @@ public:
     {
         string uuid;
         string srcUuid;
+        int srcPort;
         string dstUuid;
         int dstPort;
     };
@@ -58,6 +59,12 @@ public:
         list<Connection> inbound;
         list<Connection> outbound;
         map<string, ParamValue> params;
+        
+        void saveParam(const string &name, int p);
+        void saveParam(const string &name, float p);
+        void saveParam(const string &name, const vector<float> &p);
+
+        void loadParam(const string &name, vector<float> &p) const;
     };
     
     struct Freedraw
@@ -72,8 +79,10 @@ public:
     
     void create();
     void load(const string &title);
-    void save();
+    void loadFromPath(const string &path);
+    void save() const;
     void saveTo(const string &title);
+    void saveToPath(const string &path) const;
     
     void recreate(void (^createNode)(const Node &node),
                   void (^createConnection)(const Connection &connection),

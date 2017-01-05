@@ -35,25 +35,10 @@ int AGAudioCompositeNode::numOutputPorts() const
     return m_outputs.size();
 }
 
-void AGAudioCompositeNode::setEditPortValue(int port, float value)
-{
-    switch(port)
-    {
-        case 0: m_gain = value; break;
-    }
-}
-
-void AGAudioCompositeNode::getEditPortValue(int port, float &value) const
-{
-    switch(port)
-    {
-        case 0: value = m_gain; break;
-    }
-}
-
-void AGAudioCompositeNode::renderAudio(sampletime t, float *input, float *output, int nFrames)
+void AGAudioCompositeNode::renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans)
 {
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+    m_lastTime = t;
     pullInputPorts(t, nFrames);
     
     m_outputBuffer.clear();
@@ -66,11 +51,11 @@ void AGAudioCompositeNode::renderAudio(sampletime t, float *input, float *output
     {
         Mutex::Scope scope = m_outputsMutex.inScope();
         for(AGAudioRenderer *outputNode : m_outputs)
-            outputNode->renderAudio(t, input, m_outputBuffer, nFrames);
+            outputNode->renderAudio(t, input, m_outputBuffer, nFrames, 0, 1);
     }
     
-    for(int i = 0; i < nFrames; i++)
-        output[i] += m_outputBuffer[i]*m_gain;
+    float gain = param(AUDIO_PARAM_GAIN);
     
-    m_lastTime = t;
+    for(int i = 0; i < nFrames; i++)
+        output[i] += m_outputBuffer[i]*gain;
 }
