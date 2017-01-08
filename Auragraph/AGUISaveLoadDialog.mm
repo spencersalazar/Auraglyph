@@ -136,7 +136,6 @@ public:
     
     virtual void touchDown(const AGTouchInfo &t) override
     {
-        m_name.push_back(vector<GLvertex2f>());
         m_name.back().push_back(t.position.xy());
     }
     
@@ -367,13 +366,13 @@ public:
     
     virtual void touchDown(const AGTouchInfo &t) override
     {
-        GLvertex3f pos = t.position-m_pos;
+        GLvertex3f relPos = t.position-m_pos;
         float yPos = m_itemStart+m_verticalScrollPos;
         
         for(int i = 0; i < m_documentList.size(); i++)
         {
-            if(pos.y < yPos+m_itemHeight/2.0f && pos.y > yPos-m_itemHeight/2.0f &&
-               pos.x > -m_size.x/2 && pos.x < m_size.x/2)
+            if(relPos.y < yPos+m_itemHeight/2.0f && relPos.y > yPos-m_itemHeight/2.0f &&
+               relPos.x > -m_size.x/2 && relPos.x < m_size.x/2)
             {
                 m_selection = i;
                 break;
@@ -388,7 +387,6 @@ public:
     
     virtual void touchMove(const AGTouchInfo &t) override
     {
-        // TODO: pull max_travel out into AGStyle
         if((m_touchStart-t.position).magnitudeSquared() > AGStyle::maxTravel*AGStyle::maxTravel)
         {
             m_selection = -1;
