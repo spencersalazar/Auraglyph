@@ -1792,15 +1792,19 @@ public:
         
         vector<GLvertex3f> _iconGeo() const override
         {
-            float radius_y = 0.005f*AGStyle::oldGlobalScale;
-            float radius_x = radius_y*0.66f;
+            float r_y = 25;
+            float r_x = r_y*(8.5/11.0); // US letter aspect ratio
             
-            // sawtooth wave shape
+            // classic folded document shape
             vector<GLvertex3f> iconGeo = {
-                { -radius_x, 0, 0 },
-                { -radius_x*0.5f, radius_y, 0 },
-                { radius_x*0.5f, -radius_y, 0 },
-                { radius_x, 0, 0 },
+                { r_x*(2-G_RATIO), r_y, 0 },
+                { -r_x, r_y, 0 },
+                { -r_x, -r_y, 0 },
+                { r_x, -r_y, 0 },
+                { r_x, r_y-r_x*(G_RATIO-1), 0 },
+                { r_x*(2-G_RATIO), r_y-r_x*(G_RATIO-1), 0 },
+                { r_x*(2-G_RATIO), r_y, 0 },
+                { r_x, r_y-r_x*(G_RATIO-1), 0 },
             };
             
             return iconGeo;
@@ -1822,7 +1826,7 @@ public:
     {
         if(paramId == PARAM_FILE)
         {
-            // todo: abstract this
+            // todo: abstract filesystem API
             NSString *documentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
             NSArray *paths = [[NSFileManager defaultManager] subpathsAtPath:documentPath];
             int fileNum = (int) floor(param(PARAM_FILE));
