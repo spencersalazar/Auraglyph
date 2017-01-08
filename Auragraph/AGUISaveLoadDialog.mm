@@ -110,6 +110,7 @@ public:
             { -m_size.x/2,  m_size.y/2, 0 },
         }, 4);
         
+        // draw outer frame
         glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &AGStyle::foregroundColor);
         glLineWidth(4.0f);
         drawLineLoop((GLvertex3f[]){
