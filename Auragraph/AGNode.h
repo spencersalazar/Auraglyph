@@ -58,6 +58,23 @@ struct AGPortInfo
     
     Mode mode;
     
+    enum Type
+    {
+        TYPE_FLOAT = 0,
+        TYPE_INT,
+        TYPE_STRING,
+    };
+    
+    Type type;
+    
+    enum Editor
+    {
+        EDITOR_DEFAULT = 0,
+        EDITOR_FILES,
+    };
+    
+    Editor editor;
+    
     // TODO: min, max, units label, rate, etc.
 };
 
