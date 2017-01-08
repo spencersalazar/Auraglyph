@@ -12,6 +12,7 @@
 #import "AGGenericShader.h"
 #import "AGHandwritingRecognizer.h"
 #import "AGSlider.h"
+#include "AGFileBrowser.h"
 #include "AGAnalytics.h"
 
 #import "TexFont.h"
@@ -236,9 +237,11 @@ void AGUIStandardNodeEditor::update(float t, float dt)
     
     m_currentDrawlineAlpha.update(dt);
     
-    for(auto slider : m_editSliders)
-        slider->update(t, dt);
-    m_pinButton->update(t, dt);
+//    for(auto slider : m_editSliders)
+//        slider->update(t, dt);
+//    m_pinButton->update(t, dt);
+    
+    updateChildren(t, dt);
     
     m_t += dt;
 }
@@ -345,10 +348,12 @@ void AGUIStandardNodeEditor::render()
 //        text->render(ss.str(), valueColor, valueMV, proj);
     }
     
-    for(auto slider : m_editSliders)
-        slider->render();
+//    for(auto slider : m_editSliders)
+//        slider->render();
+//    
+//    m_pinButton->render();
     
-    m_pinButton->render();
+    renderChildren();
     
     /* draw item editor */
     
@@ -560,6 +565,9 @@ void AGUIStandardNodeEditor::touchDown(const GLvertex3f &t, const CGPoint &scree
         m_hit = hitTestX(t, &inBBox);
         
         m_doneEditing = !inBBox;
+        
+        if(m_doneEditing && m_customItemEditor)
+            removeChild(m_customItemEditor);
     }
     else
     {
@@ -732,14 +740,33 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
             {
                 AGAnalytics::instance().eventEditNodeParamDrawOpen(m_node->type(), m_node->editPortInfo(m_hit).name);
                 
-                m_editingPort = m_hit;
-                m_hit = -1;
-                m_currentValue = 0;
-                m_currentValueStream.str(std::string()); // clear
-                m_currentValueString = m_currentValueStream.str();
-                m_decimal = false;
-                m_drawline.clear();
-                //m_node->getEditPortValue(m_editingPort, m_currentValue);
+                const AGPortInfo &portInfo = m_node->editPortInfo(m_hit);
+                if(portInfo.editor == AGPortInfo::EDITOR_DEFAULT)
+                {
+                    m_editingPort = m_hit;
+                    m_hit = -1;
+                    m_currentValue = 0;
+                    m_currentValueStream.str(std::string()); // clear
+                    m_currentValueString = m_currentValueStream.str();
+                    m_decimal = false;
+                    m_drawline.clear();
+                    //m_node->getEditPortValue(m_editingPort, m_currentValue);
+                }
+                else if(portInfo.editor == AGPortInfo::EDITOR_FILES)
+                {
+                    m_hit = -1;
+                    
+                    AGFileBrowser *fileBrowser = new AGFileBrowser;
+                    fileBrowser->init();
+                    
+                    m_customItemEditor = fileBrowser;
+                    addChildToTop(m_customItemEditor);
+                    
+                    fileBrowser->onCancel([this](){
+                        removeChild(m_customItemEditor);
+                        m_customItemEditor = NULL;
+                    });
+                }
             }
         }
     }
@@ -775,6 +802,10 @@ void AGUIStandardNodeEditor::renderOut()
 {
     m_xScale = lincurvef(AGStyle::open_animTimeX/2, 1, AGStyle::open_squeezeHeight);
     m_yScale = lincurvef(AGStyle::open_animTimeY/2, 1, AGStyle::open_squeezeHeight);
+    
+    // cause custom item editor to fade out also
+    if(m_customItemEditor)
+        removeChild(m_customItemEditor);
 }
 
 bool AGUIStandardNodeEditor::finishedRenderingOut()

@@ -24,7 +24,7 @@
 
 class AGNode;
 class AGSlider;
-
+class AGFileBrowser;
 
 /*------------------------------------------------------------------------------
  - AGUINodeEditor -
@@ -113,6 +113,8 @@ private:
     std::vector<AGSlider *> m_editSliders;
     std::vector<GLvertex3f> m_pinInfoGeo;
     AGUIIconButton *m_pinButton;
+    
+    AGInteractiveObject *m_customItemEditor = NULL;
     
     int m_hit;
     int m_editingPort;

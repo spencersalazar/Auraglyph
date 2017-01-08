@@ -1775,18 +1775,20 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_TRIGGER, "trigger", true, true, 0 },
-                { PARAM_RATE, "rate", true, true, 1 },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1 }
+                { PARAM_TRIGGER, "trigger", ._default = 0 },
+                { PARAM_RATE, "rate", ._default = 1 },
+                { AUDIO_PARAM_GAIN, "gain", ._default = 1 },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_FILE, "file", true, true, 0 },
-                { PARAM_RATE, "rate", true, true, 1 },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1 }
+                { PARAM_FILE, "file", ._default = 0,
+                    .type = AGPortInfo::TYPE_STRING,
+                    .editor = AGPortInfo::EDITOR_FILES },
+                { PARAM_RATE, "rate", ._default = 1 },
+                { AUDIO_PARAM_GAIN, "gain", ._default = 1 }
             };
         };
         

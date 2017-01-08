@@ -19,6 +19,7 @@
 		093395741A088849009E4802 /* AGControlNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 093395721A088849009E4802 /* AGControlNode.mm */; };
 		093395771A08BFAC009E4802 /* AGNodeSelector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 093395751A08BFAC009E4802 /* AGNodeSelector.mm */; };
 		0933957A1A0A3785009E4802 /* AGAboutBox.mm in Sources */ = {isa = PBXBuildFile; fileRef = 093395781A0A3785009E4802 /* AGAboutBox.mm */; };
+		0934B6781E22135E009259E2 /* AGFileBrowser.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0934B6761E22135E009259E2 /* AGFileBrowser.mm */; };
 		09412E061A205A070065598D /* AGDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09412E041A205A070065598D /* AGDocument.mm */; };
 		09412E091A210B630065598D /* sputil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09412E071A210B630065598D /* sputil.cpp */; };
 		09412E0C1A2112300065598D /* NSString+STLString.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09412E0B1A2112300065598D /* NSString+STLString.mm */; };
@@ -145,6 +146,8 @@
 		093395761A08BFAC009E4802 /* AGNodeSelector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGNodeSelector.h; sourceTree = "<group>"; };
 		093395781A0A3785009E4802 /* AGAboutBox.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGAboutBox.mm; sourceTree = "<group>"; };
 		093395791A0A3785009E4802 /* AGAboutBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAboutBox.h; sourceTree = "<group>"; };
+		0934B6761E22135E009259E2 /* AGFileBrowser.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGFileBrowser.mm; sourceTree = "<group>"; };
+		0934B6771E22135E009259E2 /* AGFileBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGFileBrowser.h; sourceTree = "<group>"; };
 		093D631E18CECF0A0012C4B7 /* Animation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Animation.h; sourceTree = "<group>"; };
 		09412E041A205A070065598D /* AGDocument.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGDocument.mm; sourceTree = "<group>"; };
 		09412E051A205A070065598D /* AGDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGDocument.h; sourceTree = "<group>"; };
@@ -521,6 +524,8 @@
 				091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */,
 				09F29DAE1CCA086200502C01 /* AGSlider.h */,
 				09F29DAD1CCA086200502C01 /* AGSlider.mm */,
+				0934B6771E22135E009259E2 /* AGFileBrowser.h */,
+				0934B6761E22135E009259E2 /* AGFileBrowser.mm */,
 				09E5EC8118A46F7300B21D97 /* AGControl.h */,
 				09E5EC8018A46F7300B21D97 /* AGControl.mm */,
 				093395791A0A3785009E4802 /* AGAboutBox.h */,
@@ -946,6 +951,7 @@
 				098740AD17BC377E0098511A /* AGAudioNode.mm in Sources */,
 				098740B017BC527E0098511A /* ES2Render.mm in Sources */,
 				09B9626E1DDE3F1E001DCFB1 /* AGDocumentManager.mm in Sources */,
+				0934B6781E22135E009259E2 /* AGFileBrowser.mm in Sources */,
 				09FC924B1A153A83005D14A3 /* AGConnection.mm in Sources */,
 				098740B317BC61410098511A /* AGUserInterface.mm in Sources */,
 				09B674441D6D9E8700F84E09 /* AGCompositeNode.mm in Sources */,
