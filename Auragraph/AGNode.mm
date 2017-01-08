@@ -44,6 +44,10 @@ void AGNode::connect(AGConnection * connection)
 
 void AGNode::disconnect(AGConnection * connection)
 {
+    dbgprint("disconnect: (0x%08x) 0x%08x:%i -> 0x%08x:%i\n",
+             (unsigned int) connection, (unsigned int) connection->src(), connection->srcPort(),
+             (unsigned int) connection->dst(), connection->dstPort());
+    
     connection->src()->lock();
     connection->src()->removeOutbound(connection);
     connection->src()->unlock();
@@ -160,11 +164,15 @@ void AGNode::fadeOutAndRemove()
     m_active = false;
     m_fadeOut.reset();
     
-    itmap_safe(m_inbound, ^(AGConnection *&connection){
+    dbgprint("disconnecting inbound nodes (%li)\n", m_inbound.size());
+    itmap_safe(m_inbound, ^(AGConnection *&_connection){
+        AGConnection *connection = _connection;
         AGNode::disconnect(connection);
         [[AGViewController instance] fadeOutAndDelete:connection];
     });
-    itmap_safe(m_outbound, ^(AGConnection *&connection){
+    dbgprint("disconnecting outbound nodes (%li)\n", m_outbound.size());
+    itmap_safe(m_outbound, ^(AGConnection *&_connection){
+        AGConnection *connection = _connection;
         AGNode::disconnect(connection);
         [[AGViewController instance] fadeOutAndDelete:connection];
     });
