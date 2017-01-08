@@ -13,6 +13,7 @@
 #import "AGHandwritingRecognizer.h"
 #import "AGSlider.h"
 #include "AGFileBrowser.h"
+#include "AGFileManager.h"
 #include "AGAnalytics.h"
 
 #import "TexFont.h"
@@ -752,15 +753,31 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                     m_drawline.clear();
                     //m_node->getEditPortValue(m_editingPort, m_currentValue);
                 }
-                else if(portInfo.editor == AGPortInfo::EDITOR_FILES)
+                else if(portInfo.editor == AGPortInfo::EDITOR_AUDIOFILES)
                 {
                     m_hit = -1;
                     
                     AGFileBrowser *fileBrowser = new AGFileBrowser;
                     fileBrowser->init();
                     
+                    fileBrowser->setDirectoryPath(AGFileManager::instance().soundfileDirectory());
+                    fileBrowser->setFilter([](const string &path){
+                        string ext = ".wav";
+                        // if has ext
+                        if(path.size() >= ext.size() && path.compare(path.size() - ext.size(), ext.size(), ext) == 0)
+                            return true;
+                        else
+                            return false;
+                    });
+                    
                     m_customItemEditor = fileBrowser;
                     addChildToTop(m_customItemEditor);
+                    
+                    fileBrowser->onChooseFile([this](const string &file){
+                        
+                        removeChild(m_customItemEditor);
+                        m_customItemEditor = NULL;
+                    });
                     
                     fileBrowser->onCancel([this](){
                         removeChild(m_customItemEditor);

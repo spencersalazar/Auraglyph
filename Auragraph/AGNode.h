@@ -70,7 +70,7 @@ struct AGPortInfo
     enum Editor
     {
         EDITOR_DEFAULT = 0,
-        EDITOR_FILES,
+        EDITOR_AUDIOFILES,
     };
     
     Editor editor;

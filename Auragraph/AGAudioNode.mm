@@ -217,15 +217,17 @@ void AGAudioNode::allocatePortBuffers()
         m_inputPortBuffer = new float*[numInputPorts()];
         for(int i = 0; i < numInputPorts(); i++)
         {
-            if(m_manifest->inputPortInfo()[i].canConnect)
-            {
-                m_inputPortBuffer[i] = new float[bufferSize()];
-                memset(m_inputPortBuffer[i], 0, sizeof(float)*bufferSize());
-            }
-            else
-            {
-                m_inputPortBuffer[i] = NULL;
-            }
+            // edit: why would it be in port buffer if it can't connect?
+            // pretty sure this is only historical
+//            if(m_manifest->inputPortInfo()[i].canConnect)
+//            {
+            m_inputPortBuffer[i] = new float[bufferSize()];
+            memset(m_inputPortBuffer[i], 0, sizeof(float)*bufferSize());
+//            }
+//            else
+//            {
+//                m_inputPortBuffer[i] = NULL;
+//            }
         }
     }
     else
@@ -1786,7 +1788,7 @@ public:
             return {
                 { PARAM_FILE, "file", ._default = 0,
                     .type = AGPortInfo::TYPE_STRING,
-                    .editor = AGPortInfo::EDITOR_FILES },
+                    .editor = AGPortInfo::EDITOR_AUDIOFILES },
                 { PARAM_RATE, "rate", ._default = 1 },
                 { AUDIO_PARAM_GAIN, "gain", ._default = 1 }
             };
