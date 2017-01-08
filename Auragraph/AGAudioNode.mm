@@ -1758,26 +1758,33 @@ private:
 class AGAudioSoundFileNode : public AGAudioNode
 {
 public:
+    
+    enum Param
+    {
+        PARAM_FILE = AUDIO_PARAM_LAST+1,
+        PARAM_RATE,
+    };
+    
     class Manifest : public AGStandardNodeManifest<AGAudioSoundFileNode>
     {
     public:
-        string _type() const override { return "SoundFile"; };
-        string _name() const override { return "SoundFile"; };
+        string _type() const override { return "File"; };
+        string _name() const override { return "File"; };
         
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { "rate", true, true },
-                { "gain", true, true }
+                { PARAM_RATE, "rate", true, true, 1 },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1 }
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { "file", true, true },
-                { "rate", true, true },
-                { "gain", true, true }
+                { PARAM_FILE, "file", true, true, 0 },
+                { PARAM_RATE, "rate", true, true, 1 },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1 }
             };
         };
         
@@ -1802,50 +1809,54 @@ public:
     
     using AGAudioNode::AGAudioNode;
     
-    void setDefaultPortValues() override
+    void initFinal() override
     {
-        m_rate = 1;
-        m_gain = 1;
-//        m_file.openFile("");
+        stk::Stk::setSampleRate(sampleRate());
     }
     
-    virtual int numOutputPorts() const override { return 1; }
-    virtual int numInputPorts() const override { return 2; }
+    int numOutputPorts() const override { return 1; }
     
-    virtual void setEditPortValue(int port, float value) override
+    void editPortValueChanged(int paramId) override
     {
-        
+        if(paramId == PARAM_FILE)
+        {
+            // todo: abstract this
+            NSString *documentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+            NSArray *paths = [[NSFileManager defaultManager] subpathsAtPath:documentPath];
+            int fileNum = (int) floor(param(PARAM_FILE));
+            int i = 0;
+            for(NSString *path in paths)
+            {
+                if([[[path pathExtension] lowercaseString] isEqualToString:@"wav"])
+                {
+                    if(i == fileNum)
+                    {
+                        m_file.openFile([path UTF8String]);
+                        break;
+                    }
+                }
+            }
+        }
     }
     
-    virtual void getEditPortValue(int port, float &value) const override
-    {
-        
-    }
-    
-    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames) override
+    void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
         pullInputPorts(t, nFrames);
         
-        float gain = m_gain;
-        float rate = m_rate;
+        float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        float *ratev = inputPortVector(PARAM_RATE);
         
         for(int i = 0; i < nFrames; i++)
         {
-            rate += m_inputPortBuffer[0][i];
-            gain += m_inputPortBuffer[1][i];
-            
-            m_file.setRate(rate);
-            
-            m_outputBuffer[i] = m_file.tick()*gain;
+            m_file.setRate(ratev[i]);
+            m_outputBuffer[i] = m_file.tick() * gainv[i];
             output[i] += m_outputBuffer[i];
         }
-        
-        m_lastTime = t;
     }
     
 private:
-    float m_rate;
     stk::FileWvIn m_file;
 };
 
