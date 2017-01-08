@@ -1300,7 +1300,7 @@ static AGViewController * g_instance = nil;
     AGNode *node = AGNodeManager::audioNodeManager().createNodeOfType("Output", GLvertex3f(0, 0, 0));
     AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
     outputNode->setOutputDestination([AGAudioManager instance].masterOut);
-    _nodes.push_back(node);
+    [self addNode:node];
 }
 
 - (void)_loadDocument:(AGDocument &)doc
