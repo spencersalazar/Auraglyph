@@ -1762,6 +1762,7 @@ public:
     enum Param
     {
         PARAM_FILE = AUDIO_PARAM_LAST+1,
+        PARAM_TRIGGER,
         PARAM_RATE,
     };
     
@@ -1774,6 +1775,7 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
+                { PARAM_TRIGGER, "trigger", true, true, 0 },
                 { PARAM_RATE, "rate", true, true, 1 },
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1 }
             };
@@ -1824,15 +1826,25 @@ public:
             NSString *documentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
             NSArray *paths = [[NSFileManager defaultManager] subpathsAtPath:documentPath];
             int fileNum = (int) floor(param(PARAM_FILE));
-            int i = 0;
-            for(NSString *path in paths)
+            if(fileNum != m_fileNum)
             {
-                if([[[path pathExtension] lowercaseString] isEqualToString:@"wav"])
+                m_fileNum = fileNum;
+                int i = 0;
+                for(NSString *path in paths)
                 {
-                    if(i == fileNum)
+                    if([[[path pathExtension] lowercaseString] isEqualToString:@"wav"])
                     {
-                        m_file.openFile([path UTF8String]);
-                        break;
+                        if(i == m_fileNum)
+                        {
+                            NSString *fullPath = [documentPath stringByAppendingPathComponent:path];
+                            m_file.openFile([fullPath UTF8String]);
+                            m_file.setRate(m_rate);
+                            // set to end of file
+                            m_file.addTime(m_file.getSize());
+                            break;
+                        }
+                        
+                        i++;
                     }
                 }
             }
@@ -1846,17 +1858,32 @@ public:
         pullInputPorts(t, nFrames);
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        float *triggerv = inputPortVector(PARAM_TRIGGER);
         float *ratev = inputPortVector(PARAM_RATE);
         
         for(int i = 0; i < nFrames; i++)
         {
-            m_file.setRate(ratev[i]);
+            // Soundfile is edge-triggered
+            if(m_lastTrigger <= 0 && triggerv[i] > 0)
+                m_file.reset();
+                
+            m_lastTrigger = triggerv[i];
+            
+            if(ratev[i] != m_rate)
+            {
+                m_rate = ratev[i];
+                m_file.setRate(m_rate);
+            }
+            
             m_outputBuffer[i] = m_file.tick() * gainv[i];
             output[i] += m_outputBuffer[i];
         }
     }
     
 private:
+    int m_fileNum = -1;
+    float m_lastTrigger = 0;
+    float m_rate = 1;
     stk::FileWvIn m_file;
 };
 
