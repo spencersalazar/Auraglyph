@@ -9,6 +9,7 @@
 #include "AGRenderObject.h"
 #include "AGViewController.h"
 #include "AGGenericShader.h"
+#include "spstl.h"
 
 #define DEBUG_BOUNDS 0
 
@@ -153,10 +154,15 @@ void AGRenderObject::addChild(AGRenderObject *child)
     child->m_parent = this;
 }
 
+void AGRenderObject::addChildToTop(AGRenderObject *child)
+{
+    m_children.push_back(child);
+    child->m_parent = this;
+}
+
 void AGRenderObject::removeChild(AGRenderObject *child)
 {
-    child->m_parent = NULL;
-    m_children.remove(child);
+    child->renderOut();
 }
 
 void AGRenderObject::update(float t, float dt)
@@ -173,14 +179,20 @@ void AGRenderObject::update(float t, float dt)
         m_renderState.modelview = globalModelViewMatrix();
     m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
     
-    
     updateChildren(t, dt);
 }
 
 void AGRenderObject::updateChildren(float t, float dt)
 {
-    for(list<AGRenderObject *>::iterator i = m_children.begin(); i != m_children.end(); i++)
-        (*i)->update(t, dt);
+    itmap_safe(m_children, ^(AGRenderObject *&child){
+        child->update(t, dt);
+        
+        if(child->finishedRenderingOut())
+        {
+            child->m_parent = NULL;
+            m_children.remove(child);
+        }
+    });
 }
 
 void AGRenderObject::render()

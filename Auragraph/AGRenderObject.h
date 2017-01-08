@@ -97,6 +97,7 @@ public:
     virtual void unhide();
     
     void addChild(AGRenderObject *child);
+    void addChildToTop(AGRenderObject *child);
     void removeChild(AGRenderObject *child);
     const list<AGRenderObject *> &children() { return m_children; }
     
