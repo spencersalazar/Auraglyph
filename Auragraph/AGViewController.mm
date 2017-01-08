@@ -1093,7 +1093,10 @@ static AGViewController * g_instance = nil;
         else if(touchCapture)
         {
             _touchCaptures[touch] = touchCapture;
-            touchCapture->touchDown(AGTouchInfo(pos, p, (TouchID) touch));
+            if(touchCapture->renderFixed())
+                touchCapture->touchDown(AGTouchInfo(fixedPos, p, (TouchID) touch));
+            else
+                touchCapture->touchDown(AGTouchInfo(pos, p, (TouchID) touch));
         }
         
         // has
