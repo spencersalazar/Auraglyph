@@ -6,12 +6,12 @@
 //  Copyright © 2016 Spencer Salazar. All rights reserved.
 //
 
-#import "AGUINodeEditor.h"
-#import "AGNode.h"
-#import "AGStyle.h"
-#import "AGGenericShader.h"
-#import "AGHandwritingRecognizer.h"
-#import "AGSlider.h"
+#include "AGUINodeEditor.h"
+#include "AGNode.h"
+#include "AGStyle.h"
+#include "AGGenericShader.h"
+#include "AGHandwritingRecognizer.h"
+#include "AGSlider.h"
 #include "AGAnalytics.h"
 
 #import "TexFont.h"

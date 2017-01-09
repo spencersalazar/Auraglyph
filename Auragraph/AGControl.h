@@ -10,6 +10,7 @@
 #define __Auragraph__AGControl__
 
 #include <string>
+#include <float.h>
 
 using namespace std;
 
