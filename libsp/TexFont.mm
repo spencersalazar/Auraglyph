@@ -199,17 +199,17 @@ void TexFont::render(const std::string &text, const GLcolor4f &color,
     glBindVertexArrayOES(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLgeoprimf), s_geo);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLgeoprimf), s_geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
     
-    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLgeoprimf), &s_geo->texcoord);
-    glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+    glVertexAttribPointer(AGVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLgeoprimf), &s_geo->texcoord);
+    glEnableVertexAttribArray(AGVertexAttribTexCoord0);
     
-    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-    glDisableVertexAttribArray(GLKVertexAttribNormal);
+    glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+    glDisableVertexAttribArray(AGVertexAttribNormal);
     
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
-    glDisableVertexAttribArray(GLKVertexAttribColor);
+    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
+    glDisableVertexAttribArray(AGVertexAttribColor);
     
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_tex);
@@ -253,17 +253,17 @@ void TexFont::renderTexmap(const GLcolor4f &color, const GLKMatrix4 &_modelView,
     glBindVertexArrayOES(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLgeoprimf), s_geo);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLgeoprimf), s_geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
     
-    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLgeoprimf), &s_geo->texcoord);
-    glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+    glVertexAttribPointer(AGVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLgeoprimf), &s_geo->texcoord);
+    glEnableVertexAttribArray(AGVertexAttribTexCoord0);
     
-    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-    glDisableVertexAttribArray(GLKVertexAttribNormal);
+    glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+    glDisableVertexAttribArray(AGVertexAttribNormal);
     
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
-    glDisableVertexAttribArray(GLKVertexAttribColor);
+    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
+    glDisableVertexAttribArray(AGVertexAttribColor);
     
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_tex);

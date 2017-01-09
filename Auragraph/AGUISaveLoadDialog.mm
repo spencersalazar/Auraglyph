@@ -102,7 +102,7 @@ public:
     virtual void render() override
     {
         // draw inner box
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &AGStyle::frameBackgroundColor());
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::frameBackgroundColor());
         drawTriangleFan((GLvertex3f[]){
             { -m_size.x/2, -m_size.y/2, 0 },
             {  m_size.x/2, -m_size.y/2, 0 },
@@ -110,7 +110,7 @@ public:
             { -m_size.x/2,  m_size.y/2, 0 },
         }, 4);
         
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &AGStyle::foregroundColor);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::foregroundColor);
         glLineWidth(4.0f);
         drawLineLoop((GLvertex3f[]){
             { -m_size.x/2, -m_size.y/2, 0 },
@@ -255,7 +255,7 @@ public:
     virtual void render() override
     {
         // draw inner box
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &AGStyle::frameBackgroundColor());
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::frameBackgroundColor());
         drawTriangleFan((GLvertex3f[]){
             { -m_size.x/2, -m_size.y/2, 0 },
             {  m_size.x/2, -m_size.y/2, 0 },
@@ -263,7 +263,7 @@ public:
             { -m_size.x/2,  m_size.y/2, 0 },
         }, 4);
         
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &AGStyle::foregroundColor);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::foregroundColor);
         glLineWidth(4.0f);
         drawLineLoop((GLvertex3f[]){
             { -m_size.x/2, -m_size.y/2, 0 },
@@ -294,7 +294,7 @@ public:
             if(i == m_selection)
             {
                 // draw selection box
-                glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor);
+                glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor);
                 
                 drawTriangleFan(shader, (GLvertex3f[]){
                     { -m_size.x/2*margin,  m_itemHeight/2*margin, 0 },
@@ -303,11 +303,11 @@ public:
                     {  m_size.x/2*margin,  m_itemHeight/2*margin, 0 },
                 }, 4, xform);
                 
-                glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &AGStyle::frameBackgroundColor());
+                glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &AGStyle::frameBackgroundColor());
             }
             else
             {
-                glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor);
+                glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor);
             }
             
             // draw each "figure" in the "name"
@@ -317,7 +317,7 @@ public:
             // draw separating line between rows
             if(i != len-1 || len == 1)
             {
-                glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &whiteA);
+                glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &whiteA);
                 drawLineStrip(shader, (GLvertex2f[]){
                     { -m_size.x/2*margin, -m_itemHeight/2 }, { m_size.x/2*margin, -m_itemHeight/2 },
                 }, 2, xform);
@@ -342,7 +342,7 @@ public:
             float scroll_bar_y = m_verticalScrollPos/scroll_max_scroll*(scroll_bar_tray_height-scroll_bar_height);
             
             // load it up and draw
-            glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+            glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
             glLineWidth(1.0);
             drawLineStrip((GLvertex2f[]) {
                 { m_size.x/2*scroll_bar_margin, m_size.y/2*scroll_bar_margin-scroll_bar_y },
@@ -351,7 +351,7 @@ public:
         }
         
         // restore color
-        glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor);
+        glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor);
         
         AGInteractiveObject::render();
     }

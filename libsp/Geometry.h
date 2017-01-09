@@ -9,18 +9,17 @@
 #ifndef Mood_Globe_Geometry_h
 #define Mood_Globe_Geometry_h
 
-#import <math.h>
-#import <OpenGLES/ES1/gl.h>
-#import <OpenGLES/ES1/glext.h>
-#import <CoreGraphics/CoreGraphics.h>
+#include <math.h>
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h>
+#include <CoreGraphics/CoreGraphics.h>
+#include "gfx.h"
 
 
-#ifdef __OBJC__
 #define ENABLE_GLKIT (1)
-#endif // __OBJC__
 
 #if ENABLE_GLKIT
-#import <GLKit/GLKit.h>
+#import <GLKit/GLKMath.h>
 #endif
 
 
@@ -124,7 +123,7 @@ struct GLcolor4f
     }
     
 #if ENABLE_GLKIT
-    inline void set(GLKVertexAttrib attrib = GLKVertexAttribColor) const
+    inline void set(AGVertexAttrib attrib = AGVertexAttribColor) const
     {
         glVertexAttrib4fv(attrib, (const GLfloat *) this);
     }

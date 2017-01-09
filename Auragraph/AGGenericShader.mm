@@ -123,8 +123,8 @@ void AGTextureShader::useProgram()
 }
 
 
-const GLint AGWaveformShader::s_attribPositionX = GLKVertexAttribTexCoord1+1;
-const GLint AGWaveformShader::s_attribPositionY = GLKVertexAttribTexCoord1+2;
+const GLint AGWaveformShader::s_attribPositionX = AGVertexAttribTexCoord1+1;
+const GLint AGWaveformShader::s_attribPositionY = AGVertexAttribTexCoord1+2;
 
 static AGWaveformShader *g_waveformShader = NULL;
 static map<int, string> *g_waveformShaderAttrib = NULL;
@@ -134,8 +134,8 @@ AGWaveformShader &AGWaveformShader::instance()
     if(g_waveformShader ==  NULL)
     {
         g_waveformShaderAttrib = new map<int, string>;
-        (*g_waveformShaderAttrib)[GLKVertexAttribNormal] = "normal";
-        (*g_waveformShaderAttrib)[GLKVertexAttribColor] = "color";
+        (*g_waveformShaderAttrib)[AGVertexAttribNormal] = "normal";
+        (*g_waveformShaderAttrib)[AGVertexAttribColor] = "color";
         (*g_waveformShaderAttrib)[s_attribPositionX] = "positionX";
         (*g_waveformShaderAttrib)[s_attribPositionY] = "positionY";
 

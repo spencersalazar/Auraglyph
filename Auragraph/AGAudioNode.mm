@@ -139,8 +139,8 @@ void AGAudioNode::render()
     glBindVertexArrayOES(s_vertexArray);
     
     color.a = m_fadeOut;
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
-    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
+    glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
     
     AGGenericShader &shader = AGGenericShader::instance();
     shader.useProgram();

@@ -385,7 +385,7 @@ public:
         load();
         
         glBindVertexArrayOES(0);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_iconGeo.data());
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_iconGeo.data());
         
         glLineWidth(2.0);
         glDrawArrays(m_iconGeoType, 0, m_iconGeo.size());

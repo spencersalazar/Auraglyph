@@ -310,8 +310,8 @@ void AGNode::render()
     for(int port = 0; port < numOut; port++)
     {
         // draw output port
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_portGeo);
-        glEnableVertexAttribArray(GLKVertexAttribPosition);
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_portGeo);
+        glEnableVertexAttribArray(AGVertexAttribPosition);
         
         GLvertex3f portPos = relativePositionForOutputPort(port);
         GLKMatrix4 mvpOutputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, portPos.x, portPos.y, portPos.z);
@@ -323,7 +323,7 @@ void AGNode::render()
         else if(m_outputActivation == -1-port) color = GLcolor4f(1, 0, 0, 1);
         else                                   color = GLcolor4f(1, 1, 1, 1);
         color.a = m_fadeOut;
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
         
         glLineWidth(2.0f);
         glDrawArrays(s_portGeoType, 0, s_portGeoSize);
@@ -333,8 +333,8 @@ void AGNode::render()
     for(int port = 0; port < numIn; port++)
     {
         // draw input port
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_portGeo);
-        glEnableVertexAttribArray(GLKVertexAttribPosition);
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_portGeo);
+        glEnableVertexAttribArray(AGVertexAttribPosition);
 
         GLvertex3f portPos = relativePositionForInputPort(port);
         GLKMatrix4 mvpInputPort = GLKMatrix4Translate(m_modelViewProjectionMatrix, portPos.x, portPos.y, portPos.z);
@@ -346,7 +346,7 @@ void AGNode::render()
         else if(m_inputActivation == -1-port) color = GLcolor4f(1, 0, 0, 1);
         else                                  color = GLcolor4f(1, 1, 1, 1);
         color.a = m_fadeOut;
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
         
         glLineWidth(2.0f);
         glDrawArrays(s_portGeoType, 0, s_portGeoSize);
@@ -368,8 +368,8 @@ void AGNode::_renderIcon()
         
         GLcolor4f color = GLcolor4f::white;
         color.a = m_fadeOut;
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
-        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
+        glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
         
         m_manifest->renderIcon();
     }
@@ -656,16 +656,16 @@ void AGFreeDraw::render()
     shader.setModelViewMatrix(modelView);
     shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, m_points);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, m_points);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
     
-    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
     GLcolor4f color = GLcolor4f::white;
     color.a = m_alpha;
-    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &color);
+    glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &color);
     
-    glDisableVertexAttribArray(GLKVertexAttribTexCoord0);
-    glDisableVertexAttribArray(GLKVertexAttribTexCoord1);
+    glDisableVertexAttribArray(AGVertexAttribTexCoord0);
+    glDisableVertexAttribArray(AGVertexAttribTexCoord1);
     glDisable(GL_TEXTURE_2D);
     
     if(m_touchDown)
@@ -687,7 +687,7 @@ void AGFreeDraw::render()
     // debug
 //    if(m_touchPoint0 >= 0)
 //    {
-//        glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::green);
+//        glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &GLcolor4f::green);
 //        glDrawArrays(GL_LINE_STRIP, m_touchPoint0, 2);
 //    }
 }

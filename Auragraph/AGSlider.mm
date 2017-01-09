@@ -80,11 +80,11 @@ void AGSlider::render()
         
         GLvertex3f geo[4];
         GeoGen::makeRect(geo, m_position.x, m_position.y, m_size.x, m_size.y);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, geo);
-        glEnableVertexAttribArray(GLKVertexAttribPosition);
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, geo);
+        glEnableVertexAttribArray(AGVertexAttribPosition);
         
-        glVertexAttrib4f(GLKVertexAttribColor, 1, 1, 1, 0.25);
-        glDisableVertexAttribArray(GLKVertexAttribColor);
+        glVertexAttrib4f(AGVertexAttribColor, 1, 1, 1, 0.25);
+        glDisableVertexAttribArray(AGVertexAttribColor);
         
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }

@@ -105,14 +105,14 @@ void AGUIButton::render()
     GLcolor4f blackA = AGStyle::darkColor();
     blackA.a = m_renderState.alpha*0.75;
 
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
     
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
-    glDisableVertexAttribArray(GLKVertexAttribColor);
+    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
+    glDisableVertexAttribArray(AGVertexAttribColor);
     
-    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-    glDisableVertexAttribArray(GLKVertexAttribNormal);
+    glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+    glDisableVertexAttribArray(AGVertexAttribNormal);
     
     if(isPressed())
     {
@@ -129,14 +129,14 @@ void AGUIButton::render()
     }
     else
     {
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &blackA);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &blackA);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
         
         glLineWidth(2.0);
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
         glDrawArrays(GL_LINE_LOOP, 0, 4);
         
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::black);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::black);
         glDrawArrays(GL_LINE_LOOP, 4, 4);
         
         color = AGStyle::lightColor();
@@ -226,14 +226,14 @@ void AGUITextButton::render()
         shader.setProjectionMatrix(proj);
         shader.setModelViewMatrix(modelView);
         
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
-        glEnableVertexAttribArray(GLKVertexAttribPosition);
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
+        glEnableVertexAttribArray(AGVertexAttribPosition);
         
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &AGStyle::lightColor());
-        glDisableVertexAttribArray(GLKVertexAttribColor);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::lightColor());
+        glDisableVertexAttribArray(AGVertexAttribColor);
         
-        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-        glDisableVertexAttribArray(GLKVertexAttribNormal);
+        glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+        glDisableVertexAttribArray(AGVertexAttribNormal);
         
         glLineWidth(4.0);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
@@ -436,8 +436,8 @@ void AGUITrash::render()
     shader.setModelViewMatrix(modelView);
     shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
     
     GLcolor4f color;
     if(m_active)
@@ -446,17 +446,17 @@ void AGUITrash::render()
         color = GLcolor4f::white;
     color.a = m_renderState.alpha;
 
-    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
     if(m_active)
-        glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &color);
+        glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &color);
     else
-        glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &color);
+        glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &color);
     
     glEnable(GL_TEXTURE_2D);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_tex);
-    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLvertex2f), m_uv);
-    glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+    glVertexAttribPointer(AGVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLvertex2f), m_uv);
+    glEnableVertexAttribArray(AGVertexAttribTexCoord0);
     
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }

@@ -54,12 +54,12 @@ void AGInputNode::initializeInputNode()
         glBindBuffer(GL_ARRAY_BUFFER, s_vertexBuffer);
         glBufferData(GL_ARRAY_BUFFER, s_geoSize*sizeof(GLvncprimf), s_geo, GL_STATIC_DRAW);
         
-        glEnableVertexAttribArray(GLKVertexAttribPosition);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(0));
-        glEnableVertexAttribArray(GLKVertexAttribNormal);
-        glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(sizeof(GLvertex3f)));
-        glEnableVertexAttribArray(GLKVertexAttribColor);
-        glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(2*sizeof(GLvertex3f)));
+        glEnableVertexAttribArray(AGVertexAttribPosition);
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(0));
+        glEnableVertexAttribArray(AGVertexAttribNormal);
+        glVertexAttribPointer(AGVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(sizeof(GLvertex3f)));
+        glEnableVertexAttribArray(AGVertexAttribColor);
+        glVertexAttribPointer(AGVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvncprimf), BUFFER_OFFSET(2*sizeof(GLvertex3f)));
         
         glBindVertexArrayOES(0);
     }
@@ -99,8 +99,8 @@ void AGInputNode::render()
     
     GLcolor4f color = GLcolor4f::white;
     color.a = m_fadeOut;
-    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &color);
-    glDisableVertexAttribArray(GLKVertexAttribColor);
+    glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &color);
+    glDisableVertexAttribArray(AGVertexAttribColor);
     
     // TODO
     AGGenericShader &shader = AGGenericShader::instance();

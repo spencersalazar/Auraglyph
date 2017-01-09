@@ -184,21 +184,21 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
     shader.setMVPMatrix(m_modelViewProjectionMatrix);
     shader.setNormalMatrix(m_normalMatrix);
     
-    glDisableVertexAttribArray(GLKVertexAttribColor);
-    glDisableVertexAttribArray(GLKVertexAttribNormal);
-    glDisableVertexAttribArray(GLKVertexAttribTexCoord0);
+    glDisableVertexAttribArray(AGVertexAttribColor);
+    glDisableVertexAttribArray(AGVertexAttribNormal);
+    glDisableVertexAttribArray(AGVertexAttribTexCoord0);
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
+    glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
     
     // fill
     GLcolor4f blackA = GLcolor4f(0, 0, 0, 0.75);
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &blackA);
+    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &blackA);
     glDrawArrays(GL_TRIANGLE_FAN, 0, m_geoSize);
     
     // stroke
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
     glLineWidth(4.0f);
     glDrawArrays(GL_LINE_LOOP, 0, m_geoSize);
     
@@ -221,9 +221,9 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
         scroll_bar_geo[1] = GLvertex2f(m_radius*scroll_bar_margin, m_radius*scroll_bar_margin-(scroll_bar_y+scroll_bar_height));
         
         // load it up and draw
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
         glLineWidth(1.0);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), scroll_bar_geo);
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), scroll_bar_geo);
         glDrawArrays(GL_LINES, 0, 2);
     }
     
@@ -266,17 +266,17 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
             
             clipShader.setMVPMatrix(hitMvp);
             clipShader.setNormalMatrix(hitNormal);
-            glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &whiteA);
+            glVertexAttrib4fv(AGVertexAttribColor, (const float*) &whiteA);
             
-            glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, m_geo);
+            glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, m_geo);
             
             glDrawArrays(GL_TRIANGLE_FAN, 0, m_geoSize);
             
-            glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &GLcolor4f::black);
+            glVertexAttrib4fv(AGVertexAttribColor, (const float*) &GLcolor4f::black);
         }
         else
         {
-            glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &GLcolor4f::white);
+            glVertexAttrib4fv(AGVertexAttribColor, (const float*) &GLcolor4f::white);
         }
         
         clipShader.setMVPMatrix(mvp);

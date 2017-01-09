@@ -8,6 +8,7 @@
 
 #import "ShaderHelper.h"
 #import <GLKit/GLKit.h>
+#import "gfx.h"
 
 @implementation ShaderHelper
 
@@ -35,13 +36,13 @@
 {
     map<int, string> attributeMap;
     if(attributes & SHADERHELPER_ATTR_POSITION)
-        attributeMap[GLKVertexAttribPosition] = "position";
+        attributeMap[AGVertexAttribPosition] = "position";
     if(attributes & SHADERHELPER_ATTR_NORMAL)
-        attributeMap[GLKVertexAttribNormal] = "normal";
+        attributeMap[AGVertexAttribNormal] = "normal";
     if(attributes & SHADERHELPER_ATTR_COLOR)
-        attributeMap[GLKVertexAttribColor] = "color";
+        attributeMap[AGVertexAttribColor] = "color";
     if(attributes & SHADERHELPER_ATTR_TEXCOORD0)
-        attributeMap[GLKVertexAttribTexCoord0] = "texcoord0";
+        attributeMap[AGVertexAttribTexCoord0] = "texcoord0";
     
     return [self createProgramForVertexShader:vsh
                                fragmentShader:fsh
