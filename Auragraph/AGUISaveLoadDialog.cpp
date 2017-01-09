@@ -135,6 +135,7 @@ public:
     
     virtual void touchDown(const AGTouchInfo &t) override
     {
+        m_name.push_back(vector<GLvertex2f>());
         m_name.back().push_back(t.position.xy());
     }
     
