@@ -469,7 +469,7 @@
         if(trash.hitTest(fixedPos))
         {
             AGAnalytics::instance().eventDeleteNode(_moveNode->type());
-            _moveNode->fadeOutAndRemove();
+            _moveNode->removeFromTopLevel();
         }
     }
 }
