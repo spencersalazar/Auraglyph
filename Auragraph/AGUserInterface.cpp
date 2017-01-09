@@ -178,7 +178,7 @@ GLvrectf AGUIButton::effectiveBounds()
 
 void AGUIButton::setAction(void (^action)())
 {
-    m_action = action;
+    m_action = Block_copy(action);
 }
 
 bool AGUIButton::isPressed()
@@ -343,12 +343,16 @@ AGUIButtonGroup::AGUIButtonGroup()
 
 AGUIButtonGroup::~AGUIButtonGroup()
 {
+    for(auto action : m_actions)
+        Block_release(action);
+    m_actions.clear();
 }
 
 void AGUIButtonGroup::addButton(AGUIButton *button, void (^action)(), bool isDefault)
 {
     button->setLatched(isDefault);
     m_buttons.push_back(button);
+    m_actions.push_back(Block_copy(action));
     addChild(button);
     
     button->setAction(^{

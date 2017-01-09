@@ -212,6 +212,7 @@ public:
     
 private:
     std::list<AGUIButton *> m_buttons;
+    std::list<void (^)()> m_actions;
 };
 
 

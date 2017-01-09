@@ -192,7 +192,6 @@ m_lastTraceWasRecognized(true)
     m_pinButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
     m_pinButton->setIconMode(AGUIIconButton::ICONMODE_SQUARE);
     m_pinButton->setAction(^{
-        dbgprint("pin!\n");
         pin(m_pinButton->isPressed());
     });
     addChild(m_pinButton);
