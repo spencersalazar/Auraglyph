@@ -10,8 +10,6 @@
 #include "AGNode.h"
 #include "AGAudioNode.h"
 #include "AGGenericShader.h"
-#include "AGHandwritingRecognizer.h"
-#include "AGViewController.h"
 #include "AGDef.h"
 #include "AGStyle.h"
 
@@ -382,7 +380,7 @@ AGUITrash &AGUITrash::instance()
 
 AGUITrash::AGUITrash()
 {
-    m_tex = loadOrRetrieveTexture(@"trash.png");
+    m_tex = loadOrRetrieveTexture("trash.png");
     
     m_radius = 0.005*AGStyle::oldGlobalScale;
     m_geo[0] = GLvertex3f(-m_radius, -m_radius, 0);
