@@ -7,7 +7,6 @@
 //
 
 #import "ShaderHelper.h"
-#import <GLKit/GLKit.h>
 #import "gfx.h"
 
 @implementation ShaderHelper

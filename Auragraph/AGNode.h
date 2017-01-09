@@ -22,7 +22,7 @@
 #include "ShaderHelper.h"
 #include "Mutex.h"
 
-#import <GLKit/GLKit.h>
+#include "gfx.h"
 //#import <Foundation/Foundation.h>
 
 #include <list>

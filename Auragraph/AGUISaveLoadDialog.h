@@ -6,8 +6,7 @@
 //  Copyright © 2016 Spencer Salazar. All rights reserved.
 //
 
-#ifndef AGUISaveLoadDialog_h
-#define AGUISaveLoadDialog_h
+#pragma once
 
 #include "AGUserInterface.h"
 #include "AGDocument.h"
@@ -42,4 +41,3 @@ public:
     virtual void onLoad(const std::function<void (const std::string &file, AGDocument &doc)> &) = 0;
 };
 
-#endif /* AGUISaveLoadDialog_hpp */

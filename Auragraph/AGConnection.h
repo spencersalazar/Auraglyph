@@ -16,8 +16,7 @@
 
 #include "Geometry.h"
 #include "Animation.h"
-
-#include <GLKit/GLKit.h>
+#include "gfx.h"
 
 #include <string>
 #include <vector>

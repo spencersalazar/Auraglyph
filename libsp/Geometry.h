@@ -15,8 +15,9 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include "gfx.h"
 
-
+#if defined(__APPLE__)
 #define ENABLE_GLKIT (1)
+#endif // defined(__APPLE__)
 
 #if ENABLE_GLKIT
 #import <GLKit/GLKMath.h>
@@ -397,9 +398,7 @@ static inline bool pointInPolygon(GLvertex3f p, const GLvertex3f *poly, int N)
 }
 
 
-#if defined(__APPLE__) && defined(__OBJC__)
-
-#include <GLKit/GLKit.h>
+#if ENABLE_GLKIT
 
 static inline GLvertex3f operator*(GLKMatrix4 m, GLvertex3f v)
 {
@@ -407,7 +406,7 @@ static inline GLvertex3f operator*(GLKMatrix4 m, GLvertex3f v)
     return GLvertex3f(v2.x, v2.y, v2.z);
 }
 
-#endif // defined(__APPLE__) && defined(__OBJC__)
+#endif // ENABLE_GLKIT
 
 
 #endif

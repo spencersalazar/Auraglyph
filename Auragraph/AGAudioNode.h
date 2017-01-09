@@ -9,20 +9,20 @@
 #ifndef __Auragraph__AGAudioNode__
 #define __Auragraph__AGAudioNode__
 
-#import "AGNode.h"
+#include "AGNode.h"
 
-#import "Geometry.h"
-#import "ShaderHelper.h"
-#import "AGStyle.h"
+#include "Geometry.h"
+#include "ShaderHelper.h"
+#include "AGStyle.h"
 #include "AGAudioRenderer.h"
 #include "Buffers.h"
 
-#import <GLKit/GLKit.h>
+#include "gfx.h"
 //#import <Foundation/Foundation.h>
 
-#import <list>
-#import <vector>
-#import <string>
+#include <list>
+#include <vector>
+#include <string>
 
 using namespace std;
 

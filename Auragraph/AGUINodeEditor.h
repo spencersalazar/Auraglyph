@@ -10,11 +10,11 @@
 #define AGNodeEditor_hpp
 
 
-#import <GLKit/GLKit.h>
-#import "Geometry.h"
-#import "Animation.h"
+#include "gfx.h"
+#include "Geometry.h"
+#include "Animation.h"
 #include "AGInteractiveObject.h"
-#import "AGUserInterface.h"
+#include "AGUserInterface.h"
 
 #include "LTKTypes.h"
 #include "LTKTrace.h"
