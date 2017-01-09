@@ -10,7 +10,7 @@
 #define __Auragraph__TexFont__
 
 #include <string>
-#include <GLKit/GLKit.h>
+#include "gfx.h"
 #include "Geometry.h"
 
 class TexFont

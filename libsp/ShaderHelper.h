@@ -6,9 +6,10 @@
 //  Copyright (c) 2013 Spencer Salazar. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <map>
-#import <string>
+#pragma once
+
+#include <map>
+#include <string>
 
 using namespace std;
 
@@ -23,6 +24,13 @@ typedef enum
     SHADERHELPER_PNTC = SHADERHELPER_ATTR_POSITION | SHADERHELPER_ATTR_NORMAL | SHADERHELPER_ATTR_TEXCOORD0 | SHADERHELPER_ATTR_COLOR,
     SHADERHELPER_PTC = SHADERHELPER_ATTR_POSITION | SHADERHELPER_ATTR_TEXCOORD0 | SHADERHELPER_ATTR_COLOR,
 } EnableAttributes;
+
+
+#ifdef __OBJC__
+
+// TODO: make all of this C++
+
+#import <Foundation/Foundation.h>
 
 @interface ShaderHelper : NSObject
 
@@ -43,3 +51,5 @@ typedef enum
 + (BOOL)validateProgram:(GLuint)prog;
 
 @end
+
+#endif // __OBJC__
