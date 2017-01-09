@@ -10,8 +10,11 @@
 
 #include "AGInteractiveObject.h"
 
+#include <vector>
 #include <string>
 #include <functional>
+
+class AGUIButton;
 
 class AGFileBrowser : public AGInteractiveObject
 {
@@ -55,10 +58,24 @@ private:
     
     std::function<void (const string &)> m_choose = [](const string &){};
     std::function<void (void)> m_cancel = [](){};
-    std::function<bool (const string &)> filter = [](const string &){ return true; };
+    std::function<bool (const string &)> m_filter = [](const string &){ return true; };
     
     lincurvef m_xScale;
     lincurvef m_yScale;
+    
+    vector<string> m_paths;
+    
+    float m_itemStart;
+    float m_itemHeight;
+    clampf m_verticalScrollPos;
+    
+    AGUIButton *m_cancelButton;
+    
+    GLvertex3f m_touchStart;
+    GLvertex3f m_lastTouch;
+    int m_selection = -1;
+    
+    float m_fontScale;
 };
 
 

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -18,6 +19,8 @@ public:
     static AGFileManager &instance();
     
     const string &soundfileDirectory();
+    
+    vector<string> listDirectory(const string &directory);
     
 private:
     AGFileManager();

@@ -760,7 +760,6 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                     AGFileBrowser *fileBrowser = new AGFileBrowser;
                     fileBrowser->init();
                     
-                    fileBrowser->setDirectoryPath(AGFileManager::instance().soundfileDirectory());
                     fileBrowser->setFilter([](const string &path){
                         string ext = ".wav";
                         // if has ext
@@ -769,6 +768,7 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                         else
                             return false;
                     });
+                    fileBrowser->setDirectoryPath(AGFileManager::instance().soundfileDirectory());
                     
                     m_customItemEditor = fileBrowser;
                     addChildToTop(m_customItemEditor);

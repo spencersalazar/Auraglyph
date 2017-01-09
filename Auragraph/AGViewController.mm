@@ -1096,6 +1096,7 @@ static AGViewController * g_instance = nil;
             if(touchCapture->renderFixed())
                 touchCapture->touchDown(AGTouchInfo(fixedPos, p, (TouchID) touch));
             else
+                // TODO: should this transform to coordinate space of the object?
                 touchCapture->touchDown(AGTouchInfo(pos, p, (TouchID) touch));
         }
         

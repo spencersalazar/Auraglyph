@@ -184,13 +184,15 @@ void AGRenderObject::update(float t, float dt)
 
 void AGRenderObject::updateChildren(float t, float dt)
 {
-    itmap_safe(m_children, ^(AGRenderObject *&child){
+    itmap_safe(m_children, ^(AGRenderObject *&_child){
+        AGRenderObject *child = _child;
         child->update(t, dt);
         
         if(child->finishedRenderingOut())
         {
-            child->m_parent = NULL;
             m_children.remove(child);
+            child->m_parent = NULL;
+            delete child;
         }
     });
 }

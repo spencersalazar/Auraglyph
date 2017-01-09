@@ -30,3 +30,16 @@ const string &AGFileManager::soundfileDirectory()
     return m_soundfileDirectory;
 }
 
+vector<string> AGFileManager::listDirectory(const string &directory)
+{
+    vector<string> pathList;
+    NSError *error = nil;
+    NSArray *pathArray = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[NSString stringWithUTF8String:directory.c_str()]
+                                                                             error:&error];
+    for(NSString *path in pathArray)
+    {
+        pathList.push_back([path UTF8String]);
+    }
+    
+    return std::move(pathList);
+}

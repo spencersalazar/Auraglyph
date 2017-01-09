@@ -9,6 +9,7 @@
 #include "AGFileBrowser.h"
 #include "AGStyle.h"
 #include "Animation.h"
+#include "AGFileManager.h"
 
 AGFileBrowser::AGFileBrowser(const GLvertex3f &position)
 {
@@ -18,6 +19,12 @@ AGFileBrowser::AGFileBrowser(const GLvertex3f &position)
     m_pos = position;
     m_size.x = 250;
     m_size.y = m_size.x/AGStyle::aspect16_9;
+    
+    TexFont *font = AGStyle::standardFont64();
+    m_itemHeight = font->height();
+    m_fontScale = AGStyle::standardFontScale*0.8f;
+    
+    m_verticalScrollPos.clampTo(0, 0);
 }
 
 AGFileBrowser::~AGFileBrowser()
@@ -71,6 +78,48 @@ void AGFileBrowser::render()
         { -m_size.x/2,  m_size.y/2, 0 },
     }, 4);
     
+    // TODO: clip all of this
+    
+    TexFont *font = AGStyle::standardFont64();
+    float textHeight = font->height()*m_fontScale;
+    int i = 0;
+    for(string path : m_paths)
+    {
+        GLKMatrix4 modelView = m_renderState.modelview;
+        float yPos = m_verticalScrollPos + m_size.y/2*0.95-m_itemHeight*(i+1)+m_itemHeight/2.0;
+        
+        GLcolor4f textColor;
+        
+        if(i == m_selection)
+        {
+            GLKMatrix4 xform = GLKMatrix4MakeTranslation(0, yPos, 0);
+            float margin = 0.975f;
+            // draw selection box
+            glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor);
+            
+            drawTriangleFan((GLvertex3f[]){
+                { -m_size.x/2*margin,  m_itemHeight/2*margin, 0 },
+                { -m_size.x/2*margin, -m_itemHeight/2*margin, 0 },
+                {  m_size.x/2*margin, -m_itemHeight/2*margin, 0 },
+                {  m_size.x/2*margin,  m_itemHeight/2*margin, 0 },
+            }, 4, xform);
+            
+            textColor = AGStyle::frameBackgroundColor();
+        }
+        else
+        {
+            textColor = AGStyle::foregroundColor;
+        }
+        
+        // move to bottom left corner of box
+        modelView = GLKMatrix4Translate(modelView, -m_size.x/2*0.9f, yPos-textHeight*2.0/3.0f, 0);
+        modelView = GLKMatrix4Scale(modelView, m_fontScale, m_fontScale, 1);
+        
+        font->render(path, textColor, modelView, m_renderState.projection);
+        
+        i++;
+    }
+    
     AGInteractiveObject::render();
 }
 
@@ -87,19 +136,60 @@ bool AGFileBrowser::finishedRenderingOut()
 
 void AGFileBrowser::touchDown(const AGTouchInfo &t)
 {
+    GLvertex3f relPos = t.position-(parent()?parent()->position():GLvertex3f())-m_pos;
+//    float yPos = m_size.y/2*0.9+m_verticalScrollPos;
     
+    for(int i = 0; i < m_paths.size(); i++)
+    {
+        float yPos = m_verticalScrollPos + m_size.y/2*0.95-m_itemHeight*(i+1)+m_itemHeight/2.0;
+        
+        dbgprint("AGFileBrowser::bbox top: %f bot: %f lft: %f rgt: %f\n",
+                 yPos+m_itemHeight/2.0f, yPos-m_itemHeight/2.0f,
+                 -m_size.x/2, m_size.x/2);
+        dbgprint("AGFileBrowser::relPos: %f,%f\n", relPos.x, relPos.y);
+        
+        if(relPos.y < yPos+m_itemHeight/2.0f && relPos.y > yPos-m_itemHeight/2.0f &&
+           relPos.x > -m_size.x/2 && relPos.x < m_size.x/2)
+        {
+            m_selection = i;
+            dbgprint("AGFileBrowser::m_selection: %i\n", m_selection);
+            break;
+        }
+        
+//        yPos -= m_itemStart;
+    }
+    
+    m_touchStart = t.position;
+    m_lastTouch = t.position;
 }
 
 void AGFileBrowser::touchMove(const AGTouchInfo &t)
 {
+    if((m_touchStart-t.position).magnitudeSquared() > AGStyle::maxTravel*AGStyle::maxTravel)
+    {
+        m_selection = -1;
+        // start scrolling
+        m_verticalScrollPos += (t.position.y - m_lastTouch.y);
+        dbgprint("AGFileBrowser::m_verticalScrollPos: %f\n", (float)m_verticalScrollPos);
+    }
     
+    m_lastTouch = t.position;
 }
 
 void AGFileBrowser::touchUp(const AGTouchInfo &t)
 {
+    if((m_touchStart-t.position).magnitudeSquared() > AGStyle::maxTravel*AGStyle::maxTravel)
+    {
+        m_selection = -1;
+    }
     
+    if(m_selection >= 0)
+    {
+        dbgprint("AGFileBrowser::choose: %i\n", m_selection);
+        
+        m_choose(m_paths[m_selection]);
+    }
 }
-
 
 void AGFileBrowser::setPosition(const GLvertex3f &position)
 {
@@ -123,7 +213,14 @@ GLvertex2f AGFileBrowser::size()
 
 void AGFileBrowser::setDirectoryPath(const string &directoryPath)
 {
+    vector<string> paths = AGFileManager::instance().listDirectory(directoryPath);
+    for(string path : paths)
+    {
+        if(m_filter(path))
+            m_paths.push_back(path);
+    }
     
+    m_verticalScrollPos.clampTo(0, max(0.0f, m_paths.size()*m_itemHeight-m_size.y*0.95f));
 }
 
 string AGFileBrowser::selectedFile() const
@@ -133,12 +230,12 @@ string AGFileBrowser::selectedFile() const
 
 void AGFileBrowser::onChooseFile(const std::function<void (const string &)> &choose)
 {
-    
+    m_choose = choose;
 }
 
 void AGFileBrowser::onCancel(const std::function<void (void)> &cancel)
 {
-    
+    m_cancel = cancel;
 }
 
 /*
@@ -147,6 +244,6 @@ void AGFileBrowser::onCancel(const std::function<void (void)> &cancel)
  */
 void AGFileBrowser::setFilter(const std::function<bool (const string &)> &filter)
 {
-    
+    m_filter = filter;
 }
 
