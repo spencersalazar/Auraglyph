@@ -20,9 +20,9 @@ AGGenericShader &AGGenericShader::instance()
     return *g_shader;
 }
 
-AGGenericShader::AGGenericShader(NSString *name, EnableAttributes attributes)
+AGGenericShader::AGGenericShader(const string &name, EnableAttributes attributes)
 {
-    m_program = [ShaderHelper createProgram:name
+    m_program = [ShaderHelper createProgram:[NSString stringWithUTF8String:name.c_str()]
                              withAttributes:attributes];
     m_uniformMVPMatrix = glGetUniformLocation(m_program, "modelViewProjectionMatrix");
     m_uniformNormalMatrix = glGetUniformLocation(m_program, "normalMatrix");
@@ -31,9 +31,9 @@ AGGenericShader::AGGenericShader(NSString *name, EnableAttributes attributes)
     m_mv = GLKMatrix4Identity;
 }
 
-AGGenericShader::AGGenericShader(NSString *name, const map<int, string> &attributeMap)
+AGGenericShader::AGGenericShader(const string &name, const map<int, string> &attributeMap)
 {
-    m_program = [ShaderHelper createProgram:name
+    m_program = [ShaderHelper createProgram:[NSString stringWithUTF8String:name.c_str()]
                            withAttributeMap:attributeMap];
     m_uniformMVPMatrix = glGetUniformLocation(m_program, "modelViewProjectionMatrix");
     m_uniformNormalMatrix = glGetUniformLocation(m_program, "normalMatrix");
@@ -81,7 +81,7 @@ AGClipShader &AGClipShader::instance()
     return *g_clipShader;
 }
 
-AGClipShader::AGClipShader() : AGGenericShader(@"Clip")
+AGClipShader::AGClipShader() : AGGenericShader("Clip")
 {
     m_uniformLocalMatrix = glGetUniformLocation(m_program, "localMatrix");
     m_uniformClipOrigin = glGetUniformLocation(m_program, "clipOrigin");
@@ -109,7 +109,7 @@ AGTextureShader &AGTextureShader::instance()
     return *g_textureShader;
 }
 
-AGTextureShader::AGTextureShader() : AGGenericShader(@"Texture", SHADERHELPER_PNTC)
+AGTextureShader::AGTextureShader() : AGGenericShader("Texture", SHADERHELPER_PNTC)
 {
     m_uniformTex = glGetUniformLocation(m_program, "tex");
 }
@@ -146,7 +146,7 @@ AGWaveformShader &AGWaveformShader::instance()
 }
 
 AGWaveformShader::AGWaveformShader() :
-AGGenericShader(@"Waveform", *g_waveformShaderAttrib)
+AGGenericShader("Waveform", *g_waveformShaderAttrib)
 {
     m_uniformPositionZ = glGetUniformLocation(m_program, "positionZ");
     m_uniformGain = glGetUniformLocation(m_program, "gain");

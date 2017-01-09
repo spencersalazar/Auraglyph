@@ -92,7 +92,7 @@ void AGSlider::render()
 
 void AGSlider::touchDown(const AGTouchInfo &t)
 {
-    NSLog(@"touchDown %f %f", t.screenPosition.x, t.screenPosition.y);
+    dbgprint("touchDown %f %f\n", t.screenPosition.x, t.screenPosition.y);
     
     m_firstFinger = t;
     m_lastPosition = t;
@@ -104,7 +104,7 @@ void AGSlider::touchDown(const AGTouchInfo &t)
 
 void AGSlider::touchMove(const AGTouchInfo &t)
 {
-    NSLog(@"touchMove %f %f", t.screenPosition.x, t.screenPosition.y);
+    dbgprint("touchMove %f %f\n", t.screenPosition.x, t.screenPosition.y);
     
     m_ytravel += m_lastPosition.screenPosition.y - t.screenPosition.y;
     

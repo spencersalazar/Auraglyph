@@ -108,7 +108,7 @@
 		09E5EC8718A5A88100B21D97 /* ADSR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC8618A5A88100B21D97 /* ADSR.cpp */; };
 		09F29D7A1CC73D7A00502C01 /* libfeatureextractorcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851017B354BE0065EF8E /* libfeatureextractorcommon.a */; };
 		09F29D7B1CC73D8000502C01 /* libshaperecommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851917B354BE0065EF8E /* libshaperecommon.a */; };
-		09F29DAF1CCA086200502C01 /* AGSlider.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09F29DAD1CCA086200502C01 /* AGSlider.mm */; };
+		09F29DAF1CCA086200502C01 /* AGSlider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F29DAD1CCA086200502C01 /* AGSlider.cpp */; };
 		09F2D53A1D7EA33400F537C7 /* Delay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F2D5371D7EA33400F537C7 /* Delay.cpp */; };
 		09F2D53B1D7EA33400F537C7 /* DelayA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F2D5381D7EA33400F537C7 /* DelayA.cpp */; };
 		09F2D53C1D7EA33400F537C7 /* DelayL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F2D5391D7EA33400F537C7 /* DelayL.cpp */; };
@@ -348,7 +348,7 @@
 		09E5EC8018A46F7300B21D97 /* AGControl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGControl.mm; sourceTree = "<group>"; };
 		09E5EC8118A46F7300B21D97 /* AGControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGControl.h; sourceTree = "<group>"; };
 		09E5EC8618A5A88100B21D97 /* ADSR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ADSR.cpp; sourceTree = "<group>"; };
-		09F29DAD1CCA086200502C01 /* AGSlider.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGSlider.mm; sourceTree = "<group>"; };
+		09F29DAD1CCA086200502C01 /* AGSlider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGSlider.cpp; sourceTree = "<group>"; };
 		09F29DAE1CCA086200502C01 /* AGSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGSlider.h; sourceTree = "<group>"; };
 		09F2D5371D7EA33400F537C7 /* Delay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Delay.cpp; sourceTree = "<group>"; };
 		09F2D5381D7EA33400F537C7 /* DelayA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DelayA.cpp; sourceTree = "<group>"; };
@@ -514,7 +514,7 @@
 				091C70CB1C48A9A600B513C2 /* AGUINodeEditor.h */,
 				091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */,
 				09F29DAE1CCA086200502C01 /* AGSlider.h */,
-				09F29DAD1CCA086200502C01 /* AGSlider.mm */,
+				09F29DAD1CCA086200502C01 /* AGSlider.cpp */,
 				09E5EC8118A46F7300B21D97 /* AGControl.h */,
 				09E5EC8018A46F7300B21D97 /* AGControl.mm */,
 				093395791A0A3785009E4802 /* AGAboutBox.h */,
@@ -896,7 +896,7 @@
 				095D12D417ACA36C0048A012 /* main.m in Sources */,
 				0933956E1A08799A009E4802 /* AGFormulaNode.mm in Sources */,
 				0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */,
-				09F29DAF1CCA086200502C01 /* AGSlider.mm in Sources */,
+				09F29DAF1CCA086200502C01 /* AGSlider.cpp in Sources */,
 				095D12D817ACA36C0048A012 /* AGAppDelegate.mm in Sources */,
 				095D12E517ACA36C0048A012 /* AGViewController.mm in Sources */,
 				09E5EC8218A46F7300B21D97 /* AGControl.mm in Sources */,

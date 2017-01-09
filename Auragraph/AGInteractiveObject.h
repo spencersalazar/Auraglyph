@@ -11,7 +11,7 @@
 
 
 #include "AGRenderObject.h"
-#include <GLKit/GLKit.h>
+#include "gfx.h"
 
 
 #ifdef __LP64__ // arm64
