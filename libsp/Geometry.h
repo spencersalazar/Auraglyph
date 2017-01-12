@@ -17,10 +17,12 @@
 
 #if defined(__APPLE__)
 #define ENABLE_GLKIT (1)
+#else
+#error only works on apple 
 #endif // defined(__APPLE__)
 
 #if ENABLE_GLKIT
-#import <GLKit/GLKMath.h>
+#include <GLKit/GLKMath.h>
 #endif
 
 
