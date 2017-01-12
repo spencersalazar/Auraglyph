@@ -23,6 +23,7 @@ GLuint loadOrRetrieveTexture(NSString *name);
 #endif // __OBJC
 
 GLuint loadTexture(const char *name);
+GLuint loadOrRetrieveTexture(const char *name);
 
 
 #endif // __TEXTURE_H__

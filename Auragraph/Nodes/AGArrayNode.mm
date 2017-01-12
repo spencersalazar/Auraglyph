@@ -134,15 +134,15 @@ public:
             for(list<std::vector<GLvertex3f> >::iterator i = m_drawline.begin(); i != m_drawline.end(); i++)
             {
                 vector<GLvertex3f> geo = *i;
-                glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo.data());
-                glEnableVertexAttribArray(GLKVertexAttribPosition);
+                glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo.data());
+                glEnableVertexAttribArray(AGVertexAttribPosition);
                 if(i == last && !m_lastTraceWasRecognized)
-                    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &AGStyle::errorColor());
+                    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::errorColor());
                 else
-                    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &AGStyle::lightColor());
-                glDisableVertexAttribArray(GLKVertexAttribColor);
-                glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-                glDisableVertexAttribArray(GLKVertexAttribNormal);
+                    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::lightColor());
+                glDisableVertexAttribArray(AGVertexAttribColor);
+                glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+                glDisableVertexAttribArray(AGVertexAttribNormal);
                 
                 glDrawArrays(GL_LINE_STRIP, 0, geo.size());
             }

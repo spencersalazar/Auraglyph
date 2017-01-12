@@ -9,18 +9,18 @@
 #ifndef Mood_Globe_Geometry_h
 #define Mood_Globe_Geometry_h
 
-#import <math.h>
-#import <OpenGLES/ES1/gl.h>
-#import <OpenGLES/ES1/glext.h>
-#import <CoreGraphics/CoreGraphics.h>
+#include <math.h>
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h>
+#include <CoreGraphics/CoreGraphics.h>
+#include "gfx.h"
 
-
-#ifdef __OBJC__
+#if defined(__APPLE__)
 #define ENABLE_GLKIT (1)
-#endif // __OBJC__
+#endif // defined(__APPLE__)
 
 #if ENABLE_GLKIT
-#import <GLKit/GLKit.h>
+#import <GLKit/GLKMath.h>
 #endif
 
 
@@ -124,7 +124,7 @@ struct GLcolor4f
     }
     
 #if ENABLE_GLKIT
-    inline void set(GLKVertexAttrib attrib = GLKVertexAttribColor) const
+    inline void set(AGVertexAttrib attrib = AGVertexAttribColor) const
     {
         glVertexAttrib4fv(attrib, (const GLfloat *) this);
     }
@@ -398,9 +398,7 @@ static inline bool pointInPolygon(GLvertex3f p, const GLvertex3f *poly, int N)
 }
 
 
-#if defined(__APPLE__) && defined(__OBJC__)
-
-#include <GLKit/GLKit.h>
+#if ENABLE_GLKIT
 
 static inline GLvertex3f operator*(GLKMatrix4 m, GLvertex3f v)
 {
@@ -408,7 +406,7 @@ static inline GLvertex3f operator*(GLKMatrix4 m, GLvertex3f v)
     return GLvertex3f(v2.x, v2.y, v2.z);
 }
 
-#endif // defined(__APPLE__) && defined(__OBJC__)
+#endif // ENABLE_GLKIT
 
 
 #endif

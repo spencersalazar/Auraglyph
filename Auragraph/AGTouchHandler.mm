@@ -369,14 +369,14 @@
         shader.setModelViewMatrix(modelView);
         shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));
         
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, &_linePoints[0]);
-        glEnableVertexAttribArray(GLKVertexAttribPosition);
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, &_linePoints[0]);
+        glEnableVertexAttribArray(AGVertexAttribPosition);
         
-        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-        glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &GLcolor4f::white);
+        glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+        glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &GLcolor4f::white);
         
-        glDisableVertexAttribArray(GLKVertexAttribTexCoord0);
-        glDisableVertexAttribArray(GLKVertexAttribTexCoord1);
+        glDisableVertexAttribArray(AGVertexAttribTexCoord0);
+        glDisableVertexAttribArray(AGVertexAttribTexCoord1);
         glDisable(GL_TEXTURE_2D);
         
         glDrawArrays(GL_LINE_STRIP, 0, _linePoints.size());
@@ -469,7 +469,7 @@
         if(trash.hitTest(fixedPos))
         {
             AGAnalytics::instance().eventDeleteNode(_moveNode->type());
-            _moveNode->fadeOutAndRemove();
+            _moveNode->removeFromTopLevel();
         }
     }
 }

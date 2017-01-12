@@ -6,11 +6,10 @@
 //  Copyright (c) 2013 Spencer Salazar. All rights reserved.
 //
 
-#ifndef __Auragraph__ES2Render__
-#define __Auragraph__ES2Render__
+#pragma once
 
-#import <GLKit/GLKit.h>
-#import "Geometry.h"
+#include "gfx.h"
+#include "Geometry.h"
 
 void genVertexArrayAndBuffer(const GLuint size, GLvertex3f * const geo,
                              GLuint &vertexArray, GLuint &vertexBuffer,
@@ -27,6 +26,3 @@ void genVertexArrayAndBuffer(const GLuint size, GLgeoprimf * const geo,
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 void glGenTextureFromFramebuffer(GLuint *t, GLuint *f, GLsizei w, GLsizei h);
-
-
-#endif /* defined(__Auragraph__ES2Render__) */

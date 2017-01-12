@@ -80,11 +80,11 @@ void AGSlider::render()
         
         GLvertex3f geo[4];
         GeoGen::makeRect(geo, m_position.x, m_position.y, m_size.x, m_size.y);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, geo);
-        glEnableVertexAttribArray(GLKVertexAttribPosition);
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, geo);
+        glEnableVertexAttribArray(AGVertexAttribPosition);
         
-        glVertexAttrib4f(GLKVertexAttribColor, 1, 1, 1, 0.25);
-        glDisableVertexAttribArray(GLKVertexAttribColor);
+        glVertexAttrib4f(AGVertexAttribColor, 1, 1, 1, 0.25);
+        glDisableVertexAttribArray(AGVertexAttribColor);
         
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }
@@ -92,7 +92,7 @@ void AGSlider::render()
 
 void AGSlider::touchDown(const AGTouchInfo &t)
 {
-    NSLog(@"touchDown %f %f", t.screenPosition.x, t.screenPosition.y);
+    dbgprint("touchDown %f %f\n", t.screenPosition.x, t.screenPosition.y);
     
     m_firstFinger = t;
     m_lastPosition = t;
@@ -104,7 +104,7 @@ void AGSlider::touchDown(const AGTouchInfo &t)
 
 void AGSlider::touchMove(const AGTouchInfo &t)
 {
-    NSLog(@"touchMove %f %f", t.screenPosition.x, t.screenPosition.y);
+    dbgprint("touchMove %f %f\n", t.screenPosition.x, t.screenPosition.y);
     
     m_ytravel += m_lastPosition.screenPosition.y - t.screenPosition.y;
     

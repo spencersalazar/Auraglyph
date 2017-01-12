@@ -9,9 +9,9 @@
 #ifndef __Auragraph__AGRenderObject__
 #define __Auragraph__AGRenderObject__
 
+#include "gfx.h"
 #include "Geometry.h"
 #include "Animation.h"
-#include <GLKit/GLKit.h>
 
 #include <list>
 using namespace std;

@@ -177,13 +177,13 @@ void AGConnection::render()
     
     // render line
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
     
-    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-    glDisableVertexAttribArray(GLKVertexAttribNormal);
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &m_color);
-    glDisableVertexAttribArray(GLKVertexAttribColor);
+    glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+    glDisableVertexAttribArray(AGVertexAttribNormal);
+    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &m_color);
+    glDisableVertexAttribArray(AGVertexAttribColor);
     
     AGGenericShader &shader = AGGenericShader::instance();
     shader.useProgram();
@@ -234,18 +234,19 @@ void AGConnection::render()
         waveformShader.setGain(gain);
         glVertexAttribPointer(AGWaveformShader::s_attribPositionY, 1, GL_FLOAT, GL_FALSE, 0, audioSrc->lastOutputBuffer());
         glEnableVertexAttribArray(AGWaveformShader::s_attribPositionY);
+        waveformShader.setNumElements(AGAudioNode::bufferSize());
         
-        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-        glDisableVertexAttribArray(GLKVertexAttribNormal);
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &m_color);
-        glDisableVertexAttribArray(GLKVertexAttribColor);
-        glDisableVertexAttribArray(GLKVertexAttribPosition);
+        glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+        glDisableVertexAttribArray(AGVertexAttribNormal);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &m_color);
+        glDisableVertexAttribArray(AGVertexAttribColor);
+        glDisableVertexAttribArray(AGVertexAttribPosition);
         
         glLineWidth(1.0f);
         
         glDrawArrays(GL_LINE_STRIP, 0, AGAudioNode::bufferSize());
         
-        glEnableVertexAttribArray(GLKVertexAttribPosition);
+        glEnableVertexAttribArray(AGVertexAttribPosition);
     }
     
     if(src()->rate() == RATE_CONTROL)
@@ -274,10 +275,10 @@ void AGConnection::render()
         shader.setModelViewMatrix(modelView);
         shader.setNormalMatrix(normalMatrix);
         
-        glEnableVertexAttribArray(GLKVertexAttribPosition);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), g_controlVis->geo);
-        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &m_color);
+        glEnableVertexAttribArray(AGVertexAttribPosition);
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), g_controlVis->geo);
+        glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &m_color);
         
         glDrawArrays(g_controlVis->geoType, 0, g_controlVis->numVertex);
     }

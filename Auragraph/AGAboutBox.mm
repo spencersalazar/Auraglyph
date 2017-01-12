@@ -83,22 +83,22 @@ void AGAboutBox::render()
     shader.setModelViewMatrix(m_modelView);
     shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_modelView), NULL));
     
-    glDisableVertexAttribArray(GLKVertexAttribColor);
-    glDisableVertexAttribArray(GLKVertexAttribNormal);
-    glDisableVertexAttribArray(GLKVertexAttribTexCoord0);
+    glDisableVertexAttribArray(AGVertexAttribColor);
+    glDisableVertexAttribArray(AGVertexAttribNormal);
+    glDisableVertexAttribArray(AGVertexAttribTexCoord0);
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
+    glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
     
     // stroke
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
     glLineWidth(4.0f);
     glDrawArrays(GL_LINE_LOOP, 0, m_geoSize);
     
     // fill
     GLcolor4f blackA = GLcolor4f(0, 0, 0, 0.75);
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &blackA);
+    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &blackA);
     glDrawArrays(GL_TRIANGLE_FAN, 0, m_geoSize);
     
     float titleScale = 2;

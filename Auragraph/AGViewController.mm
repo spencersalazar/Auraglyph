@@ -828,14 +828,14 @@ static AGViewController * g_instance = nil;
             GLvertex2f(0, 1),
         };
         
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), screenGeo);
-        glEnableVertexAttribArray(GLKVertexAttribPosition);
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), screenGeo);
+        glEnableVertexAttribArray(AGVertexAttribPosition);
         
-        glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLvertex2f), screenUV);
-        glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+        glVertexAttribPointer(AGVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLvertex2f), screenUV);
+        glEnableVertexAttribArray(AGVertexAttribTexCoord0);
         
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
-        glDisableVertexAttribArray(GLKVertexAttribColor);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+        glDisableVertexAttribArray(AGVertexAttribColor);
         
         glUniform1i(uniforms[UNIFORM_SCREEN_ORDERH], 8);
         glUniform1i(uniforms[UNIFORM_SCREEN_ORDERV], 0);
@@ -904,12 +904,12 @@ static AGViewController * g_instance = nil;
     shader.setMVPMatrix(_modelViewProjectionMatrix);
     shader.setNormalMatrix(_normalMatrix);
     
-    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-    glDisableVertexAttribArray(GLKVertexAttribPosition);
-    glVertexAttrib4fv(GLKVertexAttribColor, (const GLfloat *) &overlayColor);
-    glDisableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+    glDisableVertexAttribArray(AGVertexAttribPosition);
+    glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &overlayColor);
+    glDisableVertexAttribArray(AGVertexAttribPosition);
     glVertexAttribPointer(0, 3, GL_FLOAT, FALSE, 0, &overlayGeo);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
     
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     

@@ -6,13 +6,12 @@
 //  Copyright © 2016 Spencer Salazar. All rights reserved.
 //
 
-#ifndef AGControlSequencerNode_hpp
-#define AGControlSequencerNode_hpp
+#pragma once
 
-#import "AGControlNode.h"
-#import "AGTimer.h"
-#import <list>
-#import <vector>
+#include "AGControlNode.h"
+#include "AGTimer.h"
+#include <list>
+#include <vector>
 
 class AGControlSequencerNode : public AGControlNode
 {
@@ -74,5 +73,3 @@ private:
     void updateStep();
 };
 
-
-#endif /* AGControlSequencerNode_hpp */

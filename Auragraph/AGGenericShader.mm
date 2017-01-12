@@ -20,9 +20,9 @@ AGGenericShader &AGGenericShader::instance()
     return *g_shader;
 }
 
-AGGenericShader::AGGenericShader(NSString *name, EnableAttributes attributes)
+AGGenericShader::AGGenericShader(const string &name, EnableAttributes attributes)
 {
-    m_program = [ShaderHelper createProgram:name
+    m_program = [ShaderHelper createProgram:[NSString stringWithUTF8String:name.c_str()]
                              withAttributes:attributes];
     m_uniformMVPMatrix = glGetUniformLocation(m_program, "modelViewProjectionMatrix");
     m_uniformNormalMatrix = glGetUniformLocation(m_program, "normalMatrix");
@@ -31,9 +31,9 @@ AGGenericShader::AGGenericShader(NSString *name, EnableAttributes attributes)
     m_mv = GLKMatrix4Identity;
 }
 
-AGGenericShader::AGGenericShader(NSString *name, const map<int, string> &attributeMap)
+AGGenericShader::AGGenericShader(const string &name, const map<int, string> &attributeMap)
 {
-    m_program = [ShaderHelper createProgram:name
+    m_program = [ShaderHelper createProgram:[NSString stringWithUTF8String:name.c_str()]
                            withAttributeMap:attributeMap];
     m_uniformMVPMatrix = glGetUniformLocation(m_program, "modelViewProjectionMatrix");
     m_uniformNormalMatrix = glGetUniformLocation(m_program, "normalMatrix");
@@ -81,7 +81,7 @@ AGClipShader &AGClipShader::instance()
     return *g_clipShader;
 }
 
-AGClipShader::AGClipShader() : AGGenericShader(@"Clip")
+AGClipShader::AGClipShader() : AGGenericShader("Clip")
 {
     m_uniformLocalMatrix = glGetUniformLocation(m_program, "localMatrix");
     m_uniformClipOrigin = glGetUniformLocation(m_program, "clipOrigin");
@@ -109,7 +109,7 @@ AGTextureShader &AGTextureShader::instance()
     return *g_textureShader;
 }
 
-AGTextureShader::AGTextureShader() : AGGenericShader(@"Texture", SHADERHELPER_PNTC)
+AGTextureShader::AGTextureShader() : AGGenericShader("Texture", SHADERHELPER_PNTC)
 {
     m_uniformTex = glGetUniformLocation(m_program, "tex");
 }
@@ -123,8 +123,8 @@ void AGTextureShader::useProgram()
 }
 
 
-const GLint AGWaveformShader::s_attribPositionX = GLKVertexAttribTexCoord1+1;
-const GLint AGWaveformShader::s_attribPositionY = GLKVertexAttribTexCoord1+2;
+const GLint AGWaveformShader::s_attribPositionX = AGVertexAttribTexCoord1+1;
+const GLint AGWaveformShader::s_attribPositionY = AGVertexAttribTexCoord1+2;
 
 static AGWaveformShader *g_waveformShader = NULL;
 static map<int, string> *g_waveformShaderAttrib = NULL;
@@ -134,8 +134,8 @@ AGWaveformShader &AGWaveformShader::instance()
     if(g_waveformShader ==  NULL)
     {
         g_waveformShaderAttrib = new map<int, string>;
-        (*g_waveformShaderAttrib)[GLKVertexAttribNormal] = "normal";
-        (*g_waveformShaderAttrib)[GLKVertexAttribColor] = "color";
+        (*g_waveformShaderAttrib)[AGVertexAttribNormal] = "normal";
+        (*g_waveformShaderAttrib)[AGVertexAttribColor] = "color";
         (*g_waveformShaderAttrib)[s_attribPositionX] = "positionX";
         (*g_waveformShaderAttrib)[s_attribPositionY] = "positionY";
 
@@ -146,17 +146,19 @@ AGWaveformShader &AGWaveformShader::instance()
 }
 
 AGWaveformShader::AGWaveformShader() :
-AGGenericShader(@"Waveform", *g_waveformShaderAttrib)
+AGGenericShader("Waveform", *g_waveformShaderAttrib)
 {
     m_uniformPositionZ = glGetUniformLocation(m_program, "positionZ");
     m_uniformGain = glGetUniformLocation(m_program, "gain");
     m_uniformWindowAmount = glGetUniformLocation(m_program, "windowAmount");
+    m_uniformNumElements = glGetUniformLocation(m_program, "numElements");
 
-    int bufSize = AGAudioNode::bufferSize();
+    // TODO: error if more than bufSize waveform points are rendered
+    int bufSize = 2048;
     m_xBuffer = new GLfloat[bufSize];
     for(int i = 0; i < bufSize; i++)
     {
-        m_xBuffer[i] = ((float) i)/((float) (bufSize-1));
+        m_xBuffer[i] = (float) i;
     }
 }
 
@@ -169,6 +171,7 @@ void AGWaveformShader::useProgram()
     setGain(1);
     setZ(0);
     setWindowAmount(1.0);
+    setNumElements(1.0);
 }
 
 void AGWaveformShader::setZ(const GLfloat z)
@@ -183,7 +186,12 @@ void AGWaveformShader::setGain(const GLfloat gain)
 
 void AGWaveformShader::setWindowAmount(const GLfloat windowAmount)
 {
-    glUniform1f(m_uniformWindowAmount, windowAmount);
+//    glUniform1f(m_uniformWindowAmount, windowAmount);
+}
+
+void AGWaveformShader::setNumElements(const GLfloat numElements)
+{
+    glUniform1f(m_uniformNumElements, numElements);
 }
 
 

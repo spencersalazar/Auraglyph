@@ -37,6 +37,7 @@ enum AGHandwritingRecognizerFigure
     AG_FIGURE_TRIANGLE_DOWN,
 };
 
+// TODO: refactor as C++
 
 @interface AGHandwritingRecognizer : NSObject
 

@@ -538,10 +538,11 @@ void AGControlSequencerNode::initFinal()
         for(auto j = i->begin(); j != i->end(); j++)
             *j = Random::unit();
     
-    m_timer = AGTimer(60.0/param(PARAM_BPM), ^(AGTimer *) {
+    // apparently Block_copy is necessary since ARC doesn't work in C++(?)
+    m_timer = AGTimer(60.0/param(PARAM_BPM), Block_copy(^(AGTimer *) {
         if(numInputsForPort(PARAM_ADVANCE) == 0)
             updateStep();
-    });
+    }));
 }
 
 void AGControlSequencerNode::deserializeFinal(const AGDocument::Node &docNode)

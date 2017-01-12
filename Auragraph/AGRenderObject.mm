@@ -38,9 +38,9 @@ void AGRenderInfoV::set()
 {
     if(geo && numVertex)
     {
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
-        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
+        glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo);
     }
 }
 
@@ -51,9 +51,9 @@ void AGRenderInfoV::set(const AGRenderState &state)
         GLcolor4f c = color;
         c.a *= state.alpha;
         
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &c);
-        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &c);
+        glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo);
     }
 }
 
@@ -73,9 +73,9 @@ void AGRenderInfoVL::set()
     {
         assert(geo != NULL);
         glLineWidth(lineWidth);
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
-        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
+        glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo);
     }
 }
 
@@ -87,9 +87,9 @@ void AGRenderInfoVL::set(const AGRenderState &state)
         c.a *= state.alpha;
         
         glLineWidth(lineWidth);
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &c);
-        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &c);
+        glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo);
     }
 }
 
@@ -102,9 +102,9 @@ void AGRenderInfoVC::set(const AGRenderState &state)
 {
     if(geo && numVertex)
     {
-        glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvcprimf), &geo->color);
-        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvcprimf), &geo->vertex);
+        glVertexAttribPointer(AGVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvcprimf), &geo->color);
+        glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvcprimf), &geo->vertex);
     }
 }
 
@@ -112,9 +112,9 @@ void AGRenderInfoVC::set()
 {
     if(geo && numVertex)
     {
-        glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvcprimf), &geo->color);
-        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvcprimf), &geo->vertex);
+        glVertexAttribPointer(AGVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(GLvcprimf), &geo->color);
+        glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvcprimf), &geo->vertex);
     }
 }
 
@@ -267,9 +267,9 @@ void AGRenderObject::debug_renderBounds()
     shader.setMVPMatrix(GLKMatrix4Multiply(projectionMatrix(), globalModelViewMatrix()));
     shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(globalModelViewMatrix()), NULL));
     
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &color);
-    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), &bounds);
+    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
+    glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), &bounds);
     
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 #endif // DEBUG_BOUNDS
@@ -284,8 +284,8 @@ void AGRenderObject::drawTriangleFan(GLvertex3f geo[], int size)
     shader.setModelViewMatrix(m_renderState.modelview);
     shader.setProjectionMatrix(m_renderState.projection);
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
     
     glDrawArrays(GL_TRIANGLE_FAN, 0, size);
 }
@@ -300,8 +300,8 @@ void AGRenderObject::drawTriangleFan(GLvertex3f geo[], int size, const GLKMatrix
     shader.setModelViewMatrix(modelview);
     shader.setProjectionMatrix(m_renderState.projection);
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
     
     glDrawArrays(GL_TRIANGLE_FAN, 0, size);
 }
@@ -314,8 +314,8 @@ void AGRenderObject::drawTriangleFan(AGGenericShader &shader, GLvertex3f geo[], 
     shader.setModelViewMatrix(modelview);
     shader.setProjectionMatrix(m_renderState.projection);
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
     
     glDrawArrays(GL_TRIANGLE_FAN, 0, size);
 }
@@ -329,8 +329,8 @@ void AGRenderObject::drawLineLoop(GLvertex3f geo[], int size)
     shader.setModelViewMatrix(m_renderState.modelview);
     shader.setProjectionMatrix(m_renderState.projection);
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
     
     glDrawArrays(GL_LINE_LOOP, 0, size);
 }
@@ -344,8 +344,8 @@ void AGRenderObject::drawLineStrip(GLvertex2f geo[], int size)
     shader.setModelViewMatrix(m_renderState.modelview);
     shader.setProjectionMatrix(m_renderState.projection);
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(AGVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
     
     glDrawArrays(GL_LINE_STRIP, 0, size);
 }
@@ -360,8 +360,8 @@ void AGRenderObject::drawLineStrip(GLvertex2f geo[], int size, const GLKMatrix4 
     shader.setModelViewMatrix(modelview);
     shader.setProjectionMatrix(m_renderState.projection);
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(AGVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
     
     glDrawArrays(GL_LINE_STRIP, 0, size);
 }
@@ -374,8 +374,8 @@ void AGRenderObject::drawLineStrip(AGGenericShader &shader, GLvertex2f geo[], in
     shader.setModelViewMatrix(modelview);
     shader.setProjectionMatrix(m_renderState.projection);
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(AGVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
     
     glDrawArrays(GL_LINE_STRIP, 0, size);
 }
@@ -389,8 +389,8 @@ void AGRenderObject::drawLineStrip(GLvertex3f geo[], int size)
     shader.setModelViewMatrix(m_renderState.modelview);
     shader.setProjectionMatrix(m_renderState.projection);
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
     
     glDrawArrays(GL_LINE_STRIP, 0, size);
 }
@@ -427,14 +427,20 @@ void AGRenderObject::drawWaveform(float waveform[], int size, GLvertex2f from, G
     waveformShader.setGain(gain);
     glVertexAttribPointer(AGWaveformShader::s_attribPositionY, 1, GL_FLOAT, GL_FALSE, 0, waveform);
     glEnableVertexAttribArray(AGWaveformShader::s_attribPositionY);
+    waveformShader.setNumElements(size);
+
+    glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+    glDisableVertexAttribArray(AGVertexAttribNormal);
     
-    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-    glDisableVertexAttribArray(GLKVertexAttribNormal);
+    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+    glDisableVertexAttribArray(AGVertexAttribColor);
     
-    glDisableVertexAttribArray(GLKVertexAttribPosition);
+    glDisableVertexAttribArray(AGVertexAttribPosition);
+    
+    glLineWidth(2.0);
     
     glDrawArrays(GL_LINE_STRIP, 0, size);
     
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
 }
 

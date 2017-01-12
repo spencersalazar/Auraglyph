@@ -82,5 +82,10 @@ GLuint loadOrRetrieveTexture(NSString *name)
     }
 }
 
+GLuint loadOrRetrieveTexture(const char *name)
+{
+    return loadOrRetrieveTexture([NSString stringWithUTF8String:name]);
+}
+
 
 

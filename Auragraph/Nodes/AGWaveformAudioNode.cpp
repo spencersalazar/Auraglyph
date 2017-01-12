@@ -150,17 +150,17 @@ public:
         GeoGen::makeRect(box, m_width, m_height);
         
         // fill frame
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::black);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::black);
         drawTriangleFan(box, 4);
         
         // stroke frame
         glLineWidth(2.0f);
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
         drawLineLoop(box, 4);
         
         // draw y-axis
         glLineWidth(1.0f);
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
         drawLineStrip((GLvertex2f[]) {
             m_waveformPos + GLvertex2f{ -m_waveformSize.x*0.5f,  m_waveformSize.y*0.5f },
             m_waveformPos + GLvertex2f{ -m_waveformSize.x*0.5f, -m_waveformSize.y*0.5f },
@@ -168,7 +168,7 @@ public:
         
         // draw x-axis
         glLineWidth(1.0f);
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
         drawLineStrip((GLvertex2f[]) {
             m_waveformPos + GLvertex2f{ -m_waveformSize.x*0.5f, 0 },
             m_waveformPos + GLvertex2f{  m_waveformSize.x*0.5f, 0 },
@@ -176,7 +176,7 @@ public:
         
         // draw waveform
         glLineWidth(3.0f);
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
         drawWaveform(m_node->m_waveform.data(), m_node->m_waveform.size(),
                      m_waveformPos+GLvertex2f(-m_waveformSize.x*0.5f, 0),
                      m_waveformPos+GLvertex2f( m_waveformSize.x*0.5f, 0),
@@ -185,7 +185,7 @@ public:
         // draw phase
 //        glLineWidth(1.0f);
 //        float phaseOffset = (m_node->m_phase-0.5f);
-//        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+//        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
 //        drawLineStrip((GLvertex2f[]) {
 //            m_waveformPos + GLvertex2f{ phaseOffset*m_waveformSize.x,  m_waveformSize.y*0.5f },
 //            m_waveformPos + GLvertex2f{ phaseOffset*m_waveformSize.x, -m_waveformSize.y*0.5f },
@@ -196,7 +196,9 @@ public:
     
     virtual void touchDown(const AGTouchInfo &t) override
     {
-        if(pointInRectangle(t.position.xy(), position().xy()+m_waveformPos-m_waveformSize*0.5f, position().xy()+m_waveformPos+m_waveformSize*0.5f))
+        GLvertex2f bottomLeft = position().xy()+m_waveformPos-m_waveformSize*0.5f;
+        GLvertex2f topRight = position().xy()+m_waveformPos+m_waveformSize*0.5f;
+        if(pointInRectangle(t.position.xy(), bottomLeft, topRight))
         {
             GLvertex2f posInWaveform = t.position.xy()-position().xy()-m_waveformPos;
             // normalize x to [0,1]
@@ -211,6 +213,14 @@ public:
             m_node->m_waveform[pos] = normY;
             
             m_lastModifiedPos = pos;
+        }
+        else if(t.position.x < bottomLeft.x)
+        {
+            m_lastModifiedPos = 0;
+        }
+        else if(t.position.x > topRight.x)
+        {
+            m_lastModifiedPos = m_node->m_waveform.size()-1;
         }
     }
     

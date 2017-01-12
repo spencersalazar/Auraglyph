@@ -9,9 +9,10 @@
 #ifndef __Auragraph__AGGenericShader__
 #define __Auragraph__AGGenericShader__
 
-#import <GLKit/GLKit.h>
-#import "Geometry.h"
-#import "ShaderHelper.h"
+#include "gfx.h"
+#include "Geometry.h"
+#include "ShaderHelper.h"
+#include <string>
 
 class AGGenericShader
 {
@@ -28,8 +29,8 @@ public:
     void setNormalMatrix(const GLKMatrix3 &m);
     
 protected:
-    AGGenericShader(NSString *name = @"Shader", EnableAttributes attributes = SHADERHELPER_PNC);
-    AGGenericShader(NSString *name, const map<int, string> &attributeMap);
+    AGGenericShader(const string &name = "Shader", EnableAttributes attributes = SHADERHELPER_PNC);
+    AGGenericShader(const string &name, const map<int, string> &attributeMap);
     
     GLuint m_program;
     GLint m_uniformMVPMatrix;
@@ -84,6 +85,7 @@ public:
     void setZ(const GLfloat z);
     void setGain(const GLfloat gain);
     void setWindowAmount(const GLfloat windowAmount);
+    void setNumElements(const GLfloat numElements);
 
     static const GLint s_attribPositionX;
     static const GLint s_attribPositionY;
@@ -93,6 +95,7 @@ protected:
     GLint m_uniformPositionZ;
     GLint m_uniformGain;
     GLint m_uniformWindowAmount;
+    GLint m_uniformNumElements;
 };
 
 

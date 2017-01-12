@@ -22,7 +22,7 @@
 #include "ShaderHelper.h"
 #include "Mutex.h"
 
-#import <GLKit/GLKit.h>
+#include "gfx.h"
 //#import <Foundation/Foundation.h>
 
 #include <list>
@@ -402,7 +402,7 @@ public:
         load();
         
         glBindVertexArrayOES(0);
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_iconGeo.data());
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_iconGeo.data());
         
         glLineWidth(2.0);
         glDrawArrays(m_iconGeoType, 0, m_iconGeo.size());

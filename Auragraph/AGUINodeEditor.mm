@@ -6,12 +6,12 @@
 //  Copyright © 2016 Spencer Salazar. All rights reserved.
 //
 
-#import "AGUINodeEditor.h"
-#import "AGNode.h"
-#import "AGStyle.h"
-#import "AGGenericShader.h"
-#import "AGHandwritingRecognizer.h"
-#import "AGSlider.h"
+#include "AGUINodeEditor.h"
+#include "AGNode.h"
+#include "AGStyle.h"
+#include "AGGenericShader.h"
+#include "AGHandwritingRecognizer.h"
+#include "AGSlider.h"
 #include "AGFileBrowser.h"
 #include "AGFileManager.h"
 #include "AGAnalytics.h"
@@ -194,7 +194,6 @@ m_lastTraceWasRecognized(true)
     m_pinButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
     m_pinButton->setIconMode(AGUIIconButton::ICONMODE_SQUARE);
     m_pinButton->setAction(^{
-        dbgprint("pin!\n");
         pin(m_pinButton->isPressed());
     });
     addChild(m_pinButton);
@@ -256,12 +255,12 @@ void AGUIStandardNodeEditor::render()
     
     /* draw bounding box */
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_geo);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
-    glDisableVertexAttribArray(GLKVertexAttribColor);
-    glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-    glDisableVertexAttribArray(GLKVertexAttribNormal);
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
+    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+    glDisableVertexAttribArray(AGVertexAttribColor);
+    glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+    glDisableVertexAttribArray(AGVertexAttribNormal);
     
     AGGenericShader::instance().useProgram();
     
@@ -284,7 +283,7 @@ void AGUIStandardNodeEditor::render()
     glDrawArrays(GL_LINE_LOOP, s_boundingOffset, 4);
     
     GLcolor4f blackA = GLcolor4f(0, 0, 0, 0.75);
-    glVertexAttrib4fv(GLKVertexAttribColor, (const float*) &blackA);
+    glVertexAttrib4fv(AGVertexAttribColor, (const float*) &blackA);
     
     // fill
     glDrawArrays(GL_TRIANGLE_FAN, s_boundingOffset, 4);
@@ -316,12 +315,12 @@ void AGUIStandardNodeEditor::render()
             
             /* draw hit box */
             
-            glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_geo);
-            glEnableVertexAttribArray(GLKVertexAttribPosition);
-            glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
-            glDisableVertexAttribArray(GLKVertexAttribColor);
-            glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-            glDisableVertexAttribArray(GLKVertexAttribNormal);
+            glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_geo);
+            glEnableVertexAttribArray(AGVertexAttribPosition);
+            glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+            glDisableVertexAttribArray(AGVertexAttribColor);
+            glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+            glDisableVertexAttribArray(AGVertexAttribNormal);
             
             AGGenericShader::instance().useProgram();
             GLKMatrix4 hitMV = GLKMatrix4Translate(modelview(), 0, y + s_radius/rowCount, 0);
@@ -363,12 +362,12 @@ void AGUIStandardNodeEditor::render()
         glBindVertexArrayOES(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         
-        glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_geo);
-        glEnableVertexAttribArray(GLKVertexAttribPosition);
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
-        glDisableVertexAttribArray(GLKVertexAttribColor);
-        glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-        glDisableVertexAttribArray(GLKVertexAttribNormal);
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_geo);
+        glEnableVertexAttribArray(AGVertexAttribPosition);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+        glDisableVertexAttribArray(AGVertexAttribColor);
+        glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+        glDisableVertexAttribArray(AGVertexAttribNormal);
         
         float y = s_radius - s_radius*2.0*(m_editingPort+2)/rowCount;
         
@@ -382,13 +381,13 @@ void AGUIStandardNodeEditor::render()
         // stroke
         glDrawArrays(GL_LINE_LOOP, s_itemEditBoxOffset, 4);
         
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &blackA);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &blackA);
         
         // fill
         glDrawArrays(GL_TRIANGLE_FAN, s_itemEditBoxOffset, 4);
         
         
-        glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
         
         // accept button
         GLKMatrix4 buttonMV = GLKMatrix4Translate(modelview(), s_radius*1.65, y + s_radius/rowCount, 0);
@@ -452,20 +451,20 @@ void AGUIStandardNodeEditor::render()
             std::list<std::vector<GLvertex3f> >::iterator next = i;
             next++;
             
-            glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo.data());
-            glEnableVertexAttribArray(GLKVertexAttribPosition);
+            glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo.data());
+            glEnableVertexAttribArray(AGVertexAttribPosition);
             if(next == m_drawline.end())
             {
                 GLcolor4f traceColor = GLcolor4f(1, 1, 1, m_currentDrawlineAlpha);
-                glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &traceColor);
+                glVertexAttrib4fv(AGVertexAttribColor, (const float *) &traceColor);
             }
             else
             {
-                glVertexAttrib4fv(GLKVertexAttribColor, (const float *) &GLcolor4f::white);
+                glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
             }
-            glDisableVertexAttribArray(GLKVertexAttribColor);
-            glVertexAttrib3f(GLKVertexAttribNormal, 0, 0, 1);
-            glDisableVertexAttribArray(GLKVertexAttribNormal);
+            glDisableVertexAttribArray(AGVertexAttribColor);
+            glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
+            glDisableVertexAttribArray(AGVertexAttribNormal);
             
             glDrawArrays(GL_LINE_STRIP, 0, geo.size());
         }
