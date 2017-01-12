@@ -169,6 +169,7 @@ class AGUIIconButton : public AGUIButton
 {
 public:
     AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size, const AGRenderInfoV &iconRenderInfo);
+    ~AGUIIconButton();
     
     virtual void update(float t, float dt);
     virtual void render();

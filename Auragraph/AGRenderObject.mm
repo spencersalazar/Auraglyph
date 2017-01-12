@@ -133,6 +133,7 @@ AGRenderObject::AGRenderObject() : m_parent(NULL), m_alpha(powcurvef(0, 1, 0.5, 
     m_renderState.projection = GLKMatrix4Identity;
     m_renderState.modelview = GLKMatrix4Identity;
     m_renderState.normal = GLKMatrix3Identity;
+    m_renderingOut = false;
     m_debug_initCalled = false;
 }
 
@@ -233,6 +234,7 @@ void AGRenderObject::renderChildren()
 
 void AGRenderObject::renderOut()
 {
+    m_renderingOut = true;
     m_alpha.reset(1, 0);
     
     for(list<AGRenderObject *>::iterator i = m_children.begin(); i != m_children.end(); i++)
@@ -241,7 +243,7 @@ void AGRenderObject::renderOut()
 
 bool AGRenderObject::finishedRenderingOut()
 {
-    return m_alpha < 0.01;
+    return m_renderingOut && m_alpha < 0.01;
 }
 
 void AGRenderObject::hide()

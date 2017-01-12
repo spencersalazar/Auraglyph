@@ -258,6 +258,11 @@ m_iconInfo(iconRenderInfo)
     m_renderList.push_back(&m_iconInfo);
 }
 
+AGUIIconButton::~AGUIIconButton()
+{
+    SAFE_DELETE_ARRAY(m_boxGeo);
+}
+
 void AGUIIconButton::setIconMode(AGUIIconButton::IconMode m)
 {
     m_iconMode = m;

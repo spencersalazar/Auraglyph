@@ -64,8 +64,12 @@
 #define PI_OVER_180 (ONE_PI / 180.0)
 
 // safe object deletion
+#ifndef SAFE_DELETE
 #define SAFE_DELETE(x) { delete x; x = NULL; }
+#endif // SAFE_DELETE
+#ifndef SAFE_DELETE_ARRAY
 #define SAFE_DELETE_ARRAY(x) { delete [] x; x = NULL; }
+#endif // SAFE_DELETE_ARRAY
 
 // mo stuff
 #ifndef SAMPLE

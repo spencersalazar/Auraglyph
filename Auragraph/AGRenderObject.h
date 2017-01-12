@@ -142,6 +142,7 @@ protected:
     AGRenderObject *m_parent;
     list<AGRenderObject *> m_children;
     
+    bool m_renderingOut;
     powcurvef m_alpha;
     
     bool m_debug_initCalled;
