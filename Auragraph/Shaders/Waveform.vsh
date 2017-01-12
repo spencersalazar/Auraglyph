@@ -17,6 +17,7 @@ uniform mat4 modelViewProjectionMatrix;
 uniform mat3 normalMatrix;
 uniform float positionZ;
 uniform float gain;
+uniform float numElements;
 uniform float alphaWindow;
 
 #define M_PI 3.1415926535897932384626433832795
@@ -38,7 +39,7 @@ void main()
 {
 //    vec4 position = vec4(positionX, sin(positionX*2.0*M_PI), positionZ, 1.0);
 //    vec4 position = vec4(positionX, window(positionY*gain, positionX), positionZ, 1.0);
-    vec4 position = vec4(positionX, positionY*gain*color.a, positionZ, 1.0);
+    vec4 position = vec4(positionX/(numElements-1.0), positionY*gain*color.a, positionZ, 1.0);
     vec3 eyeNormal = normalize(normalMatrix * normal);
     vec3 lightPosition = vec3(0.0, 0.0, 1.0);
     vec4 diffuseColor = vec4(1.0, 1.0, 1.0, 1.0);
@@ -47,6 +48,10 @@ void main()
     
     colorVarying = diffuseColor * nDotVP * color;
     colorVarying.a = window(colorVarying.a, positionX)*alphaWindow + colorVarying.a*(1.0-alphaWindow);
+    // for debugging:
+//    colorVarying.r = positionX/(numElements-1.0);
+//    colorVarying.g = 1.0-(positionX/(numElements-1.0));
+//    colorVarying.b = 0.0;
     
     gl_Position = modelViewProjectionMatrix * position;
     //gl_Position = vec4(0, 0, 0, 1);

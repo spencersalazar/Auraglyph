@@ -196,7 +196,9 @@ public:
     
     virtual void touchDown(const AGTouchInfo &t) override
     {
-        if(pointInRectangle(t.position.xy(), position().xy()+m_waveformPos-m_waveformSize*0.5f, position().xy()+m_waveformPos+m_waveformSize*0.5f))
+        GLvertex2f bottomLeft = position().xy()+m_waveformPos-m_waveformSize*0.5f;
+        GLvertex2f topRight = position().xy()+m_waveformPos+m_waveformSize*0.5f;
+        if(pointInRectangle(t.position.xy(), bottomLeft, topRight))
         {
             GLvertex2f posInWaveform = t.position.xy()-position().xy()-m_waveformPos;
             // normalize x to [0,1]
@@ -211,6 +213,14 @@ public:
             m_node->m_waveform[pos] = normY;
             
             m_lastModifiedPos = pos;
+        }
+        else if(t.position.x < bottomLeft.x)
+        {
+            m_lastModifiedPos = 0;
+        }
+        else if(t.position.x > topRight.x)
+        {
+            m_lastModifiedPos = m_node->m_waveform.size()-1;
         }
     }
     

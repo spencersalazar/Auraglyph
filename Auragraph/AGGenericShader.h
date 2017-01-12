@@ -85,6 +85,7 @@ public:
     void setZ(const GLfloat z);
     void setGain(const GLfloat gain);
     void setWindowAmount(const GLfloat windowAmount);
+    void setNumElements(const GLfloat numElements);
 
     static const GLint s_attribPositionX;
     static const GLint s_attribPositionY;
@@ -94,6 +95,7 @@ protected:
     GLint m_uniformPositionZ;
     GLint m_uniformGain;
     GLint m_uniformWindowAmount;
+    GLint m_uniformNumElements;
 };
 
 

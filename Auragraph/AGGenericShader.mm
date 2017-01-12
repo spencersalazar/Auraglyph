@@ -151,12 +151,14 @@ AGGenericShader("Waveform", *g_waveformShaderAttrib)
     m_uniformPositionZ = glGetUniformLocation(m_program, "positionZ");
     m_uniformGain = glGetUniformLocation(m_program, "gain");
     m_uniformWindowAmount = glGetUniformLocation(m_program, "windowAmount");
+    m_uniformNumElements = glGetUniformLocation(m_program, "numElements");
 
-    int bufSize = AGAudioNode::bufferSize();
+    // TODO: error if more than bufSize waveform points are rendered
+    int bufSize = 2048;
     m_xBuffer = new GLfloat[bufSize];
     for(int i = 0; i < bufSize; i++)
     {
-        m_xBuffer[i] = ((float) i)/((float) (bufSize-1));
+        m_xBuffer[i] = (float) i;
     }
 }
 
@@ -169,6 +171,7 @@ void AGWaveformShader::useProgram()
     setGain(1);
     setZ(0);
     setWindowAmount(1.0);
+    setNumElements(1.0);
 }
 
 void AGWaveformShader::setZ(const GLfloat z)
@@ -183,7 +186,12 @@ void AGWaveformShader::setGain(const GLfloat gain)
 
 void AGWaveformShader::setWindowAmount(const GLfloat windowAmount)
 {
-    glUniform1f(m_uniformWindowAmount, windowAmount);
+//    glUniform1f(m_uniformWindowAmount, windowAmount);
+}
+
+void AGWaveformShader::setNumElements(const GLfloat numElements)
+{
+    glUniform1f(m_uniformNumElements, numElements);
 }
 
 
