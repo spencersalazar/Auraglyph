@@ -242,7 +242,7 @@ static AGViewController * g_instance = nil;
             for(auto param : node->editPortInfo())
                 [params addObject:@{ @"name": [NSString stringWithSTLString:param.name] }];
             
-            for(auto port : node->editPortInfo())
+            for(auto port : node->inputPortInfo())
                 [ports addObject:@{ @"name": [NSString stringWithSTLString:port.name] }];
             
             NSMutableArray *iconGeo = [NSMutableArray new];
