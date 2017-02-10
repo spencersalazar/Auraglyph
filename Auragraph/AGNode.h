@@ -88,6 +88,9 @@ public:
     virtual const vector<AGPortInfo> &inputPortInfo() const = 0;
     virtual const vector<AGPortInfo> &editPortInfo() const = 0;
     
+    virtual const vector<GLvertex3f> &iconGeo() const = 0;
+    virtual GLuint iconGeoType() const = 0;
+    
     static const AGNodeManifest *defaultManifest() { return NULL; }
 };
 
@@ -404,6 +407,9 @@ public:
         node->init(docNode);
         return node;
     }
+    
+    const vector<GLvertex3f> &iconGeo() const override { return m_iconGeo; }
+    GLuint iconGeoType() const override { return m_iconGeoType; }
     
     
 protected:
