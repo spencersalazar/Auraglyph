@@ -406,7 +406,8 @@ public:
     public:
         string _type() const override { return "Input"; };
         string _name() const override { return "Input"; };
-        
+        string _description() const override { return "Routes audio from input device, such as a microphone."; };
+
         vector<AGPortInfo> _inputPortInfo() const override { return { }; }
         
         vector<AGPortInfo> _editPortInfo() const override
@@ -507,7 +508,8 @@ public:
     public:
         string _type() const override { return "SineWave"; };
         string _name() const override { return "SineWave"; };
-        
+        string _description() const override { return "Standard sinusoidal oscillator."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
@@ -596,7 +598,8 @@ public:
     public:
         string _type() const override { return "SquareWave"; };
         string _name() const override { return "SquareWave"; };
-        
+        string _description() const override { return "Standard square wave oscillator."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
@@ -688,7 +691,8 @@ public:
     public:
         string _type() const override { return "SawWave"; };
         string _name() const override { return "SawWave"; };
-        
+        string _description() const override { return "Standard sawtooth wave oscillator."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
@@ -775,7 +779,8 @@ public:
     public:
         string _type() const override { return "TriWave"; };
         string _name() const override { return "TriWave"; };
-        
+        string _description() const override { return "Standard triangle wave oscillator."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
@@ -870,7 +875,8 @@ public:
     public:
         string _type() const override { return "ADSR"; };
         string _name() const override { return "ADSR"; };
-        
+        string _description() const override { return "Attack-decay-sustain-release (ADSR) envelope. "; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
@@ -1006,7 +1012,8 @@ public:
     public:
         string _type() const override { return "LowPass"; };
         string _name() const override { return "LowPass"; };
-        
+        string _description() const override { return "Resonant low-pass filter (second order Butterworth)."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
@@ -1051,7 +1058,8 @@ public:
     public:
         string _type() const override { return "HiPass"; };
         string _name() const override { return "HiPass"; };
-        
+        string _description() const override { return "Resonant high-pass filter (second-order Butterworth)."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
@@ -1096,7 +1104,8 @@ public:
     public:
         string _type() const override { return "BandPass"; };
         string _name() const override { return "BandPass"; };
-        
+        string _description() const override { return "Band pass filter (second-order Butterworth)."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
@@ -1353,7 +1362,8 @@ public:
     public:
         string _type() const override { return "Feedback"; };
         string _name() const override { return "Feedback"; };
-        
+        string _description() const override { return "Delay processor with built-in feedback."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
@@ -1478,7 +1488,8 @@ public:
     public:
         string _type() const override { return "Add"; };
         string _name() const override { return "Add"; };
-        
+        string _description() const override { return "Simply adds singular value, or if multiple inputs, sums all inputs. "; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
@@ -1582,7 +1593,8 @@ public:
     public:
         string _type() const override { return "Multiply"; };
         string _name() const override { return "Multiply"; };
-        
+        string _description() const override { return "Multiplies a single input by a constant value, or multiples inputs together if there is more than one. "; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
@@ -1681,7 +1693,8 @@ public:
     public:
         string _type() const override { return "Noise"; };
         string _name() const override { return "Noise"; };
-        
+        string _description() const override { return "White noise generator."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {

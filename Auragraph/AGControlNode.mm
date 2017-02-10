@@ -183,7 +183,8 @@ public:
     public:
         string _type() const override { return "Timer"; };
         string _name() const override { return "Timer"; };
-        
+        string _description() const override { return "Emits pulses at the specified interval."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
@@ -283,7 +284,8 @@ public:
     public:
         string _type() const override { return "Add"; };
         string _name() const override { return "Add"; };
-        
+        string _description() const override { return "Adds constant value to input."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
@@ -363,7 +365,8 @@ public:
     public:
         string _type() const override { return "Multiply"; };
         string _name() const override { return "Multiply"; };
-        
+        string _description() const override { return "Multiplies input by constant value."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
@@ -442,7 +445,8 @@ public:
     public:
         string _type() const override { return "midi2freq"; };
         string _name() const override { return "midi2freq"; };
-        
+        string _description() const override { return "Converts MIDI pitch input to frequency value."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {

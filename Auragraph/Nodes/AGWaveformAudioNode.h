@@ -31,7 +31,8 @@ public:
     public:
         string _type() const override { return "Waveform"; };
         string _name() const override { return "Waveform"; };
-        
+        string _description() const override { return "User-defined waveform oscillator."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {

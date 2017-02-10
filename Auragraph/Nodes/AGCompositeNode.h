@@ -38,7 +38,8 @@ public:
     public:
         string _type() const override { return "Composite"; };
         string _name() const override { return "Composite"; };
-        
+        string _description() const override { return "Composite node containing a user-defined subprogram."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {

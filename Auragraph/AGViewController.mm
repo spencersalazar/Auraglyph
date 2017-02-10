@@ -232,39 +232,44 @@ static AGViewController * g_instance = nil;
     NSMutableArray *audioNodes = [NSMutableArray new];
     NSMutableArray *controlNodes = [NSMutableArray new];
     
-    auto audioNodeList = AGNodeManager::audioNodeManager().nodeTypes();
-    for(auto node : audioNodeList)
-    {
-        NSMutableArray *params = [NSMutableArray new];
-        NSMutableArray *ports = [NSMutableArray new];
-        NSMutableDictionary *icon = [NSMutableDictionary new];
-        
-        for(auto param : node->editPortInfo())
-            [params addObject:@{ @"name": [NSString stringWithSTLString:param.name] }];
-        
-        for(auto port : node->editPortInfo())
-            [ports addObject:@{ @"name": [NSString stringWithSTLString:port.name] }];
-        
-        NSMutableArray *iconGeo = [NSMutableArray new];
-        for(auto pt : node->iconGeo())
-            [iconGeo addObject:@{ @"x": @(pt.x), @"y": @(pt.y)}];
-        icon[@"geo"] = iconGeo;
-        
-        switch(node->iconGeoType())
+    auto processNodes = [](const std::vector<const AGNodeManifest *> &nodeList, NSMutableArray *nodes) {
+        for(auto node : nodeList)
         {
-            case GL_LINES: icon[@"type"] = @"lines"; break;
-            case GL_LINE_STRIP: icon[@"type"] = @"line_strip"; break;
-            case GL_LINE_LOOP: icon[@"type"] = @"line_loop"; break;
-            default: assert(0);
+            NSMutableArray *params = [NSMutableArray new];
+            NSMutableArray *ports = [NSMutableArray new];
+            NSMutableDictionary *icon = [NSMutableDictionary new];
+            
+            for(auto param : node->editPortInfo())
+                [params addObject:@{ @"name": [NSString stringWithSTLString:param.name] }];
+            
+            for(auto port : node->editPortInfo())
+                [ports addObject:@{ @"name": [NSString stringWithSTLString:port.name] }];
+            
+            NSMutableArray *iconGeo = [NSMutableArray new];
+            for(auto pt : node->iconGeo())
+                [iconGeo addObject:@{ @"x": @(pt.x), @"y": @(pt.y)}];
+            icon[@"geo"] = iconGeo;
+            
+            switch(node->iconGeoType())
+            {
+                case GL_LINES: icon[@"type"] = @"lines"; break;
+                case GL_LINE_STRIP: icon[@"type"] = @"line_strip"; break;
+                case GL_LINE_LOOP: icon[@"type"] = @"line_loop"; break;
+                default: assert(0);
+            }
+            
+            [nodes addObject:@{
+                               @"name": [NSString stringWithSTLString:node->type()],
+                               @"desc": [NSString stringWithSTLString:node->description()],
+                               @"icon": icon,
+                               @"params": params,
+                               @"ports": ports
+                               }];
         }
-        
-        [audioNodes addObject:@{
-                                @"name": [NSString stringWithSTLString:node->type()],
-                                @"icon": icon,
-                                @"params": params,
-                                @"ports": ports
-                                }];
-    }
+    };
+    
+    processNodes(AGNodeManager::audioNodeManager().nodeTypes(), audioNodes);
+    processNodes(AGNodeManager::controlNodeManager().nodeTypes(), controlNodes);
     
     NSDictionary *nodes = @{ @"audio": audioNodes, @"control": controlNodes };
     NSError *error = nil;

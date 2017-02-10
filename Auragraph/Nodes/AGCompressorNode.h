@@ -90,7 +90,8 @@ public:
     public:
         string _type() const override { return "Compressor"; };
         string _name() const override { return "Compressor"; };
-        
+        string _description() const override { return "Dynamic range compressor node."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {

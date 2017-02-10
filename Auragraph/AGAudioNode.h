@@ -126,6 +126,7 @@ public:
     public:
         string _type() const override { return "Output"; };
         string _name() const override { return "Output"; };
+        string _description() const override { return "Routes audio to final destination device, such as a speaker or headphones."; };
         
         vector<AGPortInfo> _inputPortInfo() const override
         {

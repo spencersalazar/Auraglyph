@@ -39,7 +39,8 @@ public:
     public:
         string _type() const override { return "Orientation"; };
         string _name() const override { return "Orientation"; };
-        
+        string _description() const override { return "Outputs Euler angles (rotation about X, Y, and Z axes) corresponding to device orientation."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
