@@ -1776,9 +1776,9 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         vector<const AGNodeManifest *> &nodeTypes = s_audioNodeManager->m_nodeTypes;
         
         nodeTypes.push_back(new AGAudioSineWaveNode::Manifest);
-        nodeTypes.push_back(new AGAudioSquareWaveNode::Manifest);
-        
         nodeTypes.push_back(new AGAudioSawtoothWaveNode::Manifest);
+        
+        nodeTypes.push_back(new AGAudioSquareWaveNode::Manifest);
         nodeTypes.push_back(new AGAudioTriangleWaveNode::Manifest);
         
         nodeTypes.push_back(new AGAudioWaveformNode::Manifest);
