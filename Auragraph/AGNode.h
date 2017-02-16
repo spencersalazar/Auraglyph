@@ -59,6 +59,8 @@ struct AGPortInfo
     Mode mode;
     
     // TODO: min, max, units label, rate, etc.
+    
+    string doc;
 };
 
 struct AGNodeInfo

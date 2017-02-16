@@ -44,14 +44,14 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_READ, "read", true, true }
+                { PARAM_READ, "read", true, true, .doc = "Triggers sensor reading and output." }
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_RATE, "rate", true, true, 60, 0, 100, AGPortInfo::LIN },
+                { PARAM_RATE, "rate", true, true, 60, 0, 100, AGPortInfo::LIN, .doc = "Rate at which to read sensors." },
             };
         };
         

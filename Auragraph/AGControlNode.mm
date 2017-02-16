@@ -188,14 +188,14 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INTERVAL, "interval", true, true },
+                { PARAM_INTERVAL, "interval", true, true, .doc = "Timer fire interval (seconds)." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_INTERVAL, "interval", true, true, 0.5, 0.001, AGFloat_Max },
+                { PARAM_INTERVAL, "interval", true, true, 0.5, 0.001, AGFloat_Max, .doc = "Timer fire interval (seconds)." },
             };
         };
         
@@ -289,14 +289,14 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_ADD, "add", true, true },
+                { PARAM_ADD, "add", true, true, .doc = "Input control value." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_ADD, "add", true, true, 0 },
+                { PARAM_ADD, "add", true, true, 0, .doc = "Quantity to add to input." },
             };
         };
         
@@ -370,14 +370,14 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_MULTIPLY, "mult", true, true },
+                { PARAM_MULTIPLY, "mult", true, true, .doc = "Input control value." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_MULTIPLY, "mult", true, true, 0 },
+                { PARAM_MULTIPLY, "mult", true, true, 0, .doc = "Quantity to multiply input by." },
             };
         };
         
@@ -450,7 +450,7 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_MIDI, "midi", true, true },
+                { PARAM_MIDI, "midi", true, true, .doc = "MIDI note input control value." },
             };
         };
         

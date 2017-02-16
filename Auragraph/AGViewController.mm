@@ -240,10 +240,12 @@ static AGViewController * g_instance = nil;
             NSMutableDictionary *icon = [NSMutableDictionary new];
             
             for(auto param : node->editPortInfo())
-                [params addObject:@{ @"name": [NSString stringWithSTLString:param.name] }];
+                [params addObject:@{ @"name": [NSString stringWithSTLString:param.name],
+                                     @"desc": [NSString stringWithSTLString:param.doc] }];
             
             for(auto port : node->inputPortInfo())
-                [ports addObject:@{ @"name": [NSString stringWithSTLString:port.name] }];
+                [ports addObject:@{ @"name": [NSString stringWithSTLString:port.name],
+                                    @"desc": [NSString stringWithSTLString:port.doc] }];
             
             NSMutableArray *iconGeo = [NSMutableArray new];
             for(auto pt : node->iconGeo())
