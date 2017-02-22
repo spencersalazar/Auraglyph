@@ -56,8 +56,8 @@
 		095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */; };
 		096F42051D9CF04600600717 /* AGWaveformAudioNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096F42031D9CF04600600717 /* AGWaveformAudioNode.cpp */; };
 		09817F3919F87CC7000E9FB3 /* GeoGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09817F3819F87CC7000E9FB3 /* GeoGenerator.cpp */; };
-		0985E5361D8C952800B536C8 /* AGInteractiveObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0985E5341D8C952800B536C8 /* AGInteractiveObject.mm */; };
-		0987409C17B98D7C0098511A /* AGNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0987409A17B98D7C0098511A /* AGNode.mm */; };
+		0985E5361D8C952800B536C8 /* AGInteractiveObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0985E5341D8C952800B536C8 /* AGInteractiveObject.cpp */; };
+		0987409C17B98D7C0098511A /* AGNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0987409A17B98D7C0098511A /* AGNode.cpp */; };
 		098740A017BA2AB90098511A /* mo_audio.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0987409E17BA2AB90098511A /* mo_audio.mm */; };
 		098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740A217BA2EA70098511A /* AGAudioManager.mm */; };
 		098740A617BA317E0098511A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 098740A417BA317E0098511A /* AudioToolbox.framework */; };
@@ -78,7 +78,7 @@
 		0989132318A0870000AB98AD /* Clip.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 09D9D2E817ECF65D00938871 /* Clip.fsh */; };
 		0989132418A0870000AB98AD /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 095D12DF17ACA36C0048A012 /* Shader.fsh */; };
 		0989132518A0870000AB98AD /* Texture.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 0989131718A07E1200AB98AD /* Texture.fsh */; };
-		098F9B3A19EE49BA00CE2F24 /* AGRenderObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098F9B3819EE49BA00CE2F24 /* AGRenderObject.mm */; };
+		098F9B3A19EE49BA00CE2F24 /* AGRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 098F9B3819EE49BA00CE2F24 /* AGRenderObject.cpp */; };
 		0991BA7A1D839BB10080175C /* AGCompressorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0991BA781D839BB10080175C /* AGCompressorNode.cpp */; };
 		0991BA7E1D83A5140080175C /* spdsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0991BA7C1D83A5140080175C /* spdsp.cpp */; };
 		099AF10F17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png in Resources */ = {isa = PBXBuildFile; fileRef = 099AF10E17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png */; };
@@ -278,9 +278,9 @@
 		096F42041D9CF04600600717 /* AGWaveformAudioNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AGWaveformAudioNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		09817F3719F78B3F000E9FB3 /* GeoGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeoGenerator.h; sourceTree = "<group>"; };
 		09817F3819F87CC7000E9FB3 /* GeoGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeoGenerator.cpp; sourceTree = "<group>"; };
-		0985E5341D8C952800B536C8 /* AGInteractiveObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGInteractiveObject.mm; sourceTree = "<group>"; };
+		0985E5341D8C952800B536C8 /* AGInteractiveObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGInteractiveObject.cpp; sourceTree = "<group>"; };
 		0985E5351D8C952800B536C8 /* AGInteractiveObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGInteractiveObject.h; sourceTree = "<group>"; };
-		0987409A17B98D7C0098511A /* AGNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGNode.mm; sourceTree = "<group>"; };
+		0987409A17B98D7C0098511A /* AGNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGNode.cpp; sourceTree = "<group>"; };
 		0987409B17B98D7C0098511A /* AGNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGNode.h; sourceTree = "<group>"; };
 		0987409D17BA2AB90098511A /* mo_audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mo_audio.h; sourceTree = "<group>"; };
 		0987409E17BA2AB90098511A /* mo_audio.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = mo_audio.mm; sourceTree = "<group>"; };
@@ -306,7 +306,7 @@
 		0989131818A07E1200AB98AD /* Texture.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Texture.vsh; path = Shaders/Texture.vsh; sourceTree = "<group>"; };
 		098C0E1217C4278C00171366 /* Screen.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Screen.fsh; path = Shaders/Screen.fsh; sourceTree = "<group>"; };
 		098C0E1317C4278C00171366 /* Screen.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Screen.vsh; path = Shaders/Screen.vsh; sourceTree = "<group>"; };
-		098F9B3819EE49BA00CE2F24 /* AGRenderObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGRenderObject.mm; sourceTree = "<group>"; };
+		098F9B3819EE49BA00CE2F24 /* AGRenderObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGRenderObject.cpp; sourceTree = "<group>"; };
 		098F9B3919EE49BA00CE2F24 /* AGRenderObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGRenderObject.h; sourceTree = "<group>"; };
 		0991BA781D839BB10080175C /* AGCompressorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = AGCompressorNode.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		0991BA791D839BB10080175C /* AGCompressorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AGCompressorNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -504,13 +504,13 @@
 				09B674461D6DA2B200F84E09 /* AGAudioCapturer.h */,
 				09F700B41D6FA75900294BDD /* AGAudioOutputDestination.h */,
 				098F9B3919EE49BA00CE2F24 /* AGRenderObject.h */,
-				098F9B3819EE49BA00CE2F24 /* AGRenderObject.mm */,
+				098F9B3819EE49BA00CE2F24 /* AGRenderObject.cpp */,
 				0985E5351D8C952800B536C8 /* AGInteractiveObject.h */,
-				0985E5341D8C952800B536C8 /* AGInteractiveObject.mm */,
+				0985E5341D8C952800B536C8 /* AGInteractiveObject.cpp */,
 				09AAFA2C1E5D736200BA59AB /* AGHostInterface.h */,
 				09AAFA2D1E5D74BE00BA59AB /* AGHostInterface.cpp */,
 				0987409B17B98D7C0098511A /* AGNode.h */,
-				0987409A17B98D7C0098511A /* AGNode.mm */,
+				0987409A17B98D7C0098511A /* AGNode.cpp */,
 				09FC924A1A153A83005D14A3 /* AGConnection.h */,
 				09FC92491A153A83005D14A3 /* AGConnection.mm */,
 				098740AC17BC377E0098511A /* AGAudioNode.h */,
@@ -947,7 +947,7 @@
 				093395771A08BFAC009E4802 /* AGNodeSelector.cpp in Sources */,
 				096F42051D9CF04600600717 /* AGWaveformAudioNode.cpp in Sources */,
 				09F700B81D71046300294BDD /* Buffers.cpp in Sources */,
-				0985E5361D8C952800B536C8 /* AGInteractiveObject.mm in Sources */,
+				0985E5361D8C952800B536C8 /* AGInteractiveObject.cpp in Sources */,
 				095D12FC17ACAA100048A012 /* Texture.mm in Sources */,
 				09E5EC7F18A36A9D00B21D97 /* SPFilter.cpp in Sources */,
 				0991BA7E1D83A5140080175C /* spdsp.cpp in Sources */,
@@ -963,13 +963,13 @@
 				09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */,
 				09412E0C1A2112300065598D /* NSString+STLString.mm in Sources */,
 				09B962551DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp in Sources */,
-				098F9B3A19EE49BA00CE2F24 /* AGRenderObject.mm in Sources */,
+				098F9B3A19EE49BA00CE2F24 /* AGRenderObject.cpp in Sources */,
 				095D12FF17ACAB7B0048A012 /* ShaderHelper.mm in Sources */,
 				095E853117B358FC0065EF8E /* shaperectst.mm in Sources */,
 				09B962501DD839A0001DCFB1 /* AGControlOrientationNode.mm in Sources */,
 				095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */,
 				09412E091A210B630065598D /* sputil.cpp in Sources */,
-				0987409C17B98D7C0098511A /* AGNode.mm in Sources */,
+				0987409C17B98D7C0098511A /* AGNode.cpp in Sources */,
 				098740A017BA2AB90098511A /* mo_audio.mm in Sources */,
 				098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */,
 				098740AA17BB99DE0098511A /* TexFont.mm in Sources */,
