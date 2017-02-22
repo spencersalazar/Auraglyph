@@ -11,12 +11,12 @@
 		0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0901C1BA17BE2F970032904B /* AGGenericShader.mm */; };
 		091081801A0B63DB0063028B /* AGStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0910817E1A0B63DB0063028B /* AGStyle.mm */; };
 		091C70CC1C48A9A600B513C2 /* AGUINodeEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */; };
-		0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */; };
+		0927D7E01ADCE4E000AD8AE5 /* AGInputNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.cpp */; };
 		093395691A019D43009E4802 /* Orbitron-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 093395681A019D43009E4802 /* Orbitron-Regular.ttf */; };
 		0933956B1A019E4F009E4802 /* Orbitron-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */; };
 		0933956E1A08799A009E4802 /* AGFormulaNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0933956C1A08799A009E4802 /* AGFormulaNode.mm */; };
 		093395711A088612009E4802 /* AGArrayNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0933956F1A088612009E4802 /* AGArrayNode.mm */; };
-		093395741A088849009E4802 /* AGControlNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 093395721A088849009E4802 /* AGControlNode.mm */; };
+		093395741A088849009E4802 /* AGControlNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 093395721A088849009E4802 /* AGControlNode.cpp */; };
 		093395771A08BFAC009E4802 /* AGNodeSelector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 093395751A08BFAC009E4802 /* AGNodeSelector.cpp */; };
 		0933957A1A0A3785009E4802 /* AGAboutBox.mm in Sources */ = {isa = PBXBuildFile; fileRef = 093395781A0A3785009E4802 /* AGAboutBox.mm */; };
 		09412E061A205A070065598D /* AGDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09412E041A205A070065598D /* AGDocument.mm */; };
@@ -62,7 +62,7 @@
 		098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740A217BA2EA70098511A /* AGAudioManager.mm */; };
 		098740A617BA317E0098511A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 098740A417BA317E0098511A /* AudioToolbox.framework */; };
 		098740AA17BB99DE0098511A /* TexFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740A817BB99DE0098511A /* TexFont.mm */; };
-		098740AD17BC377E0098511A /* AGAudioNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740AB17BC377E0098511A /* AGAudioNode.mm */; };
+		098740AD17BC377E0098511A /* AGAudioNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 098740AB17BC377E0098511A /* AGAudioNode.cpp */; };
 		098740B017BC527E0098511A /* ES2Render.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740AE17BC527E0098511A /* ES2Render.mm */; };
 		098740B317BC61410098511A /* AGUserInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 098740B117BC61410098511A /* AGUserInterface.cpp */; };
 		098740BD17BCD9820098511A /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 098740BC17BCD9810098511A /* CoreText.framework */; };
@@ -114,7 +114,7 @@
 		09F2D53B1D7EA33400F537C7 /* DelayA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F2D5381D7EA33400F537C7 /* DelayA.cpp */; };
 		09F2D53C1D7EA33400F537C7 /* DelayL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F2D5391D7EA33400F537C7 /* DelayL.cpp */; };
 		09F3C50818A5A8C300E499AF /* Stk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F3C50718A5A8C300E499AF /* Stk.cpp */; };
-		09F6E87A1D6A3758006DBC9E /* AGOutputNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09F6E8781D6A3758006DBC9E /* AGOutputNode.mm */; };
+		09F6E87A1D6A3758006DBC9E /* AGOutputNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F6E8781D6A3758006DBC9E /* AGOutputNode.cpp */; };
 		09F700B81D71046300294BDD /* Buffers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F700B61D71046300294BDD /* Buffers.cpp */; };
 		09FC92471A14F55D005D14A3 /* AGTimer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09FC92451A14F55D005D14A3 /* AGTimer.mm */; };
 		09FC924B1A153A83005D14A3 /* AGConnection.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09FC92491A153A83005D14A3 /* AGConnection.mm */; };
@@ -140,7 +140,7 @@
 		0910817F1A0B63DB0063028B /* AGStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGStyle.h; sourceTree = "<group>"; };
 		091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGUINodeEditor.mm; sourceTree = "<group>"; };
 		091C70CB1C48A9A600B513C2 /* AGUINodeEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGUINodeEditor.h; sourceTree = "<group>"; };
-		0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGInputNode.mm; sourceTree = "<group>"; };
+		0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGInputNode.cpp; sourceTree = "<group>"; };
 		0927D7DF1ADCE4E000AD8AE5 /* AGInputNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGInputNode.h; sourceTree = "<group>"; };
 		093395681A019D43009E4802 /* Orbitron-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Orbitron-Regular.ttf"; sourceTree = "<group>"; };
 		0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Orbitron-Medium.ttf"; sourceTree = "<group>"; };
@@ -148,7 +148,7 @@
 		0933956D1A08799A009E4802 /* AGFormulaNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AGFormulaNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		0933956F1A088612009E4802 /* AGArrayNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGArrayNode.mm; sourceTree = "<group>"; };
 		093395701A088612009E4802 /* AGArrayNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGArrayNode.h; sourceTree = "<group>"; };
-		093395721A088849009E4802 /* AGControlNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGControlNode.mm; sourceTree = "<group>"; };
+		093395721A088849009E4802 /* AGControlNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGControlNode.cpp; sourceTree = "<group>"; };
 		093395731A088849009E4802 /* AGControlNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGControlNode.h; sourceTree = "<group>"; };
 		093395751A08BFAC009E4802 /* AGNodeSelector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGNodeSelector.cpp; sourceTree = "<group>"; };
 		093395761A08BFAC009E4802 /* AGNodeSelector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGNodeSelector.h; sourceTree = "<group>"; };
@@ -290,7 +290,7 @@
 		098740A417BA317E0098511A /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		098740A817BB99DE0098511A /* TexFont.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TexFont.mm; sourceTree = "<group>"; };
 		098740A917BB99DE0098511A /* TexFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TexFont.h; sourceTree = "<group>"; };
-		098740AB17BC377E0098511A /* AGAudioNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = AGAudioNode.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		098740AB17BC377E0098511A /* AGAudioNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = AGAudioNode.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		098740AC17BC377E0098511A /* AGAudioNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AGAudioNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		098740AE17BC527E0098511A /* ES2Render.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ES2Render.mm; sourceTree = "<group>"; };
 		098740AF17BC527E0098511A /* ES2Render.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ES2Render.h; sourceTree = "<group>"; };
@@ -375,7 +375,7 @@
 		09F3C50918A5A8D500E499AF /* ADSR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ADSR.h; sourceTree = "<group>"; };
 		09F3C50A18A5A8D500E499AF /* Stk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Stk.h; sourceTree = "<group>"; };
 		09F3C50B18A5A8E000E499AF /* Generator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Generator.h; sourceTree = "<group>"; };
-		09F6E8781D6A3758006DBC9E /* AGOutputNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGOutputNode.mm; sourceTree = "<group>"; };
+		09F6E8781D6A3758006DBC9E /* AGOutputNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGOutputNode.cpp; sourceTree = "<group>"; };
 		09F6E8791D6A3758006DBC9E /* AGOutputNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGOutputNode.h; sourceTree = "<group>"; };
 		09F700B41D6FA75900294BDD /* AGAudioOutputDestination.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGAudioOutputDestination.h; sourceTree = "<group>"; };
 		09F700B51D6FA79B00294BDD /* AGAudioRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGAudioRenderer.h; sourceTree = "<group>"; };
@@ -514,13 +514,13 @@
 				09FC924A1A153A83005D14A3 /* AGConnection.h */,
 				09FC92491A153A83005D14A3 /* AGConnection.mm */,
 				098740AC17BC377E0098511A /* AGAudioNode.h */,
-				098740AB17BC377E0098511A /* AGAudioNode.mm */,
+				098740AB17BC377E0098511A /* AGAudioNode.cpp */,
 				093395731A088849009E4802 /* AGControlNode.h */,
-				093395721A088849009E4802 /* AGControlNode.mm */,
+				093395721A088849009E4802 /* AGControlNode.cpp */,
 				0927D7DF1ADCE4E000AD8AE5 /* AGInputNode.h */,
-				0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */,
+				0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.cpp */,
 				09F6E8791D6A3758006DBC9E /* AGOutputNode.h */,
-				09F6E8781D6A3758006DBC9E /* AGOutputNode.mm */,
+				09F6E8781D6A3758006DBC9E /* AGOutputNode.cpp */,
 				09B674411D6D9D6500F84E09 /* Nodes */,
 				098740B217BC61410098511A /* AGUserInterface.h */,
 				098740B117BC61410098511A /* AGUserInterface.cpp */,
@@ -936,13 +936,13 @@
 				09BE8B9B1C952386002097F0 /* AGControlSequencerNode.cpp in Sources */,
 				095D12D417ACA36C0048A012 /* main.m in Sources */,
 				0933956E1A08799A009E4802 /* AGFormulaNode.mm in Sources */,
-				0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */,
+				0927D7E01ADCE4E000AD8AE5 /* AGInputNode.cpp in Sources */,
 				09F29DAF1CCA086200502C01 /* AGSlider.cpp in Sources */,
 				095D12D817ACA36C0048A012 /* AGAppDelegate.mm in Sources */,
 				095D12E517ACA36C0048A012 /* AGViewController.mm in Sources */,
 				09E5EC8218A46F7300B21D97 /* AGControl.mm in Sources */,
 				09891316189F70D200AB98AD /* AGTouchHandler.mm in Sources */,
-				09F6E87A1D6A3758006DBC9E /* AGOutputNode.mm in Sources */,
+				09F6E87A1D6A3758006DBC9E /* AGOutputNode.cpp in Sources */,
 				095D12FB17ACAA100048A012 /* Geometry.cpp in Sources */,
 				093395771A08BFAC009E4802 /* AGNodeSelector.cpp in Sources */,
 				096F42051D9CF04600600717 /* AGWaveformAudioNode.cpp in Sources */,
@@ -953,7 +953,7 @@
 				0991BA7E1D83A5140080175C /* spdsp.cpp in Sources */,
 				09F2D53C1D7EA33400F537C7 /* DelayL.cpp in Sources */,
 				09FC92471A14F55D005D14A3 /* AGTimer.mm in Sources */,
-				093395741A088849009E4802 /* AGControlNode.mm in Sources */,
+				093395741A088849009E4802 /* AGControlNode.cpp in Sources */,
 				09F3C50818A5A8C300E499AF /* Stk.cpp in Sources */,
 				09817F3919F87CC7000E9FB3 /* GeoGenerator.cpp in Sources */,
 				093395711A088612009E4802 /* AGArrayNode.mm in Sources */,
@@ -973,7 +973,7 @@
 				098740A017BA2AB90098511A /* mo_audio.mm in Sources */,
 				098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */,
 				098740AA17BB99DE0098511A /* TexFont.mm in Sources */,
-				098740AD17BC377E0098511A /* AGAudioNode.mm in Sources */,
+				098740AD17BC377E0098511A /* AGAudioNode.cpp in Sources */,
 				098740B017BC527E0098511A /* ES2Render.mm in Sources */,
 				09B9626E1DDE3F1E001DCFB1 /* AGDocumentManager.mm in Sources */,
 				09AAFA2E1E5D74BE00BA59AB /* AGHostInterface.cpp in Sources */,

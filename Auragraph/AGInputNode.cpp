@@ -10,6 +10,7 @@
 #include "spstl.h"
 #include "AGStyle.h"
 #include "AGGenericShader.h"
+#include "ES2Render.h"
 
 
 //------------------------------------------------------------------------------

@@ -8,6 +8,7 @@
 
 #include "AGOutputNode.h"
 #include "AGGenericShader.h"
+#include "ES2Render.h"
 
 //------------------------------------------------------------------------------
 // ### AGOutputNode ###

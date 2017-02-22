@@ -15,6 +15,7 @@
 #include "spstl.h"
 #include "AGStyle.h"
 #include "AGControlOrientationNode.h"
+#include "ES2Render.h"
 
 //------------------------------------------------------------------------------
 // ### AGControlNode ###

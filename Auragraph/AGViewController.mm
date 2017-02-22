@@ -29,6 +29,7 @@
 #import "AGAnalytics.h"
 #import "AGUISaveLoadDialog.h"
 #import "AGPreferences.h"
+#include "ES2Render.h"
 #import "NSString+STLString.h"
 
 #import <list>

@@ -18,8 +18,7 @@
 
 #include "Geometry.h"
 #include "Animation.h"
-#include "ES2Render.h"
-#include "ShaderHelper.h"
+//#include "ES2Render.h"
 #include "Mutex.h"
 
 #include "gfx.h"

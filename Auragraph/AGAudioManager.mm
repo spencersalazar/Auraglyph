@@ -1,6 +1,6 @@
 //
 //  AGAudioManager.m
-//  Auragraph
+//  ;
 //
 //  Created by Spencer Salazar on 8/13/13.
 //  Copyright (c) 2013 Spencer Salazar. All rights reserved.
@@ -15,8 +15,6 @@
 
 #import "Mutex.h"
 #import "spstl.h"
-
-
 
 class AGAudioManagerOutputDestination : public AGAudioOutputDestination
 {
@@ -185,3 +183,41 @@ static AGAudioManager *g_audioManager;
 
 
 @end
+
+
+
+_AGAudioManager &_AGAudioManager::instance()
+{
+    static _AGAudioManager s_instance;
+    return s_instance;
+}
+
+void _AGAudioManager::addRenderer(AGAudioRenderer *renderer)
+{
+    [[AGAudioManager instance] addRenderer:renderer];
+}
+
+void _AGAudioManager::removeRenderer(AGAudioRenderer *renderer)
+{
+    [[AGAudioManager instance] removeRenderer:renderer];
+}
+
+void _AGAudioManager::addCapturer(AGAudioCapturer *capturer)
+{
+    [[AGAudioManager instance] addCapturer:capturer];
+}
+
+void _AGAudioManager::removeCapturer(AGAudioCapturer *capturer)
+{
+    [[AGAudioManager instance] removeCapturer:capturer];
+}
+
+void _AGAudioManager::addTimer(AGTimer *timer)
+{
+    [[AGAudioManager instance] addTimer:timer];
+}
+
+void _AGAudioManager::removeTimer(AGTimer *timer)
+{
+    [[AGAudioManager instance] removeTimer:timer];
+}

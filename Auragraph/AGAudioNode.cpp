@@ -6,21 +6,22 @@
 //  Copyright (c) 2013 Spencer Salazar. All rights reserved.
 //
 
-#import "AGAudioNode.h"
-#import "AGNode.h"
-#import "SPFilter.h"
-#import "AGDef.h"
-#import "AGGenericShader.h"
-#import "AGAudioManager.h"
-#import "ADSR.h"
-#import "DelayA.h"
-#import "spstl.h"
-#import "AGAudioCapturer.h"
-#import "AGCompositeNode.h"
+#include "AGAudioNode.h"
+#include "AGNode.h"
+#include "SPFilter.h"
+#include "AGDef.h"
+#include "AGGenericShader.h"
+#include "AGAudioManager.h"
+#include "ADSR.h"
+#include "DelayA.h"
+#include "spstl.h"
+#include "AGAudioCapturer.h"
+#include "AGCompositeNode.h"
 #include "AGCompressorNode.h"
 #include "AGWaveformAudioNode.h"
 #include "AGStyle.h"
 #include "spdsp.h"
+#include "ES2Render.h"
 
 
 //------------------------------------------------------------------------------
@@ -439,7 +440,7 @@ public:
     
     void initFinal() override
     {
-        [[AGAudioManager instance] addCapturer:this];
+        _AGAudioManager::instance().addCapturer(this);
         
         m_inputSize = 0;
         m_input = NULL;
@@ -447,7 +448,7 @@ public:
     
     virtual ~AGAudioInputNode()
     {
-        [[AGAudioManager instance] removeCapturer:this];
+        _AGAudioManager::instance().removeCapturer(this);
     }
     
     
