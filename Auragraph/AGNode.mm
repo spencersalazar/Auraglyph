@@ -8,14 +8,13 @@
 
 #include "AGNode.h"
 
-#import "AGViewController.h"
-#import "AGGenericShader.h"
-#import "AGAudioNode.h"
-#import "AGControlNode.h"
+#include "AGGenericShader.h"
+#include "AGAudioNode.h"
+#include "AGControlNode.h"
 #include "sputil.h"
 #include "AGStyle.h"
 
-#import "spstl.h"
+#include "spstl.h"
 
 
 //------------------------------------------------------------------------------
@@ -168,13 +167,13 @@ void AGNode::fadeOutAndRemove()
     itmap_safe(m_inbound, ^(AGConnection *&_connection){
         AGConnection *connection = _connection;
         AGNode::disconnect(connection);
-        [[AGViewController instance] fadeOutAndDelete:connection];
+        removeFromTopLevel();
     });
     dbgprint("disconnecting outbound nodes (%li)\n", m_outbound.size());
     itmap_safe(m_outbound, ^(AGConnection *&_connection){
         AGConnection *connection = _connection;
         AGNode::disconnect(connection);
-        [[AGViewController instance] fadeOutAndDelete:connection];
+        removeFromTopLevel();
     });
 }
 
