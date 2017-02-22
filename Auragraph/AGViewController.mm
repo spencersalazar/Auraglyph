@@ -21,6 +21,7 @@
 #import "AGGenericShader.h"
 #import "AGTouchHandler.h"
 #import "AGAboutBox.h"
+#import "AGHostInterface.h"
 #import "AGDocument.h"
 #import "AGDocumentManager.h"
 #import "GeoGenerator.h"
@@ -90,6 +91,8 @@ enum InterfaceMode
     
     GLvertex3f _camera;
     slewf _cameraZ;
+    
+    AGHostInterface *_hostInterface;
     
     map<UITouch *, UITouch *> _touches;
     map<UITouch *, UITouch *> _freeTouches;
@@ -173,8 +176,16 @@ static AGViewController * g_instance = nil;
     [super viewDidLoad];
     
     g_instance = self;
-        
     _t = 0;
+    
+    _hostInterface = new AGGenericHostInterface([self](AGInteractiveObject *object){
+        [self fadeOutAndDelete:object];
+    },[self](AGInteractiveObject *object){
+        [self addTouchOutsideListener:object];
+    },[self](AGInteractiveObject *object){
+        [self removeTouchOutsideListener:object];
+    });
+    AGInteractiveObject::setHostInterface(_hostInterface);
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 

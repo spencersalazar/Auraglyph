@@ -7,12 +7,20 @@
 //
 
 #include "AGInteractiveObject.h"
-#include "AGViewController.h"
+//#include "AGViewController.h"
+#include "AGHostInterface.h"
 
 //------------------------------------------------------------------------------
 // ### AGInteractiveObject ###
 //------------------------------------------------------------------------------
 #pragma mark - AGInteractiveObject
+
+AGHostInterface *AGInteractiveObject::s_hostInterface = NULL;
+
+void AGInteractiveObject::setHostInterface(AGHostInterface *interface)
+{
+    s_hostInterface = interface;
+}
 
 AGInteractiveObject::AGInteractiveObject() { }
 
@@ -66,18 +74,20 @@ AGInteractiveObject *AGInteractiveObject::hitTest(const GLvertex3f &t)
 
 void AGInteractiveObject::removeFromTopLevel()
 {
-    [[AGViewController instance] fadeOutAndDelete:this];
+    assert(s_hostInterface);
+    s_hostInterface->fadeOutAndDelete(this);
 }
 
 void AGInteractiveObject::addTouchOutsideListener(AGInteractiveObject *listener)
 {
-    AGViewController *viewController = [AGViewController instance];
-    [viewController addTouchOutsideListener:listener];
+    assert(s_hostInterface);
+    s_hostInterface->addTouchOutsideListener(listener);
 }
 
 void AGInteractiveObject::removeTouchOutsideListener(AGInteractiveObject *listener)
 {
-    [[AGViewController instance] removeTouchOutsideListener:listener];
+    assert(s_hostInterface);
+    s_hostInterface->removeTouchOutsideListener(listener);
 }
 
 

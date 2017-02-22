@@ -7,7 +7,6 @@
 //
 
 #include "AGRenderObject.h"
-#include "AGViewController.h"
 #include "AGGenericShader.h"
 
 #define DEBUG_BOUNDS 0

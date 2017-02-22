@@ -20,6 +20,8 @@ typedef uint64_t TouchID;
 typedef uint32_t TouchID;
 #endif
 
+class AGHostInterface;
+
 //------------------------------------------------------------------------------
 // ### AGTouchInfo ###
 // Class representing a single touch.
@@ -86,8 +88,12 @@ public:
     
     void removeFromTopLevel();
     
+    static void setHostInterface(AGHostInterface *);
     static void addTouchOutsideListener(AGInteractiveObject *);
     static void removeTouchOutsideListener(AGInteractiveObject *);
+    
+private:
+    static AGHostInterface *s_hostInterface;
 };
 
 
