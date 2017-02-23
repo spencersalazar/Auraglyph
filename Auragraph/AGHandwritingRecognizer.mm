@@ -321,3 +321,25 @@ static AGHandwritingRecognizer * g_instance = NULL;
 
 
 @end
+
+
+_AGHandwritingRecognizer &_AGHandwritingRecognizer::instance()
+{
+    static _AGHandwritingRecognizer s_instance;
+    return s_instance;
+}
+    
+AGHandwritingRecognizerFigure _AGHandwritingRecognizer::recognizeNumeral(const LTKTrace &trace)
+{
+    return [[AGHandwritingRecognizer instance] recognizeNumeral:trace];
+}
+
+void _AGHandwritingRecognizer::addSampleForNumeral(const LTKTraceGroup &tg, AGHandwritingRecognizerFigure num)
+{
+    [[AGHandwritingRecognizer instance] addSample:tg forNumeral:num];
+}
+    
+AGHandwritingRecognizerFigure _AGHandwritingRecognizer::recognizeShape(const LTKTrace &trace)
+{
+    return [[AGHandwritingRecognizer instance] recognizeShape:trace];
+}

@@ -9,6 +9,7 @@
 #ifndef Auragraph_AGDef_h
 #define Auragraph_AGDef_h
 
+#define LIBAG_BACKEND LIBAG_BACKEND_IOS
 
 #define SAFE_DELETE(x) if( x!=NULL ) { delete x; x = NULL; }
 #define SAFE_DELETE_ARRAY(x) if( x!=NULL ) { delete[] x; x = NULL; }
