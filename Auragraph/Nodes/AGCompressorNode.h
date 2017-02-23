@@ -90,20 +90,21 @@ public:
     public:
         string _type() const override { return "Compressor"; };
         string _name() const override { return "Compressor"; };
-        
+        string _description() const override { return "Dynamic range compressor node."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", true, true }
+                { PARAM_INPUT, "input", true, true, .doc = "Input signal. " }
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_THRESHOLD, "threshold", true, true, -20, -200, 0 },
-                { PARAM_RATIO, "ratio", true, true, 2, 1, AGFloat_Max },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1 },
+                { PARAM_THRESHOLD, "threshold", true, true, -20, -200, 0, .doc = "Compressor threshold (dB)." },
+                { PARAM_RATIO, "ratio", true, true, 2, 1, AGFloat_Max, .doc = "Compressor ratio." },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
             };
         };
         

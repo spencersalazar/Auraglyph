@@ -486,15 +486,15 @@ string AGControlSequencerNode::Manifest::_name() const { return "Sequencer"; };
 vector<AGPortInfo> AGControlSequencerNode::Manifest::_inputPortInfo() const
 {
     return {
-        { PARAM_ADVANCE, "advance", true, true },
-        { PARAM_BPM, "bpm", true, true, 120, 0, AGFloat_Max },
+        { PARAM_ADVANCE, "advance", true, true, .doc = "Triggers step to advance by one." },
+        { PARAM_BPM, "bpm", true, true, 120, 0, AGFloat_Max, .doc = "BPM of sequencer." },
     };
 };
 
 vector<AGPortInfo> AGControlSequencerNode::Manifest::_editPortInfo() const
 {
     return {
-        { PARAM_BPM, "bpm", true, true, 120, 0, AGFloat_Max },
+        { PARAM_BPM, "bpm", true, true, 120, 0, AGFloat_Max, .doc = "BPM of sequencer." },
     };
 };
 

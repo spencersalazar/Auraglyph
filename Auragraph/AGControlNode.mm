@@ -183,18 +183,19 @@ public:
     public:
         string _type() const override { return "Timer"; };
         string _name() const override { return "Timer"; };
-        
+        string _description() const override { return "Emits pulses at the specified interval."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INTERVAL, "interval", true, true },
+                { PARAM_INTERVAL, "interval", true, true, .doc = "Timer fire interval (seconds)." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_INTERVAL, "interval", true, true, 0.5, 0.001, AGFloat_Max },
+                { PARAM_INTERVAL, "interval", true, true, 0.5, 0.001, AGFloat_Max, .doc = "Timer fire interval (seconds)." },
             };
         };
         
@@ -283,18 +284,19 @@ public:
     public:
         string _type() const override { return "Add"; };
         string _name() const override { return "Add"; };
-        
+        string _description() const override { return "Adds constant value to input."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_ADD, "add", true, true },
+                { PARAM_ADD, "add", true, true, .doc = "Input control value." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_ADD, "add", true, true, 0 },
+                { PARAM_ADD, "add", true, true, 0, .doc = "Quantity to add to input." },
             };
         };
         
@@ -363,18 +365,19 @@ public:
     public:
         string _type() const override { return "Multiply"; };
         string _name() const override { return "Multiply"; };
-        
+        string _description() const override { return "Multiplies input by constant value."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_MULTIPLY, "mult", true, true },
+                { PARAM_MULTIPLY, "mult", true, true, .doc = "Input control value." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_MULTIPLY, "mult", true, true, 0 },
+                { PARAM_MULTIPLY, "mult", true, true, 0, .doc = "Quantity to multiply input by." },
             };
         };
         
@@ -442,11 +445,12 @@ public:
     public:
         string _type() const override { return "midi2freq"; };
         string _name() const override { return "midi2freq"; };
-        
+        string _description() const override { return "Converts MIDI pitch input to frequency value."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_MIDI, "midi", true, true },
+                { PARAM_MIDI, "midi", true, true, .doc = "MIDI note input control value." },
             };
         };
         

@@ -28,6 +28,7 @@
 #import "AGAnalytics.h"
 #import "AGUISaveLoadDialog.h"
 #import "AGPreferences.h"
+#import "NSString+STLString.h"
 
 #import <list>
 #import <map>
@@ -40,6 +41,9 @@ using namespace std;
 
 #define AG_DO_TRAINER 0
 #define AG_RESET_DOCUMENT 0
+
+#define AG_EXPORT_NODES 1
+#define AG_EXPORT_NODES_FILE @"nodes.json"
 
 
 // Uniform index.
@@ -223,6 +227,61 @@ static AGViewController * g_instance = nil;
     }
     
     g_instance = self;
+    
+#if AG_EXPORT_NODES
+    NSMutableArray *audioNodes = [NSMutableArray new];
+    NSMutableArray *controlNodes = [NSMutableArray new];
+    
+    auto processNodes = [](const std::vector<const AGNodeManifest *> &nodeList, NSMutableArray *nodes) {
+        for(auto node : nodeList)
+        {
+            NSMutableArray *params = [NSMutableArray new];
+            NSMutableArray *ports = [NSMutableArray new];
+            NSMutableDictionary *icon = [NSMutableDictionary new];
+            
+            for(auto param : node->editPortInfo())
+                [params addObject:@{ @"name": [NSString stringWithSTLString:param.name],
+                                     @"desc": [NSString stringWithSTLString:param.doc] }];
+            
+            for(auto port : node->inputPortInfo())
+                [ports addObject:@{ @"name": [NSString stringWithSTLString:port.name],
+                                    @"desc": [NSString stringWithSTLString:port.doc] }];
+            
+            NSMutableArray *iconGeo = [NSMutableArray new];
+            for(auto pt : node->iconGeo())
+                [iconGeo addObject:@{ @"x": @(pt.x), @"y": @(pt.y)}];
+            icon[@"geo"] = iconGeo;
+            
+            switch(node->iconGeoType())
+            {
+                case GL_LINES: icon[@"type"] = @"lines"; break;
+                case GL_LINE_STRIP: icon[@"type"] = @"line_strip"; break;
+                case GL_LINE_LOOP: icon[@"type"] = @"line_loop"; break;
+                default: assert(0);
+            }
+            
+            [nodes addObject:@{
+                               @"name": [NSString stringWithSTLString:node->type()],
+                               @"desc": [NSString stringWithSTLString:node->description()],
+                               @"icon": icon,
+                               @"params": params,
+                               @"ports": ports
+                               }];
+        }
+    };
+    
+    processNodes(AGNodeManager::audioNodeManager().nodeTypes(), audioNodes);
+    processNodes(AGNodeManager::controlNodeManager().nodeTypes(), controlNodes);
+    
+    NSDictionary *nodes = @{ @"audio": audioNodes, @"control": controlNodes };
+    NSError *error = nil;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:nodes options:NSJSONWritingPrettyPrinted error:&error];
+    NSString *documentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *nodeInfoPath = [documentPath stringByAppendingPathComponent:AG_EXPORT_NODES_FILE];
+    NSLog(@"writing node info to: %@", nodeInfoPath);
+    [jsonData writeToFile:nodeInfoPath atomically:YES];
+    
+#endif // AG_EXPORT_NODES
 }
 
 - (void)initUI

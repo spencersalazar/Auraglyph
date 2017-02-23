@@ -126,19 +126,20 @@ public:
     public:
         string _type() const override { return "Output"; };
         string _name() const override { return "Output"; };
+        string _description() const override { return "Routes audio to final destination device, such as a speaker or headphones."; };
         
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_LEFT, "left", true, false },
-                { PARAM_RIGHT, "right", true, false }
+                { PARAM_LEFT, "left", true, false, .doc = "Left output channel" },
+                { PARAM_RIGHT, "right", true, false, .doc = "Right output channel" }
             };
         }
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { AUDIO_PARAM_GAIN, "gain", false, true, 1, 0, AGFloat_Max, AGPortInfo::LOG }
+                { AUDIO_PARAM_GAIN, "gain", false, true, 1, 0, AGFloat_Max, AGPortInfo::LOG, .doc = "Output gain." }
             };
         }
         

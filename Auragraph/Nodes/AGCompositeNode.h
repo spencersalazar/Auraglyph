@@ -38,18 +38,19 @@ public:
     public:
         string _type() const override { return "Composite"; };
         string _name() const override { return "Composite"; };
-        
+        string _description() const override { return "Composite node containing a user-defined subprogram."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", true, true }
+                { PARAM_INPUT, "input", true, true, .doc = "Input signal." }
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1 }
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
             };
         };
         

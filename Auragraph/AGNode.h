@@ -76,6 +76,8 @@ struct AGPortInfo
     Editor editor;
     
     // TODO: min, max, units label, rate, etc.
+    
+    string doc;
 };
 
 struct AGNodeInfo
@@ -97,6 +99,8 @@ class AGNodeManifest
 public:
     virtual const string &type() const = 0;
     virtual const string &name() const = 0;
+    virtual const string &description() const = 0;
+    
     virtual void initialize() const = 0;
     virtual void renderIcon() const = 0;
     virtual AGNode *createNode(const GLvertex3f &pos) const = 0;
@@ -104,6 +108,9 @@ public:
     
     virtual const vector<AGPortInfo> &inputPortInfo() const = 0;
     virtual const vector<AGPortInfo> &editPortInfo() const = 0;
+    
+    virtual const vector<GLvertex3f> &iconGeo() const = 0;
+    virtual GLuint iconGeoType() const = 0;
     
     static const AGNodeManifest *defaultManifest() { return NULL; }
 };
@@ -385,6 +392,8 @@ public:
         return m_type;
     }
     
+    virtual const string &description() const override { load(); return m_description; }
+
     virtual const vector<AGPortInfo> &inputPortInfo() const override
     {
         load();
@@ -422,10 +431,14 @@ public:
         return node;
     }
     
+    const vector<GLvertex3f> &iconGeo() const override { return m_iconGeo; }
+    GLuint iconGeoType() const override { return m_iconGeoType; }
+    
     
 protected:
     virtual string _type() const = 0;
     virtual string _name() const = 0;
+    virtual string _description() const = 0;
     virtual vector<AGPortInfo> _inputPortInfo() const = 0;
     virtual vector<AGPortInfo> _editPortInfo() const = 0;
     virtual vector<GLvertex3f> _iconGeo() const = 0;
@@ -439,6 +452,7 @@ private:
             m_needsLoad = false;
             m_type = _type();
             m_name = _name();
+            m_description = _description();
             m_iconGeo = _iconGeo();
             m_iconGeoType = _iconGeoType();
             m_inputPortInfo = _inputPortInfo();
@@ -449,6 +463,7 @@ private:
     mutable bool m_needsLoad;
     mutable string m_type;
     mutable string m_name;
+    mutable string m_description;
     mutable vector<GLvertex3f> m_iconGeo;
     mutable vector<AGPortInfo> m_inputPortInfo;
     mutable vector<AGPortInfo> m_editPortInfo;

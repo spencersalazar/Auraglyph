@@ -28,6 +28,7 @@ public:
     public:
         string _type() const override;
         string _name() const override;
+        string _description() const override { return "Discrete step sequencer for control values."; };
         vector<AGPortInfo> _inputPortInfo() const override;
         vector<AGPortInfo> _editPortInfo() const override;
         vector<GLvertex3f> _iconGeo() const override;

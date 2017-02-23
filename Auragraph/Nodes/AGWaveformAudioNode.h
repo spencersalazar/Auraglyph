@@ -31,21 +31,22 @@ public:
     public:
         string _type() const override { return "Waveform"; };
         string _name() const override { return "Waveform"; };
-        
+        string _description() const override { return "User-defined waveform oscillator."; };
+
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_FREQ, "freq", true, true },
-                { AUDIO_PARAM_GAIN, "gain", true, true },
+                { PARAM_FREQ, "freq", true, true, .doc = "Oscillator frequency." },
+                { AUDIO_PARAM_GAIN, "gain", true, true, .doc = "Output gain." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1 },
-                { PARAM_FREQ, "freq", true, true, 220 },
-                { PARAM_DURATION, "dur", true, true, 1.0f/220.0f },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
+                { PARAM_FREQ, "freq", true, true, 220, .doc = "Oscillator frequency." },
+                { PARAM_DURATION, "dur", true, true, 1.0f/220.0f, .doc = "Oscillator duration or wavelength (seconds)." },
             };
         };
         

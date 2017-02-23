@@ -164,7 +164,8 @@ public:
     public:
         string _type() const override { return "Slider"; };
         string _name() const override { return "Slider"; };
-        
+        string _description() const override { return "Continuous control input slider."; };
+
         vector<AGPortInfo> _inputPortInfo() const override { return {}; };
         vector<AGPortInfo> _editPortInfo() const override { return {}; };
         
