@@ -1786,6 +1786,7 @@ public:
     public:
         string _type() const override { return "File"; };
         string _name() const override { return "File"; };
+        string _description() const override { return "Sound file player."; };
         
         vector<AGPortInfo> _inputPortInfo() const override
         {
