@@ -10,6 +10,7 @@
 
 #include "AGNode.h"
 #include "AGConnection.h"
+#include "AGControl.h"
 
 #include "spstl.h"
 #include "NSString+STLString.h"
@@ -20,6 +21,45 @@ static NSString *filenameForTitle(string title)
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
     return [[basePath stringByAppendingPathComponent:[NSString stringWithCString:title.c_str() encoding:NSUTF8StringEncoding]] stringByAppendingPathExtension:@"json"];
+}
+
+
+AGDocument::ParamValue::ParamValue(const AGParamValue &value)
+{
+    switch(value.type)
+    {
+        case AGControl::TYPE_NONE:
+            type = NONE;
+            break;
+        case AGControl::TYPE_BIT:
+            type = BIT;
+            i = value.getInt();
+            break;
+        case AGControl::TYPE_INT:
+            type = INT;
+            i = value.getInt();
+            break;
+        case AGControl::TYPE_FLOAT:
+            type = FLOAT;
+            f = value.getFloat();
+            break;
+        case AGControl::TYPE_STRING:
+            type = STRING;
+            s = value.getString();
+            break;
+        default: assert(0);
+    }
+}
+
+AGDocument::ParamValue::operator AGParamValue() const
+{
+    switch(type)
+    {
+        case INT: return AGParamValue(i);
+        case FLOAT: return AGParamValue(f);
+        case STRING: return AGParamValue(s);
+        default: assert(0);
+    }
 }
 
 

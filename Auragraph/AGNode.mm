@@ -14,6 +14,7 @@
 #import "AGControlNode.h"
 #include "sputil.h"
 #include "AGStyle.h"
+#include "AGControl.h"
 
 #import "spstl.h"
 
@@ -149,7 +150,7 @@ void AGNode::loadEditPortValues(const AGDocument::Node &docNode)
         if(docNode.params.count(name))
         {
             AGDocument::ParamValue pv = docNode.params.find(name)->second;
-            float v = pv.f;
+            AGParamValue v = pv;
             setEditPortValue(i, v);
         }
     }
@@ -552,7 +553,7 @@ AGDocument::Node AGNode::serialize()
     
     for(int i = 0; i < numEditPorts(); i++)
     {
-        float v;
+        AGParamValue v;
         getEditPortValue(i, v);
         docNode.params[editPortInfo(i).name] = AGDocument::ParamValue(v);
     }

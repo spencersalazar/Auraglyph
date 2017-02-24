@@ -539,7 +539,7 @@ void AGControlSequencerNode::initFinal()
             *j = Random::unit();
     
     // apparently Block_copy is necessary since ARC doesn't work in C++(?)
-    m_timer = AGTimer(60.0/param(PARAM_BPM), Block_copy(^(AGTimer *) {
+    m_timer = AGTimer(60.0f/param(PARAM_BPM).getFloat(), Block_copy(^(AGTimer *) {
         if(numInputsForPort(PARAM_ADVANCE) == 0)
             updateStep();
     }));
@@ -650,7 +650,7 @@ float AGControlSequencerNode::bpm()
 void AGControlSequencerNode::setBpm(float bpm)
 {
     setParam(PARAM_BPM, validateParam(PARAM_BPM, bpm));
-    m_timer.setInterval(60.0/param(PARAM_BPM));
+    m_timer.setInterval(60.0/param(PARAM_BPM).getFloat());
 }
 
 void AGControlSequencerNode::updateStep()
@@ -682,7 +682,7 @@ float AGControlSequencerNode::getStepValue(int seq, int step)
 void AGControlSequencerNode::editPortValueChanged(int paramId)
 {
     if(paramId == PARAM_BPM)
-        m_timer.setInterval(60.0/param(PARAM_BPM));
+        m_timer.setInterval(60.0/param(PARAM_BPM).getFloat());
 }
 
 AGDocument::Node AGControlSequencerNode::serialize()

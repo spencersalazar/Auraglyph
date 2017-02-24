@@ -151,7 +151,7 @@ m_lastTraceWasRecognized(true)
     {
         AGNode *node = m_node;
         
-        float v;
+        AGParamValue v;
         m_node->getEditPortValue(port, v);
         
         float y = s_radius-rowHeight*(port+2);

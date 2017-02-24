@@ -38,6 +38,9 @@ class AGNode;
 class AGUINodeEditor;
 
 
+typedef AGControl AGParamValue;
+
+
 struct AGPortInfo
 {
     int portId;
@@ -194,12 +197,12 @@ public:
     const std::list<AGConnection *> outbound() const;
     const std::list<AGConnection *> inbound() const;
     
-    void setEditPortValue(int port, float value) { m_params[editPortInfo(port).portId] = value; editPortValueChanged(editPortInfo(port).portId); }
-    void getEditPortValue(int port, float &value) const { value = m_params.at(editPortInfo(port).portId); }
-    virtual float getDefaultParamValue(int paramId) const { return editPortInfo(m_param2EditPort.at(paramId))._default; }
-    float param(int paramId) const { return m_params.at(paramId); }
-    void setParam(int paramId, float value) { m_params[paramId] = value; editPortValueChanged(paramId); }
-    float validateParam(int paramId, float value) const { return validateEditPortValue(m_param2EditPort.at(paramId), value); }
+    void setEditPortValue(int port, AGParamValue value) { m_params[editPortInfo(port).portId] = value; editPortValueChanged(editPortInfo(port).portId); }
+    void getEditPortValue(int port, AGParamValue &value) const { value = m_params.at(editPortInfo(port).portId); }
+    virtual AGParamValue getDefaultParamValue(int paramId) const { return editPortInfo(m_param2EditPort.at(paramId))._default; }
+    AGParamValue param(int paramId) const { return m_params.at(paramId); }
+    void setParam(int paramId, AGParamValue value) { m_params[paramId] = value; editPortValueChanged(paramId); }
+    float validateParam(int paramId, AGParamValue value) const { return validateEditPortValue(m_param2EditPort.at(paramId), value); }
     int numInputsForPort(int portId);
 
     /*** Subclassing note: override information as described ***/
@@ -288,7 +291,7 @@ protected:
     
     map<int, int> m_param2InputPort;
     map<int, int> m_param2EditPort;
-    map<int, float> m_params;
+    map<int, AGParamValue> m_params;
 };
 
 

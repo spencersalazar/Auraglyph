@@ -61,7 +61,7 @@ void AGControlOrientationNode::initFinal()
     m_manager = [[CMMotionManager alloc] init];
     [m_manager startDeviceMotionUpdates];
     
-    m_timer.setInterval(1.0f/param(PARAM_RATE));
+    m_timer.setInterval(1.0f/param(PARAM_RATE).getFloat());
     m_timer.setAction([this](AGTimer *timer){
         if(inbound().size() == 0)
             _pushData();
@@ -79,7 +79,7 @@ void AGControlOrientationNode::editPortValueChanged(int paramId)
     switch(paramId)
     {
         case PARAM_RATE:
-            m_timer.setInterval(1.0f/param(PARAM_RATE));
+            m_timer.setInterval(1.0f/param(PARAM_RATE).getFloat());
             break;
     }
 }

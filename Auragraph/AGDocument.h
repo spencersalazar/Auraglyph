@@ -16,6 +16,8 @@
 
 using namespace std;
 
+class AGControl;
+typedef AGControl AGParamValue;
 class AGAudioNode;
 class AGControlNode;
 class AGFreeDraw;
@@ -31,8 +33,11 @@ public:
         ParamValue(float _f) : type(FLOAT), i(0), f(_f) { }
         ParamValue(const string &_s) : type(STRING), i(0), f(0), s(_s) { }
         ParamValue(const list<float> &_fa) : type(FLOAT_ARRAY), i(0), f(0), fa(_fa) { }
+        ParamValue(const AGParamValue &value);
         
-        enum Type { INT, FLOAT, STRING, FLOAT_ARRAY };
+        operator AGParamValue() const;
+        
+        enum Type { NONE, BIT, INT, FLOAT, STRING, FLOAT_ARRAY };
         Type type;
         int i;
         float f;

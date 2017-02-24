@@ -1201,7 +1201,7 @@ public:
             float freq = freqv[i];
             float Q = qv[i];
             
-            if(freq != param(PARAM_FREQ) || Q != param(PARAM_Q))
+            if(freq != param(PARAM_FREQ).getFloat() || Q != param(PARAM_Q).getFloat())
             {
                 if(Q < 0.001) Q = 0.001;
                 if(freq < 0) freq = 0;
@@ -1847,7 +1847,7 @@ public:
             // todo: abstract filesystem API
             NSString *documentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
             NSArray *paths = [[NSFileManager defaultManager] subpathsAtPath:documentPath];
-            int fileNum = (int) floor(param(PARAM_FILE));
+            int fileNum = (int) floor(param(PARAM_FILE).getFloat());
             if(fileNum != m_fileNum)
             {
                 m_fileNum = fileNum;

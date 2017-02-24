@@ -11,6 +11,7 @@
 
 #include <string>
 #include <float.h>
+#include <sstream>
 
 using namespace std;
 
@@ -29,6 +30,7 @@ public:
     AGControl(AGBit b) : type(TYPE_BIT), vbit(b) { }
     AGControl(AGInt i) : type(TYPE_INT), vint(i) { }
     AGControl(AGFloat f) : type(TYPE_FLOAT), vfloat(f) { }
+    AGControl(const AGString &s) : type(TYPE_STRING), vstring(s) { }
 
     AGControl(const AGControl &ctl) : type(ctl.type)
     {
@@ -145,6 +147,16 @@ public:
         v = getFloat();
     }
     
+    operator AGFloat() const
+    {
+        return getFloat();
+    }
+    
+    operator double() const
+    {
+        return getFloat();
+    }
+    
     AGInt getInt() const
     {
         switch(type)
@@ -168,6 +180,43 @@ public:
     void mapTo(AGInt &v) const
     {
         v = getInt();
+    }
+    
+    operator AGInt() const
+    {
+        return getInt();
+    }
+    
+    AGString getString() const
+    {
+        switch(type)
+        {
+            case TYPE_NONE: return "";
+            case TYPE_STRING: return vstring;
+            case TYPE_BIT: return vbit ? "1" : "0";
+            case TYPE_INT:
+            {
+                stringstream str;
+                str << vint;
+                return str.str();
+            }
+            case TYPE_FLOAT:
+            {
+                stringstream str;
+                str << vfloat;
+                return str.str();
+            }
+        }
+    }
+    
+    void mapTo(AGString &v) const
+    {
+        v = getString();
+    }
+    
+    operator AGString() const
+    {
+        return getString();
     }
     
     operator bool() const
