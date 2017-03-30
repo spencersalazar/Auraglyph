@@ -52,9 +52,6 @@ public:
         
         vector<GLvertex3f> _iconGeo() const override
         {
-            int NUM_PTS = 32;
-            vector<GLvertex3f> iconGeo(NUM_PTS);
-            
             float radius = 25;
             float w = radius*1.3, h = w*0.3, t = h*0.75, rot = -M_PI*0.8f;
             GLvertex2f offset(-w/2,0);
