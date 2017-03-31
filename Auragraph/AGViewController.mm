@@ -1153,9 +1153,9 @@ static AGViewController * g_instance = nil;
         {
             _touchCaptures[touch] = touchCapture;
             if(touchCapture->renderFixed())
-                touchCapture->touchDown(AGTouchInfo(fixedPos, p, (TouchID) touch));
+                touchCapture->touchDown(AGTouchInfo(fixedPos, p, (TouchID) touch, touch));
             else
-                touchCapture->touchDown(AGTouchInfo(pos, p, (TouchID) touch));
+                touchCapture->touchDown(AGTouchInfo(pos, p, (TouchID) touch, touch));
         }
         
         // has
@@ -1200,9 +1200,9 @@ static AGViewController * g_instance = nil;
                 GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:p];
                 
                 if(touchCapture->renderFixed())
-                    touchCapture->touchMove(AGTouchInfo(fixedPos, p, (TouchID) touch));
+                    touchCapture->touchMove(AGTouchInfo(fixedPos, p, (TouchID) touch, touch));
                 else
-                    touchCapture->touchMove(AGTouchInfo(pos, p, (TouchID) touch));
+                    touchCapture->touchMove(AGTouchInfo(pos, p, (TouchID) touch, touch));
             }
         }
         else if(_touchHandlers.count(touch))
@@ -1254,9 +1254,9 @@ static AGViewController * g_instance = nil;
                 GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:p];
                 
                 if(touchCapture->renderFixed())
-                    touchCapture->touchUp(AGTouchInfo(fixedPos, p, (TouchID) touch));
+                    touchCapture->touchUp(AGTouchInfo(fixedPos, p, (TouchID) touch, touch));
                 else
-                    touchCapture->touchUp(AGTouchInfo(pos, p, (TouchID) touch));
+                    touchCapture->touchUp(AGTouchInfo(pos, p, (TouchID) touch, touch));
 
                 _touchCaptures.erase(touch);
             }
