@@ -1761,6 +1761,149 @@ private:
     constexpr static const float ONE_OVER_RAND_MAX = 1.0/4294967295.0;
 };
 
+// Andrew Piepenbrink, 7/7/2017
+//------------------------------------------------------------------------------
+// ### AGAudioEnvelopeFollowerNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioEnvelopeFollowerNode
+
+class AGAudioEnvelopeFollowerNode : public AGAudioNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_ATTACK,
+        PARAM_RELEASE,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGAudioEnvelopeFollowerNode>
+    {
+    public:
+        string _type() const override { return "EnvelopeFollower"; };
+        string _name() const override { return "EnvelopeFollower"; };
+        string _description() const override { return "Envelope follower with separate attack and release times"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_INPUT, "input", true, false, .doc = "Input signal." },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { PARAM_ATTACK, "attack", true, true, 0.01, 0.0001, 1.0, .doc = "Attack time." },
+                { PARAM_RELEASE, "release", true, true, 0.01, 0.0001, 1.0, .doc = "Release time." },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+            };
+        };
+        
+        // XXX TODO: envelope follower shape? Some combo of noise and ADSR?
+
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            //float radius_x = 0.005*AGStyle::oldGlobalScale;
+            //float radius_y = radius_x * 0.66;
+            
+//            vector<GLvertex3f> iconGeo = {
+//                { -radius_x, 0, 0 },
+//                { -radius_x, radius_y, 0 },
+//                { 0, radius_y, 0 },
+//                { 0, -radius_y, 0 },
+//                { radius_x, -radius_y, 0 },
+//                { radius_x, 0, 0 },
+//            };
+            
+            // ADSR
+//            float radius_x = 0.005*AGStyle::oldGlobalScale;
+//            float radius_y = radius_x * 0.66;
+//            
+//            // ADSR shape
+//            vector<GLvertex3f> iconGeo = {
+//                { -radius_x, -radius_y, 0 },
+//                { -radius_x*0.75f, radius_y, 0 },
+//                { -radius_x*0.25f, 0, 0 },
+//                { radius_x*0.66f, 0, 0 },
+//                { radius_x, -radius_y, 0 },
+//            };
+
+
+            // Noise
+            
+            const float ONE_OVER_RAND_MAX = 1.0/4294967295.0; // For icon drawing
+            
+            int NUM_SAMPS = 25;
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x;
+            
+            // x icon
+            vector<GLvertex3f> iconGeo;
+            iconGeo.resize(NUM_SAMPS);
+            
+            for(int i = 0; i < NUM_SAMPS; i++)
+            {
+                float randomSample = arc4random()*ONE_OVER_RAND_MAX*2-1;
+                iconGeo[i].x = (((float)i)/(NUM_SAMPS-1)*2-1)*radius_x;
+                
+                //iconGeo[i].y = randomSample*radius_y;
+                iconGeo[i].y = randomSample*radius_y * 0.1;
+            }
+
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+    };
+    
+    using AGAudioNode::AGAudioNode;
+    
+    void initFinal() override
+    {
+        m_envelope = 0;
+    }
+    
+    virtual int numOutputPorts() const override { return 1; }
+    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
+    {
+        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
+        pullInputPorts(t, nFrames);
+        
+        float *inputv = inputPortVector(PARAM_INPUT);
+        float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        float attack_coeff = exp(-1.0f/(sampleRate()*param(PARAM_ATTACK)));
+        float release_coeff = exp(-1.0f/(sampleRate()*param(PARAM_RELEASE)));
+        
+        for(int i = 0; i < nFrames; i++)
+        {
+            
+            float env_input = abs(inputv[i]);
+            
+            if(env_input > m_envelope)
+            {
+                m_envelope = attack_coeff * m_envelope + (1-attack_coeff) * env_input;
+            }
+            else
+            {
+                m_envelope = release_coeff * m_envelope + (1-release_coeff) * env_input;
+            }
+            
+            m_outputBuffer[i] = m_envelope * gainv[i];
+            
+            output[i] += m_outputBuffer[i];
+        }
+    }
+    
+private:
+    float m_envelope;
+};
+
 
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
@@ -1793,6 +1936,9 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2BPF>::ManifestBPF);
         nodeTypes.push_back(new AGAudioCompressorNode::Manifest);
 
+        // XXX new
+        nodeTypes.push_back(new AGAudioEnvelopeFollowerNode::Manifest);
+        
         nodeTypes.push_back(new AGAudioAddNode::Manifest);
         nodeTypes.push_back(new AGAudioMultiplyNode::Manifest);
         
