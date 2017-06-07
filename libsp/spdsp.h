@@ -25,4 +25,10 @@
 template<typename T>
 inline T clipunit(T x) { return x-std::floor(x); }
 
+template<typename T>
+inline bool isbad(T x) { return isnan(x) || isinf(x); }
+
+template<typename T>
+inline bool isgood(T x) { return !(isnan(x) || isinf(x)); }
+
 #endif /* spdsp_hpp */
