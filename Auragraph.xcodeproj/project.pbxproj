@@ -29,6 +29,9 @@
 		0944E8C11DCB322700EB8087 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0944E8C01DCB322700EB8087 /* libsqlite3.tbd */; };
 		0944E8C31DCB323000EB8087 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0944E8C21DCB323000EB8087 /* libz.tbd */; };
 		0944E8C61DCB325D00EB8087 /* AGAnalytics.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0944E8C41DCB325D00EB8087 /* AGAnalytics.mm */; };
+		094BA3D91EE8AB3700E62DEB /* allpass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 094BA3D11EE8AB3700E62DEB /* allpass.cpp */; };
+		094BA3DA1EE8AB3700E62DEB /* comb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 094BA3D31EE8AB3700E62DEB /* comb.cpp */; };
+		094BA3DB1EE8AB3700E62DEB /* revmodel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 094BA3D61EE8AB3700E62DEB /* revmodel.cpp */; };
 		095D12C417ACA36C0048A012 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C317ACA36C0048A012 /* UIKit.framework */; };
 		095D12C617ACA36C0048A012 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C517ACA36C0048A012 /* Foundation.framework */; };
 		095D12C817ACA36C0048A012 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C717ACA36C0048A012 /* CoreGraphics.framework */; };
@@ -170,6 +173,14 @@
 		0944E8C21DCB323000EB8087 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		0944E8C41DCB325D00EB8087 /* AGAnalytics.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGAnalytics.mm; sourceTree = "<group>"; };
 		0944E8C51DCB325D00EB8087 /* AGAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAnalytics.h; sourceTree = "<group>"; };
+		094BA3D11EE8AB3700E62DEB /* allpass.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = allpass.cpp; sourceTree = "<group>"; };
+		094BA3D21EE8AB3700E62DEB /* allpass.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = allpass.hpp; sourceTree = "<group>"; };
+		094BA3D31EE8AB3700E62DEB /* comb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = comb.cpp; sourceTree = "<group>"; };
+		094BA3D41EE8AB3700E62DEB /* comb.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = comb.hpp; sourceTree = "<group>"; };
+		094BA3D51EE8AB3700E62DEB /* denormals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = denormals.h; sourceTree = "<group>"; };
+		094BA3D61EE8AB3700E62DEB /* revmodel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = revmodel.cpp; sourceTree = "<group>"; };
+		094BA3D71EE8AB3700E62DEB /* revmodel.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = revmodel.hpp; sourceTree = "<group>"; };
+		094BA3D81EE8AB3700E62DEB /* tuning.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tuning.h; sourceTree = "<group>"; };
 		095D12C017ACA36C0048A012 /* AURAGLPH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AURAGLPH.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		095D12C317ACA36C0048A012 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		095D12C517ACA36C0048A012 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -428,6 +439,29 @@
 			);
 			name = GoogleAnalytics;
 			path = libs/GoogleAnalytics;
+			sourceTree = "<group>";
+		};
+		094BA3CF1EE8AB3700E62DEB /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				094BA3D01EE8AB3700E62DEB /* Reverb */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		094BA3D01EE8AB3700E62DEB /* Reverb */ = {
+			isa = PBXGroup;
+			children = (
+				094BA3D11EE8AB3700E62DEB /* allpass.cpp */,
+				094BA3D21EE8AB3700E62DEB /* allpass.hpp */,
+				094BA3D31EE8AB3700E62DEB /* comb.cpp */,
+				094BA3D41EE8AB3700E62DEB /* comb.hpp */,
+				094BA3D51EE8AB3700E62DEB /* denormals.h */,
+				094BA3D61EE8AB3700E62DEB /* revmodel.cpp */,
+				094BA3D71EE8AB3700E62DEB /* revmodel.hpp */,
+				094BA3D81EE8AB3700E62DEB /* tuning.h */,
+			);
+			path = Reverb;
 			sourceTree = "<group>";
 		};
 		095D12B717ACA36C0048A012 = {
@@ -745,6 +779,7 @@
 		09B674411D6D9D6500F84E09 /* Nodes */ = {
 			isa = PBXGroup;
 			children = (
+				094BA3CF1EE8AB3700E62DEB /* Audio */,
 				0933956D1A08799A009E4802 /* AGFormulaNode.h */,
 				0933956C1A08799A009E4802 /* AGFormulaNode.mm */,
 				093395701A088612009E4802 /* AGArrayNode.h */,
@@ -914,12 +949,14 @@
 				09F700B81D71046300294BDD /* Buffers.cpp in Sources */,
 				0985E5361D8C952800B536C8 /* AGInteractiveObject.mm in Sources */,
 				095D12FC17ACAA100048A012 /* Texture.mm in Sources */,
+				094BA3D91EE8AB3700E62DEB /* allpass.cpp in Sources */,
 				09E5EC7F18A36A9D00B21D97 /* SPFilter.cpp in Sources */,
 				0991BA7E1D83A5140080175C /* spdsp.cpp in Sources */,
 				09F2D53C1D7EA33400F537C7 /* DelayL.cpp in Sources */,
 				09FC92471A14F55D005D14A3 /* AGTimer.mm in Sources */,
 				093395741A088849009E4802 /* AGControlNode.mm in Sources */,
 				09F3C50818A5A8C300E499AF /* Stk.cpp in Sources */,
+				094BA3DA1EE8AB3700E62DEB /* comb.cpp in Sources */,
 				09817F3919F87CC7000E9FB3 /* GeoGenerator.cpp in Sources */,
 				093395711A088612009E4802 /* AGArrayNode.mm in Sources */,
 				0991BA7A1D839BB10080175C /* AGCompressorNode.cpp in Sources */,
@@ -928,6 +965,7 @@
 				09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */,
 				09412E0C1A2112300065598D /* NSString+STLString.mm in Sources */,
 				09B962551DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp in Sources */,
+				094BA3DB1EE8AB3700E62DEB /* revmodel.cpp in Sources */,
 				098F9B3A19EE49BA00CE2F24 /* AGRenderObject.mm in Sources */,
 				095D12FF17ACAB7B0048A012 /* ShaderHelper.mm in Sources */,
 				095E853117B358FC0065EF8E /* shaperectst.mm in Sources */,
