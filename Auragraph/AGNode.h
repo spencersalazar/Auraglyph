@@ -329,12 +329,17 @@ public:
     static const AGNodeManager &controlNodeManager();
     static const AGNodeManager &inputNodeManager();
     static const AGNodeManager &outputNodeManager();
+    static const AGNodeManager &nodeManagerForClass(AGDocument::Node::Class _class);
     
     const std::vector<const AGNodeManifest *> &nodeTypes() const;
     void renderNodeTypeIcon(const AGNodeManifest *mf) const;
     AGNode *createNodeType(const AGNodeManifest *mf, const GLvertex3f &pos) const;
     AGNode *createNodeType(const AGDocument::Node &docNode) const;
     AGNode *createNodeOfType(const string &type, const GLvertex3f &pos) const;
+    
+    
+    static const string &portNameForPortNumber(AGDocument::Node::Class _class, const string &nodeType, int portNumber);
+    static int portNumberForPortName(AGDocument::Node::Class _class, const string &nodeType, const string &portName);
     
 private:
     static AGNodeManager *s_audioNodeManager;
