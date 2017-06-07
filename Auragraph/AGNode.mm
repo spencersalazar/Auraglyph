@@ -846,5 +846,57 @@ AGNode *AGNodeManager::createNodeOfType(const string &type, const GLvertex3f &po
     return NULL;
 }
 
+const AGNodeManager &AGNodeManager::nodeManagerForClass(AGDocument::Node::Class _class)
+{
+    switch(_class)
+    {
+        case AGDocument::Node::AUDIO:
+            return audioNodeManager();
+        case AGDocument::Node::CONTROL:
+            return controlNodeManager();
+        case AGDocument::Node::INPUT:
+            return inputNodeManager();
+        case AGDocument::Node::OUTPUT:
+            return outputNodeManager();
+    }
+}
 
+const string &AGNodeManager::portNameForPortNumber(AGDocument::Node::Class _class, const string &nodeType, int portNumber)
+{
+    static const string emptyString = "";
+    
+    const AGNodeManager &mgr = nodeManagerForClass(_class);
+    
+    for(auto mf : mgr.nodeTypes())
+    {
+        if(mf->type() == nodeType)
+        {
+            if(portNumber < mf->inputPortInfo().size() && portNumber >= 0)
+                return mf->inputPortInfo()[portNumber].name;
+        }
+    }
+    
+    return emptyString;
+}
+
+int AGNodeManager::portNumberForPortName(AGDocument::Node::Class _class, const string &nodeType, const string &portName)
+{
+    const AGNodeManager &mgr = nodeManagerForClass(_class);
+    
+    for(auto mf : mgr.nodeTypes())
+    {
+        if(mf->type() == nodeType)
+        {
+            int i = 0;
+            for(auto prt : mf->inputPortInfo())
+            {
+                if(prt.name == portName)
+                    return i;
+                i++;
+            }
+        }
+    }
+    
+    return -1;
+}
 

@@ -137,7 +137,10 @@ void AGDocument::loadFromPath(const string &path)
                         else
                             c.srcPort = 0;
                         c.dstUuid = n.uuid;
-                        c.dstPort = [conn[@"dstPort"] intValue];
+                        if([conn[@"dstPort"] isKindOfClass:[NSString class]])
+                            c.dstPort = AGNodeManager::portNumberForPortName(n._class, n.type, [conn[@"dstPort"] stlString]);
+                        else
+                            c.dstPort = [conn[@"dstPort"] intValue];
                         
                         m_connections[c.uuid] = c;
                     }
@@ -156,7 +159,10 @@ void AGDocument::loadFromPath(const string &path)
                         else
                             c.srcPort = 0;
                         c.dstUuid = [conn[@"dst"] stlString];
-                        c.dstPort = [conn[@"dstPort"] intValue];
+                        if([conn[@"dstPort"] isKindOfClass:[NSString class]])
+                            c.dstPort = AGNodeManager::portNumberForPortName(n._class, n.type, [conn[@"dstPort"] stlString]);
+                        else
+                            c.dstPort = [conn[@"dstPort"] intValue];
                         
                         m_connections[c.uuid] = c;
                     }
@@ -246,7 +252,7 @@ void AGDocument::saveToPath(const std::string &path) const
             [inbound addObject:@{ @"uuid": [NSString stringWithSTLString:conn.uuid],
                                   @"src": [NSString stringWithSTLString:conn.srcUuid],
                                   @"srcPort": @(conn.srcPort),
-                                  @"dstPort": @(conn.dstPort)
+                                  @"dstPort": [NSString stringWithSTLString:AGNodeManager::portNameForPortNumber(node._class, node.type, conn.dstPort)]
                                   }];
         
         NSMutableArray *outbound = [NSMutableArray arrayWithCapacity:node.outbound.size()];
@@ -254,7 +260,7 @@ void AGDocument::saveToPath(const std::string &path) const
             [outbound addObject:@{ @"uuid": [NSString stringWithSTLString:conn.uuid],
                                    @"srcPort": @(conn.srcPort),
                                    @"dst": [NSString stringWithSTLString:conn.dstUuid],
-                                   @"dstPort": @(conn.dstPort)
+                                   @"dstPort": [NSString stringWithSTLString:AGNodeManager::portNameForPortNumber(node._class, node.type, conn.dstPort)]
                                    }];
         
         [doc setObject:@{ @"object": @"node",
