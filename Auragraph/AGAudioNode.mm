@@ -501,6 +501,7 @@ public:
     enum Param
     {
         PARAM_FREQ = AUDIO_PARAM_LAST+1,
+        PARAM_PHASE,
     };
 
     class Manifest : public AGStandardNodeManifest<AGAudioSineWaveNode>
@@ -514,7 +515,8 @@ public:
         {
             return {
                 { PARAM_FREQ, "freq", true, true, 220, 0, 0, AGPortInfo::LOG, .doc = "Oscillator frequency. " },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, 0, 0, AGPortInfo::LOG, .doc = "Output gain." }
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, 0, 0, AGPortInfo::LOG, .doc = "Output gain." },
+                { PARAM_PHASE, "phase", true, true, 1, 0, 0, AGPortInfo::LIN, .doc = "Oscillator phase." },
             };
         };
         
@@ -564,13 +566,14 @@ public:
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
         float *freqv = inputPortVector(PARAM_FREQ);
+        float *phasev = inputPortVector(PARAM_PHASE);
         
         for(int i = 0; i < nFrames; i++)
         {
             m_outputBuffer[i] = sinf(m_phase*2.0*M_PI) * gainv[i];
             output[i] += m_outputBuffer[i];
             
-            m_phase = clipunit(m_phase + freqv[i]/sampleRate());
+            m_phase = clipunit(m_phase + freqv[i]/sampleRate() + phasev[i]);
         }
     }
     
@@ -591,6 +594,7 @@ public:
     {
         PARAM_FREQ = AUDIO_PARAM_LAST+1,
         PARAM_WIDTH,
+        PARAM_PHASE,
     };
 
     class Manifest : public AGStandardNodeManifest<AGAudioSquareWaveNode>
@@ -603,9 +607,10 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_FREQ, "freq", true, true, 220, .doc = "Oscillator frequency" },
+                { PARAM_FREQ, "freq", true, true, 220, .doc = "Oscillator frequency." },
                 { PARAM_WIDTH, "width", true, true, 0.5, 0, 1, .doc = "Pulse width of wave as fraction of full wavelength." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
+                { PARAM_PHASE, "phase", true, true, 1, 0, 0, AGPortInfo::LIN, .doc = "Oscillator phase." },
             };
         };
         
@@ -657,13 +662,14 @@ public:
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
         float *freqv = inputPortVector(PARAM_FREQ);
         float *width = inputPortVector(PARAM_WIDTH);
-        
+        float *phasev = inputPortVector(PARAM_PHASE);
+
         for(int i = 0; i < nFrames; i++)
         {
             m_outputBuffer[i] = (m_phase < width[i] ? 1 : -1) * gainv[i];
             output[i] += m_outputBuffer[i];
             
-            m_phase = clipunit(m_phase + freqv[i]/sampleRate());
+            m_phase = clipunit(m_phase + freqv[i]/sampleRate() + phasev[i]);
         }
     }
     
@@ -684,6 +690,7 @@ public:
     enum Param
     {
         PARAM_FREQ = AUDIO_PARAM_LAST+1,
+        PARAM_PHASE,
     };
 
     class Manifest : public AGStandardNodeManifest<AGAudioSawtoothWaveNode>
@@ -697,7 +704,8 @@ public:
         {
             return {
                 { PARAM_FREQ, "freq", true, true, 220, .doc = "Oscillator frequency" },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
+                { PARAM_PHASE, "phase", true, true, 1, 0, 0, AGPortInfo::LIN, .doc = "Oscillator phase." },
             };
         };
         
@@ -745,13 +753,14 @@ public:
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
         float *freqv = inputPortVector(PARAM_FREQ);
+        float *phasev = inputPortVector(PARAM_PHASE);
         
         for(int i = 0; i < nFrames; i++)
         {
             m_outputBuffer[i] = ((1-m_phase)*2-1)  * gainv[i];
             output[i] += m_outputBuffer[i];
             
-            m_phase = clipunit(m_phase + freqv[i]/sampleRate());
+            m_phase = clipunit(m_phase + freqv[i]/sampleRate() + phasev[i]);
         }
     }
     
@@ -772,6 +781,7 @@ public:
     enum Param
     {
         PARAM_FREQ = AUDIO_PARAM_LAST+1,
+        PARAM_PHASE,
     };
 
     class Manifest : public AGStandardNodeManifest<AGAudioTriangleWaveNode>
@@ -785,7 +795,8 @@ public:
         {
             return {
                 { PARAM_FREQ, "freq", true, true, 220, .doc = "Oscillator frequency" },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
+                { PARAM_PHASE, "phase", true, true, 1, 0, 0, AGPortInfo::LIN, .doc = "Oscillator phase." },
             };
         };
         
@@ -833,6 +844,7 @@ public:
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
         float *freqv = inputPortVector(PARAM_FREQ);
+        float *phasev = inputPortVector(PARAM_PHASE);
         
         for(int i = 0; i < nFrames; i++)
         {
@@ -842,7 +854,7 @@ public:
                 m_outputBuffer[i] = ((m_phase-0.5)*4-1) * gainv[i];
             output[i] += m_outputBuffer[i];
             
-            m_phase = clipunit(m_phase + freqv[i]/sampleRate());
+            m_phase = clipunit(m_phase + freqv[i]/sampleRate() + phasev[i]);
         }
     }
     
