@@ -1018,6 +1018,8 @@ public:
         
         float *triggerv = inputPortVector(PARAM_TRIGGER);
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        // use constant (1.0) virtual input if no actual inputs are present
+        float virtual_input = numInputsForPort(PARAM_INPUT, AGRate::RATE_AUDIO) == 0 ? 1.0f : 0.0f;
         float *inputv = inputPortVector(PARAM_INPUT);
         
         for(int i = 0; i < nFrames; i++)
@@ -1026,12 +1028,12 @@ public:
             {
                 if(triggerv[i] > 0)
                     m_adsr.keyOn();
-                    else
-                        m_adsr.keyOff();
-                        }
+                else
+                    m_adsr.keyOff();
+            }
             m_prevTrigger = triggerv[i];
             
-            m_outputBuffer[i] = m_adsr.tick() * inputv[i] * gainv[i];
+            m_outputBuffer[i] = m_adsr.tick() * (inputv[i] + virtual_input) * gainv[i];
             output[i] += m_outputBuffer[i];
         }
     }
