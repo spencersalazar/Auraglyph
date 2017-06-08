@@ -495,6 +495,11 @@ AGControl AGNode::lastControlOutput(int port)
     return c;
 }
 
+void AGNode::clearControl(int paramId)
+{
+    m_controlPortBuffer[m_param2InputPort[paramId]] = AGControl();
+}
+
 void AGNode::receiveControl_internal(int port, const AGControl &control)
 {
     m_controlPortBuffer[port] = AGControl(control);
@@ -525,13 +530,13 @@ void AGNode::finalPortValue(float &value, int portId, int sample) const
         value = m_params.at(portId);
 }
 
-int AGNode::numInputsForPort(int portId)
+int AGNode::numInputsForPort(int paramId, AGRate rate)
 {
-    int portNum = m_param2InputPort[portId];
+    int portNum = m_param2InputPort[paramId];
     int numInputs = 0;
     for(auto conn : m_inbound)
     {
-        if(conn->dstPort() == portNum)
+        if(conn->dstPort() == portNum && (rate == AGRate::RATE_NULL || conn->rate() == rate))
             numInputs++;
     }
     

@@ -133,6 +133,7 @@ public:
     void pushControl(int port, const AGControl &control);
     virtual void receiveControl(int port, const AGControl &control) { }
     AGControl lastControlOutput(int port);
+    void clearControl(int paramId);
 
     enum HitTestResult
     {
@@ -183,7 +184,7 @@ public:
     float param(int paramId) const { return m_params.at(paramId); }
     void setParam(int paramId, float value) { m_params[paramId] = value; editPortValueChanged(paramId); }
     float validateParam(int paramId, float value) const { return validateEditPortValue(m_param2EditPort.at(paramId), value); }
-    int numInputsForPort(int portId);
+    int numInputsForPort(int paramId, AGRate rate = RATE_NULL);
 
     /*** Subclassing note: override information as described ***/
     
