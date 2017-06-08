@@ -558,6 +558,18 @@ public:
     
     virtual int numOutputPorts() const override { return 1; }
     
+    void receiveControl(int port, const AGControl &control) override
+    {
+        if(port == m_param2InputPort[PARAM_PHASE])
+        {
+            // hard-sync phase to control input
+            m_phase = control.getFloat();
+            // clear control
+            // prevents upsampling to renderAudio phase vector
+            clearControl(PARAM_PHASE);
+        }
+    }
+    
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
@@ -566,6 +578,8 @@ public:
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
         float *freqv = inputPortVector(PARAM_FREQ);
+        // if there are audio-rate phase inputs, then ignore m_phase value
+        float phase_ctl = numInputsForPort(PARAM_PHASE, AGRate::RATE_AUDIO) > 0 ? 0.0f : 1.0f;
         float *phasev = inputPortVector(PARAM_PHASE);
         
         for(int i = 0; i < nFrames; i++)
@@ -573,7 +587,7 @@ public:
             m_outputBuffer[i] = sinf(m_phase*2.0*M_PI) * gainv[i];
             output[i] += m_outputBuffer[i];
             
-            m_phase = clipunit(m_phase + freqv[i]/sampleRate() + phasev[i]);
+            m_phase = clipunit(m_phase*phase_ctl + freqv[i]/sampleRate() + phasev[i]);
         }
     }
     
@@ -653,6 +667,18 @@ public:
     
     virtual int numOutputPorts() const override { return 1; }
     
+    void receiveControl(int port, const AGControl &control) override
+    {
+        if(port == m_param2InputPort[PARAM_PHASE])
+        {
+            // hard-sync phase to control input
+            m_phase = control.getFloat();
+            // clear control
+            // prevents upsampling to renderAudio phase vector
+            clearControl(PARAM_PHASE);
+        }
+    }
+
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
@@ -662,6 +688,8 @@ public:
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
         float *freqv = inputPortVector(PARAM_FREQ);
         float *width = inputPortVector(PARAM_WIDTH);
+        // if there are audio-rate phase inputs, then ignore m_phase value
+        float phase_ctl = numInputsForPort(PARAM_PHASE, AGRate::RATE_AUDIO) > 0 ? 0.0f : 1.0f;
         float *phasev = inputPortVector(PARAM_PHASE);
 
         for(int i = 0; i < nFrames; i++)
@@ -669,7 +697,7 @@ public:
             m_outputBuffer[i] = (m_phase < width[i] ? 1 : -1) * gainv[i];
             output[i] += m_outputBuffer[i];
             
-            m_phase = clipunit(m_phase + freqv[i]/sampleRate() + phasev[i]);
+            m_phase = clipunit(m_phase*phase_ctl + freqv[i]/sampleRate() + phasev[i]);
         }
     }
     
@@ -745,6 +773,18 @@ public:
     
     virtual int numOutputPorts() const override { return 1; }
     
+    void receiveControl(int port, const AGControl &control) override
+    {
+        if(port == m_param2InputPort[PARAM_PHASE])
+        {
+            // hard-sync phase to control input
+            m_phase = control.getFloat();
+            // clear control
+            // prevents upsampling to renderAudio phase vector
+            clearControl(PARAM_PHASE);
+        }
+    }
+
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
@@ -753,6 +793,8 @@ public:
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
         float *freqv = inputPortVector(PARAM_FREQ);
+        // if there are audio-rate phase inputs, then ignore m_phase value
+        float phase_ctl = numInputsForPort(PARAM_PHASE, AGRate::RATE_AUDIO) > 0 ? 0.0f : 1.0f;
         float *phasev = inputPortVector(PARAM_PHASE);
         
         for(int i = 0; i < nFrames; i++)
@@ -760,7 +802,7 @@ public:
             m_outputBuffer[i] = ((1-m_phase)*2-1)  * gainv[i];
             output[i] += m_outputBuffer[i];
             
-            m_phase = clipunit(m_phase + freqv[i]/sampleRate() + phasev[i]);
+            m_phase = clipunit(m_phase*phase_ctl + freqv[i]/sampleRate() + phasev[i]);
         }
     }
     
@@ -836,6 +878,18 @@ public:
 
     virtual int numOutputPorts() const override { return 1; }
     
+    void receiveControl(int port, const AGControl &control) override
+    {
+        if(port == m_param2InputPort[PARAM_PHASE])
+        {
+            // hard-sync phase to control input
+            m_phase = control.getFloat();
+            // clear control
+            // prevents upsampling to renderAudio phase vector
+            clearControl(PARAM_PHASE);
+        }
+    }
+
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
@@ -844,6 +898,8 @@ public:
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
         float *freqv = inputPortVector(PARAM_FREQ);
+        // if there are audio-rate phase inputs, then ignore m_phase value
+        float phase_ctl = numInputsForPort(PARAM_PHASE, AGRate::RATE_AUDIO) > 0 ? 0.0f : 1.0f;
         float *phasev = inputPortVector(PARAM_PHASE);
         
         for(int i = 0; i < nFrames; i++)
@@ -854,7 +910,7 @@ public:
                 m_outputBuffer[i] = ((m_phase-0.5)*4-1) * gainv[i];
             output[i] += m_outputBuffer[i];
             
-            m_phase = clipunit(m_phase + freqv[i]/sampleRate() + phasev[i]);
+            m_phase = clipunit(m_phase*phase_ctl + freqv[i]/sampleRate() + phasev[i]);
         }
     }
     
