@@ -23,7 +23,8 @@ public:
     {
         PARAM_INPUT = AUDIO_PARAM_LAST+1,
         PARAM_FREQ,
-        PARAM_DURATION
+        PARAM_DURATION,
+        PARAM_PHASE,
     };
     
     class Manifest : public AGStandardNodeManifest<AGAudioWaveformNode>
@@ -38,6 +39,7 @@ public:
             return {
                 { PARAM_FREQ, "freq", true, true, .doc = "Oscillator frequency." },
                 { AUDIO_PARAM_GAIN, "gain", true, true, .doc = "Output gain." },
+                { PARAM_PHASE, "phase", true, true, .doc = "Oscillator phase." },
             };
         };
         
@@ -80,6 +82,7 @@ public:
     
     void initFinal() override;
     void deserializeFinal(const AGDocument::Node &docNode) override;
+    void receiveControl(int port, const AGControl &control) override;
     void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override;
     
     void _renderIcon() override;
