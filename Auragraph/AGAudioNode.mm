@@ -2095,6 +2095,156 @@ private:
     float m_envelope;
 };
 
+// Andrew Piepenbrink, 7/7/2017
+//------------------------------------------------------------------------------
+// ### AGAudioStateVariableFilterNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioStateVariableFilterNode
+
+class AGAudioStateVariableFilterNode : public AGAudioNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_CUTOFF,
+        PARAM_Q,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGAudioStateVariableFilterNode>
+    {
+    public:
+        string _type() const override { return "StateVariableFilter"; };
+        string _name() const override { return "StateVariableFilter"; };
+        string _description() const override { return "State variable filter"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_INPUT, "input", true, false, .doc = "Input signal." },
+                { PARAM_CUTOFF, "cutoff", true, true, 220.0, 0.0001, 7000.0, .doc = "Filter cutoff." },
+                { PARAM_Q, "Q", true, true, 1.0, 0.0001, 100.0, .doc = "Filter Q." },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { PARAM_CUTOFF, "cutoff", true, true, 220.0, 0.0001, 7000.0, .doc = "Filter cutoff." },
+                { PARAM_Q, "Q", true, true, 1.0, 0.0001, 100.0, .doc = "Filter Q." },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+            };
+        };
+        
+        // XXX TODO: icon shape
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            //float radius_x = 0.005*AGStyle::oldGlobalScale;
+            //float radius_y = radius_x * 0.66;
+            
+            //            vector<GLvertex3f> iconGeo = {
+            //                { -radius_x, 0, 0 },
+            //                { -radius_x, radius_y, 0 },
+            //                { 0, radius_y, 0 },
+            //                { 0, -radius_y, 0 },
+            //                { radius_x, -radius_y, 0 },
+            //                { radius_x, 0, 0 },
+            //            };
+            
+            // ADSR
+            //            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            //            float radius_y = radius_x * 0.66;
+            //
+            //            // ADSR shape
+            //            vector<GLvertex3f> iconGeo = {
+            //                { -radius_x, -radius_y, 0 },
+            //                { -radius_x*0.75f, radius_y, 0 },
+            //                { -radius_x*0.25f, 0, 0 },
+            //                { radius_x*0.66f, 0, 0 },
+            //                { radius_x, -radius_y, 0 },
+            //            };
+            
+            
+            // Noise
+            
+            const float ONE_OVER_RAND_MAX = 1.0/4294967295.0; // For icon drawing
+            
+            int NUM_SAMPS = 25;
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x;
+            
+            // x icon
+            vector<GLvertex3f> iconGeo;
+            iconGeo.resize(NUM_SAMPS);
+            
+            for(int i = 0; i < NUM_SAMPS; i++)
+            {
+                float randomSample = arc4random()*ONE_OVER_RAND_MAX*2-1;
+                iconGeo[i].y = (((float)i)/(NUM_SAMPS-1)*2-1)*radius_x;
+                
+                //iconGeo[i].y = randomSample*radius_y;
+                iconGeo[i].x = randomSample*radius_y * 0.1;
+            }
+            
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+    };
+    
+    using AGAudioNode::AGAudioNode;
+    
+    void initFinal() override
+    {
+        d1 = d2 = 0;
+    }
+    
+    virtual int numOutputPorts() const override { return 1; }
+    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
+    {
+        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
+        pullInputPorts(t, nFrames);
+        
+        float *inputv = inputPortVector(PARAM_INPUT);
+        float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        float *cutoffv = inputPortVector(PARAM_CUTOFF);
+        float *qv = inputPortVector(PARAM_Q);
+        
+        for(int i = 0; i < nFrames; i++)
+        {
+            
+            // TODO: only recompute coeffs if params have changed
+            float cutoff_coeff = 2 * sin(M_PI * cutoffv[i] / sampleRate());
+            float q_coeff = 1.0 / qv[i];
+            
+            float lpf = d2 + cutoff_coeff * d1;
+            float hpf = inputv[i] - lpf - q_coeff * d1;
+            float bpf = cutoff_coeff * hpf + d1;
+            float brf = hpf + lpf;
+            
+            if (isbad(lpf) || isbad(hpf) || isbad(bpf) || isbad(brf))
+                lpf = hpf = bpf = brf = 0;
+            
+            d1 = bpf;
+            d2 = lpf;
+            
+            m_outputBuffer[i] = lpf * gainv[i];
+            
+            output[i] += m_outputBuffer[i];
+        }
+    }
+    
+private:
+    float d1;
+    float d2;
+};
+
 
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
@@ -2127,7 +2277,6 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2BPF>::ManifestBPF);
         nodeTypes.push_back(new AGAudioCompressorNode::Manifest);
 
-        // XXX new
         nodeTypes.push_back(new AGAudioEnvelopeFollowerNode::Manifest);
         
         nodeTypes.push_back(new AGAudioAddNode::Manifest);
@@ -2137,6 +2286,9 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioOutputNode::Manifest);
         
         nodeTypes.push_back(new AGAudioCompositeNode::Manifest);
+        
+        // XXX new
+        nodeTypes.push_back(new AGAudioStateVariableFilterNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();
