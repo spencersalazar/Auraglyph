@@ -117,6 +117,15 @@ void AGNode::_initBase()
         m_param2EditPort[info.portId] = i;
         m_params[info.portId] = getDefaultParamValue(info.portId);
     }
+    
+    // XXX
+    int numOutput = numOutputPorts();
+    for(int i = 0; i < numOutput; i++)
+    {
+        const AGPortInfo &info = outputPortInfo(i);
+        m_param2OutputPort[info.portId] = i;
+    }
+
 }
 
 void AGNode::init()
@@ -538,6 +547,21 @@ int AGNode::numInputsForPort(int portId)
     return numInputs;
 }
 
+// XXX
+int AGNode::numOutputsForPort(int portId)
+{
+    int portNum = m_param2OutputPort[portId];
+    int numOutputs = 0;
+    for(auto conn : m_outbound)
+    {
+        if(conn->srcPort() == portNum)
+            numOutputs++;
+    }
+    
+    return numOutputs;
+}
+
+
 AGDocument::Node AGNode::serialize()
 {
     assert(type().length());
@@ -861,6 +885,7 @@ const AGNodeManager &AGNodeManager::nodeManagerForClass(AGDocument::Node::Class 
     }
 }
 
+// XXX TODO: do we need to make this handle (multiple) output ports?
 const string &AGNodeManager::portNameForPortNumber(AGDocument::Node::Class _class, const string &nodeType, int portNumber)
 {
     static const string emptyString = "";
@@ -879,6 +904,7 @@ const string &AGNodeManager::portNameForPortNumber(AGDocument::Node::Class _clas
     return emptyString;
 }
 
+// XXX TODO: do we need to make this handle (multiple) output ports?
 int AGNodeManager::portNumberForPortName(AGDocument::Node::Class _class, const string &nodeType, const string &portName)
 {
     const AGNodeManager &mgr = nodeManagerForClass(_class);

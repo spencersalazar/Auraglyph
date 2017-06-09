@@ -43,6 +43,8 @@ public:
         
         vector<AGPortInfo> _editPortInfo() const override { return { }; };
         
+        vector<AGPortInfo> _outputPortInfo() const override { return { }; };
+        
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius = 38;

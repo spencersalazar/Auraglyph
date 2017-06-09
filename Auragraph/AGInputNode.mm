@@ -168,7 +168,8 @@ public:
 
         vector<AGPortInfo> _inputPortInfo() const override { return {}; };
         vector<AGPortInfo> _editPortInfo() const override { return {}; };
-        
+        vector<AGPortInfo> _outputPortInfo() const override { return {}; }; // XXX
+
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius = 0.002*AGStyle::oldGlobalScale;

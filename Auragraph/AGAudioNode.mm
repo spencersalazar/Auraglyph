@@ -69,8 +69,17 @@ void AGAudioNode::init()
     m_portRadius = 0.01*0.2*AGStyle::oldGlobalScale;
     
     m_lastTime = -1;
-    m_outputBuffer.resize(bufferSize());
-    m_outputBuffer.clear();
+    
+    //m_outputBuffer.resize(bufferSize());
+    //m_outputBuffer.clear();
+    // XXX this now handles vectors of output buffers
+    m_outputBuffer.clear(); //
+    for(int i = 0; i < numOutputPorts(); i++)
+    {
+        m_outputBuffer.push_back(*new Buffer<float>(bufferSize()));
+        m_outputBuffer.at(i).clear();
+    }
+    
     m_inputPortBuffer = NULL;
     
     allocatePortBuffers();
@@ -86,8 +95,16 @@ void AGAudioNode::init(const AGDocument::Node &docNode)
     m_portRadius = 0.01*0.2*AGStyle::oldGlobalScale;
     
     m_lastTime = -1;
-    m_outputBuffer.resize(bufferSize());
-    m_outputBuffer.clear();
+
+    //m_outputBuffer.resize(bufferSize());
+    //m_outputBuffer.clear();
+    // XXX this now handles vectors of output buffers
+    m_outputBuffer.clear(); //
+    for(int i = 0; i < numOutputPorts(); i++)
+    {
+        m_outputBuffer.push_back(*new Buffer<float>(bufferSize()));
+        m_outputBuffer.at(i).clear();
+    }
     m_inputPortBuffer = NULL;
     
     allocatePortBuffers();
@@ -109,6 +126,9 @@ AGAudioNode::~AGAudioNode()
         delete[] m_inputPortBuffer;
         m_inputPortBuffer = NULL;
     }
+    
+    // XXX TODO: we need to make this delete our vectors of output buffers **IF** we choose to add an 'm_outputPortBuffer', which seems redundant to me
+    // So should we be destroying (though not through 'delete') our output vector another way?
 }
 
 //void AGAudioNode::renderAudio(float *input, float *output, int nFrames)
@@ -204,11 +224,26 @@ GLvertex3f AGAudioNode::relativePositionForInputPort(int port) const
     return GLvertex3f(-m_radius*cosf(theta), m_radius*sinf(theta), 0);
 }
 
+// XXX: now handles multiple outs
 GLvertex3f AGAudioNode::relativePositionForOutputPort(int port) const
 {
-    return GLvertex3f(m_radius, 0, 0);
+    //return GLvertex3f(m_radius, 0, 0); // XXX old style, fixed position for only one output
+    
+    int numOut = numOutputPorts();
+    // compute placement to pack ports side by side on left side
+    // thetaI - inner angle of the big circle traversed by 1/2 of the port
+    float thetaI = acosf((2*m_radius*m_radius - s_portRadius*s_portRadius) / (2*m_radius*m_radius));
+    // thetaStart - position of first port
+    float thetaStart = (numOut-1)*thetaI;
+    // theta - position of this port
+    float theta = thetaStart - 2*thetaI*port;
+    // flip horizontally to place on left side
+    return GLvertex3f(m_radius*cosf(theta), m_radius*sinf(theta), 0);
 }
 
+// XXX TODO: should we make this handle our output buffers too? They're already being initialized in init(),
+// which is the only caller of this function; so is it init() that has bad cohesion, and all of the buffer
+// initialization **SHOULD** live in here?
 void AGAudioNode::allocatePortBuffers()
 {
     if(numInputPorts() > 0)
@@ -272,7 +307,10 @@ void AGAudioNode::pullInputPorts(sampletime t, int nFrames)
             AGAudioNode *node = dynamic_cast<AGAudioNode *>(rndrr);
             if(node)
                 dbgprint_off("rendering '%s'\n", node->title().c_str());
-            rndrr->renderAudio(t, NULL, m_inputPortBuffer[conn->dstPort()], nFrames, 0, 1);
+            
+            // XXX
+            //rndrr->renderAudio(t, NULL, m_inputPortBuffer[conn->dstPort()], nFrames, 0, 1);
+            rndrr->renderAudio(t, NULL, m_inputPortBuffer[conn->dstPort()], nFrames, conn->srcPort(), conn->src()->numOutputPorts());
         }
     }
     
@@ -295,7 +333,10 @@ void AGAudioNode::pullPortInput(int portId, int num, sampletime t, float *output
                 if(conn->rate() == RATE_AUDIO)
                 {
                     AGAudioRenderer *rndrr = dynamic_cast<AGAudioRenderer *>(conn->src());
-                    rndrr->renderAudio(t, NULL, output, nFrames, 0, 1);
+                    
+                    // XXX
+                    //rndrr->renderAudio(t, NULL, output, nFrames, 0, 1);
+                    rndrr->renderAudio(t, NULL, output, nFrames, conn->srcPort(), conn->src()->numOutputPorts());
                 }
                 else
                 {
@@ -324,15 +365,18 @@ void AGAudioNode::pullPortInput(int portId, int num, sampletime t, float *output
 //        value += m_inputPortBuffer[index][sample];
 //}
 
-void AGAudioNode::renderLast(float *output, int nFrames)
+// XXX: added channel parameter
+void AGAudioNode::renderLast(float *output, int nFrames, int chanNum)
 {
-    for(int i = 0; i < nFrames; i++) output[i] += m_outputBuffer[i];
+    for(int i = 0; i < nFrames; i++) output[i] += m_outputBuffer[chanNum][i];
 }
 
 float *AGAudioNode::inputPortVector(int paramId)
 {
     return m_inputPortBuffer[m_param2InputPort.at(paramId)];
 }
+
+// XXX TODO: do we need an equivalent 'outputPortVector' function like the above?
 
 //------------------------------------------------------------------------------
 // ### AGAudioOutputNode ###
@@ -377,7 +421,10 @@ void AGAudioOutputNode::renderAudio(sampletime t, float *input, float *output, i
         if(conn->rate() == RATE_AUDIO)
         {
             assert(conn->dstPort() == 0 || conn->dstPort() == 1);
-            ((AGAudioNode *)conn->src())->renderAudio(t, input, m_inputBuffer[conn->dstPort()], nFrames, 0, 1);
+            
+            // XXX
+            //((AGAudioNode *)conn->src())->renderAudio(t, input, m_inputBuffer[conn->dstPort()], nFrames, 0, 1);
+            ((AGAudioNode *)conn->src())->renderAudio(t, input, m_inputBuffer[conn->dstPort()], nFrames, conn->srcPort(), conn->src()->numOutputPorts());
         }
     }
     
@@ -401,6 +448,12 @@ class AGAudioInputNode : public AGAudioNode, public AGAudioCapturer
 {
 public:
     
+    enum Param
+    {
+        PARAM_OUTPUT = AUDIO_PARAM_LAST+1,
+    };
+
+    
     class Manifest : public AGStandardNodeManifest<AGAudioInputNode>
     {
     public:
@@ -414,6 +467,14 @@ public:
         {
             return {
                 { AUDIO_PARAM_GAIN, "gain", false, true, 1, 0, 0, AGPortInfo::LOG, .doc = "Output gain." }
+            };
+        }
+        
+        // XXX
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
             };
         }
         
@@ -451,7 +512,7 @@ public:
     }
     
     
-    int numOutputPorts() const override { return 1; }
+    int numOutputPorts() const override { return 1; } // XXX TODO: maybe change this to a manifest-based thingy?
     int numInputPorts() const override { return 0; }
     
     void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
@@ -464,7 +525,7 @@ public:
         
         if(m_inputSize && m_input)
         {
-            float *_outputBuffer = m_outputBuffer.buffer;
+            float *_outputBuffer = m_outputBuffer[chanNum].buffer;
             float *_input = m_input;
             int mn = min(nFrames, m_inputSize);
             for(int i = 0; i < mn; i++)
@@ -500,7 +561,8 @@ public:
     
     enum Param
     {
-        PARAM_FREQ = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT = AUDIO_PARAM_LAST+1,
+        PARAM_FREQ,
         PARAM_PHASE,
     };
 
@@ -527,7 +589,15 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, 0, 0, AGPortInfo::LOG, .doc = "Output gain." }
             };
         };
-        
+
+        // XXX
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+
         vector<GLvertex3f> _iconGeo() const override
         {
             int NUM_PTS = 32;
@@ -556,7 +626,7 @@ public:
         m_phase = 0;
     }
     
-    virtual int numOutputPorts() const override { return 1; }
+    //virtual int numOutputPorts() const override { return 1; }
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
@@ -570,8 +640,8 @@ public:
         
         for(int i = 0; i < nFrames; i++)
         {
-            m_outputBuffer[i] = sinf(m_phase*2.0*M_PI) * gainv[i];
-            output[i] += m_outputBuffer[i];
+            m_outputBuffer[chanNum][i] = sinf(m_phase*2.0*M_PI) * gainv[i];
+            output[i] += m_outputBuffer[chanNum][i];
             
             m_phase = clipunit(m_phase + freqv[i]/sampleRate() + phasev[i]);
         }
@@ -592,7 +662,8 @@ public:
     
     enum Param
     {
-        PARAM_FREQ = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT = AUDIO_PARAM_LAST+1,
+        PARAM_FREQ,
         PARAM_WIDTH,
         PARAM_PHASE,
     };
@@ -622,6 +693,14 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
             };
         };
+
+        // XXX
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
         
         vector<GLvertex3f> _iconGeo() const override
         {
@@ -666,8 +745,8 @@ public:
 
         for(int i = 0; i < nFrames; i++)
         {
-            m_outputBuffer[i] = (m_phase < width[i] ? 1 : -1) * gainv[i];
-            output[i] += m_outputBuffer[i];
+            m_outputBuffer[chanNum][i] = (m_phase < width[i] ? 1 : -1) * gainv[i];
+            output[i] += m_outputBuffer[chanNum][i];
             
             m_phase = clipunit(m_phase + freqv[i]/sampleRate() + phasev[i]);
         }
@@ -689,7 +768,8 @@ public:
     
     enum Param
     {
-        PARAM_FREQ = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT = AUDIO_PARAM_LAST+1,
+        PARAM_FREQ,
         PARAM_PHASE,
     };
 
@@ -716,6 +796,14 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
             };
         };
+        
+        // XXX
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
         
         vector<GLvertex3f> _iconGeo() const override
         {
@@ -757,8 +845,8 @@ public:
         
         for(int i = 0; i < nFrames; i++)
         {
-            m_outputBuffer[i] = ((1-m_phase)*2-1)  * gainv[i];
-            output[i] += m_outputBuffer[i];
+            m_outputBuffer[chanNum][i] = ((1-m_phase)*2-1)  * gainv[i];
+            output[i] += m_outputBuffer[chanNum][i];
             
             m_phase = clipunit(m_phase + freqv[i]/sampleRate() + phasev[i]);
         }
@@ -780,7 +868,8 @@ public:
     
     enum Param
     {
-        PARAM_FREQ = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT = AUDIO_PARAM_LAST+1,
+        PARAM_FREQ,
         PARAM_PHASE,
     };
 
@@ -807,6 +896,14 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
             };
         };
+
+        // XXX
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
         
         vector<GLvertex3f> _iconGeo() const override
         {
@@ -849,10 +946,10 @@ public:
         for(int i = 0; i < nFrames; i++)
         {
             if(m_phase < 0.5)
-                m_outputBuffer[i] = ((1-m_phase*2)*2-1) * gainv[i];
+                m_outputBuffer[chanNum][i] = ((1-m_phase*2)*2-1) * gainv[i];
             else
-                m_outputBuffer[i] = ((m_phase-0.5)*4-1) * gainv[i];
-            output[i] += m_outputBuffer[i];
+                m_outputBuffer[chanNum][i] = ((m_phase-0.5)*4-1) * gainv[i];
+            output[i] += m_outputBuffer[chanNum][i];
             
             m_phase = clipunit(m_phase + freqv[i]/sampleRate() + phasev[i]);
         }
@@ -875,6 +972,7 @@ public:
     enum Param
     {
         PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT,
         PARAM_TRIGGER,
         PARAM_ATTACK,
         PARAM_DECAY,
@@ -909,6 +1007,14 @@ public:
             };
         };
         
+        // XXX
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius_x = 0.005*AGStyle::oldGlobalScale;
@@ -975,8 +1081,8 @@ public:
                         }
             m_prevTrigger = triggerv[i];
             
-            m_outputBuffer[i] = m_adsr.tick() * inputv[i] * gainv[i];
-            output[i] += m_outputBuffer[i];
+            m_outputBuffer[chanNum][i] = m_adsr.tick() * inputv[i] * gainv[i];
+            output[i] += m_outputBuffer[chanNum][i];
         }
     }
 
@@ -1015,6 +1121,7 @@ public:
     enum Param
     {
         PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT,
         PARAM_FREQ,
         PARAM_Q,
     };
@@ -1045,6 +1152,14 @@ public:
             };
         };
         
+        // XXX
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius_x = 0.005*AGStyle::oldGlobalScale;
@@ -1090,7 +1205,15 @@ public:
                 { PARAM_Q, "Q", true, true, 1, 0.001, 1000, .doc = "Filter Q (bandwidth)." },
             };
         };
-        
+
+        // XXX
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius_x = 0.005*AGStyle::oldGlobalScale;
@@ -1136,6 +1259,14 @@ public:
                 { PARAM_Q, "Q", true, true, 1, 0.001, 1000, .doc = "Filter Q (bandwidth)." },
             };
         };
+
+        // XXX
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
         
         vector<GLvertex3f> _iconGeo() const override
         {
@@ -1226,8 +1357,8 @@ public:
                 m_filter.clear();
             }
             
-            m_outputBuffer[i] = samp;
-            output[i] += m_outputBuffer[i];
+            m_outputBuffer[chanNum][i] = samp;
+            output[i] += m_outputBuffer[chanNum][i];
         }
     }
 
@@ -1365,6 +1496,7 @@ public:
     enum Param
     {
         PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT,
         PARAM_DELAY,
         PARAM_FEEDBACK,
     };
@@ -1394,6 +1526,14 @@ public:
                 { PARAM_FEEDBACK, "feedback", true, true, 0.1, 0, 1, .doc = "Feedback gain." },
             };
         };
+
+        // XXX
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
         
         vector<GLvertex3f> _iconGeo() const override
         {
@@ -1448,8 +1588,8 @@ public:
             _setDelay(delayLengthv[i]);
             
             float delaySamp = m_delay.tick(inputv[i] + m_delay.last()*feedbackGainv[i]);
-            m_outputBuffer[i] = (inputv[i] + delaySamp)*gainv[i];
-            output[i] += m_outputBuffer[i];
+            m_outputBuffer[chanNum][i] = (inputv[i] + delaySamp)*gainv[i];
+            output[i] += m_outputBuffer[chanNum][i];
         }
     }
     
@@ -1492,6 +1632,7 @@ public:
     enum Param
     {
         PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT,
         PARAM_ADD,
     };
     
@@ -1516,7 +1657,15 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
             };
         };
-        
+
+        // XXX
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius_x = 0.005*AGStyle::oldGlobalScale;
@@ -1561,7 +1710,7 @@ public:
         
         // set to base value
         for(int i = 0; i < nFrames; i++)
-            m_outputBuffer[i] = base;
+            m_outputBuffer[chanNum][i] = base;
         
         for(int j = 0; j < numInputs; j++)
         {
@@ -1569,11 +1718,11 @@ public:
             pullPortInput(PARAM_INPUT, j, t, m_inputBuffer, nFrames);
             
             for(int i = 0; i < nFrames; i++)
-                m_outputBuffer[i] += m_inputBuffer[i];
+                m_outputBuffer[chanNum][i] += m_inputBuffer[i];
         }
         
         for(int i = 0; i < nFrames; i++)
-            output[i] += m_outputBuffer[i];
+            output[i] += m_outputBuffer[chanNum][i];
         
         this->unlock();
     }
@@ -1597,6 +1746,7 @@ public:
     enum Param
     {
         PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT,
         PARAM_MULTIPLY,
     };
     
@@ -1621,7 +1771,15 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
             };
         };
-        
+
+        // XXX
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius_x = 0.005*AGStyle::oldGlobalScale;
@@ -1666,7 +1824,7 @@ public:
         
         // set to base value
         for(int i = 0; i < nFrames; i++)
-            m_outputBuffer[i] = base;
+            m_outputBuffer[chanNum][i] = base;
         
         for(int j = 0; j < numInputs; j++)
         {
@@ -1674,13 +1832,13 @@ public:
             pullPortInput(PARAM_INPUT, j, t, m_inputBuffer, nFrames);
             
             for(int i = 0; i < nFrames; i++)
-                m_outputBuffer[i] *= m_inputBuffer[i];
+                m_outputBuffer[chanNum][i] *= m_inputBuffer[i];
         }
         
         this->unlock();
         
         for(int i = 0; i < nFrames; i++)
-            output[i] += m_outputBuffer[i];
+            output[i] += m_outputBuffer[chanNum][i];
     }
     
 private:
@@ -1698,7 +1856,11 @@ class AGAudioNoiseNode : public AGAudioNode
 {
 public:
     
-    enum Param { };
+    enum Param
+    {
+        PARAM_OUTPUT = AUDIO_PARAM_LAST+1,
+    };
+    
     
     class Manifest : public AGStandardNodeManifest<AGAudioNoiseNode>
     {
@@ -1720,7 +1882,15 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
             };
         };
-        
+
+        // XXX
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+
         vector<GLvertex3f> _iconGeo() const override
         {
             int NUM_SAMPS = 25;
@@ -1764,8 +1934,8 @@ public:
         for(int i = 0; i < nFrames; i++)
         {
             float randomSample = arc4random()*ONE_OVER_RAND_MAX*2-1;
-            m_outputBuffer[i] = randomSample*gainv[i];
-            output[i] += m_outputBuffer[i];
+            m_outputBuffer[chanNum][i] = randomSample*gainv[i];
+            output[i] += m_outputBuffer[chanNum][i];
         }
     }
     
@@ -1786,6 +1956,7 @@ public:
     enum Param
     {
         PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT,
         PARAM_ATTACK,
         PARAM_RELEASE,
     };
@@ -1813,6 +1984,14 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
             };
         };
+
+        // XXX
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
         
         // XXX TODO: envelope follower shape? Some combo of noise and ADSR?
 
@@ -1906,9 +2085,9 @@ public:
                 m_envelope = release_coeff * m_envelope + (1-release_coeff) * env_input;
             }
             
-            m_outputBuffer[i] = m_envelope * gainv[i];
+            m_outputBuffer[chanNum][i] = m_envelope * gainv[i];
             
-            output[i] += m_outputBuffer[i];
+            output[i] += m_outputBuffer[chanNum][i];
         }
     }
     

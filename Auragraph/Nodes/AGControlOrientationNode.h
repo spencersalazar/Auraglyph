@@ -30,6 +30,7 @@ public:
     
     enum Param
     {
+        PARAM_OUTPUT,
         PARAM_READ,
         PARAM_RATE,
     };
@@ -54,7 +55,15 @@ public:
                 { PARAM_RATE, "rate", true, true, 60, 0, 100, AGPortInfo::LIN, .doc = "Rate at which to read sensors." },
             };
         };
-        
+
+        // XXX
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." },
+            };
+        };
+
         vector<GLvertex3f> _iconGeo() const override;
         
         GLuint _iconGeoType() const override { return GL_LINES; };

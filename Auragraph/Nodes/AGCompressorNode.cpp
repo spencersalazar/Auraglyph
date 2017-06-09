@@ -47,8 +47,8 @@ void AGAudioCompressorNode::renderAudio(sampletime t, float *input, float *outpu
         
         // Compute linear gain for compressor
         float gainval = dB2lin(dbgainval);
-        m_outputBuffer[i] = inputv[i]*gainval*gain;
-        output[i] += m_outputBuffer[i];
+        m_outputBuffer[chanNum][i] = inputv[i]*gainval*gain;
+        output[i] += m_outputBuffer[chanNum][i];
     }
 }
 

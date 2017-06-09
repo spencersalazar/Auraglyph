@@ -19,6 +19,7 @@ public:
     
     enum PARAM
     {
+        PARAM_OUTPUT,
         PARAM_ADVANCE,
         PARAM_BPM,
     };
@@ -31,6 +32,7 @@ public:
         string _description() const override { return "Discrete step sequencer for control values."; };
         vector<AGPortInfo> _inputPortInfo() const override;
         vector<AGPortInfo> _editPortInfo() const override;
+        vector<AGPortInfo> _outputPortInfo() const override; // XXX
         vector<GLvertex3f> _iconGeo() const override;
         GLuint _iconGeoType() const override;
     };

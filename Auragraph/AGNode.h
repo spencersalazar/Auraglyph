@@ -74,6 +74,9 @@ struct AGNodeInfo
     
     vector<AGPortInfo> inputPortInfo;
     vector<AGPortInfo> editPortInfo;
+    
+    // XXX
+    vector<AGPortInfo> outputPortInfo;
 };
 
 
@@ -91,6 +94,9 @@ public:
     
     virtual const vector<AGPortInfo> &inputPortInfo() const = 0;
     virtual const vector<AGPortInfo> &editPortInfo() const = 0;
+    
+    // XXX
+    virtual const vector<AGPortInfo> &outputPortInfo() const = 0;
     
     virtual const vector<GLvertex3f> &iconGeo() const = 0;
     virtual GLuint iconGeoType() const = 0;
@@ -162,11 +168,15 @@ public:
     void activateOutputPort(int type) { m_outputActivation = type; }
     void activate(int type) { m_activation = type; }
     
-    virtual int numOutputPorts() const { return 1; }
+    
     virtual int numInputPorts() const { if(m_manifest) return m_manifest->inputPortInfo().size(); else return 0; }
     virtual int numEditPorts() const { if(m_manifest) return m_manifest->editPortInfo().size(); else return 0; }
+    // XXX
+    //virtual int numOutputPorts() const { return 1; }
+    virtual int numOutputPorts() const { if(m_manifest) return m_manifest->outputPortInfo().size(); else return 0; }
     virtual const AGPortInfo &inputPortInfo(int port) const { return m_manifest->inputPortInfo()[port]; }
     virtual const AGPortInfo &editPortInfo(int port) const { return m_manifest->editPortInfo()[port]; }
+    virtual const AGPortInfo &outputPortInfo(int port) const { return m_manifest->outputPortInfo()[port]; } // XXX
     
     virtual GLvertex3f positionForInboundConnection(AGConnection * connection) const { return m_pos + relativePositionForInboundConnection(connection); }
     virtual GLvertex3f positionForOutboundConnection(AGConnection * connection) const { return m_pos + relativePositionForOutboundConnection(connection); }
@@ -183,7 +193,11 @@ public:
     float param(int paramId) const { return m_params.at(paramId); }
     void setParam(int paramId, float value) { m_params[paramId] = value; editPortValueChanged(paramId); }
     float validateParam(int paramId, float value) const { return validateEditPortValue(m_param2EditPort.at(paramId), value); }
+    
+    // XXX: not sure if we need this (only a handful of callers exist for 'numInputsForPort', namely the extra-tricky add and mul), but for completeness
+    // I'm going to add an equivalent output function
     int numInputsForPort(int portId);
+    int numOutputsForPort(int portId);
 
     /*** Subclassing note: override information as described ***/
     
@@ -271,6 +285,7 @@ protected:
     
     map<int, int> m_param2InputPort;
     map<int, int> m_param2EditPort;
+    map<int, int> m_param2OutputPort; // XXX
     map<int, float> m_params;
 };
 
@@ -394,6 +409,13 @@ public:
         return m_editPortInfo;
     }
     
+    // XXX
+    virtual const vector<AGPortInfo> &outputPortInfo() const override
+    {
+        load();
+        return m_outputPortInfo;
+    }
+    
     virtual void renderIcon() const override
     {
         load();
@@ -429,6 +451,8 @@ protected:
     virtual string _description() const = 0;
     virtual vector<AGPortInfo> _inputPortInfo() const = 0;
     virtual vector<AGPortInfo> _editPortInfo() const = 0;
+    virtual vector<AGPortInfo> _outputPortInfo() const = 0; // XXX
+    
     virtual vector<GLvertex3f> _iconGeo() const = 0;
     virtual GLuint _iconGeoType() const = 0;
     
@@ -445,6 +469,7 @@ private:
             m_iconGeoType = _iconGeoType();
             m_inputPortInfo = _inputPortInfo();
             m_editPortInfo = _editPortInfo();
+            m_outputPortInfo = _outputPortInfo(); // XXX
         }
     }
     
@@ -455,6 +480,7 @@ private:
     mutable vector<GLvertex3f> m_iconGeo;
     mutable vector<AGPortInfo> m_inputPortInfo;
     mutable vector<AGPortInfo> m_editPortInfo;
+    mutable vector<AGPortInfo> m_outputPortInfo; // XXX
     mutable GLuint m_iconGeoType;
 };
 
