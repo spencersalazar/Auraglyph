@@ -263,10 +263,10 @@ void AGDocument::saveToPath(const std::string &path) const
             [inbound addObject:@{ @"uuid": [NSString stringWithSTLString:conn.uuid],
                                   @"src": [NSString stringWithSTLString:conn.srcUuid],
                                   @"srcPort": @(conn.srcPort),
-                                  @"dstPort": [NSString stringWithSTLString:dstPort],
+                                  @"dstPort": @(conn.dstPort),
                                   }];
         }
-        
+    
         NSMutableArray *outbound = [NSMutableArray arrayWithCapacity:node.outbound.size()];
         for(const Connection &conn : node.outbound)
         {
@@ -274,12 +274,12 @@ void AGDocument::saveToPath(const std::string &path) const
             const string &dstPort = AGNodeManager::portNameForPortNumber(dstNode._class, dstNode.type, conn.dstPort);
             assert(dstPort.size() > 0);
             [outbound addObject:@{ @"uuid": [NSString stringWithSTLString:conn.uuid],
-                                   @"srcPort": @(conn.srcPort),
                                    @"dst": [NSString stringWithSTLString:conn.dstUuid],
-                                   @"dstPort": [NSString stringWithSTLString:dstPort],
+                                   @"srcPort": @(conn.srcPort),
+                                   @"dstPort": @(conn.dstPort),
                                    }];
         }
-        
+    
         [doc setObject:@{ @"object": @"node",
                           @"class": @((int) node._class),
                           @"type": [NSString stringWithSTLString:node.type],

@@ -67,9 +67,7 @@ public:
     virtual AGRate rate() override { return RATE_AUDIO; }
     inline float gain() const { return param(AUDIO_PARAM_GAIN); }
     
-    // XXX
-    //const float *lastOutputBuffer() const { return m_outputBuffer; }
-    const float *lastOutputBuffer(int portNum) const { return m_outputBuffer[portNum]; }
+    const float *lastOutputBuffer(int portNum) const { return m_outputBuffer[portNum].data(); }
     
     static int sampleRate() { return s_sampleRate; }
     static int bufferSize()
@@ -97,17 +95,15 @@ protected:
     
     sampletime m_lastTime;
     
-    //Buffer<float> m_outputBuffer; // XXX this is now a vector of Buffers
-    vector<Buffer<float> > m_outputBuffer;
-    
+    vector<vector<float> > m_outputBuffer;
+
     float ** m_inputPortBuffer; // XXX TODO: stretch goal; should we refactor this as a vector of Buffers? if our newfangled
                                 // output vector scheme works, then go for it!
     
     void allocatePortBuffers();
     void pullInputPorts(sampletime t, int nFrames);
-    void renderLast(float *output, int nFrames, int chanNum = 0); // XXX: added a parameter (w/default of zero) for channel number
+    void renderLast(float *output, int nFrames, int chanNum = 0);
     float *inputPortVector(int paramId);
-    // XXX TODO: do we need an '*outputPortVector()' too, as above?
 };
 
 
@@ -150,9 +146,7 @@ public:
             };
         }
 
-        // XXX
         vector<AGPortInfo> _outputPortInfo() const override { return { }; }
-
         
         vector<GLvertex3f> _iconGeo() const override
         {
@@ -178,11 +172,6 @@ public:
     void initFinal() override;
     
     void setOutputDestination(AGAudioOutputDestination *destination);
-    
-    // XXX TODO: should we no longer be overriding this? Well, yeah, **IF** we add outputs to our manifest, i.e. in all
-    // nodes this line of code gets replaced with an equivalent AGPortInfo vector in the manifest; though, should we
-    // have a way of making a default of one output so we don't have to recode so much of all our nodes? Decisions decisions...
-    virtual int numOutputPorts() const override { return 0; }
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override;
     

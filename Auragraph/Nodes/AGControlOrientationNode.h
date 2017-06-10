@@ -56,7 +56,6 @@ public:
             };
         };
 
-        // XXX
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {

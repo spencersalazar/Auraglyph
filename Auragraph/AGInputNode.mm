@@ -168,7 +168,7 @@ public:
 
         vector<AGPortInfo> _inputPortInfo() const override { return {}; };
         vector<AGPortInfo> _editPortInfo() const override { return {}; };
-        vector<AGPortInfo> _outputPortInfo() const override { return {}; }; // XXX
+        vector<AGPortInfo> _outputPortInfo() const override { return {}; };
 
         vector<GLvertex3f> _iconGeo() const override
         {

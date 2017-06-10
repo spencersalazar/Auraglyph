@@ -201,7 +201,6 @@ public:
             };
         };
 
-        // XXX
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
@@ -311,7 +310,6 @@ public:
             };
         };
 
-        // XXX
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
@@ -401,7 +399,6 @@ public:
             };
         };
 
-        // XXX
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
@@ -485,7 +482,6 @@ public:
         
         vector<AGPortInfo> _editPortInfo() const override { return { }; };
 
-        // XXX
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
