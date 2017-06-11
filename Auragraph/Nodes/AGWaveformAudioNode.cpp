@@ -332,7 +332,7 @@ void AGAudioWaveformNode::receiveControl(int port, const AGControl &control)
 
 void AGAudioWaveformNode::renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans)
 {
-    if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+    if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
     m_lastTime = t;
     pullInputPorts(t, nFrames);
     
