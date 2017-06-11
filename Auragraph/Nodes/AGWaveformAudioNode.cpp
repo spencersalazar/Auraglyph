@@ -318,6 +318,18 @@ float AGAudioWaveformNode::get(float phase)
     return m_waveform[whole]*(1-fract) + m_waveform[(whole+1)%m_waveform.size()]*(fract);
 }
 
+void AGAudioWaveformNode::receiveControl(int port, const AGControl &control)
+{
+    if(port == m_param2InputPort[PARAM_PHASE])
+    {
+        // hard-sync phase to control input
+        m_phase = control.getFloat();
+        // clear control
+        // prevents upsampling to renderAudio phase vector
+        clearControl(PARAM_PHASE);
+    }
+}
+
 void AGAudioWaveformNode::renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans)
 {
     if(t <= m_lastTime) { renderLast(output, nFrames); return; }
@@ -326,13 +338,16 @@ void AGAudioWaveformNode::renderAudio(sampletime t, float *input, float *output,
     
     float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
     float *freqv = inputPortVector(PARAM_FREQ);
+    // if there are audio-rate phase inputs, then ignore m_phase value
+    float phase_ctl = numInputsForPort(PARAM_PHASE, AGRate::RATE_AUDIO) > 0 ? 0.0f : 1.0f;
+    float *phasev = inputPortVector(PARAM_PHASE);
     
     for(int i = 0; i < nFrames; i++)
     {
         m_outputBuffer[chanNum][i] = get(m_phase) * gainv[i];
         output[i] += m_outputBuffer[chanNum][i];
         
-        m_phase = clipunit(m_phase + freqv[i]/sampleRate());
+        m_phase = clipunit(m_phase*phase_ctl + freqv[i]/sampleRate() + phasev[i]);
     }
 }
 

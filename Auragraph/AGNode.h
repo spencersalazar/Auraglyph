@@ -135,6 +135,7 @@ public:
     void pushControl(int port, const AGControl &control);
     virtual void receiveControl(int port, const AGControl &control) { }
     AGControl lastControlOutput(int port);
+    void clearControl(int paramId);
 
     enum HitTestResult
     {
@@ -190,7 +191,7 @@ public:
     
     // XXX TODO : not sure if we need this (only a handful of callers exist for 'numInputsForPort', namely the extra-tricky
     // add and mul), but for completeness I'm going to add an equivalent output function
-    int numInputsForPort(int portId);
+    int numInputsForPort(int paramId, AGRate rate = RATE_NULL);
     int numOutputsForPort(int portId);
 
     /*** Subclassing note: override information as described ***/

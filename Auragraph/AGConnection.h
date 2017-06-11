@@ -28,6 +28,7 @@ class AGNode;
 
 enum AGRate
 {
+    RATE_NULL,
     RATE_CONTROL,
     RATE_AUDIO,
 };

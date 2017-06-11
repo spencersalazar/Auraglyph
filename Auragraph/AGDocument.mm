@@ -156,6 +156,10 @@ void AGDocument::loadFromPath(const string &path)
                     {
                         Connection c;
                         
+                        NSDictionary *dstNode = doc[conn[@"dst"]];
+                        AGDocument::Node::Class dstClass = (AGDocument::Node::Class) [dstNode[@"class"] intValue];
+                        string dstType = [dstNode[@"type"] stlString];
+                        
                         c.uuid = [conn[@"uuid"] stlString];
                         c.srcUuid = n.uuid;
                         if([conn objectForKey:@"srcPort"])
@@ -165,7 +169,7 @@ void AGDocument::loadFromPath(const string &path)
                         c.dstUuid = [conn[@"dst"] stlString];
                         if([conn[@"dstPort"] isKindOfClass:[NSString class]])
                         {
-                            int dstPort = AGNodeManager::portNumberForPortName(n._class, n.type, [conn[@"dstPort"] stlString]);
+                            int dstPort = AGNodeManager::portNumberForPortName(dstClass, dstType, [conn[@"dstPort"] stlString]);
                             assert(dstPort != -1);
                             c.dstPort = dstPort;
                         }
