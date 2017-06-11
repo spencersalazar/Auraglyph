@@ -267,7 +267,7 @@ void AGDocument::saveToPath(const std::string &path) const
             [inbound addObject:@{ @"uuid": [NSString stringWithSTLString:conn.uuid],
                                   @"src": [NSString stringWithSTLString:conn.srcUuid],
                                   @"srcPort": @(conn.srcPort),
-                                  @"dstPort": @(conn.dstPort),
+                                  @"dstPort": [NSString stringWithSTLString:dstPort],
                                   }];
         }
     
@@ -280,7 +280,7 @@ void AGDocument::saveToPath(const std::string &path) const
             [outbound addObject:@{ @"uuid": [NSString stringWithSTLString:conn.uuid],
                                    @"dst": [NSString stringWithSTLString:conn.dstUuid],
                                    @"srcPort": @(conn.srcPort),
-                                   @"dstPort": @(conn.dstPort),
+                                   @"dstPort": [NSString stringWithSTLString:dstPort],
                                    }];
         }
     
