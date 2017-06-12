@@ -149,6 +149,13 @@ m_lastTraceWasRecognized(true)
     float rowHeight = s_radius*2.0/rowCount;
     for(int port = 0; port < numEditPorts; port++)
     {
+        AGControl::Type editPortType = m_node->editPortInfo(port).type;
+        // only use sliders for float/int
+        if(editPortType != AGControl::TYPE_NONE &&
+           editPortType != AGControl::TYPE_FLOAT &&
+           editPortType != AGControl::TYPE_INT)
+            continue;
+        
         AGNode *node = m_node;
         
         AGParamValue v;
@@ -339,13 +346,14 @@ void AGUIStandardNodeEditor::render()
         nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
         text->render(m_node->editPortInfo(i).name, nameColor, nameMV, projection());
         
-//        GLKMatrix4 valueMV = GLKMatrix4Translate(m_modelView, s_radius*0.1, y + s_radius/rowCount*0.1, 0);
-//        valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
-//        std::stringstream ss;
-//        float v = 0;
-//        m_node->getEditPortValue(i, v);
-//        ss << v;
-//        text->render(ss.str(), valueColor, valueMV, proj);
+        if(m_node->editPortInfo(i).type == AGControl::TYPE_STRING)
+        {
+            GLKMatrix4 valueMV = GLKMatrix4Translate(modelview(), s_radius*0.1, y + s_radius/rowCount*0.1, 0);
+            valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
+            AGParamValue v;
+            m_node->getEditPortValue(i, v);
+            text->render(v, valueColor, valueMV, projection());
+        }
     }
     
 //    for(auto slider : m_editSliders)
@@ -754,6 +762,7 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                 }
                 else if(portInfo.editor == AGPortInfo::EDITOR_AUDIOFILES)
                 {
+                    int hitPort = m_hit;
                     m_hit = -1;
                     
                     AGFileBrowser *fileBrowser = new AGFileBrowser;
@@ -772,8 +781,8 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                     m_customItemEditor = fileBrowser;
                     addChildToTop(m_customItemEditor);
                     
-                    fileBrowser->onChooseFile([this](const string &file){
-                        
+                    fileBrowser->onChooseFile([hitPort, this](const string &file){
+                        m_node->setEditPortValue(hitPort, file);
                         removeChild(m_customItemEditor);
                         m_customItemEditor = NULL;
                     });
