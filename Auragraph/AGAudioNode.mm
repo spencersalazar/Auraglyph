@@ -2351,30 +2351,12 @@ public:
         {
             // todo: abstract filesystem API
             NSString *documentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-            NSArray *paths = [[NSFileManager defaultManager] subpathsAtPath:documentPath];
-            int fileNum = (int) floor(param(PARAM_FILE).getFloat());
-            if(fileNum != m_fileNum)
-            {
-                m_fileNum = fileNum;
-                int i = 0;
-                for(NSString *path in paths)
-                {
-                    if([[[path pathExtension] lowercaseString] isEqualToString:@"wav"])
-                    {
-                        if(i == m_fileNum)
-                        {
-                            NSString *fullPath = [documentPath stringByAppendingPathComponent:path];
-                            m_file.openFile([fullPath UTF8String]);
-                            m_file.setRate(m_rate);
-                            // set to end of file
-                            m_file.addTime(m_file.getSize());
-                            break;
-                        }
-                        
-                        i++;
-                    }
-                }
-            }
+            NSString *subpath = [NSString stringWithUTF8String:param(PARAM_FILE).getString().c_str()];
+            NSString *fullPath = [documentPath stringByAppendingPathComponent:subpath];
+            m_file.openFile([fullPath UTF8String]);
+            m_file.setRate(m_rate);
+            // set to end of file
+            m_file.addTime(m_file.getSize());
         }
     }
     
