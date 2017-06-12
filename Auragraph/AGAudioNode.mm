@@ -242,10 +242,11 @@ void AGAudioNode::allocatePortBuffers()
     }
     
     m_outputBuffer.clear();
+    m_outputBuffer.resize(numOutputPorts());
     for(int i = 0; i < numOutputPorts(); i++)
     {
-        m_outputBuffer.push_back(*new vector<float>(bufferSize()));
-        m_outputBuffer.at(i).clear();
+        m_outputBuffer[i].resize(bufferSize());
+        m_outputBuffer[i].clear();
     }
 
 }
@@ -492,7 +493,7 @@ public:
         
         if(m_inputSize && m_input)
         {
-            float *_outputBuffer = m_outputBuffer[chanNum].data();            
+            float *_outputBuffer = m_outputBuffer[chanNum];
             float *_input = m_input;
             int mn = min(nFrames, m_inputSize);
             for(int i = 0; i < mn; i++)

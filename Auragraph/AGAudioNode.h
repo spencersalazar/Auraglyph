@@ -67,7 +67,7 @@ public:
     virtual AGRate rate() override { return RATE_AUDIO; }
     inline float gain() const { return param(AUDIO_PARAM_GAIN); }
     
-    const float *lastOutputBuffer(int portNum) const { return m_outputBuffer[portNum].data(); }
+    const float *lastOutputBuffer(int portNum) const { return m_outputBuffer[portNum]; }
     
     static int sampleRate() { return s_sampleRate; }
     static int bufferSize()
@@ -95,7 +95,7 @@ protected:
     
     sampletime m_lastTime;
     
-    vector<vector<float> > m_outputBuffer;
+    vector<Buffer<float>> m_outputBuffer;
 
     float ** m_inputPortBuffer; // XXX TODO: stretch goal; should we refactor this as a vector of Buffers? if our newfangled
                                 // output vector scheme works, then go for it!
