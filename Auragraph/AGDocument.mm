@@ -177,7 +177,14 @@ void AGDocument::loadFromPath(const string &path)
                         else
                             c.srcPort = 0;
                         c.dstUuid = n.uuid;
-                        c.dstPort = [conn[@"dstPort"] intValue];
+                        if([conn[@"dstPort"] isKindOfClass:[NSString class]])
+                        {
+                            int dstPort = AGNodeManager::portNumberForPortName(n._class, n.type, [conn[@"dstPort"] stlString]);
+                            assert(dstPort != -1);
+                            c.dstPort = dstPort;
+                        }
+                        else
+                            c.dstPort = [conn[@"dstPort"] intValue];
                         
                         m_connections[c.uuid] = c;
                     }
@@ -189,6 +196,10 @@ void AGDocument::loadFromPath(const string &path)
                     {
                         Connection c;
                         
+                        NSDictionary *dstNode = doc[conn[@"dst"]];
+                        AGDocument::Node::Class dstClass = (AGDocument::Node::Class) [dstNode[@"class"] intValue];
+                        string dstType = [dstNode[@"type"] stlString];
+                        
                         c.uuid = [conn[@"uuid"] stlString];
                         c.srcUuid = n.uuid;
                         if([conn objectForKey:@"srcPort"])
@@ -196,7 +207,14 @@ void AGDocument::loadFromPath(const string &path)
                         else
                             c.srcPort = 0;
                         c.dstUuid = [conn[@"dst"] stlString];
-                        c.dstPort = [conn[@"dstPort"] intValue];
+                        if([conn[@"dstPort"] isKindOfClass:[NSString class]])
+                        {
+                            int dstPort = AGNodeManager::portNumberForPortName(dstClass, dstType, [conn[@"dstPort"] stlString]);
+                            assert(dstPort != -1);
+                            c.dstPort = dstPort;
+                        }
+                        else
+                            c.dstPort = [conn[@"dstPort"] intValue];
                         
                         m_connections[c.uuid] = c;
                     }
@@ -283,19 +301,28 @@ void AGDocument::saveToPath(const std::string &path) const
         
         NSMutableArray *inbound = [NSMutableArray arrayWithCapacity:node.inbound.size()];
         for(const Connection &conn : node.inbound)
+        {
+            const string &dstPort = AGNodeManager::portNameForPortNumber(node._class, node.type, conn.dstPort);
+            assert(dstPort.size() > 0);
             [inbound addObject:@{ @"uuid": [NSString stringWithSTLString:conn.uuid],
                                   @"src": [NSString stringWithSTLString:conn.srcUuid],
                                   @"srcPort": @(conn.srcPort),
-                                  @"dstPort": @(conn.dstPort)
+                                  @"dstPort": [NSString stringWithSTLString:dstPort],
                                   }];
+        }
         
         NSMutableArray *outbound = [NSMutableArray arrayWithCapacity:node.outbound.size()];
         for(const Connection &conn : node.outbound)
+        {
+            const Node &dstNode = m_nodes.at(conn.dstUuid);
+            const string &dstPort = AGNodeManager::portNameForPortNumber(dstNode._class, dstNode.type, conn.dstPort);
+            assert(dstPort.size() > 0);
             [outbound addObject:@{ @"uuid": [NSString stringWithSTLString:conn.uuid],
                                    @"srcPort": @(conn.srcPort),
                                    @"dst": [NSString stringWithSTLString:conn.dstUuid],
-                                   @"dstPort": @(conn.dstPort)
+                                   @"dstPort": [NSString stringWithSTLString:dstPort],
                                    }];
+        }
         
         [doc setObject:@{ @"object": @"node",
                           @"class": @((int) node._class),

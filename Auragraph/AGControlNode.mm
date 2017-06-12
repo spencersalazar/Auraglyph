@@ -15,6 +15,7 @@
 #include "spstl.h"
 #include "AGStyle.h"
 #include "AGControlOrientationNode.h"
+#include "AGControlGestureNode.h"
 
 //------------------------------------------------------------------------------
 // ### AGControlNode ###
@@ -506,6 +507,7 @@ const AGNodeManager &AGNodeManager::controlNodeManager()
         nodeTypes.push_back(new AGControlMultiplyNode::Manifest);
 
         nodeTypes.push_back(new AGControlOrientationNode::Manifest);
+        nodeTypes.push_back(new AGControlGestureNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();

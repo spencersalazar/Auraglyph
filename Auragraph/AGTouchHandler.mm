@@ -1087,14 +1087,15 @@ private:
 {
     if(_done) return;
     
-    CGPoint p = [[touches anyObject] locationInView:_viewController.view];
+    UITouch *touch = [touches anyObject];
+    CGPoint p = [touch locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
     _touchCapture = _nodeEditor->hitTest(pos);
     
     if(_touchCapture)
     {
-        _touchCapture->touchDown(AGTouchInfo(pos, p, (TouchID) [touches anyObject]));
+        _touchCapture->touchDown(AGTouchInfo(pos, p, (TouchID) touch, touch));
     }
     else
     {
@@ -1113,20 +1114,22 @@ private:
 {
     if(_done) return;
     
-    CGPoint p = [[touches anyObject] locationInView:_viewController.view];
+    UITouch *touch = [touches anyObject];
+    CGPoint p = [touch locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    _touchCapture->touchMove(AGTouchInfo(pos, p, (TouchID) [touches anyObject]));
+    _touchCapture->touchMove(AGTouchInfo(pos, p, (TouchID) touch, touch));
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     if(_done) return;
     
-    CGPoint p = [[touches anyObject] locationInView:_viewController.view];
+    UITouch *touch = [touches anyObject];
+    CGPoint p = [touch locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    _touchCapture->touchUp(AGTouchInfo(pos, p, (TouchID) [touches anyObject]));
+    _touchCapture->touchUp(AGTouchInfo(pos, p, (TouchID) touch, touch));
     
     _done = _nodeEditor->doneEditing();
     

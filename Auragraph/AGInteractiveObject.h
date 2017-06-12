@@ -20,6 +20,18 @@ typedef uint64_t TouchID;
 typedef uint32_t TouchID;
 #endif
 
+#if __APPLE__ && TARGET_OS_IPHONE
+
+#ifdef __OBJC__
+typedef UITouch *AGPlatformTouchInfo;
+#else
+typedef void *AGPlatformTouchInfo;
+#endif // __OBJC__
+
+#else //
+typedef void *AGPlatformTouchInfo;
+#endif
+
 //------------------------------------------------------------------------------
 // ### AGTouchInfo ###
 // Class representing a single touch.
@@ -27,13 +39,14 @@ typedef uint32_t TouchID;
 struct AGTouchInfo
 {
     AGTouchInfo() { }
-    AGTouchInfo(const GLvertex3f &_position, const CGPoint &_screenPosition, TouchID _touchId) :
-    position(_position), screenPosition(_screenPosition), touchId(_touchId)
+    AGTouchInfo(const GLvertex3f &_position, const CGPoint &_screenPosition, TouchID _touchId, AGPlatformTouchInfo _platformTouchInfo) :
+    position(_position), screenPosition(_screenPosition), touchId(_touchId), platformTouchInfo(_platformTouchInfo)
     { }
     
     GLvertex3f position;
     CGPoint screenPosition;
     TouchID touchId;
+    AGPlatformTouchInfo platformTouchInfo;
 };
 
 

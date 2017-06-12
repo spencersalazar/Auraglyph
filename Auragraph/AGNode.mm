@@ -496,6 +496,11 @@ AGControl AGNode::lastControlOutput(int port)
     return c;
 }
 
+void AGNode::clearControl(int paramId)
+{
+    m_controlPortBuffer[m_param2InputPort[paramId]] = AGControl();
+}
+
 void AGNode::receiveControl_internal(int port, const AGControl &control)
 {
     m_controlPortBuffer[port] = AGControl(control);
@@ -526,13 +531,13 @@ void AGNode::finalPortValue(float &value, int portId, int sample) const
         value = m_params.at(portId);
 }
 
-int AGNode::numInputsForPort(int portId)
+int AGNode::numInputsForPort(int paramId, AGRate rate)
 {
-    int portNum = m_param2InputPort[portId];
+    int portNum = m_param2InputPort[paramId];
     int numInputs = 0;
     for(auto conn : m_inbound)
     {
-        if(conn->dstPort() == portNum)
+        if(conn->dstPort() == portNum && (rate == AGRate::RATE_NULL || conn->rate() == rate))
             numInputs++;
     }
     
@@ -847,5 +852,57 @@ AGNode *AGNodeManager::createNodeOfType(const string &type, const GLvertex3f &po
     return NULL;
 }
 
+const AGNodeManager &AGNodeManager::nodeManagerForClass(AGDocument::Node::Class _class)
+{
+    switch(_class)
+    {
+        case AGDocument::Node::AUDIO:
+            return audioNodeManager();
+        case AGDocument::Node::CONTROL:
+            return controlNodeManager();
+        case AGDocument::Node::INPUT:
+            return inputNodeManager();
+        case AGDocument::Node::OUTPUT:
+            return outputNodeManager();
+    }
+}
 
+const string &AGNodeManager::portNameForPortNumber(AGDocument::Node::Class _class, const string &nodeType, int portNumber)
+{
+    static const string emptyString = "";
+    
+    const AGNodeManager &mgr = nodeManagerForClass(_class);
+    
+    for(auto mf : mgr.nodeTypes())
+    {
+        if(mf->type() == nodeType)
+        {
+            if(portNumber < mf->inputPortInfo().size() && portNumber >= 0)
+                return mf->inputPortInfo()[portNumber].name;
+        }
+    }
+    
+    return emptyString;
+}
+
+int AGNodeManager::portNumberForPortName(AGDocument::Node::Class _class, const string &nodeType, const string &portName)
+{
+    const AGNodeManager &mgr = nodeManagerForClass(_class);
+    
+    for(auto mf : mgr.nodeTypes())
+    {
+        if(mf->type() == nodeType)
+        {
+            int i = 0;
+            for(auto prt : mf->inputPortInfo())
+            {
+                if(prt.name == portName)
+                    return i;
+                i++;
+            }
+        }
+    }
+    
+    return -1;
+}
 

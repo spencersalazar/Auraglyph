@@ -153,6 +153,7 @@ public:
     void pushControl(int port, const AGControl &control);
     virtual void receiveControl(int port, const AGControl &control) { }
     AGControl lastControlOutput(int port);
+    void clearControl(int paramId);
 
     enum HitTestResult
     {
@@ -203,7 +204,7 @@ public:
     AGParamValue param(int paramId) const { return m_params.at(paramId); }
     void setParam(int paramId, AGParamValue value) { m_params[paramId] = value; editPortValueChanged(paramId); }
     float validateParam(int paramId, AGParamValue value) const { return validateEditPortValue(m_param2EditPort.at(paramId), value); }
-    int numInputsForPort(int portId);
+    int numInputsForPort(int paramId, AGRate rate = RATE_NULL);
 
     /*** Subclassing note: override information as described ***/
     
@@ -349,12 +350,17 @@ public:
     static const AGNodeManager &controlNodeManager();
     static const AGNodeManager &inputNodeManager();
     static const AGNodeManager &outputNodeManager();
+    static const AGNodeManager &nodeManagerForClass(AGDocument::Node::Class _class);
     
     const std::vector<const AGNodeManifest *> &nodeTypes() const;
     void renderNodeTypeIcon(const AGNodeManifest *mf) const;
     AGNode *createNodeType(const AGNodeManifest *mf, const GLvertex3f &pos) const;
     AGNode *createNodeType(const AGDocument::Node &docNode) const;
     AGNode *createNodeOfType(const string &type, const GLvertex3f &pos) const;
+    
+    
+    static const string &portNameForPortNumber(AGDocument::Node::Class _class, const string &nodeType, int portNumber);
+    static int portNumberForPortName(AGDocument::Node::Class _class, const string &nodeType, const string &portName);
     
 private:
     static AGNodeManager *s_audioNodeManager;

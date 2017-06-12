@@ -504,6 +504,7 @@ public:
     enum Param
     {
         PARAM_FREQ = AUDIO_PARAM_LAST+1,
+        PARAM_PHASE,
     };
 
     class Manifest : public AGStandardNodeManifest<AGAudioSineWaveNode>
@@ -517,7 +518,8 @@ public:
         {
             return {
                 { PARAM_FREQ, "freq", true, true, 220, 0, 0, AGPortInfo::LOG, .doc = "Oscillator frequency. " },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, 0, 0, AGPortInfo::LOG, .doc = "Output gain." }
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, 0, 0, AGPortInfo::LOG, .doc = "Output gain." },
+                { PARAM_PHASE, "phase", true, true, 1, 0, 0, AGPortInfo::LIN, .doc = "Oscillator phase." },
             };
         };
         
@@ -559,6 +561,18 @@ public:
     
     virtual int numOutputPorts() const override { return 1; }
     
+    void receiveControl(int port, const AGControl &control) override
+    {
+        if(port == m_param2InputPort[PARAM_PHASE])
+        {
+            // hard-sync phase to control input
+            m_phase = control.getFloat();
+            // clear control
+            // prevents upsampling to renderAudio phase vector
+            clearControl(PARAM_PHASE);
+        }
+    }
+    
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
@@ -567,13 +581,16 @@ public:
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
         float *freqv = inputPortVector(PARAM_FREQ);
+        // if there are audio-rate phase inputs, then ignore m_phase value
+        float phase_ctl = numInputsForPort(PARAM_PHASE, AGRate::RATE_AUDIO) > 0 ? 0.0f : 1.0f;
+        float *phasev = inputPortVector(PARAM_PHASE);
         
         for(int i = 0; i < nFrames; i++)
         {
             m_outputBuffer[i] = sinf(m_phase*2.0*M_PI) * gainv[i];
             output[i] += m_outputBuffer[i];
             
-            m_phase = clipunit(m_phase + freqv[i]/sampleRate());
+            m_phase = clipunit(m_phase*phase_ctl + freqv[i]/sampleRate() + phasev[i]);
         }
     }
     
@@ -594,6 +611,7 @@ public:
     {
         PARAM_FREQ = AUDIO_PARAM_LAST+1,
         PARAM_WIDTH,
+        PARAM_PHASE,
     };
 
     class Manifest : public AGStandardNodeManifest<AGAudioSquareWaveNode>
@@ -606,9 +624,10 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_FREQ, "freq", true, true, 220, .doc = "Oscillator frequency" },
+                { PARAM_FREQ, "freq", true, true, 220, .doc = "Oscillator frequency." },
                 { PARAM_WIDTH, "width", true, true, 0.5, 0, 1, .doc = "Pulse width of wave as fraction of full wavelength." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
+                { PARAM_PHASE, "phase", true, true, 1, 0, 0, AGPortInfo::LIN, .doc = "Oscillator phase." },
             };
         };
         
@@ -651,6 +670,18 @@ public:
     
     virtual int numOutputPorts() const override { return 1; }
     
+    void receiveControl(int port, const AGControl &control) override
+    {
+        if(port == m_param2InputPort[PARAM_PHASE])
+        {
+            // hard-sync phase to control input
+            m_phase = control.getFloat();
+            // clear control
+            // prevents upsampling to renderAudio phase vector
+            clearControl(PARAM_PHASE);
+        }
+    }
+
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
@@ -660,13 +691,16 @@ public:
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
         float *freqv = inputPortVector(PARAM_FREQ);
         float *width = inputPortVector(PARAM_WIDTH);
-        
+        // if there are audio-rate phase inputs, then ignore m_phase value
+        float phase_ctl = numInputsForPort(PARAM_PHASE, AGRate::RATE_AUDIO) > 0 ? 0.0f : 1.0f;
+        float *phasev = inputPortVector(PARAM_PHASE);
+
         for(int i = 0; i < nFrames; i++)
         {
             m_outputBuffer[i] = (m_phase < width[i] ? 1 : -1) * gainv[i];
             output[i] += m_outputBuffer[i];
             
-            m_phase = clipunit(m_phase + freqv[i]/sampleRate());
+            m_phase = clipunit(m_phase*phase_ctl + freqv[i]/sampleRate() + phasev[i]);
         }
     }
     
@@ -687,6 +721,7 @@ public:
     enum Param
     {
         PARAM_FREQ = AUDIO_PARAM_LAST+1,
+        PARAM_PHASE,
     };
 
     class Manifest : public AGStandardNodeManifest<AGAudioSawtoothWaveNode>
@@ -700,7 +735,8 @@ public:
         {
             return {
                 { PARAM_FREQ, "freq", true, true, 220, .doc = "Oscillator frequency" },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
+                { PARAM_PHASE, "phase", true, true, 1, 0, 0, AGPortInfo::LIN, .doc = "Oscillator phase." },
             };
         };
         
@@ -740,6 +776,18 @@ public:
     
     virtual int numOutputPorts() const override { return 1; }
     
+    void receiveControl(int port, const AGControl &control) override
+    {
+        if(port == m_param2InputPort[PARAM_PHASE])
+        {
+            // hard-sync phase to control input
+            m_phase = control.getFloat();
+            // clear control
+            // prevents upsampling to renderAudio phase vector
+            clearControl(PARAM_PHASE);
+        }
+    }
+
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
@@ -748,13 +796,16 @@ public:
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
         float *freqv = inputPortVector(PARAM_FREQ);
+        // if there are audio-rate phase inputs, then ignore m_phase value
+        float phase_ctl = numInputsForPort(PARAM_PHASE, AGRate::RATE_AUDIO) > 0 ? 0.0f : 1.0f;
+        float *phasev = inputPortVector(PARAM_PHASE);
         
         for(int i = 0; i < nFrames; i++)
         {
             m_outputBuffer[i] = ((1-m_phase)*2-1)  * gainv[i];
             output[i] += m_outputBuffer[i];
             
-            m_phase = clipunit(m_phase + freqv[i]/sampleRate());
+            m_phase = clipunit(m_phase*phase_ctl + freqv[i]/sampleRate() + phasev[i]);
         }
     }
     
@@ -775,6 +826,7 @@ public:
     enum Param
     {
         PARAM_FREQ = AUDIO_PARAM_LAST+1,
+        PARAM_PHASE,
     };
 
     class Manifest : public AGStandardNodeManifest<AGAudioTriangleWaveNode>
@@ -788,7 +840,8 @@ public:
         {
             return {
                 { PARAM_FREQ, "freq", true, true, 220, .doc = "Oscillator frequency" },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
+                { PARAM_PHASE, "phase", true, true, 1, 0, 0, AGPortInfo::LIN, .doc = "Oscillator phase." },
             };
         };
         
@@ -828,6 +881,18 @@ public:
 
     virtual int numOutputPorts() const override { return 1; }
     
+    void receiveControl(int port, const AGControl &control) override
+    {
+        if(port == m_param2InputPort[PARAM_PHASE])
+        {
+            // hard-sync phase to control input
+            m_phase = control.getFloat();
+            // clear control
+            // prevents upsampling to renderAudio phase vector
+            clearControl(PARAM_PHASE);
+        }
+    }
+
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
         if(t <= m_lastTime) { renderLast(output, nFrames); return; }
@@ -836,6 +901,9 @@ public:
         
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
         float *freqv = inputPortVector(PARAM_FREQ);
+        // if there are audio-rate phase inputs, then ignore m_phase value
+        float phase_ctl = numInputsForPort(PARAM_PHASE, AGRate::RATE_AUDIO) > 0 ? 0.0f : 1.0f;
+        float *phasev = inputPortVector(PARAM_PHASE);
         
         for(int i = 0; i < nFrames; i++)
         {
@@ -845,7 +913,7 @@ public:
                 m_outputBuffer[i] = ((m_phase-0.5)*4-1) * gainv[i];
             output[i] += m_outputBuffer[i];
             
-            m_phase = clipunit(m_phase + freqv[i]/sampleRate());
+            m_phase = clipunit(m_phase*phase_ctl + freqv[i]/sampleRate() + phasev[i]);
         }
     }
     
@@ -953,6 +1021,8 @@ public:
         
         float *triggerv = inputPortVector(PARAM_TRIGGER);
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        // use constant (1.0) virtual input if no actual inputs are present
+        float virtual_input = numInputsForPort(PARAM_INPUT, AGRate::RATE_AUDIO) == 0 ? 1.0f : 0.0f;
         float *inputv = inputPortVector(PARAM_INPUT);
         
         for(int i = 0; i < nFrames; i++)
@@ -961,12 +1031,12 @@ public:
             {
                 if(triggerv[i] > 0)
                     m_adsr.keyOn();
-                    else
-                        m_adsr.keyOff();
-                        }
+                else
+                    m_adsr.keyOff();
+            }
             m_prevTrigger = triggerv[i];
             
-            m_outputBuffer[i] = m_adsr.tick() * inputv[i] * gainv[i];
+            m_outputBuffer[i] = m_adsr.tick() * (inputv[i] + virtual_input) * gainv[i];
             output[i] += m_outputBuffer[i];
         }
     }
@@ -1233,6 +1303,12 @@ private:
 //------------------------------------------------------------------------------
 #pragma mark - AGAudioFeedbackNode
 
+
+#pragma mark AllPass1
+//------------------------------------------------------------------------------
+// ### AllPass1 ###
+// 1st order allpass filter for delay interpolation
+//------------------------------------------------------------------------------
 class AllPass1
 {
 public:
@@ -1764,6 +1840,149 @@ private:
     constexpr static const float ONE_OVER_RAND_MAX = 1.0/4294967295.0;
 };
 
+// Andrew Piepenbrink, 7/7/2017
+//------------------------------------------------------------------------------
+// ### AGAudioEnvelopeFollowerNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioEnvelopeFollowerNode
+
+class AGAudioEnvelopeFollowerNode : public AGAudioNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_ATTACK,
+        PARAM_RELEASE,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGAudioEnvelopeFollowerNode>
+    {
+    public:
+        string _type() const override { return "EnvelopeFollower"; };
+        string _name() const override { return "EnvelopeFollower"; };
+        string _description() const override { return "Envelope follower with separate attack and release times"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_INPUT, "input", true, false, .doc = "Input signal." },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { PARAM_ATTACK, "attack", true, true, 0.01, 0.0001, 1.0, .doc = "Attack time." },
+                { PARAM_RELEASE, "release", true, true, 0.01, 0.0001, 1.0, .doc = "Release time." },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+            };
+        };
+        
+        // XXX TODO: envelope follower shape? Some combo of noise and ADSR?
+
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            //float radius_x = 0.005*AGStyle::oldGlobalScale;
+            //float radius_y = radius_x * 0.66;
+            
+//            vector<GLvertex3f> iconGeo = {
+//                { -radius_x, 0, 0 },
+//                { -radius_x, radius_y, 0 },
+//                { 0, radius_y, 0 },
+//                { 0, -radius_y, 0 },
+//                { radius_x, -radius_y, 0 },
+//                { radius_x, 0, 0 },
+//            };
+            
+            // ADSR
+//            float radius_x = 0.005*AGStyle::oldGlobalScale;
+//            float radius_y = radius_x * 0.66;
+//            
+//            // ADSR shape
+//            vector<GLvertex3f> iconGeo = {
+//                { -radius_x, -radius_y, 0 },
+//                { -radius_x*0.75f, radius_y, 0 },
+//                { -radius_x*0.25f, 0, 0 },
+//                { radius_x*0.66f, 0, 0 },
+//                { radius_x, -radius_y, 0 },
+//            };
+
+
+            // Noise
+            
+            const float ONE_OVER_RAND_MAX = 1.0/4294967295.0; // For icon drawing
+            
+            int NUM_SAMPS = 25;
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x;
+            
+            // x icon
+            vector<GLvertex3f> iconGeo;
+            iconGeo.resize(NUM_SAMPS);
+            
+            for(int i = 0; i < NUM_SAMPS; i++)
+            {
+                float randomSample = arc4random()*ONE_OVER_RAND_MAX*2-1;
+                iconGeo[i].x = (((float)i)/(NUM_SAMPS-1)*2-1)*radius_x;
+                
+                //iconGeo[i].y = randomSample*radius_y;
+                iconGeo[i].y = randomSample*radius_y * 0.1;
+            }
+
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+    };
+    
+    using AGAudioNode::AGAudioNode;
+    
+    void initFinal() override
+    {
+        m_envelope = 0;
+    }
+    
+    virtual int numOutputPorts() const override { return 1; }
+    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
+    {
+        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        m_lastTime = t;
+        pullInputPorts(t, nFrames);
+        
+        float *inputv = inputPortVector(PARAM_INPUT);
+        float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        float attack_coeff = exp(-1.0f/(sampleRate()*param(PARAM_ATTACK)));
+        float release_coeff = exp(-1.0f/(sampleRate()*param(PARAM_RELEASE)));
+        
+        for(int i = 0; i < nFrames; i++)
+        {
+            
+            float env_input = abs(inputv[i]);
+            
+            if(env_input > m_envelope)
+            {
+                m_envelope = attack_coeff * m_envelope + (1-attack_coeff) * env_input;
+            }
+            else
+            {
+                m_envelope = release_coeff * m_envelope + (1-release_coeff) * env_input;
+            }
+            
+            m_outputBuffer[i] = m_envelope * gainv[i];
+            
+            output[i] += m_outputBuffer[i];
+        }
+    }
+    
+private:
+    float m_envelope;
+};
+
 
 //------------------------------------------------------------------------------
 // ### AGAudioSoundFileNode ###
@@ -1943,6 +2162,9 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2BPF>::ManifestBPF);
         nodeTypes.push_back(new AGAudioCompressorNode::Manifest);
 
+        // XXX new
+        nodeTypes.push_back(new AGAudioEnvelopeFollowerNode::Manifest);
+        
         nodeTypes.push_back(new AGAudioAddNode::Manifest);
         nodeTypes.push_back(new AGAudioMultiplyNode::Manifest);
         
