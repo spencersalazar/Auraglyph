@@ -61,14 +61,7 @@ struct AGPortInfo
     
     Mode mode;
     
-    enum Type
-    {
-        TYPE_FLOAT = 0,
-        TYPE_INT,
-        TYPE_STRING,
-    };
-    
-    Type type;
+    AGControl::Type type;
     
     enum Editor
     {

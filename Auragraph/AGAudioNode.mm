@@ -2299,7 +2299,7 @@ public:
         {
             return {
                 { PARAM_FILE, "file", ._default = 0,
-                    .type = AGPortInfo::TYPE_STRING,
+                    .type = AGControl::TYPE_STRING,
                     .editor = AGPortInfo::EDITOR_AUDIOFILES },
                 { PARAM_RATE, "rate", ._default = 1 },
                 { AUDIO_PARAM_GAIN, "gain", ._default = 1 }
