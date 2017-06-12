@@ -485,7 +485,7 @@ public:
     
     void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         // pullInputPorts(t, nFrames);
         
@@ -607,7 +607,7 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
@@ -722,7 +722,7 @@ public:
 
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
@@ -834,7 +834,7 @@ public:
 
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
@@ -945,7 +945,7 @@ public:
 
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
@@ -1071,7 +1071,7 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
@@ -1332,7 +1332,7 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
@@ -1583,7 +1583,7 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
@@ -1700,7 +1700,7 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         
         this->lock();
@@ -1811,7 +1811,7 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         
         this->lock();
@@ -1925,7 +1925,7 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
@@ -2059,7 +2059,7 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
