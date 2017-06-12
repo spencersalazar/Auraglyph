@@ -1956,8 +1956,8 @@ public:
         
         float *inputv = inputPortVector(PARAM_INPUT);
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
-        float attack_coeff = exp(-1.0f/(sampleRate()*param(PARAM_ATTACK)));
-        float release_coeff = exp(-1.0f/(sampleRate()*param(PARAM_RELEASE)));
+        float attack_coeff = exp(-1.0f/(sampleRate()*(float)param(PARAM_ATTACK)));
+        float release_coeff = exp(-1.0f/(sampleRate()*(float)param(PARAM_RELEASE)));
         
         for(int i = 0; i < nFrames; i++)
         {
