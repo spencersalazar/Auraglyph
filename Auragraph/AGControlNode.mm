@@ -518,6 +518,97 @@ private:
 };
 
 //------------------------------------------------------------------------------
+// ### AGControlSlewNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGControlSlewNode
+
+class AGControlSlewNode : public AGControlNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_OUTPUT,
+        PARAM_INPUT,
+        PARAM_RATE,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGControlSlewNode>
+    {
+    public:
+        string _type() const override { return "slew"; };
+        string _name() const override { return "slew"; };
+        string _description() const override { return "Slew between values at a specified rate."; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_INPUT, "input", true, true, .doc = "Input value." },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { PARAM_RATE, "rate", true, true, .doc = "Slew rate." },
+            };
+        };
+        
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." },
+            };
+        };
+        
+        // XXX TODO
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius = 0.005*AGStyle::oldGlobalScale;
+            
+            return {
+                { -radius, -1.0f, 0 }, {  radius, 0, 0 },
+                {  radius*0.38f,  radius*0.38f, 0 }, { radius, 0, 0 },
+                {  radius*0.38f, -radius*0.38f, 0 }, { radius, 0, 0 },
+            };
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINES; };
+    };
+    
+    using AGControlNode::AGControlNode;
+    
+    virtual int numOutputPorts() const override { return 1; }
+    
+    void initFinal() override
+    {
+        float interval = 0.01;
+        
+        m_timer = AGTimer(interval, ^(AGTimer *) {
+            m_slew.interp();
+            pushControl(0, AGControl(m_slew));
+        });
+    }
+
+    void editPortValueChanged(int paramId) override
+    {
+        if(paramId == PARAM_RATE) {
+            m_slew.rate = param(PARAM_RATE);
+        }
+    }
+
+    virtual void receiveControl(int port, const AGControl &control) override
+    {
+        float t = control.getFloat();
+        m_slew = t;
+    }
+    
+private:
+    AGTimer m_timer;
+    slewf m_slew;
+};
+
+//------------------------------------------------------------------------------
 // ### AGNodeManager ###
 //------------------------------------------------------------------------------
 #pragma mark - AGNodeManager
@@ -540,6 +631,8 @@ const AGNodeManager &AGNodeManager::controlNodeManager()
 
         nodeTypes.push_back(new AGControlOrientationNode::Manifest);
         nodeTypes.push_back(new AGControlGestureNode::Manifest);
+        
+        nodeTypes.push_back(new AGControlSlewNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();
