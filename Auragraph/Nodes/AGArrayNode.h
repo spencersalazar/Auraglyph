@@ -35,6 +35,7 @@ public:
 
         vector<AGPortInfo> _inputPortInfo() const override;
         vector<AGPortInfo> _editPortInfo() const override;
+        vector<AGPortInfo> _outputPortInfo() const override;
         vector<GLvertex3f> _iconGeo() const override;
         GLuint _iconGeoType() const override;
     };

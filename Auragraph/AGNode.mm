@@ -118,6 +118,14 @@ void AGNode::_initBase()
         m_param2EditPort[info.portId] = i;
         m_params[info.portId] = getDefaultParamValue(info.portId);
     }
+    
+    int numOutput = numOutputPorts();
+    for(int i = 0; i < numOutput; i++)
+    {
+        const AGPortInfo &info = outputPortInfo(i);
+        m_param2OutputPort[info.portId] = i;
+    }
+
 }
 
 void AGNode::init()
@@ -543,6 +551,20 @@ int AGNode::numInputsForPort(int paramId, AGRate rate)
     
     return numInputs;
 }
+
+int AGNode::numOutputsForPort(int portId)
+{
+    int portNum = m_param2OutputPort[portId];
+    int numOutputs = 0;
+    for(auto conn : m_outbound)
+    {
+        if(conn->srcPort() == portNum)
+            numOutputs++;
+    }
+    
+    return numOutputs;
+}
+
 
 AGDocument::Node AGNode::serialize()
 {

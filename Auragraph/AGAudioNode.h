@@ -67,7 +67,7 @@ public:
     virtual AGRate rate() override { return RATE_AUDIO; }
     inline float gain() const { return param(AUDIO_PARAM_GAIN); }
     
-    const float *lastOutputBuffer() const { return m_outputBuffer; }
+    const float *lastOutputBuffer(int portNum) const { return m_outputBuffer[portNum]; }
     
     static int sampleRate() { return s_sampleRate; }
     static int bufferSize()
@@ -94,12 +94,15 @@ private:
 protected:
     
     sampletime m_lastTime;
-    Buffer<float> m_outputBuffer;
-    float ** m_inputPortBuffer;
+    
+    vector<Buffer<float>> m_outputBuffer;
+
+    float ** m_inputPortBuffer; // XXX TODO: stretch goal; should we refactor this as a vector of Buffers? if our newfangled
+                                // output vector scheme works, then go for it!
     
     void allocatePortBuffers();
     void pullInputPorts(sampletime t, int nFrames);
-    void renderLast(float *output, int nFrames);
+    void renderLast(float *output, int nFrames, int chanNum);
     float *inputPortVector(int paramId);
 };
 
@@ -142,6 +145,8 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", false, true, 1, 0, AGFloat_Max, AGPortInfo::LOG, .doc = "Output gain." }
             };
         }
+
+        vector<AGPortInfo> _outputPortInfo() const override { return { }; }
         
         vector<GLvertex3f> _iconGeo() const override
         {
@@ -167,8 +172,6 @@ public:
     void initFinal() override;
     
     void setOutputDestination(AGAudioOutputDestination *destination);
-    
-    virtual int numOutputPorts() const override { return 0; }
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override;
     

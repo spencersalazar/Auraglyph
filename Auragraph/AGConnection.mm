@@ -232,7 +232,9 @@ void AGConnection::render()
         
         waveformShader.setZ(0);
         waveformShader.setGain(gain);
-        glVertexAttribPointer(AGWaveformShader::s_attribPositionY, 1, GL_FLOAT, GL_FALSE, 0, audioSrc->lastOutputBuffer());
+        
+        glVertexAttribPointer(AGWaveformShader::s_attribPositionY, 1, GL_FLOAT, GL_FALSE, 0, audioSrc->lastOutputBuffer(srcPort()));
+        
         glEnableVertexAttribArray(AGWaveformShader::s_attribPositionY);
         waveformShader.setNumElements(AGAudioNode::bufferSize());
         

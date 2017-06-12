@@ -31,6 +31,7 @@ public:
     enum Param
     {
         PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT,
     };
     
     class Manifest : public AGStandardNodeManifest<AGAudioCompositeNode>
@@ -53,7 +54,14 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
             };
         };
-        
+
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+
         vector<GLvertex3f> _iconGeo() const override
         {
             int NUM_PTS = 32;

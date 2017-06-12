@@ -22,6 +22,7 @@ public:
     enum Param
     {
         PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT,
         PARAM_FREQ,
         PARAM_DURATION,
         PARAM_PHASE,
@@ -51,7 +52,14 @@ public:
                 { PARAM_DURATION, "dur", true, true, 1.0f/220.0f, .doc = "Oscillator duration or wavelength (seconds)." },
             };
         };
-        
+
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius = 25;

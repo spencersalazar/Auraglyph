@@ -607,6 +607,9 @@ vector<AGPortInfo> AGControlArrayNode::Manifest::_inputPortInfo() const
 
 vector<AGPortInfo> AGControlArrayNode::Manifest::_editPortInfo() const { return { }; };
 
+// XXX TODO: shouldn't we be declaring outputs here? Control objects handle things differently...
+vector<AGPortInfo> AGControlArrayNode::Manifest::_outputPortInfo() const { return { }; };
+
 vector<GLvertex3f> AGControlArrayNode::Manifest::_iconGeo() const
 {
     float radius = 0.0057*AGStyle::oldGlobalScale;

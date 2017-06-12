@@ -37,11 +37,11 @@ int AGAudioCompositeNode::numOutputPorts() const
 
 void AGAudioCompositeNode::renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans)
 {
-    if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+    if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
     m_lastTime = t;
     pullInputPorts(t, nFrames);
     
-    m_outputBuffer.clear();
+    m_outputBuffer[chanNum].clear();
     
     // feed input audio to input port(s)
     for(AGAudioCapturer *capturer : m_inputNodes)
@@ -51,11 +51,11 @@ void AGAudioCompositeNode::renderAudio(sampletime t, float *input, float *output
     {
         Mutex::Scope scope = m_outputsMutex.inScope();
         for(AGAudioRenderer *outputNode : m_outputs)
-            outputNode->renderAudio(t, input, m_outputBuffer, nFrames, 0, 1);
+            outputNode->renderAudio(t, input, m_outputBuffer[chanNum], nFrames, 0, 1);
     }
     
     float gain = param(AUDIO_PARAM_GAIN);
     
     for(int i = 0; i < nFrames; i++)
-        output[i] += m_outputBuffer[i]*gain;
+        output[i] += m_outputBuffer[chanNum][i]*gain;
 }

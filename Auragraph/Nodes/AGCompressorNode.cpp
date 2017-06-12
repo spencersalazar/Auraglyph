@@ -17,7 +17,7 @@ void AGAudioCompressorNode::initFinal()
 
 void AGAudioCompressorNode::renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans)
 {
-    if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+    if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
     m_lastTime = t;
     pullInputPorts(t, nFrames);
     
@@ -47,8 +47,8 @@ void AGAudioCompressorNode::renderAudio(sampletime t, float *input, float *outpu
         
         // Compute linear gain for compressor
         float gainval = dB2lin(dbgainval);
-        m_outputBuffer[i] = inputv[i]*gainval*gain;
-        output[i] += m_outputBuffer[i];
+        m_outputBuffer[chanNum][i] = inputv[i]*gainval*gain;
+        output[i] += m_outputBuffer[chanNum][i];
     }
 }
 

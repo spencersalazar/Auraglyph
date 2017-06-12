@@ -70,8 +70,7 @@ void AGAudioNode::init()
     m_portRadius = 0.01*0.2*AGStyle::oldGlobalScale;
     
     m_lastTime = -1;
-    m_outputBuffer.resize(bufferSize());
-    m_outputBuffer.clear();
+    
     m_inputPortBuffer = NULL;
     
     allocatePortBuffers();
@@ -87,8 +86,7 @@ void AGAudioNode::init(const AGDocument::Node &docNode)
     m_portRadius = 0.01*0.2*AGStyle::oldGlobalScale;
     
     m_lastTime = -1;
-    m_outputBuffer.resize(bufferSize());
-    m_outputBuffer.clear();
+
     m_inputPortBuffer = NULL;
     
     allocatePortBuffers();
@@ -110,6 +108,8 @@ AGAudioNode::~AGAudioNode()
         delete[] m_inputPortBuffer;
         m_inputPortBuffer = NULL;
     }
+
+    m_outputBuffer.clear();
 }
 
 //void AGAudioNode::renderAudio(float *input, float *output, int nFrames)
@@ -207,7 +207,16 @@ GLvertex3f AGAudioNode::relativePositionForInputPort(int port) const
 
 GLvertex3f AGAudioNode::relativePositionForOutputPort(int port) const
 {
-    return GLvertex3f(m_radius, 0, 0);
+    int numOut = numOutputPorts();
+    // compute placement to pack ports side by side on left side
+    // thetaI - inner angle of the big circle traversed by 1/2 of the port
+    float thetaI = acosf((2*m_radius*m_radius - s_portRadius*s_portRadius) / (2*m_radius*m_radius));
+    // thetaStart - position of first port
+    float thetaStart = (numOut-1)*thetaI;
+    // theta - position of this port
+    float theta = thetaStart - 2*thetaI*port;
+    // flip horizontally to place on left side
+    return GLvertex3f(m_radius*cosf(theta), m_radius*sinf(theta), 0);
 }
 
 void AGAudioNode::allocatePortBuffers()
@@ -234,6 +243,15 @@ void AGAudioNode::allocatePortBuffers()
     {
         m_inputPortBuffer = NULL;
     }
+    
+    m_outputBuffer.clear();
+    m_outputBuffer.resize(numOutputPorts());
+    for(int i = 0; i < numOutputPorts(); i++)
+    {
+        m_outputBuffer[i].resize(bufferSize());
+        m_outputBuffer[i].clear();
+    }
+
 }
 
 void AGAudioNode::pullInputPorts(sampletime t, int nFrames)
@@ -275,7 +293,7 @@ void AGAudioNode::pullInputPorts(sampletime t, int nFrames)
             AGAudioNode *node = dynamic_cast<AGAudioNode *>(rndrr);
             if(node)
                 dbgprint_off("rendering '%s'\n", node->title().c_str());
-            rndrr->renderAudio(t, NULL, m_inputPortBuffer[conn->dstPort()], nFrames, 0, 1);
+            rndrr->renderAudio(t, NULL, m_inputPortBuffer[conn->dstPort()], nFrames, conn->srcPort(), conn->src()->numOutputPorts());
         }
     }
     
@@ -298,7 +316,7 @@ void AGAudioNode::pullPortInput(int portId, int num, sampletime t, float *output
                 if(conn->rate() == RATE_AUDIO)
                 {
                     AGAudioRenderer *rndrr = dynamic_cast<AGAudioRenderer *>(conn->src());
-                    rndrr->renderAudio(t, NULL, output, nFrames, 0, 1);
+                    rndrr->renderAudio(t, NULL, output, nFrames, conn->srcPort(), conn->src()->numOutputPorts());
                 }
                 else
                 {
@@ -327,9 +345,9 @@ void AGAudioNode::pullPortInput(int portId, int num, sampletime t, float *output
 //        value += m_inputPortBuffer[index][sample];
 //}
 
-void AGAudioNode::renderLast(float *output, int nFrames)
+void AGAudioNode::renderLast(float *output, int nFrames, int chanNum)
 {
-    for(int i = 0; i < nFrames; i++) output[i] += m_outputBuffer[i];
+    for(int i = 0; i < nFrames; i++) output[i] += m_outputBuffer[chanNum][i];
 }
 
 float *AGAudioNode::inputPortVector(int paramId)
@@ -380,7 +398,7 @@ void AGAudioOutputNode::renderAudio(sampletime t, float *input, float *output, i
         if(conn->rate() == RATE_AUDIO)
         {
             assert(conn->dstPort() == 0 || conn->dstPort() == 1);
-            ((AGAudioNode *)conn->src())->renderAudio(t, input, m_inputBuffer[conn->dstPort()], nFrames, 0, 1);
+            ((AGAudioNode *)conn->src())->renderAudio(t, input, m_inputBuffer[conn->dstPort()], nFrames, conn->srcPort(), conn->src()->numOutputPorts());
         }
     }
     
@@ -404,6 +422,12 @@ class AGAudioInputNode : public AGAudioNode, public AGAudioCapturer
 {
 public:
     
+    enum Param
+    {
+        PARAM_OUTPUT = AUDIO_PARAM_LAST+1,
+    };
+
+    
     class Manifest : public AGStandardNodeManifest<AGAudioInputNode>
     {
     public:
@@ -417,6 +441,13 @@ public:
         {
             return {
                 { AUDIO_PARAM_GAIN, "gain", false, true, 1, 0, 0, AGPortInfo::LOG, .doc = "Output gain." }
+            };
+        }
+        
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
             };
         }
         
@@ -453,13 +484,11 @@ public:
         [[AGAudioManager instance] removeCapturer:this];
     }
     
-    
-    int numOutputPorts() const override { return 1; }
     int numInputPorts() const override { return 0; }
     
     void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         // pullInputPorts(t, nFrames);
         
@@ -467,7 +496,7 @@ public:
         
         if(m_inputSize && m_input)
         {
-            float *_outputBuffer = m_outputBuffer.buffer;
+            float *_outputBuffer = m_outputBuffer[chanNum];
             float *_input = m_input;
             int mn = min(nFrames, m_inputSize);
             for(int i = 0; i < mn; i++)
@@ -503,7 +532,8 @@ public:
     
     enum Param
     {
-        PARAM_FREQ = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT = AUDIO_PARAM_LAST+1,
+        PARAM_FREQ,
         PARAM_PHASE,
     };
 
@@ -530,7 +560,14 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, 0, 0, AGPortInfo::LOG, .doc = "Output gain." }
             };
         };
-        
+
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+
         vector<GLvertex3f> _iconGeo() const override
         {
             int NUM_PTS = 32;
@@ -559,8 +596,6 @@ public:
         m_phase = 0;
     }
     
-    virtual int numOutputPorts() const override { return 1; }
-    
     void receiveControl(int port, const AGControl &control) override
     {
         if(port == m_param2InputPort[PARAM_PHASE])
@@ -575,7 +610,7 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
@@ -587,8 +622,8 @@ public:
         
         for(int i = 0; i < nFrames; i++)
         {
-            m_outputBuffer[i] = sinf(m_phase*2.0*M_PI) * gainv[i];
-            output[i] += m_outputBuffer[i];
+            m_outputBuffer[chanNum][i] = sinf(m_phase*2.0*M_PI) * gainv[i];
+            output[i] += m_outputBuffer[chanNum][i];
             
             m_phase = clipunit(m_phase*phase_ctl + freqv[i]/sampleRate() + phasev[i]);
         }
@@ -609,7 +644,8 @@ public:
     
     enum Param
     {
-        PARAM_FREQ = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT = AUDIO_PARAM_LAST+1,
+        PARAM_FREQ,
         PARAM_WIDTH,
         PARAM_PHASE,
     };
@@ -639,6 +675,13 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
             };
         };
+
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
         
         vector<GLvertex3f> _iconGeo() const override
         {
@@ -668,8 +711,6 @@ public:
         m_phase = 0;
     }
     
-    virtual int numOutputPorts() const override { return 1; }
-    
     void receiveControl(int port, const AGControl &control) override
     {
         if(port == m_param2InputPort[PARAM_PHASE])
@@ -684,7 +725,7 @@ public:
 
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
@@ -697,8 +738,8 @@ public:
 
         for(int i = 0; i < nFrames; i++)
         {
-            m_outputBuffer[i] = (m_phase < width[i] ? 1 : -1) * gainv[i];
-            output[i] += m_outputBuffer[i];
+            m_outputBuffer[chanNum][i] = (m_phase < width[i] ? 1 : -1) * gainv[i];
+            output[i] += m_outputBuffer[chanNum][i];
             
             m_phase = clipunit(m_phase*phase_ctl + freqv[i]/sampleRate() + phasev[i]);
         }
@@ -720,7 +761,8 @@ public:
     
     enum Param
     {
-        PARAM_FREQ = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT = AUDIO_PARAM_LAST+1,
+        PARAM_FREQ,
         PARAM_PHASE,
     };
 
@@ -748,6 +790,13 @@ public:
             };
         };
         
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+        
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius_x = 0.005f*AGStyle::oldGlobalScale;
@@ -774,8 +823,6 @@ public:
         m_phase = 0;
     }
     
-    virtual int numOutputPorts() const override { return 1; }
-    
     void receiveControl(int port, const AGControl &control) override
     {
         if(port == m_param2InputPort[PARAM_PHASE])
@@ -790,7 +837,7 @@ public:
 
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
@@ -802,8 +849,8 @@ public:
         
         for(int i = 0; i < nFrames; i++)
         {
-            m_outputBuffer[i] = ((1-m_phase)*2-1)  * gainv[i];
-            output[i] += m_outputBuffer[i];
+            m_outputBuffer[chanNum][i] = ((1-m_phase)*2-1)  * gainv[i];
+            output[i] += m_outputBuffer[chanNum][i];
             
             m_phase = clipunit(m_phase*phase_ctl + freqv[i]/sampleRate() + phasev[i]);
         }
@@ -825,7 +872,8 @@ public:
     
     enum Param
     {
-        PARAM_FREQ = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT = AUDIO_PARAM_LAST+1,
+        PARAM_FREQ,
         PARAM_PHASE,
     };
 
@@ -852,6 +900,13 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
             };
         };
+
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
         
         vector<GLvertex3f> _iconGeo() const override
         {
@@ -878,8 +933,6 @@ public:
     {
         m_phase = 0;
     }
-
-    virtual int numOutputPorts() const override { return 1; }
     
     void receiveControl(int port, const AGControl &control) override
     {
@@ -895,7 +948,7 @@ public:
 
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
@@ -908,10 +961,10 @@ public:
         for(int i = 0; i < nFrames; i++)
         {
             if(m_phase < 0.5)
-                m_outputBuffer[i] = ((1-m_phase*2)*2-1) * gainv[i];
+                m_outputBuffer[chanNum][i] = ((1-m_phase*2)*2-1) * gainv[i];
             else
-                m_outputBuffer[i] = ((m_phase-0.5)*4-1) * gainv[i];
-            output[i] += m_outputBuffer[i];
+                m_outputBuffer[chanNum][i] = ((m_phase-0.5)*4-1) * gainv[i];
+            output[i] += m_outputBuffer[chanNum][i];
             
             m_phase = clipunit(m_phase*phase_ctl + freqv[i]/sampleRate() + phasev[i]);
         }
@@ -934,6 +987,7 @@ public:
     enum Param
     {
         PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT,
         PARAM_TRIGGER,
         PARAM_ATTACK,
         PARAM_DECAY,
@@ -968,6 +1022,13 @@ public:
             };
         };
         
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius_x = 0.005*AGStyle::oldGlobalScale;
@@ -997,8 +1058,6 @@ public:
                            param(PARAM_SUSTAIN), param(PARAM_RELEASE));
     }
     
-    virtual int numOutputPorts() const override { return 1; }
-    
     void editPortValueChanged(int paramId) override
     {
         switch(paramId)
@@ -1015,7 +1074,7 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
@@ -1036,8 +1095,8 @@ public:
             }
             m_prevTrigger = triggerv[i];
             
-            m_outputBuffer[i] = m_adsr.tick() * (inputv[i] + virtual_input) * gainv[i];
-            output[i] += m_outputBuffer[i];
+            m_outputBuffer[chanNum][i] = m_adsr.tick() * (inputv[i] + virtual_input) * gainv[i];
+            output[i] += m_outputBuffer[chanNum][i];
         }
     }
 
@@ -1076,6 +1135,7 @@ public:
     enum Param
     {
         PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT,
         PARAM_FREQ,
         PARAM_Q,
     };
@@ -1106,6 +1166,13 @@ public:
             };
         };
         
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius_x = 0.005*AGStyle::oldGlobalScale;
@@ -1151,7 +1218,14 @@ public:
                 { PARAM_Q, "Q", true, true, 1, 0.001, 1000, .doc = "Filter Q (bandwidth)." },
             };
         };
-        
+
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius_x = 0.005*AGStyle::oldGlobalScale;
@@ -1197,6 +1271,13 @@ public:
                 { PARAM_Q, "Q", true, true, 1, 0.001, 1000, .doc = "Filter Q (bandwidth)." },
             };
         };
+
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
         
         vector<GLvertex3f> _iconGeo() const override
         {
@@ -1226,8 +1307,6 @@ public:
         m_filter.set(param(PARAM_FREQ), param(PARAM_Q));
     }
     
-    virtual int numOutputPorts() const override { return 1; }
-    
     void editPortValueChanged(int paramId) override
     {
         switch(paramId)
@@ -1256,7 +1335,7 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
@@ -1287,8 +1366,8 @@ public:
                 m_filter.clear();
             }
             
-            m_outputBuffer[i] = samp;
-            output[i] += m_outputBuffer[i];
+            m_outputBuffer[chanNum][i] = samp;
+            output[i] += m_outputBuffer[chanNum][i];
         }
     }
 
@@ -1432,6 +1511,7 @@ public:
     enum Param
     {
         PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT,
         PARAM_DELAY,
         PARAM_FEEDBACK,
     };
@@ -1461,6 +1541,13 @@ public:
                 { PARAM_FEEDBACK, "feedback", true, true, 0.1, 0, 1, .doc = "Feedback gain." },
             };
         };
+
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
         
         vector<GLvertex3f> _iconGeo() const override
         {
@@ -1491,8 +1578,6 @@ public:
         m_delay.clear();
     }
     
-    virtual int numOutputPorts() const override { return 1; }
-    
     void editPortValueChanged(int paramId) override
     {
         if(paramId == PARAM_DELAY)
@@ -1501,7 +1586,7 @@ public:
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
@@ -1515,8 +1600,8 @@ public:
             _setDelay(delayLengthv[i]);
             
             float delaySamp = m_delay.tick(inputv[i] + m_delay.last()*feedbackGainv[i]);
-            m_outputBuffer[i] = (inputv[i] + delaySamp)*gainv[i];
-            output[i] += m_outputBuffer[i];
+            m_outputBuffer[chanNum][i] = (inputv[i] + delaySamp)*gainv[i];
+            output[i] += m_outputBuffer[chanNum][i];
         }
     }
     
@@ -1559,6 +1644,7 @@ public:
     enum Param
     {
         PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT,
         PARAM_ADD,
     };
     
@@ -1583,7 +1669,14 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
             };
         };
-        
+
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius_x = 0.005*AGStyle::oldGlobalScale;
@@ -1608,11 +1701,9 @@ public:
         m_inputBuffer.resize(bufferSize());
     }
     
-    virtual int numOutputPorts() const override { return 1; }
-    
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         
         this->lock();
@@ -1628,7 +1719,7 @@ public:
         
         // set to base value
         for(int i = 0; i < nFrames; i++)
-            m_outputBuffer[i] = base;
+            m_outputBuffer[chanNum][i] = base;
         
         for(int j = 0; j < numInputs; j++)
         {
@@ -1636,11 +1727,11 @@ public:
             pullPortInput(PARAM_INPUT, j, t, m_inputBuffer, nFrames);
             
             for(int i = 0; i < nFrames; i++)
-                m_outputBuffer[i] += m_inputBuffer[i];
+                m_outputBuffer[chanNum][i] += m_inputBuffer[i];
         }
         
         for(int i = 0; i < nFrames; i++)
-            output[i] += m_outputBuffer[i];
+            output[i] += m_outputBuffer[chanNum][i];
         
         this->unlock();
     }
@@ -1664,6 +1755,7 @@ public:
     enum Param
     {
         PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT,
         PARAM_MULTIPLY,
     };
     
@@ -1688,7 +1780,14 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
             };
         };
-        
+
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius_x = 0.005*AGStyle::oldGlobalScale;
@@ -1713,11 +1812,9 @@ public:
         m_inputBuffer.resize(bufferSize());
     }
     
-    virtual int numOutputPorts() const override { return 1; }
-    
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         
         this->lock();
@@ -1733,7 +1830,7 @@ public:
         
         // set to base value
         for(int i = 0; i < nFrames; i++)
-            m_outputBuffer[i] = base;
+            m_outputBuffer[chanNum][i] = base;
         
         for(int j = 0; j < numInputs; j++)
         {
@@ -1741,13 +1838,13 @@ public:
             pullPortInput(PARAM_INPUT, j, t, m_inputBuffer, nFrames);
             
             for(int i = 0; i < nFrames; i++)
-                m_outputBuffer[i] *= m_inputBuffer[i];
+                m_outputBuffer[chanNum][i] *= m_inputBuffer[i];
         }
         
         this->unlock();
         
         for(int i = 0; i < nFrames; i++)
-            output[i] += m_outputBuffer[i];
+            output[i] += m_outputBuffer[chanNum][i];
     }
     
 private:
@@ -1765,7 +1862,11 @@ class AGAudioNoiseNode : public AGAudioNode
 {
 public:
     
-    enum Param { };
+    enum Param
+    {
+        PARAM_OUTPUT = AUDIO_PARAM_LAST+1,
+    };
+    
     
     class Manifest : public AGStandardNodeManifest<AGAudioNoiseNode>
     {
@@ -1787,7 +1888,14 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
             };
         };
-        
+
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+
         vector<GLvertex3f> _iconGeo() const override
         {
             int NUM_SAMPS = 25;
@@ -1818,11 +1926,9 @@ public:
         srandom(time(NULL));
     }
     
-    virtual int numOutputPorts() const override { return 1; }
-    
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
@@ -1831,8 +1937,8 @@ public:
         for(int i = 0; i < nFrames; i++)
         {
             float randomSample = arc4random()*ONE_OVER_RAND_MAX*2-1;
-            m_outputBuffer[i] = randomSample*gainv[i];
-            output[i] += m_outputBuffer[i];
+            m_outputBuffer[chanNum][i] = randomSample*gainv[i];
+            output[i] += m_outputBuffer[chanNum][i];
         }
     }
     
@@ -1853,6 +1959,7 @@ public:
     enum Param
     {
         PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT,
         PARAM_ATTACK,
         PARAM_RELEASE,
     };
@@ -1880,6 +1987,13 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
             };
         };
+
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
         
         // XXX TODO: envelope follower shape? Some combo of noise and ADSR?
 
@@ -1946,11 +2060,9 @@ public:
         m_envelope = 0;
     }
     
-    virtual int numOutputPorts() const override { return 1; }
-    
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
@@ -1973,14 +2085,180 @@ public:
                 m_envelope = release_coeff * m_envelope + (1-release_coeff) * env_input;
             }
             
-            m_outputBuffer[i] = m_envelope * gainv[i];
+            m_outputBuffer[chanNum][i] = m_envelope * gainv[i];
             
-            output[i] += m_outputBuffer[i];
+            output[i] += m_outputBuffer[chanNum][i];
         }
     }
     
 private:
     float m_envelope;
+};
+
+// Andrew Piepenbrink, 7/7/2017
+//------------------------------------------------------------------------------
+// ### AGAudioStateVariableFilterNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioStateVariableFilterNode
+
+class AGAudioStateVariableFilterNode : public AGAudioNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_LPF_OUTPUT,
+        PARAM_HPF_OUTPUT,
+        PARAM_BPF_OUTPUT,
+        PARAM_BRF_OUTPUT,
+        PARAM_CUTOFF,
+        PARAM_Q,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGAudioStateVariableFilterNode>
+    {
+    public:
+        string _type() const override { return "StateVariableFilter"; };
+        string _name() const override { return "StateVariableFilter"; };
+        string _description() const override { return "State variable filter"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_INPUT, "input", true, false, .doc = "Input signal." },
+                { PARAM_CUTOFF, "cutoff", true, true, 220.0, 0.0001, 7000.0, .doc = "Filter cutoff." },
+                { PARAM_Q, "Q", true, true, 1.0, 0.0001, 100.0, .doc = "Filter Q." },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { PARAM_CUTOFF, "cutoff", true, true, 220.0, 0.0001, 7000.0, .doc = "Filter cutoff." },
+                { PARAM_Q, "Q", true, true, 1.0, 0.0001, 100.0, .doc = "Filter Q." },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+            };
+        };
+
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_LPF_OUTPUT, "lp output", true, false, .doc = "LP Output." },
+                { PARAM_HPF_OUTPUT, "hp output", true, false, .doc = "HP Output." },
+                { PARAM_BPF_OUTPUT, "bp output", true, false, .doc = "BP Output." },
+                { PARAM_BRF_OUTPUT, "br output", true, false, .doc = "Notch Output." }
+
+            };
+        }
+
+        // XXX TODO: icon shape
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            //float radius_x = 0.005*AGStyle::oldGlobalScale;
+            //float radius_y = radius_x * 0.66;
+            
+            //            vector<GLvertex3f> iconGeo = {
+            //                { -radius_x, 0, 0 },
+            //                { -radius_x, radius_y, 0 },
+            //                { 0, radius_y, 0 },
+            //                { 0, -radius_y, 0 },
+            //                { radius_x, -radius_y, 0 },
+            //                { radius_x, 0, 0 },
+            //            };
+            
+            // ADSR
+            //            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            //            float radius_y = radius_x * 0.66;
+            //
+            //            // ADSR shape
+            //            vector<GLvertex3f> iconGeo = {
+            //                { -radius_x, -radius_y, 0 },
+            //                { -radius_x*0.75f, radius_y, 0 },
+            //                { -radius_x*0.25f, 0, 0 },
+            //                { radius_x*0.66f, 0, 0 },
+            //                { radius_x, -radius_y, 0 },
+            //            };
+            
+            
+            // Noise
+            
+            const float ONE_OVER_RAND_MAX = 1.0/4294967295.0; // For icon drawing
+            
+            int NUM_SAMPS = 25;
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x;
+            
+            // x icon
+            vector<GLvertex3f> iconGeo;
+            iconGeo.resize(NUM_SAMPS);
+            
+            for(int i = 0; i < NUM_SAMPS; i++)
+            {
+                float randomSample = arc4random()*ONE_OVER_RAND_MAX*2-1;
+                iconGeo[i].y = (((float)i)/(NUM_SAMPS-1)*2-1)*radius_x;
+                
+                //iconGeo[i].y = randomSample*radius_y;
+                iconGeo[i].x = randomSample*radius_y * 0.1;
+            }
+            
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+    };
+    
+    using AGAudioNode::AGAudioNode;
+    
+    void initFinal() override
+    {
+        d1 = d2 = 0;
+    }
+    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
+    {
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
+        m_lastTime = t;
+        pullInputPorts(t, nFrames);
+        
+        float *inputv = inputPortVector(PARAM_INPUT);
+        float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        float *cutoffv = inputPortVector(PARAM_CUTOFF);
+        float *qv = inputPortVector(PARAM_Q);
+        
+        for(int i = 0; i < nFrames; i++)
+        {
+            
+            // TODO: only recompute coeffs if params have changed
+            float cutoff_coeff = 2 * sin(M_PI * cutoffv[i] / sampleRate());
+            float q_coeff = 1.0 / qv[i];
+            
+            float lpf = d2 + cutoff_coeff * d1;
+            float hpf = inputv[i] - lpf - q_coeff * d1;
+            float bpf = cutoff_coeff * hpf + d1;
+            float brf = hpf + lpf;
+            
+            if (isbad(lpf) || isbad(hpf) || isbad(bpf) || isbad(brf))
+                lpf = hpf = bpf = brf = 0;
+            
+            d1 = bpf;
+            d2 = lpf;
+            
+            m_outputBuffer[0][i] = lpf * gainv[i];
+            m_outputBuffer[1][i] = hpf * gainv[i];
+            m_outputBuffer[2][i] = bpf * gainv[i];
+            m_outputBuffer[3][i] = brf * gainv[i];
+            
+            output[i] += m_outputBuffer[chanNum][i];
+        }
+    }
+    
+private:
+    float d1;
+    float d2;
 };
 
 
@@ -1998,6 +2276,7 @@ public:
         PARAM_FILE = AUDIO_PARAM_LAST+1,
         PARAM_TRIGGER,
         PARAM_RATE,
+        PARAM_OUTPUT,
     };
     
     class Manifest : public AGStandardNodeManifest<AGAudioSoundFileNode>
@@ -2026,6 +2305,13 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", ._default = 1 }
             };
         };
+        
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
         
         vector<GLvertex3f> _iconGeo() const override
         {
@@ -2094,7 +2380,7 @@ public:
     
     void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
     {
-        if(t <= m_lastTime) { renderLast(output, nFrames); return; }
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         pullInputPorts(t, nFrames);
         
@@ -2116,8 +2402,8 @@ public:
                 m_file.setRate(m_rate);
             }
             
-            m_outputBuffer[i] = m_file.tick() * gainv[i];
-            output[i] += m_outputBuffer[i];
+            m_outputBuffer[0][i] = m_file.tick() * gainv[i];
+            output[i] += m_outputBuffer[chanNum][i];
         }
     }
     
@@ -2162,7 +2448,6 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2BPF>::ManifestBPF);
         nodeTypes.push_back(new AGAudioCompressorNode::Manifest);
 
-        // XXX new
         nodeTypes.push_back(new AGAudioEnvelopeFollowerNode::Manifest);
         
         nodeTypes.push_back(new AGAudioAddNode::Manifest);
@@ -2172,6 +2457,8 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioOutputNode::Manifest);
         
         nodeTypes.push_back(new AGAudioCompositeNode::Manifest);
+        
+        nodeTypes.push_back(new AGAudioStateVariableFilterNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();

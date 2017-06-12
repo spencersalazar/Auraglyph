@@ -498,6 +498,9 @@ vector<AGPortInfo> AGControlSequencerNode::Manifest::_editPortInfo() const
     };
 };
 
+// XXX TODO: not sure how to handle this b/c the sequencer handles multiple outputs differently
+vector<AGPortInfo> AGControlSequencerNode::Manifest::_outputPortInfo() const { return { }; };
+
 vector<GLvertex3f> AGControlSequencerNode::Manifest::_iconGeo() const
 {
     float radius = 0.005*AGStyle::oldGlobalScale;

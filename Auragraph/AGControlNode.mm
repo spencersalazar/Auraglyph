@@ -176,6 +176,7 @@ public:
     
     enum Param
     {
+        PARAM_OUTPUT,
         PARAM_INTERVAL,
     };
     
@@ -197,6 +198,13 @@ public:
         {
             return {
                 { PARAM_INTERVAL, "interval", true, true, 0.5, 0.001, AGFloat_Max, .doc = "Timer fire interval (seconds)." },
+            };
+        };
+
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." },
             };
         };
         
@@ -277,6 +285,7 @@ public:
     
     enum Param
     {
+        PARAM_OUTPUT,
         PARAM_ADD,
     };
     
@@ -300,7 +309,14 @@ public:
                 { PARAM_ADD, "add", true, true, 0, .doc = "Quantity to add to input." },
             };
         };
-        
+
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." },
+            };
+        };
+
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius_x = 0.005*AGStyle::oldGlobalScale;
@@ -358,6 +374,7 @@ public:
     
     enum Param
     {
+        PARAM_OUTPUT,
         PARAM_MULTIPLY,
     };
     
@@ -381,7 +398,14 @@ public:
                 { PARAM_MULTIPLY, "mult", true, true, 0, .doc = "Quantity to multiply input by." },
             };
         };
-        
+
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." },
+            };
+        };
+
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius_x = 0.005*AGStyle::oldGlobalScale;
@@ -438,6 +462,7 @@ public:
     
     enum Param
     {
+        PARAM_OUTPUT,
         PARAM_MIDI,
     };
     
@@ -456,7 +481,14 @@ public:
         };
         
         vector<AGPortInfo> _editPortInfo() const override { return { }; };
-        
+
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." },
+            };
+        };
+
         vector<GLvertex3f> _iconGeo() const override
         {
             float radius = 0.005*AGStyle::oldGlobalScale;
