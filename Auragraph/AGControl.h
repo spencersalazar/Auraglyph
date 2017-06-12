@@ -120,8 +120,9 @@ public:
         AGBit vbit;
         AGInt vint;
         AGFloat vfloat;
-        AGString vstring;
     };
+    
+    AGString vstring;
     
     
     AGFloat getFloat() const
