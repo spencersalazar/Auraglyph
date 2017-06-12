@@ -151,7 +151,7 @@ void AGDocument::loadFromPath(const string &path)
                         NSDictionary *value = dict[@"params"][param];
                         if([value[@"type"] isEqualToString:@"int"]) { pv.type = ParamValue::INT; pv.i = [value[@"value"] intValue]; }
                         else if([value[@"type"] isEqualToString:@"float"]) { pv.type = ParamValue::FLOAT; pv.f = [value[@"value"] floatValue]; }
-                        else if([value[@"type"] isEqualToString:@"string"]) { pv.type = ParamValue::STRING; pv.s = [[value[@"value"] stringValue] UTF8String]; }
+                        else if([value[@"type"] isEqualToString:@"string"]) { pv.type = ParamValue::STRING; pv.s = [value[@"value"] UTF8String]; }
                         else if([value[@"type"] isEqualToString:@"array_float"])
                         {
                             pv.type = ParamValue::FLOAT_ARRAY;
