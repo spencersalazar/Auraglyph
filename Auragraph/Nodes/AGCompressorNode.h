@@ -84,6 +84,8 @@ public:
         PARAM_OUTPUT,
         PARAM_THRESHOLD,
         PARAM_RATIO,
+        PARAM_ATTACK,
+        PARAM_RELEASE,
     };
     
     class Manifest : public AGStandardNodeManifest<AGAudioCompressorNode>
@@ -105,6 +107,8 @@ public:
             return {
                 { PARAM_THRESHOLD, "threshold", true, true, -20, -200, 0, .doc = "Compressor threshold (dB)." },
                 { PARAM_RATIO, "ratio", true, true, 2, 1, AGFloat_Max, .doc = "Compressor ratio." },
+                { PARAM_ATTACK, "attack", true, true, 0.025, 0, 1, .doc = "Compressor attack." },
+                { PARAM_RELEASE, "release", true, true, 0.1, 0, 1, .doc = "Compressor release." },
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
             };
         };

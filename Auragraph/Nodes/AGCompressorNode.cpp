@@ -11,8 +11,8 @@
 
 void AGAudioCompressorNode::initFinal()
 {
-    m_detector.setTauAttack(0.025, sampleRate());
-    m_detector.setTauRelease(0.100, sampleRate());
+    //m_detector.setTauAttack(0.025, sampleRate());
+    //m_detector.setTauRelease(0.100, sampleRate());
 }
 
 void AGAudioCompressorNode::renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans)
@@ -25,7 +25,12 @@ void AGAudioCompressorNode::renderAudio(sampletime t, float *input, float *outpu
     float dbThreshold = param(PARAM_THRESHOLD);
     float linThreshold = dB2lin(dbThreshold);
     float ratio = param(PARAM_RATIO);
+    float attack = param(PARAM_ATTACK);
+    float release = param(PARAM_RELEASE);
     float *inputv = inputPortVector(PARAM_INPUT);
+    
+    m_detector.setTauAttack(attack, sampleRate());
+    m_detector.setTauRelease(release, sampleRate());
     
     // if(m_controlPortBuffer[1]) gain += m_controlPortBuffer[1].getFloat();
 
