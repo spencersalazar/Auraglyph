@@ -2533,6 +2533,126 @@ private:
     AllPassN m_allpass;
 };
 
+//------------------------------------------------------------------------------
+// ### AGAudioBiquadNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioBiquadNode
+
+class AGAudioBiquadNode : public AGAudioNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT,
+        PARAM_A1,
+        PARAM_A2,
+        PARAM_B0,
+        PARAM_B1,
+        PARAM_B2,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGAudioBiquadNode>
+    {
+    public:
+        string _type() const override { return "Biquad"; };
+        string _name() const override { return "Biquad"; };
+        string _description() const override { return "Biquad filter."; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_INPUT, "input", true, false, .doc = "Input signal." },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { PARAM_A1, "a1", true, true, 0.00, -2.0, 2.0, .doc = "A1 coefficient." },
+                { PARAM_A2, "a2", true, true, 0.00, -2.0, 2.0, .doc = "A2 coefficient." },
+                { PARAM_B0, "b0", true, true, 0.00, -2.0, 2.0, .doc = "B0 coefficient." },
+                { PARAM_B1, "b1", true, true, 0.00, -2.0, 2.0, .doc = "B1 coefficient." },
+                { PARAM_B2, "b2", true, true, 0.00, -2.0, 2.0, .doc = "B2 coefficient." },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+            };
+        };
+        
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+        
+        // XXX TODO
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            const float ONE_OVER_RAND_MAX = 1.0/4294967295.0; // For icon drawing
+            
+            int NUM_SAMPS = 25;
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x;
+            
+            // x icon
+            vector<GLvertex3f> iconGeo;
+            iconGeo.resize(NUM_SAMPS);
+            
+            for(int i = 0; i < NUM_SAMPS; i++)
+            {
+                float randomSample = arc4random()*ONE_OVER_RAND_MAX*2-1;
+                iconGeo[i].x = (((float)i)/(NUM_SAMPS-1)*2-1)*radius_x;
+                iconGeo[i].y = randomSample*radius_y * 0.01;
+            }
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+    };
+    
+    using AGAudioNode::AGAudioNode;
+    
+    void initFinal() override
+    {
+        sn_1 = sn_2 = 0;
+    }
+    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
+    {
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
+        m_lastTime = t;
+        pullInputPorts(t, nFrames);
+        
+        float *inputv = inputPortVector(PARAM_INPUT);
+        float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        float a1 = param(PARAM_A1);
+        float a2 = param(PARAM_A2);
+        float b0 = param(PARAM_B0);
+        float b1 = param(PARAM_B1);
+        float b2 = param(PARAM_B2);
+        
+        for(int i = 0; i < nFrames; i++)
+        {
+            // Transposed Direct-Form II
+            float xn = inputv[i];
+            float yn = b0 * xn + sn_1;
+            sn_2 = -a2 * yn + b2 * xn;
+            sn_1 = -a1 * yn + b1 * xn;
+            
+            if (isbad(yn) || isbad(sn_1) || isbad(sn_2))
+                yn = sn_1 = sn_2 = 0;
+            
+            m_outputBuffer[chanNum][i] = yn * gainv[i];
+            output[i] += m_outputBuffer[chanNum][i];
+        }
+    }
+    
+private:
+    float sn_1, sn_2;
+};
 
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
@@ -2578,6 +2698,9 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioStateVariableFilterNode::Manifest);
         
         nodeTypes.push_back(new AGAudioAllpassNode::Manifest);
+        
+        nodeTypes.push_back(new AGAudioBiquadNode::Manifest);
+        
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();
