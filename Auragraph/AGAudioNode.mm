@@ -2438,20 +2438,37 @@ public:
         {
             float radius_x = 0.005*AGStyle::oldGlobalScale;
             float radius_y = radius_x;
+            int NUM_SAMPS = 25;
             
-            // ADSR shape
-            vector<GLvertex3f> iconGeo = {
-                {       -radius_x, radius_y*0.25f, 0 }, {       -radius_x, -radius_y*0.25f, 0 },
-                { -radius_x*0.33f, radius_y*0.25f, 0 }, { -radius_x*0.33f, -radius_y*0.25f, 0 },
-                {  radius_x*0.33f, radius_y*0.25f, 0 }, {  radius_x*0.33f, -radius_y*0.25f, 0 },
-                {        radius_x, radius_y*0.25f, 0 }, {        radius_x, -radius_y*0.25f, 0 },
-                {       -radius_x,              0, 0 }, {        radius_x,               0, 0 },
-            };
+            vector<GLvertex3f> iconGeo;
             
+            for (int i = 0; i < NUM_SAMPS; i++)
+            {
+                GLvertex3f vert;
+                
+                float sample = ((float)i/NUM_SAMPS);
+                sample = pow(sample, 6);
+                
+                vert.x = ((float)i/(NUM_SAMPS-1))*radius_x - radius_x;
+                vert.y = sample * radius_y;
+                
+                iconGeo.push_back(vert);
+            }
+
+            for (int i = 0; i < NUM_SAMPS; i++)
+            {
+                GLvertex3f vert;
+                
+                vert.x = ((float)i/NUM_SAMPS)*radius_x;
+                vert.y = -iconGeo[NUM_SAMPS-i-1].y;
+                
+                iconGeo.push_back(vert);
+            }
+
             return iconGeo;
         };
         
-        GLuint _iconGeoType() const override { return GL_LINES; };
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
     };
     
     using AGAudioNode::AGAudioNode;
