@@ -2154,56 +2154,36 @@ public:
             };
         }
 
-        // XXX TODO: icon shape
         vector<GLvertex3f> _iconGeo() const override
         {
-            //float radius_x = 0.005*AGStyle::oldGlobalScale;
-            //float radius_y = radius_x * 0.66;
-            
-            //            vector<GLvertex3f> iconGeo = {
-            //                { -radius_x, 0, 0 },
-            //                { -radius_x, radius_y, 0 },
-            //                { 0, radius_y, 0 },
-            //                { 0, -radius_y, 0 },
-            //                { radius_x, -radius_y, 0 },
-            //                { radius_x, 0, 0 },
-            //            };
-            
-            // ADSR
-            //            float radius_x = 0.005*AGStyle::oldGlobalScale;
-            //            float radius_y = radius_x * 0.66;
-            //
-            //            // ADSR shape
-            //            vector<GLvertex3f> iconGeo = {
-            //                { -radius_x, -radius_y, 0 },
-            //                { -radius_x*0.75f, radius_y, 0 },
-            //                { -radius_x*0.25f, 0, 0 },
-            //                { radius_x*0.66f, 0, 0 },
-            //                { radius_x, -radius_y, 0 },
-            //            };
-            
-            
-            // Noise
-            
-            const float ONE_OVER_RAND_MAX = 1.0/4294967295.0; // For icon drawing
-            
-            int NUM_SAMPS = 25;
             float radius_x = 0.005*AGStyle::oldGlobalScale;
             float radius_y = radius_x;
             
-            // x icon
-            vector<GLvertex3f> iconGeo;
-            iconGeo.resize(NUM_SAMPS);
-            
-            for(int i = 0; i < NUM_SAMPS; i++)
-            {
-                float randomSample = arc4random()*ONE_OVER_RAND_MAX*2-1;
-                iconGeo[i].y = (((float)i)/(NUM_SAMPS-1)*2-1)*radius_x;
-                
-                //iconGeo[i].y = randomSample*radius_y;
-                iconGeo[i].x = randomSample*radius_y * 0.1;
-            }
-            
+            // SVF shape, including lowpass, highpass, and notch
+            vector<GLvertex3f> iconGeo = {
+                {        -radius_x,  radius_y * 0.5f, 0 },
+                { -radius_x * 0.5f,  radius_y * 0.5f, 0 },
+                { -radius_x * 0.2f,  radius_y * 0.6f, 0 },
+                {                0,  radius_y * 0.5f, 0 },
+                {  radius_x * 0.2f,  radius_y * 0.6f, 0 },
+                {  radius_x * 0.5f,  radius_y * 0.5f, 0 },
+                {         radius_x,  radius_y * 0.5f, 0 },
+                {  radius_x * 0.5f,  radius_y * 0.5f, 0 },
+                {  radius_x * 0.2f,  radius_y * 0.4f, 0 },
+                {  radius_x * 0.1f,                0, 0 },
+                {                0, -radius_y * 0.5f, 0 },
+                { -radius_x * 0.1f,                0, 0 },
+                { -radius_x * 0.2f,  radius_y * 0.4f, 0 },
+                { -radius_x * 0.5f,  radius_y * 0.5f, 0 },
+                { -radius_x * 0.2f,  radius_y * 0.6f, 0 },
+                {                0,  radius_y * 0.5f, 0 },
+                { -radius_x * 0.2f,  radius_y * 0.1f, 0 },
+                { -radius_x * 0.5f, -radius_y * 0.5f, 0 },
+                { -radius_x * 0.2f,  radius_y * 0.1f, 0 },
+                {                0,  radius_y * 0.5f, 0 },
+                {  radius_x * 0.2f,  radius_y * 0.1f, 0 },
+                {  radius_x * 0.5f, -radius_y * 0.5f, 0 },
+            };
             
             return iconGeo;
         };
