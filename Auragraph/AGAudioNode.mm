@@ -1943,7 +1943,6 @@ private:
     constexpr static const float ONE_OVER_RAND_MAX = 1.0/4294967295.0;
 };
 
-// Andrew Piepenbrink, 7/7/2017
 //------------------------------------------------------------------------------
 // ### AGAudioEnvelopeFollowerNode ###
 //------------------------------------------------------------------------------
@@ -1992,57 +1991,62 @@ public:
             };
         }
         
-        // XXX TODO: envelope follower shape? Some combo of noise and ADSR?
-
         vector<GLvertex3f> _iconGeo() const override
         {
-            //float radius_x = 0.005*AGStyle::oldGlobalScale;
-            //float radius_y = radius_x * 0.66;
+            const float ONE_OVER_RAND_MAX = 1.0/4294967295.0;
             
-//            vector<GLvertex3f> iconGeo = {
-//                { -radius_x, 0, 0 },
-//                { -radius_x, radius_y, 0 },
-//                { 0, radius_y, 0 },
-//                { 0, -radius_y, 0 },
-//                { radius_x, -radius_y, 0 },
-//                { radius_x, 0, 0 },
-//            };
-            
-            // ADSR
-//            float radius_x = 0.005*AGStyle::oldGlobalScale;
-//            float radius_y = radius_x * 0.66;
-//            
-//            // ADSR shape
-//            vector<GLvertex3f> iconGeo = {
-//                { -radius_x, -radius_y, 0 },
-//                { -radius_x*0.75f, radius_y, 0 },
-//                { -radius_x*0.25f, 0, 0 },
-//                { radius_x*0.66f, 0, 0 },
-//                { radius_x, -radius_y, 0 },
-//            };
-
-
-            // Noise
-            
-            const float ONE_OVER_RAND_MAX = 1.0/4294967295.0; // For icon drawing
-            
-            int NUM_SAMPS = 25;
+            int NUM_SAMPS = 200;
+            float m_env = 0.0;
+            float attack = 0.88;
+            float release = 0.88;
+            float attenuation = 0.55;
             float radius_x = 0.005*AGStyle::oldGlobalScale;
             float radius_y = radius_x;
+            float nudgeUp = radius_x * 0.35;
             
-            // x icon
-            vector<GLvertex3f> iconGeo;
-            iconGeo.resize(NUM_SAMPS);
+            vector<float> samples;
+            samples.resize(NUM_SAMPS);
             
+            // Generate sine-modulated noise
             for(int i = 0; i < NUM_SAMPS; i++)
             {
-                float randomSample = arc4random()*ONE_OVER_RAND_MAX*2-1;
-                iconGeo[i].x = (((float)i)/(NUM_SAMPS-1)*2-1)*radius_x;
-                
-                //iconGeo[i].y = randomSample*radius_y;
-                iconGeo[i].y = randomSample*radius_y * 0.1;
+                samples[i] = arc4random()*ONE_OVER_RAND_MAX*2-1;
+                samples[i] *= sin(((float)i / NUM_SAMPS) * 2 * M_PI);
             }
 
+            // Build vertices for our noise
+            vector<GLvertex3f> iconGeo;
+            for(int i = 0; i < NUM_SAMPS; i++)
+            {
+                GLvertex3f vert;
+            
+                vert.x = (((float)i)/(NUM_SAMPS-1)*2-1)*radius_x;
+                vert.y = samples[i]*radius_y*attenuation;
+                
+                iconGeo.push_back(vert);
+            }
+            
+            // Add vertices for envelope trace
+            for (int i = samples.size() - 1; i >= 0; i--)
+            {
+                float env_input = abs(samples[i]);
+                
+                if(env_input > m_env)
+                {
+                    m_env = attack * m_env + (1-attack) * env_input;
+                }
+                else
+                {
+                    m_env = release * m_env + (1-release) * env_input;
+                }
+                
+                GLvertex3f vert;
+                    
+                vert.x = (((float)i)/(NUM_SAMPS-1)*2-1)*radius_x;
+                vert.y = m_env * radius_y + nudgeUp;
+                
+                iconGeo.push_back(vert);
+            }
             
             return iconGeo;
         };
@@ -2092,7 +2096,6 @@ private:
     float m_envelope;
 };
 
-// Andrew Piepenbrink, 7/7/2017
 //------------------------------------------------------------------------------
 // ### AGAudioStateVariableFilterNode ###
 //------------------------------------------------------------------------------
