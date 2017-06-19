@@ -561,19 +561,41 @@ public:
             };
         };
         
-        // XXX TODO
         vector<GLvertex3f> _iconGeo() const override
         {
-            float radius = 0.005*AGStyle::oldGlobalScale;
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x;
+            int NUM_SAMPS = 25;
             
-            return {
-                { -radius, -1.0f, 0 }, {  radius, 0, 0 },
-                {  radius*0.38f,  radius*0.38f, 0 }, { radius, 0, 0 },
-                {  radius*0.38f, -radius*0.38f, 0 }, { radius, 0, 0 },
-            };
+            slewf iconSlew;
+            iconSlew.rate = 0.6;
+            
+            vector<GLvertex3f> iconGeo;
+            
+            for (int i = 0; i < NUM_SAMPS; i++)
+            {
+                GLvertex3f vert;
+                
+                vert.x = ((float)i/(NUM_SAMPS-1))*2*radius_x - radius_x;
+                vert.y = iconSlew * radius_y;
+
+                if(i == 0)
+                    iconSlew = 1;
+                else if(i == 5)
+                    iconSlew = -1;
+                else if(i == 13)
+                    iconSlew = 0.7;
+                else if(i == 19)
+                    iconSlew = -0.5;
+                
+                iconSlew.interp();
+                iconGeo.push_back(vert);
+            }
+            
+            return iconGeo;
         };
         
-        GLuint _iconGeoType() const override { return GL_LINES; };
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
     };
     
     using AGControlNode::AGControlNode;
