@@ -631,6 +631,82 @@ private:
 };
 
 //------------------------------------------------------------------------------
+// ### AGControlRandomNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGControlRandomNode
+
+class AGControlRandomNode : public AGControlNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_OUTPUT,
+        PARAM_INPUT,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGControlRandomNode>
+    {
+    public:
+        string _type() const override { return "random"; };
+        string _name() const override { return "random"; };
+        string _description() const override { return "Generates uniformly distributed random numbers in the range 0.0-1.0."; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_INPUT, "input", true, true, .doc = "Input value." },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override { return { }; };
+        
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, true, .doc = "Output." },
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x;
+            int NUM_SAMPS = 15;
+            
+            vector<GLvertex3f> iconGeo;
+            
+            for (int i = 0; i < NUM_SAMPS; i++)
+            {
+                GLvertex3f vert;
+                
+                vert.x = ((float)i/(NUM_SAMPS-1))*2*radius_x - radius_x;
+                vert.y = (arc4random()*ONE_OVER_RAND_MAX - 0.5)*2*radius_y;
+                
+                iconGeo.push_back(vert);
+            }
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+    };
+    
+    using AGControlNode::AGControlNode;
+    
+    virtual int numOutputPorts() const override { return 1; }
+    
+    virtual void receiveControl(int port, const AGControl &control) override
+    {
+        float out = arc4random()*ONE_OVER_RAND_MAX;
+        pushControl(0, AGControl(out));
+    }
+    
+private:
+    constexpr static const float ONE_OVER_RAND_MAX = 1.0/4294967295.0;
+};
+
+//------------------------------------------------------------------------------
 // ### AGNodeManager ###
 //------------------------------------------------------------------------------
 #pragma mark - AGNodeManager
@@ -655,6 +731,7 @@ const AGNodeManager &AGNodeManager::controlNodeManager()
         nodeTypes.push_back(new AGControlGestureNode::Manifest);
         
         nodeTypes.push_back(new AGControlSlewNode::Manifest);
+        nodeTypes.push_back(new AGControlRandomNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();
