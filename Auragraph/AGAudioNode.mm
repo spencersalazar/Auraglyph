@@ -2587,30 +2587,65 @@ public:
             };
         }
         
-        // XXX TODO
         vector<GLvertex3f> _iconGeo() const override
         {
-            const float ONE_OVER_RAND_MAX = 1.0/4294967295.0; // For icon drawing
-            
-            int NUM_SAMPS = 25;
             float radius_x = 0.005*AGStyle::oldGlobalScale;
             float radius_y = radius_x;
+            float radius_circ = radius_x * 0.9;
+            int circleSize = 48;
+            int GEO_SIZE = circleSize*2;
+            vector<GLvertex3f> iconGeo = vector<GLvertex3f>(GEO_SIZE);
             
-            // x icon
-            vector<GLvertex3f> iconGeo;
-            iconGeo.resize(NUM_SAMPS);
-            
-            for(int i = 0; i < NUM_SAMPS; i++)
+            // Unit circle
+            for(int i = 0; i < circleSize; i++)
             {
-                float randomSample = arc4random()*ONE_OVER_RAND_MAX*2-1;
-                iconGeo[i].x = (((float)i)/(NUM_SAMPS-1)*2-1)*radius_x;
-                iconGeo[i].y = randomSample*radius_y * 0.01;
+                float theta0 = 2*M_PI*((float)i)/((float)(circleSize));
+                float theta1 = 2*M_PI*((float)(i+1))/((float)(circleSize));
+                iconGeo[i*2+0] = GLvertex3f(radius_circ*cosf(theta0), radius_circ*sinf(theta0), 0);
+                iconGeo[i*2+1] = GLvertex3f(radius_circ*cosf(theta1), radius_circ*sinf(theta1), 0);
             }
+            
+            // 1st-quadrant zero
+            for(int i = 0; i < GEO_SIZE; i++)
+            {
+                GLvertex3f vert = iconGeo[i];
+                vert = vert * 0.15;
+                float theta = M_PI / 4;
+                vert = vert + GLvertex3f(radius_circ*cosf(theta), radius_circ*sinf(theta), 0);
+                iconGeo.push_back(vert);
+            }
+
+            // 4th-quadrant zero
+            for(int i = 0; i < GEO_SIZE; i++)
+            {
+                GLvertex3f vert = iconGeo[i+GEO_SIZE];
+                vert.y = -vert.y;
+                iconGeo.push_back(vert);
+            }
+            
+            // Poles
+            vector<GLvertex3f> poles = {
+                { 0.5, 0.5, 0 }, { 0.3, 0.3, 0 }, { 0.3, 0.5, 0 }, { 0.5, 0.3, 0 },
+                { 0.5, -0.5, 0 }, { 0.3, -0.3, 0 }, { 0.3, -0.5, 0 }, { 0.5, -0.3, 0 },
+            };
+            
+            for(int i = 0; i < poles.size(); i++)
+            {
+                GLvertex3f vert = poles[i];
+                vert = vert * radius_circ;
+                iconGeo.push_back(vert);
+            }
+            
+            // Axes
+            iconGeo.push_back(GLvertex3f(0,  radius_y, 0));
+            iconGeo.push_back(GLvertex3f(0, -radius_y, 0));
+            iconGeo.push_back(GLvertex3f( radius_x, 0, 0));
+            iconGeo.push_back(GLvertex3f(-radius_x, 0, 0));
             
             return iconGeo;
         };
         
-        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+        GLuint _iconGeoType() const override { return GL_LINES; };
     };
     
     using AGAudioNode::AGAudioNode;
@@ -2699,8 +2734,7 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         
         nodeTypes.push_back(new AGAudioAllpassNode::Manifest);
         
-        nodeTypes.push_back(new AGAudioBiquadNode::Manifest);
-        
+        nodeTypes.push_back(new AGAudioBiquadNode::Manifest);        
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();
