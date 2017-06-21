@@ -1946,7 +1946,6 @@ private:
     constexpr static const float ONE_OVER_RAND_MAX = 1.0/4294967295.0;
 };
 
-// Andrew Piepenbrink, 7/7/2017
 //------------------------------------------------------------------------------
 // ### AGAudioEnvelopeFollowerNode ###
 //------------------------------------------------------------------------------
@@ -1995,57 +1994,62 @@ public:
             };
         }
         
-        // XXX TODO: envelope follower shape? Some combo of noise and ADSR?
-
         vector<GLvertex3f> _iconGeo() const override
         {
-            //float radius_x = 0.005*AGStyle::oldGlobalScale;
-            //float radius_y = radius_x * 0.66;
+            const float ONE_OVER_RAND_MAX = 1.0/4294967295.0;
             
-//            vector<GLvertex3f> iconGeo = {
-//                { -radius_x, 0, 0 },
-//                { -radius_x, radius_y, 0 },
-//                { 0, radius_y, 0 },
-//                { 0, -radius_y, 0 },
-//                { radius_x, -radius_y, 0 },
-//                { radius_x, 0, 0 },
-//            };
-            
-            // ADSR
-//            float radius_x = 0.005*AGStyle::oldGlobalScale;
-//            float radius_y = radius_x * 0.66;
-//            
-//            // ADSR shape
-//            vector<GLvertex3f> iconGeo = {
-//                { -radius_x, -radius_y, 0 },
-//                { -radius_x*0.75f, radius_y, 0 },
-//                { -radius_x*0.25f, 0, 0 },
-//                { radius_x*0.66f, 0, 0 },
-//                { radius_x, -radius_y, 0 },
-//            };
-
-
-            // Noise
-            
-            const float ONE_OVER_RAND_MAX = 1.0/4294967295.0; // For icon drawing
-            
-            int NUM_SAMPS = 25;
+            int NUM_SAMPS = 200;
+            float m_env = 0.0;
+            float attack = 0.88;
+            float release = 0.88;
+            float attenuation = 0.55;
             float radius_x = 0.005*AGStyle::oldGlobalScale;
             float radius_y = radius_x;
+            float nudgeUp = radius_x * 0.35;
             
-            // x icon
-            vector<GLvertex3f> iconGeo;
-            iconGeo.resize(NUM_SAMPS);
+            vector<float> samples;
+            samples.resize(NUM_SAMPS);
             
+            // Generate sine-modulated noise
             for(int i = 0; i < NUM_SAMPS; i++)
             {
-                float randomSample = arc4random()*ONE_OVER_RAND_MAX*2-1;
-                iconGeo[i].x = (((float)i)/(NUM_SAMPS-1)*2-1)*radius_x;
-                
-                //iconGeo[i].y = randomSample*radius_y;
-                iconGeo[i].y = randomSample*radius_y * 0.1;
+                samples[i] = arc4random()*ONE_OVER_RAND_MAX*2-1;
+                samples[i] *= sin(((float)i / NUM_SAMPS) * 2 * M_PI);
             }
 
+            // Build vertices for our noise
+            vector<GLvertex3f> iconGeo;
+            for(int i = 0; i < NUM_SAMPS; i++)
+            {
+                GLvertex3f vert;
+            
+                vert.x = (((float)i)/(NUM_SAMPS-1)*2-1)*radius_x;
+                vert.y = samples[i]*radius_y*attenuation;
+                
+                iconGeo.push_back(vert);
+            }
+            
+            // Add vertices for envelope trace
+            for (int i = samples.size() - 1; i >= 0; i--)
+            {
+                float env_input = abs(samples[i]);
+                
+                if(env_input > m_env)
+                {
+                    m_env = attack * m_env + (1-attack) * env_input;
+                }
+                else
+                {
+                    m_env = release * m_env + (1-release) * env_input;
+                }
+                
+                GLvertex3f vert;
+                    
+                vert.x = (((float)i)/(NUM_SAMPS-1)*2-1)*radius_x;
+                vert.y = m_env * radius_y + nudgeUp;
+                
+                iconGeo.push_back(vert);
+            }
             
             return iconGeo;
         };
@@ -2095,7 +2099,6 @@ private:
     float m_envelope;
 };
 
-// Andrew Piepenbrink, 7/7/2017
 //------------------------------------------------------------------------------
 // ### AGAudioStateVariableFilterNode ###
 //------------------------------------------------------------------------------
@@ -2154,56 +2157,36 @@ public:
             };
         }
 
-        // XXX TODO: icon shape
         vector<GLvertex3f> _iconGeo() const override
         {
-            //float radius_x = 0.005*AGStyle::oldGlobalScale;
-            //float radius_y = radius_x * 0.66;
-            
-            //            vector<GLvertex3f> iconGeo = {
-            //                { -radius_x, 0, 0 },
-            //                { -radius_x, radius_y, 0 },
-            //                { 0, radius_y, 0 },
-            //                { 0, -radius_y, 0 },
-            //                { radius_x, -radius_y, 0 },
-            //                { radius_x, 0, 0 },
-            //            };
-            
-            // ADSR
-            //            float radius_x = 0.005*AGStyle::oldGlobalScale;
-            //            float radius_y = radius_x * 0.66;
-            //
-            //            // ADSR shape
-            //            vector<GLvertex3f> iconGeo = {
-            //                { -radius_x, -radius_y, 0 },
-            //                { -radius_x*0.75f, radius_y, 0 },
-            //                { -radius_x*0.25f, 0, 0 },
-            //                { radius_x*0.66f, 0, 0 },
-            //                { radius_x, -radius_y, 0 },
-            //            };
-            
-            
-            // Noise
-            
-            const float ONE_OVER_RAND_MAX = 1.0/4294967295.0; // For icon drawing
-            
-            int NUM_SAMPS = 25;
             float radius_x = 0.005*AGStyle::oldGlobalScale;
             float radius_y = radius_x;
             
-            // x icon
-            vector<GLvertex3f> iconGeo;
-            iconGeo.resize(NUM_SAMPS);
-            
-            for(int i = 0; i < NUM_SAMPS; i++)
-            {
-                float randomSample = arc4random()*ONE_OVER_RAND_MAX*2-1;
-                iconGeo[i].y = (((float)i)/(NUM_SAMPS-1)*2-1)*radius_x;
-                
-                //iconGeo[i].y = randomSample*radius_y;
-                iconGeo[i].x = randomSample*radius_y * 0.1;
-            }
-            
+            // SVF shape, including lowpass, highpass, and notch
+            vector<GLvertex3f> iconGeo = {
+                {        -radius_x,  radius_y * 0.5f, 0 },
+                { -radius_x * 0.5f,  radius_y * 0.5f, 0 },
+                { -radius_x * 0.2f,  radius_y * 0.6f, 0 },
+                {                0,  radius_y * 0.5f, 0 },
+                {  radius_x * 0.2f,  radius_y * 0.6f, 0 },
+                {  radius_x * 0.5f,  radius_y * 0.5f, 0 },
+                {         radius_x,  radius_y * 0.5f, 0 },
+                {  radius_x * 0.5f,  radius_y * 0.5f, 0 },
+                {  radius_x * 0.2f,  radius_y * 0.4f, 0 },
+                {  radius_x * 0.1f,                0, 0 },
+                {                0, -radius_y * 0.5f, 0 },
+                { -radius_x * 0.1f,                0, 0 },
+                { -radius_x * 0.2f,  radius_y * 0.4f, 0 },
+                { -radius_x * 0.5f,  radius_y * 0.5f, 0 },
+                { -radius_x * 0.2f,  radius_y * 0.6f, 0 },
+                {                0,  radius_y * 0.5f, 0 },
+                { -radius_x * 0.2f,  radius_y * 0.1f, 0 },
+                { -radius_x * 0.5f, -radius_y * 0.5f, 0 },
+                { -radius_x * 0.2f,  radius_y * 0.1f, 0 },
+                {                0,  radius_y * 0.5f, 0 },
+                {  radius_x * 0.2f,  radius_y * 0.1f, 0 },
+                {  radius_x * 0.5f, -radius_y * 0.5f, 0 },
+            };
             
             return iconGeo;
         };
@@ -2261,6 +2244,453 @@ private:
     float d2;
 };
 
+//------------------------------------------------------------------------------
+// ### AGAudioAllpassNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioAllpassNode
+
+#pragma mark DelayI
+//------------------------------------------------------------------------------
+// ### DelayI ###
+// Integer delay line
+//------------------------------------------------------------------------------
+
+class DelayI
+{
+public:
+    DelayI(float max = 44100, float delay = 22050) : m_index(0)
+    {
+        this->maxdelay(max);
+        this->delay(delay);
+        this->clear();
+        m_index = 0;
+        m_last = 0;
+    }
+    
+    float tick(float xn)
+    {
+        m_buffer[m_index] = xn;
+        
+        int delay_index = m_index-m_delayint;
+        if(delay_index < 0)
+            delay_index += m_buffer.size;
+        float samp = m_buffer[delay_index];
+        
+        m_index = (m_index+1)%m_buffer.size;
+        
+        m_last = samp;
+        return samp;
+    }
+    
+    float delay(float dsamps)
+    {
+        assert(dsamps >= 0);
+        
+        m_delayint = (int)dsamps;
+        return dsamps;
+    }
+    
+    float maxdelay()
+    {
+        return m_buffer.size-1;
+    }
+    
+    float maxdelay(float dsamps)
+    {
+        assert(dsamps >= 0);
+        
+        m_buffer.resize((int)floorf(dsamps)+1);
+        this->clear();
+        return dsamps;
+    }
+    
+    float last()
+    {
+        return m_last;
+    }
+    
+    void clear()
+    {
+        m_buffer.clear();
+    }
+    
+private:
+    int m_delayint;
+    
+    Buffer<float> m_buffer;
+    float m_last;
+    int m_index;
+};
+
+#pragma mark AllPassN
+//------------------------------------------------------------------------------
+// ### AllPassN ###
+// Nth order allpass filter
+//------------------------------------------------------------------------------
+class AllPassN
+{
+public:
+    AllPassN(float g = 1)
+    {
+        m_delay_x.clear();
+        m_delay_y.clear();
+        _g = g;
+    }
+    
+    float tick(float xn)
+    {
+        // process output
+        float yn = xn*_g + m_delay_x.last() + m_delay_y.last()*-_g;
+        
+        // process delays
+        m_delay_y.tick(yn);
+        m_delay_x.tick(xn);
+        
+        return yn;
+    }
+    
+    float g(float g)
+    {
+        _g = g;
+        return g;
+    }
+    
+    float delay(float d)
+    {
+        m_delay_x.delay(d);
+        m_delay_y.delay(d);
+        return d;
+    }
+    
+    float maxdelay() {
+        return m_delay_x.maxdelay();
+    }
+    
+    float maxdelay(float dsamps) {
+        assert(dsamps >= 0);
+        
+        m_delay_x.maxdelay(dsamps);
+        m_delay_y.maxdelay(dsamps);
+        return dsamps;
+    }
+    
+    void clear()
+    {
+        m_delay_x.clear();
+        m_delay_y.clear();
+    }
+    
+    float last()
+    {
+        return m_delay_y.last();
+    }
+    
+private:
+    DelayI m_delay_x;
+    DelayI m_delay_y;
+    
+    float _g;
+};
+
+class AGAudioAllpassNode : public AGAudioNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT,
+        PARAM_DELAY,
+        PARAM_COEFF,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGAudioAllpassNode>
+    {
+    public:
+        string _type() const override { return "Allpass"; };
+        string _name() const override { return "Allpass"; };
+        string _description() const override { return "Nth-order allpass filter"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_INPUT, "input", true, false, .doc = "Input signal." },
+                { PARAM_DELAY, "delay", true, true, 0.5, 0, AGFloat_Max, .doc = "Delay length (seconds)." },
+                { PARAM_COEFF, "coeff", true, true, 0.1, 0, 1, .doc = "Allpass coefficient." },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
+                { PARAM_DELAY, "delay", true, true, 0.5, 0, AGFloat_Max, .doc = "Delay length (seconds)." },
+                { PARAM_COEFF, "coeff", true, true, 0.1, 0, 1, .doc = "Allpass coefficient." },
+            };
+        };
+        
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x;
+            int NUM_SAMPS = 25;
+            
+            vector<GLvertex3f> iconGeo;
+            
+            for (int i = 0; i < NUM_SAMPS; i++)
+            {
+                GLvertex3f vert;
+                
+                float sample = ((float)i/NUM_SAMPS);
+                sample = pow(sample, 6);
+                
+                vert.x = ((float)i/(NUM_SAMPS-1))*radius_x - radius_x;
+                vert.y = sample * radius_y;
+                
+                iconGeo.push_back(vert);
+            }
+
+            for (int i = 0; i < NUM_SAMPS; i++)
+            {
+                GLvertex3f vert;
+                
+                vert.x = ((float)i/NUM_SAMPS)*radius_x;
+                vert.y = -iconGeo[NUM_SAMPS-i-1].y;
+                
+                iconGeo.push_back(vert);
+            }
+
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+    };
+    
+    using AGAudioNode::AGAudioNode;
+    
+    void initFinal() override
+    {
+        _setDelay(param(PARAM_DELAY), true);
+        m_allpass.clear();
+    }
+    
+    void editPortValueChanged(int paramId) override
+    {
+        if(paramId == PARAM_DELAY) {
+            _setDelay(param(PARAM_DELAY));
+        }
+    }
+    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
+    {
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
+        m_lastTime = t;
+        pullInputPorts(t, nFrames);
+        
+        float *inputv = inputPortVector(PARAM_INPUT);
+        float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        float *delayLengthv = inputPortVector(PARAM_DELAY);
+        float *coeffv = inputPortVector(PARAM_COEFF);
+        
+        for(int i = 0; i < nFrames; i++)
+        {
+            _setDelay(delayLengthv[i]);
+            m_allpass.g(coeffv[i]);
+            
+            float delaySamp = m_allpass.tick(inputv[i]);
+            m_outputBuffer[chanNum][i] = delaySamp * gainv[i];
+            output[i] += m_outputBuffer[chanNum][i];
+        }
+    }
+    
+private:
+    
+    void _setDelay(float delaySamps, bool force=false)
+    {
+        if(force || m_currentDelayLength != delaySamps)
+        {
+            if(delaySamps < 0)
+                delaySamps = 0;
+            if(delaySamps > m_allpass.maxdelay())
+            {
+                int _max = m_allpass.maxdelay();
+                while(delaySamps > _max)
+                    _max *= 2;
+                m_allpass.maxdelay(_max);
+                m_allpass.clear();
+            }
+            m_allpass.delay(delaySamps);
+            m_currentDelayLength = delaySamps;
+        }
+    }
+    
+    float m_currentDelayLength;
+    AllPassN m_allpass;
+};
+
+//------------------------------------------------------------------------------
+// ### AGAudioBiquadNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioBiquadNode
+
+class AGAudioBiquadNode : public AGAudioNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT,
+        PARAM_A1,
+        PARAM_A2,
+        PARAM_B0,
+        PARAM_B1,
+        PARAM_B2,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGAudioBiquadNode>
+    {
+    public:
+        string _type() const override { return "Biquad"; };
+        string _name() const override { return "Biquad"; };
+        string _description() const override { return "Biquad filter."; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_INPUT, "input", true, false, .doc = "Input signal." },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { PARAM_A1, "a1", true, true, 0.00, -2.0, 2.0, .doc = "A1 coefficient." },
+                { PARAM_A2, "a2", true, true, 0.00, -2.0, 2.0, .doc = "A2 coefficient." },
+                { PARAM_B0, "b0", true, true, 0.00, -2.0, 2.0, .doc = "B0 coefficient." },
+                { PARAM_B1, "b1", true, true, 0.00, -2.0, 2.0, .doc = "B1 coefficient." },
+                { PARAM_B2, "b2", true, true, 0.00, -2.0, 2.0, .doc = "B2 coefficient." },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+            };
+        };
+        
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+            };
+        }
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_y = radius_x;
+            float radius_circ = radius_x * 0.9;
+            int circleSize = 48;
+            int GEO_SIZE = circleSize*2;
+            vector<GLvertex3f> iconGeo = vector<GLvertex3f>(GEO_SIZE);
+            
+            // Unit circle
+            for(int i = 0; i < circleSize; i++)
+            {
+                float theta0 = 2*M_PI*((float)i)/((float)(circleSize));
+                float theta1 = 2*M_PI*((float)(i+1))/((float)(circleSize));
+                iconGeo[i*2+0] = GLvertex3f(radius_circ*cosf(theta0), radius_circ*sinf(theta0), 0);
+                iconGeo[i*2+1] = GLvertex3f(radius_circ*cosf(theta1), radius_circ*sinf(theta1), 0);
+            }
+            
+            // 1st-quadrant zero
+            for(int i = 0; i < GEO_SIZE; i++)
+            {
+                GLvertex3f vert = iconGeo[i];
+                vert = vert * 0.15;
+                float theta = M_PI / 4;
+                vert = vert + GLvertex3f(radius_circ*cosf(theta), radius_circ*sinf(theta), 0);
+                iconGeo.push_back(vert);
+            }
+
+            // 4th-quadrant zero
+            for(int i = 0; i < GEO_SIZE; i++)
+            {
+                GLvertex3f vert = iconGeo[i+GEO_SIZE];
+                vert.y = -vert.y;
+                iconGeo.push_back(vert);
+            }
+            
+            // Poles
+            vector<GLvertex3f> poles = {
+                { 0.5, 0.5, 0 }, { 0.3, 0.3, 0 }, { 0.3, 0.5, 0 }, { 0.5, 0.3, 0 },
+                { 0.5, -0.5, 0 }, { 0.3, -0.3, 0 }, { 0.3, -0.5, 0 }, { 0.5, -0.3, 0 },
+            };
+            
+            for(int i = 0; i < poles.size(); i++)
+            {
+                GLvertex3f vert = poles[i];
+                vert = vert * radius_circ;
+                iconGeo.push_back(vert);
+            }
+            
+            // Axes
+            iconGeo.push_back(GLvertex3f(0,  radius_y, 0));
+            iconGeo.push_back(GLvertex3f(0, -radius_y, 0));
+            iconGeo.push_back(GLvertex3f( radius_x, 0, 0));
+            iconGeo.push_back(GLvertex3f(-radius_x, 0, 0));
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINES; };
+    };
+    
+    using AGAudioNode::AGAudioNode;
+    
+    void initFinal() override
+    {
+        sn_1 = sn_2 = 0;
+    }
+    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
+    {
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
+        m_lastTime = t;
+        pullInputPorts(t, nFrames);
+        
+        float *inputv = inputPortVector(PARAM_INPUT);
+        float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        float a1 = param(PARAM_A1);
+        float a2 = param(PARAM_A2);
+        float b0 = param(PARAM_B0);
+        float b1 = param(PARAM_B1);
+        float b2 = param(PARAM_B2);
+        
+        for(int i = 0; i < nFrames; i++)
+        {
+            // Transposed Direct-Form II
+            float xn = inputv[i];
+            float yn = b0 * xn + sn_1;
+            sn_2 = -a2 * yn + b2 * xn;
+            sn_1 = -a1 * yn + b1 * xn;
+            
+            if (isbad(yn) || isbad(sn_1) || isbad(sn_2))
+                yn = sn_1 = sn_2 = 0;
+            
+            m_outputBuffer[chanNum][i] = yn * gainv[i];
+            output[i] += m_outputBuffer[chanNum][i];
+        }
+    }
+    
+private:
+    float sn_1, sn_2;
+};
 
 //------------------------------------------------------------------------------
 // ### AGAudioSoundFileNode ###
@@ -2441,6 +2871,10 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioCompositeNode::Manifest);
         
         nodeTypes.push_back(new AGAudioStateVariableFilterNode::Manifest);
+        
+        nodeTypes.push_back(new AGAudioAllpassNode::Manifest);
+        
+        nodeTypes.push_back(new AGAudioBiquadNode::Manifest);        
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();
