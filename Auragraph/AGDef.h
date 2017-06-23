@@ -9,6 +9,7 @@
 #ifndef Auragraph_AGDef_h
 #define Auragraph_AGDef_h
 
+#include <stddef.h> // for NULL
 
 #define SAFE_DELETE(x) if( x!=NULL ) { delete x; x = NULL; }
 #define SAFE_DELETE_ARRAY(x) if( x!=NULL ) { delete[] x; x = NULL; }
