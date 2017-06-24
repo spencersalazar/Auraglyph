@@ -371,12 +371,17 @@ static AGViewController * g_instance = nil;
     _recordButton->setAction(^{
         // AGAnalytics::instance().eventTrainer();
         // TODO: analytics
-        _recordButton->setTitle("Stop");
         // flip toggle
         if((_isRecording = !_isRecording))
+        {
             [_audioManager startSessionRecording];
+            _recordButton->setTitle("Stop");
+        }
         else
+        {
             [_audioManager stopSessionRecording];
+            _recordButton->setTitle("Record");
+        }
     });
     _dashboard.push_back(_recordButton);
     
