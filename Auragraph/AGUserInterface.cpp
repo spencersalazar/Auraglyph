@@ -373,7 +373,9 @@ void AGUIButtonGroup::addButton(AGUIButton *button, void (^action)(), bool isDef
     
     button->setAction(^{
         itmap(m_buttons, ^(AGUIButton *&_b) {
-            if(_b != button)
+            if(_b == button)
+                _b->setLatched(true);
+            else
                 _b->setLatched(false);
         });
         
