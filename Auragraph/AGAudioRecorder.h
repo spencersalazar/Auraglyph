@@ -9,7 +9,6 @@
 #pragma mark once
 
 #include <string>
-#include <dispatch/dispatch.h>
 #include <CoreAudio/CoreAudioTypes.h>
 #include "SampleCircularBuffer.h"
 
@@ -19,6 +18,8 @@
 typedef void EZRecorder;
 #endif
 
+class Thread;
+class Signal;
 
 class AGAudioRecorder
 {
@@ -34,9 +35,12 @@ public:
     
 private:
     int mChannels;
-    EZRecorder *m_recorder;
-    dispatch_queue_t m_recorderQueue;
-    SampleCircularBuffer m_buffer;
+    EZRecorder *m_recorder = NULL;
+    SampleCircularBuffer *m_buffer = NULL;
     
-    float *m_recorderBuffer;
+    float *m_recorderBuffer = NULL;
+    
+    Thread *m_thread = NULL;
+    bool m_go = false;
+    Signal *m_signal = NULL;
 };

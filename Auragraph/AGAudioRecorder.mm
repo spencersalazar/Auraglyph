@@ -14,6 +14,90 @@
 #import "NSString+STLString.h"
 #include <time.h>
 
+#include <functional>
+#include <pthread.h>
+
+class Thread
+{
+public:
+    Thread()
+    {
+    }
+    
+    ~Thread()
+    {
+        if(m_thread)
+        {
+            pthread_detach(m_thread);
+            m_thread = NULL;
+        }
+    }
+    
+    void start(const std::function<void ()> &go)
+    {
+        m_go = go;
+        pthread_create(&m_thread, NULL, _threadFunc, this);
+    }
+    
+    void wait()
+    {
+        if(m_thread)
+            pthread_join(m_thread, NULL);
+    }
+    
+private:
+    static void *_threadFunc(void *_this)
+    {
+        Thread *that = static_cast<Thread *>(_this);
+        that->m_go();
+        return NULL;
+    }
+    
+    pthread_t m_thread = NULL;
+    std::function<void ()> m_go = [](){};
+};
+
+class Signal
+{
+public:
+    Signal()
+    {
+        pthread_mutex_init(&m_mutex, NULL);
+        pthread_cond_init(&m_cond, NULL);
+    }
+    
+    ~Signal()
+    {
+        pthread_cond_destroy(&m_cond);
+        pthread_mutex_destroy(&m_mutex);
+    }
+    
+    void start()
+    {
+        pthread_mutex_lock(&m_mutex);
+    }
+    
+    void wait()
+    {
+        pthread_cond_wait(&m_cond, &m_mutex);
+    }
+    
+    void signal()
+    {
+        pthread_cond_signal(&m_cond);
+    }
+    
+    void broadcast()
+    {
+        pthread_cond_broadcast(&m_cond);
+    }
+    
+private:
+    pthread_mutex_t m_mutex;
+    pthread_cond_t m_cond;
+};
+
+
 #define RECORDER_BUFFER_SIZE (2048)
 
 std::string AGAudioRecorder::pathForSessionRecording(const std::string &extension)
@@ -30,17 +114,18 @@ AGAudioRecorder::AGAudioRecorder()
 {
     [EZAudioUtilities setShouldExitOnCheckResultFail:NO];
     
-    m_recorderQueue = dispatch_queue_create("io.auraglyph.recorder", NULL);
     m_recorder = nil;
-    m_buffer.initialize(RECORDER_BUFFER_SIZE);
+    m_buffer = new SampleCircularBuffer;
+    m_buffer->initialize(RECORDER_BUFFER_SIZE);
     m_recorderBuffer = new float[RECORDER_BUFFER_SIZE];
+    
+    m_thread = new Thread;
+    m_signal = new Signal;
 }
 
 AGAudioRecorder::~AGAudioRecorder()
 {
-    // close recording before
     closeRecording();
-    m_recorderQueue = NULL;
 }
 
 void AGAudioRecorder::startRecording(const std::string &filename, int numChannels, int srate)
@@ -62,39 +147,54 @@ void AGAudioRecorder::startRecording(const std::string &filename, int numChannel
     m_recorder = [[EZRecorder alloc] initWithURL:url
                                     clientFormat:description
                                         fileType:EZRecorderFileTypeM4A];
+    
+    m_go = true;
+    m_thread->start([this](){
+        m_signal->start();
+        
+        while(m_go)
+        {
+            m_signal->wait();
+            if(!m_go)
+                break;
+            
+            int num = m_buffer->get(m_recorderBuffer, RECORDER_BUFFER_SIZE);
+            int nFrames = num/mChannels;
+            
+            assert(nFrames*mChannels == num); // no half-frames plz
+            
+            AudioBufferList bufferList;
+            bufferList.mNumberBuffers = 1;
+            bufferList.mBuffers[0].mData = m_recorderBuffer;
+            bufferList.mBuffers[0].mDataByteSize = sizeof(float)*num;
+            bufferList.mBuffers[0].mNumberChannels = mChannels;
+            
+            [m_recorder appendDataFromBufferList:&bufferList withBufferSize:nFrames];
+        }
+    });
 }
 
 void AGAudioRecorder::render(float *buffer, int nFrames)
 {
     assert(nFrames*mChannels < RECORDER_BUFFER_SIZE);
     
-    m_buffer.put(buffer, nFrames*mChannels);
-    
-    dispatch_async(m_recorderQueue, ^{
-        int num = m_buffer.get(m_recorderBuffer, RECORDER_BUFFER_SIZE);
-        int nFrames = num/mChannels;
-        
-        assert(nFrames*mChannels == num); // no half-frames plz
-        
-        AudioBufferList bufferList;
-        bufferList.mNumberBuffers = 1;
-        bufferList.mBuffers[0].mData = m_recorderBuffer;
-        bufferList.mBuffers[0].mDataByteSize = sizeof(float)*num;
-        bufferList.mBuffers[0].mNumberChannels = mChannels;
-        
-        [m_recorder appendDataFromBufferList:&bufferList withBufferSize:nFrames];
-    });
+    int numSamples = nFrames*mChannels;
+    int numPut = m_buffer->put(buffer, numSamples);
+    assert(numSamples == numPut); // buffer overflow
+    m_signal->signal();
 }
 
 void AGAudioRecorder::closeRecording()
 {
-    if(m_recorder != nil)
-    {
-        EZRecorder *recorder = m_recorder;
-        m_recorder = nil;
-        
-        dispatch_async(m_recorderQueue, ^{
-            [recorder closeAudioFile];
-        });
-    }
+    m_go = false;
+    m_signal->signal();
+    m_thread->wait();
+    
+    SAFE_DELETE(m_signal);
+    SAFE_DELETE(m_thread);
+    
+    [m_recorder closeAudioFile];
+    m_recorder = nil;
+    SAFE_DELETE_ARRAY(m_recorderBuffer);
+    SAFE_DELETE(m_buffer);
 }

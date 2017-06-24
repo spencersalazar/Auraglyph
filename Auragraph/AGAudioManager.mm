@@ -211,11 +211,12 @@ static AGAudioManager *g_audioManager;
 
 - (void)stopSessionRecording
 {
+    _sessionRecorder->closeRecording();
+    
     _sessionRecorderMutex.lock();
     
     if(_sessionRecorder)
     {
-        _sessionRecorder->closeRecording();
         delete _sessionRecorder;
         _sessionRecorder = NULL;
     }
