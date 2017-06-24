@@ -108,6 +108,9 @@ public:
     void setRenderFixed(bool fixed) { m_renderFixed = fixed; }
     virtual bool renderFixed() { return m_renderFixed; }
     
+    void setTitle(const std::string &title);
+    const std::string &title();
+    
 //    enum ActionType
 //    {
 //        ACTION_ONTOUCHDOWN,

@@ -18,6 +18,7 @@ class AGFileManager
 public:
     static AGFileManager &instance();
     
+    const string &userDataDirectory();
     const string &soundfileDirectory();
     
     vector<string> listDirectory(const string &directory);
@@ -27,4 +28,5 @@ private:
     ~AGFileManager();
     
     string m_soundfileDirectory;
+    string m_userDataDirectory;
 };

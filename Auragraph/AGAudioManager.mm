@@ -15,6 +15,7 @@
 
 #import "Mutex.h"
 #import "spstl.h"
+#import "AGAudioRecorder.h"
 
 
 
@@ -54,6 +55,9 @@ private:
     
     float _inputBuffer[1024];
     Buffer<float> _outputBuffer;
+    
+    Mutex _sessionRecorderMutex;
+    AGAudioRecorder *_sessionRecorder;
 }
 
 - (void)renderAudio:(Float32 *)buffer numFrames:(UInt32)numFrames;
@@ -181,6 +185,42 @@ static AGAudioManager *g_audioManager;
     }
     
     t += numFrames;
+    
+    _sessionRecorderMutex.lock();
+    
+    if(_sessionRecorder)
+        _sessionRecorder->render(_outputBuffer, numFrames);
+    
+    _sessionRecorderMutex.unlock();
+}
+
+- (void)startSessionRecording
+{
+    _sessionRecorderMutex.lock();
+    
+    if(!_sessionRecorder)
+    {
+        _sessionRecorder = new AGAudioRecorder;
+        string file = AGAudioRecorder::pathForSessionRecording("m4a");
+        NSLog(@"Starting session recording to %s", file.c_str());
+        _sessionRecorder->startRecording(file, 2, 44100);
+    }
+    
+    _sessionRecorderMutex.unlock();
+}
+
+- (void)stopSessionRecording
+{
+    _sessionRecorderMutex.lock();
+    
+    if(_sessionRecorder)
+    {
+        _sessionRecorder->closeRecording();
+        delete _sessionRecorder;
+        _sessionRecorder = NULL;
+    }
+    
+    _sessionRecorderMutex.unlock();
 }
 
 

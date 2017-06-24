@@ -28,4 +28,7 @@ class AGTimer;
 - (void)addTimer:(AGTimer *)timer;
 - (void)removeTimer:(AGTimer *)timer;
 
+- (void)startSessionRecording;
+- (void)stopSessionRecording;
+
 @end

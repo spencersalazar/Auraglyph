@@ -194,6 +194,17 @@ void AGUIButton::setLatched(bool latched)
     m_latch = latched;
 }
 
+void AGUIButton::setTitle(const std::string &title)
+{
+    m_title = title;
+}
+
+const std::string &AGUIButton::title()
+{
+    return m_title;
+}
+
+
 
 //------------------------------------------------------------------------------
 // ### AGUITextButton ###

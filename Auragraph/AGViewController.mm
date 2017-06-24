@@ -122,10 +122,13 @@ enum InterfaceMode
     AGUIButton *_loadButton;
     AGUIButton *_newButton;
     AGUIButton *_testButton;
+    AGUIButton *_recordButton;
     AGUIIconButton *_nodeButton;
     AGUIIconButton *_freedrawButton;
     
     std::string _currentDocumentFilename;
+    
+    BOOL _isRecording;
 }
 
 @property (strong, nonatomic) EAGLContext *context;
@@ -354,9 +357,28 @@ static AGViewController * g_instance = nil;
     _testButton->setRenderFixed(true);
     _testButton->setAction(^{
         AGAnalytics::instance().eventTrainer();
-        [self presentViewController:self.trainer animated:YES completion:nil];
+         [self presentViewController:self.trainer animated:YES completion:nil];
     });
     _dashboard.push_back(_testButton);
+    
+    float recordButtonWidth = saveButtonWidth;
+    float recordButtonHeight = saveButtonHeight;
+    _recordButton = new AGUIButton("Record",
+                                   [self fixedCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-recordButtonWidth-testButtonWidth-20, 20+recordButtonHeight/2)],
+                                   GLvertex2f(recordButtonWidth, recordButtonHeight));
+    _recordButton->init();
+    _recordButton->setRenderFixed(true);
+    _recordButton->setAction(^{
+        // AGAnalytics::instance().eventTrainer();
+        // TODO: analytics
+        _recordButton->setTitle("Stop");
+        // flip toggle
+        if((_isRecording = !_isRecording))
+            [_audioManager startSessionRecording];
+        else
+            [_audioManager stopSessionRecording];
+    });
+    _dashboard.push_back(_recordButton);
     
     AGUIButtonGroup *modeButtonGroup = new AGUIButtonGroup();
     modeButtonGroup->init();
@@ -436,6 +458,9 @@ static AGViewController * g_instance = nil;
     
     CGPoint testPos = CGPointMake(self.view.bounds.size.width-_testButton->size().x-10, 20+_testButton->size().y/2);
     _testButton->setPosition([self fixedCoordinateForScreenCoordinate:testPos]);
+    
+    CGPoint recordPos = CGPointMake(self.view.bounds.size.width-_testButton->size().x-_recordButton->size().x-20, 20+_recordButton->size().y/2);
+    _recordButton->setPosition([self fixedCoordinateForScreenCoordinate:recordPos]);
     
     GLvertex3f modeButtonStartPos = [self fixedCoordinateForScreenCoordinate:CGPointMake(27.5, self.view.bounds.size.height-7.5-_freedrawButton->size().y/2)];
     _freedrawButton->setPosition(modeButtonStartPos);

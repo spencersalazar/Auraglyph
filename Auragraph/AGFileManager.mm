@@ -20,6 +20,7 @@ AGFileManager::AGFileManager()
     NSString *documentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     
     m_soundfileDirectory = [documentPath UTF8String];
+    m_userDataDirectory = [documentPath UTF8String];
 }
 
 AGFileManager::~AGFileManager()
@@ -28,6 +29,11 @@ AGFileManager::~AGFileManager()
 const string &AGFileManager::soundfileDirectory()
 {
     return m_soundfileDirectory;
+}
+
+const string &AGFileManager::userDataDirectory()
+{
+    return m_userDataDirectory;
 }
 
 vector<string> AGFileManager::listDirectory(const string &directory)
