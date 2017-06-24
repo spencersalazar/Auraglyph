@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		0900A3821B04A10800C249D9 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0900A3811B04A10800C249D9 /* Images.xcassets */; };
 		0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0901C1BA17BE2F970032904B /* AGGenericShader.mm */; };
+		09030CE71EFEF81300D4A4F2 /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09030CE51EFEF81300D4A4F2 /* Thread.cpp */; };
+		09030CEB1EFEF83D00D4A4F2 /* Signal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09030CE91EFEF83D00D4A4F2 /* Signal.cpp */; };
 		091081801A0B63DB0063028B /* AGStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0910817E1A0B63DB0063028B /* AGStyle.mm */; };
 		091C70CC1C48A9A600B513C2 /* AGUINodeEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */; };
 		0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */; };
@@ -171,6 +173,10 @@
 		0900A3811B04A10800C249D9 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		0901C1BA17BE2F970032904B /* AGGenericShader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGGenericShader.mm; sourceTree = "<group>"; };
 		0901C1BB17BE2F970032904B /* AGGenericShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGGenericShader.h; sourceTree = "<group>"; };
+		09030CE51EFEF81300D4A4F2 /* Thread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Thread.cpp; sourceTree = "<group>"; };
+		09030CE61EFEF81300D4A4F2 /* Thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Thread.h; sourceTree = "<group>"; };
+		09030CE91EFEF83D00D4A4F2 /* Signal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Signal.cpp; sourceTree = "<group>"; };
+		09030CEA1EFEF83D00D4A4F2 /* Signal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Signal.h; sourceTree = "<group>"; };
 		09077FD117C0BFFA00DFE42F /* AGDef.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGDef.h; sourceTree = "<group>"; };
 		0910817E1A0B63DB0063028B /* AGStyle.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGStyle.mm; sourceTree = "<group>"; };
 		0910817F1A0B63DB0063028B /* AGStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGStyle.h; sourceTree = "<group>"; };
@@ -686,6 +692,10 @@
 				09F700B61D71046300294BDD /* Buffers.cpp */,
 				09EE65811EFB64C700B4ED62 /* SampleCircularBuffer.h */,
 				09EE65801EFB64C700B4ED62 /* SampleCircularBuffer.cpp */,
+				09030CE61EFEF81300D4A4F2 /* Thread.h */,
+				09030CE51EFEF81300D4A4F2 /* Thread.cpp */,
+				09030CEA1EFEF83D00D4A4F2 /* Signal.h */,
+				09030CE91EFEF83D00D4A4F2 /* Signal.cpp */,
 			);
 			path = libsp;
 			sourceTree = "<group>";
@@ -1037,6 +1047,7 @@
 				09E5EC8718A5A88100B21D97 /* ADSR.cpp in Sources */,
 				09D9C9D01C98F13A005514A4 /* spRandom.cpp in Sources */,
 				09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */,
+				09030CE71EFEF81300D4A4F2 /* Thread.cpp in Sources */,
 				09EE657F1EFB59BE00B4ED62 /* AGAudioRecorder.mm in Sources */,
 				09412E0C1A2112300065598D /* NSString+STLString.mm in Sources */,
 				09B962551DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp in Sources */,
@@ -1071,6 +1082,7 @@
 				099AF12917D1A6DA000BAB7B /* zip.c in Sources */,
 				0991BA851D8654C70080175C /* FileWvIn.cpp in Sources */,
 				099AF12A17D1A6DA000BAB7B /* SSZipArchive.m in Sources */,
+				09030CEB1EFEF83D00D4A4F2 /* Signal.cpp in Sources */,
 				0934B67B1E223B47009259E2 /* AGFileManager.mm in Sources */,
 				0933957A1A0A3785009E4802 /* AGAboutBox.mm in Sources */,
 			);
