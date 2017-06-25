@@ -28,6 +28,7 @@
 #import "AGAnalytics.h"
 #import "AGUISaveLoadDialog.h"
 #import "AGPreferences.h"
+#import "AGMenu.h"
 #import "NSString+STLString.h"
 
 #import <list>
@@ -125,6 +126,8 @@ enum InterfaceMode
     AGUIButton *_recordButton;
     AGUIIconButton *_nodeButton;
     AGUIIconButton *_freedrawButton;
+    
+    AGMenu *_fileMenu;
     
     std::string _currentDocumentFilename;
     
@@ -384,6 +387,25 @@ static AGViewController * g_instance = nil;
         }
     });
     _dashboard.push_back(_recordButton);
+    
+    float fileMenuWidth = 75;
+    float fileMenuHeight = fileMenuWidth*0.4;
+    _fileMenu = new AGMenu([self fixedCoordinateForScreenCoordinate:CGPointMake(10+_saveButton->size().x*1.05+fileMenuWidth, 10+fileMenuHeight/2)],
+                           GLvertex2f(fileMenuWidth, fileMenuHeight));
+    _fileMenu->init();
+    float iconRadius = fileMenuHeight/2*0.8f;
+    _fileMenu->setIcon((GLvertex3f[]) {
+        { -iconRadius*0.7f, -iconRadius, 0 },
+        { -iconRadius*0.7f,  iconRadius, 0 },
+        {  iconRadius*0.7f,  iconRadius, 0 },
+        {  iconRadius*0.7f, -iconRadius, 0 },
+    }, 4, GL_LINE_LOOP);
+    _fileMenu->addMenuItem("New", [](){});
+    _fileMenu->addMenuItem("Load", [](){});
+    _fileMenu->addMenuItem("Save", [](){});
+    _fileMenu->addMenuItem("Save As", [](){});
+    _dashboard.push_back(_fileMenu);
+
     
     AGUIButtonGroup *modeButtonGroup = new AGUIButtonGroup();
     modeButtonGroup->init();

@@ -11,6 +11,7 @@
 		0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0901C1BA17BE2F970032904B /* AGGenericShader.mm */; };
 		09030CE71EFEF81300D4A4F2 /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09030CE51EFEF81300D4A4F2 /* Thread.cpp */; };
 		09030CEB1EFEF83D00D4A4F2 /* Signal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09030CE91EFEF83D00D4A4F2 /* Signal.cpp */; };
+		09030CF11EFEFEFB00D4A4F2 /* AGMenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09030CEF1EFEFEFB00D4A4F2 /* AGMenu.cpp */; };
 		091081801A0B63DB0063028B /* AGStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0910817E1A0B63DB0063028B /* AGStyle.mm */; };
 		091C70CC1C48A9A600B513C2 /* AGUINodeEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */; };
 		0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */; };
@@ -177,6 +178,8 @@
 		09030CE61EFEF81300D4A4F2 /* Thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Thread.h; sourceTree = "<group>"; };
 		09030CE91EFEF83D00D4A4F2 /* Signal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Signal.cpp; sourceTree = "<group>"; };
 		09030CEA1EFEF83D00D4A4F2 /* Signal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Signal.h; sourceTree = "<group>"; };
+		09030CEF1EFEFEFB00D4A4F2 /* AGMenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGMenu.cpp; sourceTree = "<group>"; };
+		09030CF01EFEFEFB00D4A4F2 /* AGMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGMenu.h; sourceTree = "<group>"; };
 		09077FD117C0BFFA00DFE42F /* AGDef.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGDef.h; sourceTree = "<group>"; };
 		0910817E1A0B63DB0063028B /* AGStyle.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGStyle.mm; sourceTree = "<group>"; };
 		0910817F1A0B63DB0063028B /* AGStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGStyle.h; sourceTree = "<group>"; };
@@ -487,6 +490,8 @@
 				09B962531DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp */,
 				093395791A0A3785009E4802 /* AGAboutBox.h */,
 				093395781A0A3785009E4802 /* AGAboutBox.mm */,
+				09030CF01EFEFEFB00D4A4F2 /* AGMenu.h */,
+				09030CEF1EFEFEFB00D4A4F2 /* AGMenu.cpp */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -1030,6 +1035,7 @@
 				095D12D417ACA36C0048A012 /* main.m in Sources */,
 				0933956E1A08799A009E4802 /* AGFormulaNode.mm in Sources */,
 				0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */,
+				09030CF11EFEFEFB00D4A4F2 /* AGMenu.cpp in Sources */,
 				09F29DAF1CCA086200502C01 /* AGSlider.cpp in Sources */,
 				095D12D817ACA36C0048A012 /* AGAppDelegate.mm in Sources */,
 				095D12E517ACA36C0048A012 /* AGViewController.mm in Sources */,
