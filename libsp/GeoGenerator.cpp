@@ -20,6 +20,17 @@ namespace GeoGen
         }
     }
     
+    void makeCircle(std::vector<GLvertex3f> &points, int numPoints, float radius)
+    {
+        points.resize(numPoints);
+        points[0] = GLvertex3f(0, 0, 0);
+        for(int i = 0; i < numPoints-1; i++)
+        {
+            float theta = 2*M_PI*((float)i)/((float)(numPoints-2));
+            points[1+i] = GLvertex3f(radius*cosf(theta), radius*sinf(theta), 0);
+        }
+    }
+
     void makeCircleStroke(GLvertex3f *points, int numPoints, float radius)
     {
         for(int i = 0; i < numPoints; i++)
@@ -28,7 +39,16 @@ namespace GeoGen
             points[i] = GLvertex3f(radius*cosf(theta), radius*sinf(theta), 0);
         }
     }
-    
+
+    void makeCircleStroke(std::vector<GLvertex3f> &points, int numPoints, float radius)
+    {
+        points.resize(numPoints);
+        for(int i = 0; i < numPoints; i++)
+        {
+            float theta = 2*M_PI*((float)i)/((float)(numPoints-1));
+            points[i] = GLvertex3f(radius*cosf(theta), radius*sinf(theta), 0);
+        }
+    }
     
     GLvertex3f *circle64()
     {

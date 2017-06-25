@@ -11,7 +11,7 @@
 
 #include "Geometry.h"
 #include <math.h>
-
+#include <vector>
 
 namespace GeoGen
 {
@@ -22,6 +22,9 @@ namespace GeoGen
      or fill with GL_TRIANGLE_FAN
      */
     void makeCircle(GLvertex3f *points, int numPoints, float radius);
+    /* std::vector version
+     */
+    void makeCircle(std::vector<GLvertex3f> &points, int numPoints, float radius);
     
     /* makeCircle()
      - Generate vertices for circle centered at (0,0,0) and with specified radius
@@ -29,6 +32,9 @@ namespace GeoGen
      - Draw as stroke with GL_LINE_LOOP
      */
     void makeCircleStroke(GLvertex3f *points, int numPoints, float radius);
+    /* std::vector version
+     */
+    void makeCircleStroke(std::vector<GLvertex3f> &points, int numPoints, float radius);
     
     /* circle64()
      - Return 64 vertex circle, created a la makeCircle() above
