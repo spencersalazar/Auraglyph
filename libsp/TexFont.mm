@@ -87,6 +87,8 @@ m_tex(0)
     CTFontGetGlyphsForCharacters(ctFont, &g_chars[0], &glyph, 1);
     m_width = CTFontGetAdvancesForGlyphs(ctFont, kCTFontDefaultOrientation, &glyph, NULL, 1);
     m_height = CTFontGetAscent(ctFont) + CTFontGetDescent(ctFont);
+    m_ascender = CTFontGetAscent(ctFont);
+    m_descender = CTFontGetDescent(ctFont);
     
     m_res = 1024;
 	texWidth = (int) m_res;
@@ -307,6 +309,16 @@ float TexFont::width(const std::string &text)
 float TexFont::height()
 {
     return s_radius * m_height/m_width;
+}
+
+float TexFont::ascender()
+{
+    return s_radius * m_ascender/m_width;
+}
+
+float TexFont::descender()
+{
+    return s_radius * m_descender/m_width;
 }
 
 

@@ -27,6 +27,8 @@ public:
     float width();
     float width(const std::string &text);
     float height();
+    float ascender();
+    float descender();
     
 private:
     
@@ -58,6 +60,8 @@ private:
     GlyphInfo m_info[127];
     float m_width;
     float m_height;
+    float m_ascender;
+    float m_descender;
     float m_res;
 };
 
