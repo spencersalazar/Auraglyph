@@ -117,6 +117,7 @@ public:
     AGRenderObject *parent() const { return m_parent; }
     
     // draw functions
+    void drawGeometry(GLvertex3f geo[], int size, int kind);
     void drawTriangleFan(GLvertex3f geo[], int size);
     void drawTriangleFan(GLvertex3f geo[], int size, const GLKMatrix4 &xform);
     void drawTriangleFan(AGGenericShader &shader, GLvertex3f geo[], int size, const GLKMatrix4 &xform);

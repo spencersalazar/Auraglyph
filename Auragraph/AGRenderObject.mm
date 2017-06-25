@@ -277,6 +277,21 @@ void AGRenderObject::debug_renderBounds()
 #endif // DEBUG_BOUNDS
 }
 
+void AGRenderObject::drawGeometry(GLvertex3f geo[], int size, int kind)
+{
+    AGGenericShader &shader = AGGenericShader::instance();
+    
+    shader.useProgram();
+    
+    shader.setModelViewMatrix(m_renderState.modelview);
+    shader.setProjectionMatrix(m_renderState.projection);
+    
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
+    
+    glDrawArrays(kind, 0, size);
+}
+
 void AGRenderObject::drawTriangleFan(GLvertex3f geo[], int size)
 {
     AGGenericShader &shader = AGGenericShader::instance();
