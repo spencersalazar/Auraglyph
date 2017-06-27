@@ -337,6 +337,21 @@ void AGRenderObject::drawTriangleFan(AGGenericShader &shader, GLvertex3f geo[], 
     glDrawArrays(GL_TRIANGLE_FAN, 0, size);
 }
 
+void AGRenderObject::drawLineLoop(GLvertex2f geo[], int size)
+{
+    AGGenericShader &shader = AGGenericShader::instance();
+    
+    shader.useProgram();
+    
+    shader.setModelViewMatrix(m_renderState.modelview);
+    shader.setProjectionMatrix(m_renderState.projection);
+    
+    glVertexAttribPointer(AGVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
+    
+    glDrawArrays(GL_LINE_LOOP, 0, size);
+}
+
 void AGRenderObject::drawLineLoop(GLvertex3f geo[], int size)
 {
     AGGenericShader &shader = AGGenericShader::instance();
