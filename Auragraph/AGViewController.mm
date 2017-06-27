@@ -400,10 +400,18 @@ static AGViewController * g_instance = nil;
         {  iconRadius*0.7f,  iconRadius, 0 },
         {  iconRadius*0.7f, -iconRadius, 0 },
     }, 4, GL_LINE_LOOP);
-    _fileMenu->addMenuItem("New", [](){});
-    _fileMenu->addMenuItem("Load", [](){});
-    _fileMenu->addMenuItem("Save", [](){});
-    _fileMenu->addMenuItem("Save As", [](){});
+    _fileMenu->addMenuItem("New", [](){
+        dbgprint("New\n");
+    });
+    _fileMenu->addMenuItem("Load", [](){
+        dbgprint("Load\n");
+    });
+    _fileMenu->addMenuItem("Save", [](){
+        dbgprint("Save\n");
+    });
+    _fileMenu->addMenuItem("Save As", [](){
+        dbgprint("Save As\n");
+    });
     _dashboard.push_back(_fileMenu);
 
     

@@ -36,6 +36,9 @@ public:
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t) override;
     
 private:
+    
+    GLvrectf _boundingBoxForItem(int item);
+    
     std::vector<GLvertex3f> m_frameGeo;
     
     std::vector<GLvertex3f> m_iconGeo;
@@ -51,7 +54,10 @@ private:
     
     GLvertex2f m_size;
     GLvertex3f m_pos;
+    float m_maxTextWidth = 0;
     
-    bool m_open;
+    bool m_open = false;
+    int m_selectedItem = -1;
+    powcurvef m_itemsAlpha;
 };
 
