@@ -124,6 +124,7 @@ enum InterfaceMode
     AGUIIconButton *_freedrawButton;
     
     AGMenu *_fileMenu;
+    AGMenu *_editMenu;
     AGMenu *_settingsMenu;
     
     std::string _currentDocumentFilename;
@@ -353,15 +354,60 @@ static AGViewController * g_instance = nil;
         [self _save:YES];
     });
     _dashboard.push_back(_fileMenu);
-
-    _settingsMenu = new AGMenu([self fixedCoordinateForScreenCoordinate:CGPointMake(10+fileMenuWidth*1.2+fileMenuWidth/2, 10+fileMenuHeight/2)],
-                           GLvertex2f(fileMenuWidth, fileMenuHeight));
+    
+    _editMenu = new AGMenu([self fixedCoordinateForScreenCoordinate:CGPointMake(10+fileMenuWidth*1.2+fileMenuWidth/2, 10+fileMenuHeight/2)],
+                               GLvertex2f(fileMenuWidth, fileMenuHeight));
+    _editMenu->init();
+    float wrenchRadius = iconRadius*1.25;
+    float wrenchRadius2 = iconRadius*0.62;
+    float wrenchInnerRadius = wrenchRadius*0.3;
+    float sqrt2 = M_SQRT2;
+    float sqrt1_2 = M_SQRT1_2;
+    float wrenchRot = -M_PI*0.3;
+    vector<GLvertex3f> wrenchIcon = {
+        rotateZ({ -wrenchRadius2/3, 0, 0 }, wrenchRot),
+        rotateZ({ -wrenchRadius2/3, wrenchRadius-wrenchInnerRadius*(1+sqrt2), 0 }, wrenchRot),
+        rotateZ({ -wrenchRadius2/3-wrenchInnerRadius/sqrt2, wrenchRadius-wrenchInnerRadius*(1+sqrt1_2), 0 }, wrenchRot),
+        rotateZ({ -wrenchRadius2/3-wrenchInnerRadius/sqrt2, wrenchRadius-wrenchInnerRadius*(sqrt1_2), 0 }, wrenchRot),
+        rotateZ({ -wrenchRadius2/3, wrenchRadius, 0 }, wrenchRot),
+        rotateZ({ -wrenchRadius2/3, wrenchRadius-wrenchInnerRadius, 0 }, wrenchRot),
+        rotateZ({  wrenchRadius2/3, wrenchRadius-wrenchInnerRadius, 0 }, wrenchRot),
+        rotateZ({  wrenchRadius2/3, wrenchRadius, 0 }, wrenchRot),
+        rotateZ({  wrenchRadius2/3+wrenchInnerRadius/sqrt2, wrenchRadius-wrenchInnerRadius*(sqrt1_2), 0 }, wrenchRot),
+        rotateZ({  wrenchRadius2/3+wrenchInnerRadius/sqrt2, wrenchRadius-wrenchInnerRadius*(1+sqrt1_2), 0 }, wrenchRot),
+        rotateZ({  wrenchRadius2/3, wrenchRadius-wrenchInnerRadius*(1+sqrt2), 0 }, wrenchRot),
+        rotateZ({  wrenchRadius2/3, 0, 0 }, wrenchRot),
+        rotateZ({  wrenchRadius2/3, -wrenchRadius+wrenchInnerRadius*(1+sqrt2), 0 }, wrenchRot),
+        rotateZ({  wrenchRadius2/3+wrenchInnerRadius/sqrt2, -wrenchRadius+wrenchInnerRadius*(1+sqrt1_2), 0 }, wrenchRot),
+        rotateZ({  wrenchRadius2/3+wrenchInnerRadius/sqrt2, -wrenchRadius+wrenchInnerRadius*(sqrt1_2), 0 }, wrenchRot),
+        rotateZ({  wrenchRadius2/3, -wrenchRadius, 0 }, wrenchRot),
+        rotateZ({  wrenchRadius2/3, -wrenchRadius+wrenchInnerRadius, 0 }, wrenchRot),
+        rotateZ({ -wrenchRadius2/3, -wrenchRadius+wrenchInnerRadius, 0 }, wrenchRot),
+        rotateZ({ -wrenchRadius2/3, -wrenchRadius, 0 }, wrenchRot),
+        rotateZ({ -wrenchRadius2/3-wrenchInnerRadius/sqrt2, -wrenchRadius+wrenchInnerRadius*(sqrt1_2), 0 }, wrenchRot),
+        rotateZ({ -wrenchRadius2/3-wrenchInnerRadius/sqrt2, -wrenchRadius+wrenchInnerRadius*(1+sqrt1_2), 0 }, wrenchRot),
+        rotateZ({ -wrenchRadius2/3, -wrenchRadius+wrenchInnerRadius*(1+sqrt2), 0 }, wrenchRot),
+        rotateZ({ -wrenchRadius2/3, 0, 0 }, wrenchRot),
+    };
+    _editMenu->setIcon(wrenchIcon.data(), wrenchIcon.size(), GL_LINE_STRIP);
+    _editMenu->addMenuItem("Undo", [self](){
+        dbgprint("Undo\n");
+        // TODO: analytics
+    });
+    _editMenu->addMenuItem("Redo", [self](){
+        dbgprint("Redo\n");
+        // TODO: analytics
+    });
+    _dashboard.push_back(_editMenu);
+    
+    _settingsMenu = new AGMenu([self fixedCoordinateForScreenCoordinate:CGPointMake(10+fileMenuWidth*1.2*2+fileMenuWidth/2, 10+fileMenuHeight/2)],
+                               GLvertex2f(fileMenuWidth, fileMenuHeight));
     _settingsMenu->init();
     vector<GLvertex3f> gearIcon;
     int numTeeth = 7;
     float outerRadius = iconRadius;
     float innerRadius = iconRadius*0.8;
-    float start = (-(2*M_PI)/numTeeth/2);
+    float start = 0;
     for(int i = 0; i < numTeeth; i++)
     {
         float rot = (2*M_PI)/numTeeth;
@@ -461,7 +507,10 @@ static AGViewController * g_instance = nil;
     CGPoint fileMenuPos = CGPointMake(10+_fileMenu->size().x/2, 10+_fileMenu->size().y/2);
     _fileMenu->setPosition([self fixedCoordinateForScreenCoordinate:fileMenuPos]);
     
-    CGPoint settingsMenuPos = CGPointMake(10+_fileMenu->size().x*1.2+_fileMenu->size().x/2, 10+_fileMenu->size().y/2);
+    CGPoint editMenuPos = CGPointMake(10+_fileMenu->size().x*1.2+_fileMenu->size().x/2, 10+_fileMenu->size().y/2);
+    _editMenu->setPosition([self fixedCoordinateForScreenCoordinate:editMenuPos]);
+    
+    CGPoint settingsMenuPos = CGPointMake(10+_fileMenu->size().x*2*1.2+_fileMenu->size().x/2, 10+_fileMenu->size().y/2);
     _settingsMenu->setPosition([self fixedCoordinateForScreenCoordinate:settingsMenuPos]);
     
     CGPoint recordPos = CGPointMake(self.view.bounds.size.width-_recordButton->size().x-20, 20+_recordButton->size().y/2);
