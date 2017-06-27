@@ -121,6 +121,11 @@ GLvertex2f rotateZ(const GLvertex2f &v, GLfloat rads)
     return GLvertex2f(v.x*cosf(rads)-v.y*sinf(rads), v.x*sinf(rads)+v.y*cosf(rads));
 }
 
+GLvertex3f rotateZ(const GLvertex3f &v, GLfloat rads)
+{
+    return GLvertex3f(v.x*cosf(rads)-v.y*sinf(rads), v.x*sinf(rads)+v.y*cosf(rads), v.z);
+}
+
 bool GLvrectf::contains(const GLvertex3f &p)
 {
     if(p.x >= bl.x && p.y >= bl.y && p.x <= ur.x && p.y <= ur.y)

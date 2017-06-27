@@ -151,6 +151,7 @@ GLvertex2f operator/(const GLvertex2f &v, const GLfloat &s);
 bool operator==(const GLvertex2f &v, const GLvertex2f &v2);
 bool operator!=(const GLvertex2f &v, const GLvertex2f &v2);
 GLvertex2f rotateZ(const GLvertex2f &v, GLfloat rads);
+GLvertex3f rotateZ(const GLvertex3f &v, GLfloat rads);
 
 struct GLvertex2f
 {
