@@ -150,44 +150,56 @@ void AGMenu::render()
 
 void AGMenu::touchDown(const AGTouchInfo &t)
 {
-    if(pointInCircle(t.position.xy(), m_pos.xy(), m_size.x/2))
+    if(pointInRectangle(t.position.xy(), m_pos.xy()-m_size/2, m_pos.xy()+m_size/2))
     {
         m_open = true;
+        m_leftTab = false;
         m_itemsAlpha.reset(0, 1);
     }
 }
 
 void AGMenu::touchMove(const AGTouchInfo &t)
 {
-    m_selectedItem = -1;
-    GLvertex3f relPos = t.position-m_pos;
-    for(int i = 0; i < m_items.size(); i++)
+    if(!m_leftTab)
     {
-        GLvrectf r = this->_boundingBoxForItem(i);
-        if(pointInRectangle(relPos.xy(), r.bl.xy(), r.ur.xy()))
+        if(!pointInRectangle(t.position.xy(), m_pos.xy()-m_size/2, m_pos.xy()+m_size/2))
+            m_leftTab = true;
+    }
+    else
+    {
+        m_selectedItem = -1;
+        GLvertex3f relPos = t.position-m_pos;
+        for(int i = 0; i < m_items.size(); i++)
         {
-            m_selectedItem = i;
-            //dbgprint("AGMenu: %s\n", m_items[i].title.c_str());
-            break;
+            GLvrectf r = this->_boundingBoxForItem(i);
+            if(pointInRectangle(relPos.xy(), r.bl.xy(), r.ur.xy()))
+            {
+                m_selectedItem = i;
+                //dbgprint("AGMenu: %s\n", m_items[i].title.c_str());
+                break;
+            }
         }
     }
 }
 
 void AGMenu::touchUp(const AGTouchInfo &t)
 {
-    m_open = false;
-    m_selectedItem = -1;
-    m_itemsAlpha.reset(1, 0);
-    
-    GLvertex3f relPos = t.position-m_pos;
-    for(int i = 0; i < m_items.size(); i++)
+//    if(m_leftTab || !pointInRectangle(t.position.xy(), m_pos.xy()-m_size/2, m_pos.xy()+m_size/2))
     {
-        GLvrectf r = this->_boundingBoxForItem(i);
-        if(pointInRectangle(relPos.xy(), r.bl.xy(), r.ur.xy()))
+        m_open = false;
+        m_selectedItem = -1;
+        m_itemsAlpha.reset(1, 0);
+        
+        GLvertex3f relPos = t.position-m_pos;
+        for(int i = 0; i < m_items.size(); i++)
         {
-            m_items[i].action();
-            //dbgprint("AGMenu: %s\n", m_items[i].title.c_str());
-            break;
+            GLvrectf r = this->_boundingBoxForItem(i);
+            if(pointInRectangle(relPos.xy(), r.bl.xy(), r.ur.xy()))
+            {
+                m_items[i].action();
+                //dbgprint("AGMenu: %s\n", m_items[i].title.c_str());
+                break;
+            }
         }
     }
 }

@@ -57,6 +57,7 @@ private:
     float m_maxTextWidth = 0;
     
     bool m_open = false;
+    bool m_leftTab = false;
     int m_selectedItem = -1;
     powcurvef m_itemsAlpha;
 };
