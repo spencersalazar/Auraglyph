@@ -25,6 +25,11 @@ public:
     void setIcon(GLvertex3f *geo, int num, GLint kind);
     void addMenuItem(const std::string &title, const std::function<void ()> &action);
     
+    GLvertex3f position() override { return m_pos; }
+    void setPosition(const GLvertex3f &pos) { m_pos = pos; }
+    
+    GLvertex2f size() override { return m_size; }
+    
     void update(float t, float dt) override;
     void render() override;
     
