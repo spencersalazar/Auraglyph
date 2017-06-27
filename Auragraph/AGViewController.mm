@@ -119,12 +119,12 @@ enum InterfaceMode
     
     TexFont * _font;
     
-    AGUIButton *_testButton;
     AGUIButton *_recordButton;
     AGUIIconButton *_nodeButton;
     AGUIIconButton *_freedrawButton;
     
     AGMenu *_fileMenu;
+    AGMenu *_settingsMenu;
     
     std::string _currentDocumentFilename;
     
@@ -290,44 +290,17 @@ static AGViewController * g_instance = nil;
 
 - (void)initUI
 {
-    __weak typeof(self) weakSelf = self;
-    
     // needed for worldCoordinateForScreenCoordinate to work
     [self updateMatrices];
-    
-    /* about button */
-//    float aboutButtonWidth = _font->width("AURAGLYPH")*1.05;
-//    float aboutButtonHeight = _font->height()*1.05;
-//    AGUITextButton *aboutButton = new AGUITextButton("AURAGLYPH",
-//                                                     GLvertex3f(-aboutButtonWidth/2, 0, 0) + [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height-10)],
-//                                                     GLvertex2f(aboutButtonWidth, aboutButtonHeight));
-//    aboutButton->setAction(^{
-//        AGAboutBox *aboutBox = new AGAboutBox([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)]);
-//        [weakSelf addTopLevelObject:aboutBox];
-//    });
-//    [self addTopLevelObject:aboutButton];
     
     /* save button */
     float saveButtonWidth = _font->width("  Save  ")*1.05;
     float saveButtonHeight = _font->height()*1.05;
     
-    float testButtonWidth = saveButtonWidth;
-    float testButtonHeight = saveButtonHeight;
-    _testButton = new AGUIButton("Trainer",
-                                 [self fixedCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-testButtonWidth-10, 20+testButtonHeight/2)],
-                                 GLvertex2f(testButtonWidth, testButtonHeight));
-    _testButton->init();
-    _testButton->setRenderFixed(true);
-    _testButton->setAction(^{
-        AGAnalytics::instance().eventTrainer();
-         [self presentViewController:self.trainer animated:YES completion:nil];
-    });
-    _dashboard.push_back(_testButton);
-    
     float recordButtonWidth = saveButtonWidth;
     float recordButtonHeight = saveButtonHeight;
     _recordButton = new AGUIButton("Record",
-                                   [self fixedCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-recordButtonWidth-testButtonWidth-20, 20+recordButtonHeight/2)],
+                                   [self fixedCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-recordButtonWidth-20, 20+recordButtonHeight/2)],
                                    GLvertex2f(recordButtonWidth, recordButtonHeight));
     _recordButton->init();
     _recordButton->setRenderFixed(true);
@@ -380,7 +353,44 @@ static AGViewController * g_instance = nil;
         [self _save:YES];
     });
     _dashboard.push_back(_fileMenu);
-    
+
+    _settingsMenu = new AGMenu([self fixedCoordinateForScreenCoordinate:CGPointMake(10+fileMenuWidth*1.2+fileMenuWidth/2, 10+fileMenuHeight/2)],
+                           GLvertex2f(fileMenuWidth, fileMenuHeight));
+    _settingsMenu->init();
+    vector<GLvertex3f> gearIcon;
+    int numTeeth = 7;
+    float outerRadius = iconRadius;
+    float innerRadius = iconRadius*0.8;
+    float start = (-(2*M_PI)/numTeeth/2);
+    for(int i = 0; i < numTeeth; i++)
+    {
+        float rot = (2*M_PI)/numTeeth;
+        float pos = start+rot*i;
+        gearIcon.push_back({ innerRadius*cos(pos), innerRadius*sin(pos), 0 });
+        gearIcon.push_back({ outerRadius*cos(pos), outerRadius*sin(pos), 0 });
+        gearIcon.push_back({ outerRadius*cos(pos+rot/2), outerRadius*sin(pos+rot/2), 0 });
+        gearIcon.push_back({ innerRadius*cos(pos+rot/2), innerRadius*sin(pos+rot/2), 0 });
+        gearIcon.push_back({ innerRadius*cos(pos+rot), innerRadius*sin(pos+rot), 0 });
+    }
+    _settingsMenu->setIcon(gearIcon.data(), gearIcon.size(), GL_LINE_STRIP);
+    _settingsMenu->addMenuItem("Settings", [self](){
+        dbgprint("Settings\n");
+        // TODO: analytics
+    });
+    _settingsMenu->addMenuItem("Trainer", [self](){
+        dbgprint("Trainer\n");
+        AGAnalytics::instance().eventTrainer();
+        [self presentViewController:self.trainer animated:YES completion:nil];
+    });
+    _settingsMenu->addMenuItem("About", [self](){
+        dbgprint("About\n");
+        // TODO: analytics
+        AGAboutBox *aboutBox = new AGAboutBox([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)]);
+        aboutBox->init();
+        [self addTopLevelObject:aboutBox];
+    });
+    _dashboard.push_back(_settingsMenu);
+
     AGUIButtonGroup *modeButtonGroup = new AGUIButtonGroup();
     modeButtonGroup->init();
     
@@ -451,10 +461,10 @@ static AGViewController * g_instance = nil;
     CGPoint fileMenuPos = CGPointMake(10+_fileMenu->size().x/2, 10+_fileMenu->size().y/2);
     _fileMenu->setPosition([self fixedCoordinateForScreenCoordinate:fileMenuPos]);
     
-    CGPoint testPos = CGPointMake(self.view.bounds.size.width-_testButton->size().x-10, 20+_testButton->size().y/2);
-    _testButton->setPosition([self fixedCoordinateForScreenCoordinate:testPos]);
+    CGPoint settingsMenuPos = CGPointMake(10+_fileMenu->size().x*1.2+_fileMenu->size().x/2, 10+_fileMenu->size().y/2);
+    _settingsMenu->setPosition([self fixedCoordinateForScreenCoordinate:settingsMenuPos]);
     
-    CGPoint recordPos = CGPointMake(self.view.bounds.size.width-_testButton->size().x-_recordButton->size().x-20, 20+_recordButton->size().y/2);
+    CGPoint recordPos = CGPointMake(self.view.bounds.size.width-_recordButton->size().x-20, 20+_recordButton->size().y/2);
     _recordButton->setPosition([self fixedCoordinateForScreenCoordinate:recordPos]);
     
     GLvertex3f modeButtonStartPos = [self fixedCoordinateForScreenCoordinate:CGPointMake(27.5, self.view.bounds.size.height-7.5-_freedrawButton->size().y/2)];
@@ -493,7 +503,6 @@ static AGViewController * g_instance = nil;
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
-    _testButton->hide();
     _freedrawButton->hide();
     _nodeButton->hide();
     
@@ -502,7 +511,6 @@ static AGViewController * g_instance = nil;
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         [self _updateFixedUIPosition];
         
-        _testButton->unhide();
         _freedrawButton->unhide();
         _nodeButton->unhide();
     }];
