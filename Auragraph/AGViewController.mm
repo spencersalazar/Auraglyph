@@ -119,9 +119,6 @@ enum InterfaceMode
     
     TexFont * _font;
     
-    AGUIButton *_saveButton;
-    AGUIButton *_loadButton;
-    AGUIButton *_newButton;
     AGUIButton *_testButton;
     AGUIButton *_recordButton;
     AGUIIconButton *_nodeButton;
@@ -148,7 +145,7 @@ enum InterfaceMode
 - (void)renderEdit;
 - (void)renderUser;
 
-- (void)_save;
+- (void)_save:(BOOL)saveAs;
 - (void)_openLoad;
 - (void)_clearDocument;
 - (void)_newDocument;
@@ -218,6 +215,7 @@ static AGViewController * g_instance = nil;
     std::string _lastOpened = AGPreferences::instance().lastOpenedDocument();
     if(_lastOpened.size() != 0)
     {
+        _currentDocumentFilename = _lastOpened;
         AGDocument doc = AGDocumentManager::instance().load(_lastOpened);
         [self _loadDocument:doc];
     }
@@ -375,10 +373,11 @@ static AGViewController * g_instance = nil;
     _fileMenu->addMenuItem("Save", [self](){
         dbgprint("Save\n");
         AGAnalytics::instance().eventSave();
-        [self _save];
+        [self _save:NO];
     });
-    _fileMenu->addMenuItem("Save As", [](){
+    _fileMenu->addMenuItem("Save As", [self](){
         dbgprint("Save As\n");
+        [self _save:YES];
     });
     _dashboard.push_back(_fileMenu);
     
@@ -449,15 +448,6 @@ static AGViewController * g_instance = nil;
     // needed for worldCoordinateForScreenCoordinate to work
     [self updateMatrices];
     
-//    CGPoint savePos = CGPointMake(10, 20+_saveButton->size().y/2);
-//    _saveButton->setPosition([self fixedCoordinateForScreenCoordinate:savePos]);
-//    
-//    CGPoint loadPos = CGPointMake(10, 20+_saveButton->size().y*1.1+_loadButton->size().y/2);
-//    _loadButton->setPosition([self fixedCoordinateForScreenCoordinate:loadPos]);
-//    
-//    CGPoint newPos = CGPointMake(10, 20+_saveButton->size().y*1.05+_loadButton->size().y*1.2+_newButton->size().y/2);
-//    _newButton->setPosition([self fixedCoordinateForScreenCoordinate:newPos]);
-    
     CGPoint fileMenuPos = CGPointMake(10+_fileMenu->size().x/2, 10+_fileMenu->size().y/2);
     _fileMenu->setPosition([self fixedCoordinateForScreenCoordinate:fileMenuPos]);
     
@@ -503,7 +493,6 @@ static AGViewController * g_instance = nil;
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
-    _saveButton->hide();
     _testButton->hide();
     _freedrawButton->hide();
     _nodeButton->hide();
@@ -513,7 +502,6 @@ static AGViewController * g_instance = nil;
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         [self _updateFixedUIPosition];
         
-        _saveButton->unhide();
         _testButton->unhide();
         _freedrawButton->unhide();
         _nodeButton->unhide();
@@ -1325,7 +1313,7 @@ static AGViewController * g_instance = nil;
 
 
 
-- (void)_save
+- (void)_save:(BOOL)saveAs
 {
     __block AGDocument doc;
     
@@ -1344,11 +1332,7 @@ static AGViewController * g_instance = nil;
         }
     });
     
-    if(_currentDocumentFilename.size())
-    {
-        AGDocumentManager::instance().update(_currentDocumentFilename, doc);
-    }
-    else
+    if(_currentDocumentFilename.size() == 0 || saveAs)
     {
         AGUISaveDialog *saveDialog = AGUISaveDialog::save(doc);
         
@@ -1359,6 +1343,10 @@ static AGViewController * g_instance = nil;
         
         _dashboard.push_back(saveDialog);
     }
+    else
+    {
+        AGDocumentManager::instance().update(_currentDocumentFilename, doc);
+    }
 }
 
 - (void)_openLoad
@@ -1367,7 +1355,6 @@ static AGViewController * g_instance = nil;
     
     loadDialog->onLoad([self](const std::string &filename, AGDocument &doc){
         _currentDocumentFilename = filename;
-        AGPreferences::instance().setLastOpenedDocument(_currentDocumentFilename);
         [self _loadDocument:doc];
     });
     
@@ -1398,6 +1385,8 @@ static AGViewController * g_instance = nil;
 - (void)_loadDocument:(AGDocument &)doc
 {
     [self _clearDocument];
+    
+    AGPreferences::instance().setLastOpenedDocument(_currentDocumentFilename);
     
     __block map<string, AGNode *> uuid2node;
     
