@@ -312,44 +312,6 @@ static AGViewController * g_instance = nil;
     /* save button */
     float saveButtonWidth = _font->width("  Save  ")*1.05;
     float saveButtonHeight = _font->height()*1.05;
-    _saveButton = new AGUIButton("Save",
-                                 [self worldCoordinateForScreenCoordinate:CGPointMake(10, 20+saveButtonHeight/2)],
-                                 GLvertex2f(saveButtonWidth, saveButtonHeight));
-    _saveButton->init();
-    _saveButton->setRenderFixed(true);
-    _saveButton->setAction(^{
-        AGAnalytics::instance().eventSave();
-        [weakSelf _save];
-    });
-    _dashboard.push_back(_saveButton);
-    
-    /* load button */
-    float loadButtonWidth = saveButtonWidth;
-    float loadButtonHeight = saveButtonHeight;
-    _loadButton = new AGUIButton("Load",
-                                 [self fixedCoordinateForScreenCoordinate:CGPointMake(10, 20+saveButtonHeight*1+loadButtonHeight/2)],
-                                 GLvertex2f(loadButtonWidth, loadButtonHeight));
-    _loadButton->init();
-    _loadButton->setRenderFixed(true);
-    _loadButton->setAction(^{
-        // AGAnalytics::instance().eventSave();
-        [weakSelf _openLoad];
-    });
-    _dashboard.push_back(_loadButton);
-    
-    /* new button */
-    float newButtonWidth = saveButtonWidth;
-    float newButtonHeight = saveButtonHeight;
-    _newButton = new AGUIButton("New",
-                                [self fixedCoordinateForScreenCoordinate:CGPointMake(10, 20+saveButtonHeight*1.05+loadButtonHeight*1.2+newButtonHeight/2)],
-                                GLvertex2f(newButtonWidth, newButtonHeight));
-    _newButton->init();
-    _newButton->setRenderFixed(true);
-    _newButton->setAction(^{
-        // AGAnalytics::instance().eventSave();
-        [weakSelf _newDocument];
-    });
-    _dashboard.push_back(_newButton);
     
     float testButtonWidth = saveButtonWidth;
     float testButtonHeight = saveButtonHeight;
@@ -390,7 +352,7 @@ static AGViewController * g_instance = nil;
     
     float fileMenuWidth = 75;
     float fileMenuHeight = fileMenuWidth*0.4;
-    _fileMenu = new AGMenu([self fixedCoordinateForScreenCoordinate:CGPointMake(10+_saveButton->size().x*1.05+fileMenuWidth, 10+fileMenuHeight/2)],
+    _fileMenu = new AGMenu([self fixedCoordinateForScreenCoordinate:CGPointMake(10+fileMenuWidth/2, 10+fileMenuHeight/2)],
                            GLvertex2f(fileMenuWidth, fileMenuHeight));
     _fileMenu->init();
     float iconRadius = fileMenuHeight/2*0.8f;
@@ -400,20 +362,25 @@ static AGViewController * g_instance = nil;
         {  iconRadius*0.7f,  iconRadius, 0 },
         {  iconRadius*0.7f, -iconRadius, 0 },
     }, 4, GL_LINE_LOOP);
-    _fileMenu->addMenuItem("New", [](){
+    _fileMenu->addMenuItem("New", [self](){
         dbgprint("New\n");
+        [self _newDocument];
     });
-    _fileMenu->addMenuItem("Load", [](){
+    _fileMenu->addMenuItem("Load", [self](){
         dbgprint("Load\n");
+        //AGAnalytics::instance().event();
+        // TODO: analytics
+        [self _openLoad];
     });
-    _fileMenu->addMenuItem("Save", [](){
+    _fileMenu->addMenuItem("Save", [self](){
         dbgprint("Save\n");
+        AGAnalytics::instance().eventSave();
+        [self _save];
     });
     _fileMenu->addMenuItem("Save As", [](){
         dbgprint("Save As\n");
     });
     _dashboard.push_back(_fileMenu);
-
     
     AGUIButtonGroup *modeButtonGroup = new AGUIButtonGroup();
     modeButtonGroup->init();
@@ -482,14 +449,17 @@ static AGViewController * g_instance = nil;
     // needed for worldCoordinateForScreenCoordinate to work
     [self updateMatrices];
     
-    CGPoint savePos = CGPointMake(10, 20+_saveButton->size().y/2);
-    _saveButton->setPosition([self fixedCoordinateForScreenCoordinate:savePos]);
+//    CGPoint savePos = CGPointMake(10, 20+_saveButton->size().y/2);
+//    _saveButton->setPosition([self fixedCoordinateForScreenCoordinate:savePos]);
+//    
+//    CGPoint loadPos = CGPointMake(10, 20+_saveButton->size().y*1.1+_loadButton->size().y/2);
+//    _loadButton->setPosition([self fixedCoordinateForScreenCoordinate:loadPos]);
+//    
+//    CGPoint newPos = CGPointMake(10, 20+_saveButton->size().y*1.05+_loadButton->size().y*1.2+_newButton->size().y/2);
+//    _newButton->setPosition([self fixedCoordinateForScreenCoordinate:newPos]);
     
-    CGPoint loadPos = CGPointMake(10, 20+_saveButton->size().y*1.1+_loadButton->size().y/2);
-    _loadButton->setPosition([self fixedCoordinateForScreenCoordinate:loadPos]);
-    
-    CGPoint newPos = CGPointMake(10, 20+_saveButton->size().y*1.05+_loadButton->size().y*1.2+_newButton->size().y/2);
-    _newButton->setPosition([self fixedCoordinateForScreenCoordinate:newPos]);
+    CGPoint fileMenuPos = CGPointMake(10+_fileMenu->size().x/2, 10+_fileMenu->size().y/2);
+    _fileMenu->setPosition([self fixedCoordinateForScreenCoordinate:fileMenuPos]);
     
     CGPoint testPos = CGPointMake(self.view.bounds.size.width-_testButton->size().x-10, 20+_testButton->size().y/2);
     _testButton->setPosition([self fixedCoordinateForScreenCoordinate:testPos]);
