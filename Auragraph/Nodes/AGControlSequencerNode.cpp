@@ -590,6 +590,14 @@ void AGControlSequencerNode::deserializeFinal(const AGDocument::Node &docNode)
                 for(int step = 0; step < numSteps(); step++)
                     m_sequence[seq][step].value = *stepValue++;
             }
+            
+            string seqlenkey = "seq" + std::to_string(seq) + "len";
+            if(docNode.params.count(seqlenkey))
+            {
+                auto stepValue = docNode.params.at(seqlenkey).fa.begin();
+                for(int step = 0; step < numSteps(); step++)
+                    m_sequence[seq][step].length = *stepValue++;
+            }
         }
     }
     else
@@ -732,8 +740,13 @@ AGDocument::Node AGControlSequencerNode::serialize()
     {
         string seqkey = "seq" + std::to_string(seq);
         docNode.params[seqkey].type = AGDocument::ParamValue::FLOAT_ARRAY;
+        string seqlenkey = "seq" + std::to_string(seq) + "len";
+        docNode.params[seqlenkey].type = AGDocument::ParamValue::FLOAT_ARRAY;
         for(int step = 0; step < numSteps(); step++)
+        {
             docNode.params[seqkey].fa.push_back(getStepValue(seq, step));
+            docNode.params[seqlenkey].fa.push_back(getStepLength(seq, step));
+        }
     }
     
     return std::move(docNode);
