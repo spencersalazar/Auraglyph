@@ -2159,7 +2159,7 @@ public:
 
         vector<GLvertex3f> _iconGeo() const override
         {
-            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_x = 0.0065*AGStyle::oldGlobalScale;
             float radius_y = radius_x;
             
             // SVF shape, including lowpass, highpass, and notch
@@ -2439,7 +2439,7 @@ public:
         
         vector<GLvertex3f> _iconGeo() const override
         {
-            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_x = 0.006*AGStyle::oldGlobalScale;
             float radius_y = radius_x;
             int NUM_SAMPS = 25;
             
@@ -2592,9 +2592,9 @@ public:
         
         vector<GLvertex3f> _iconGeo() const override
         {
-            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_x = 0.006*AGStyle::oldGlobalScale;
             float radius_y = radius_x;
-            float radius_circ = radius_x * 0.9;
+            float radius_circ = radius_x * 0.8;
             int circleSize = 48;
             int GEO_SIZE = circleSize*2;
             vector<GLvertex3f> iconGeo = vector<GLvertex3f>(GEO_SIZE);
