@@ -106,14 +106,17 @@ void AGAudioRecorder::render(float *buffer, int nFrames)
 void AGAudioRecorder::closeRecording()
 {
     m_go = false;
-    m_signal->signal();
-    m_thread->wait();
+    if(m_signal)
+        m_signal->signal();
+    if(m_thread)
+        m_thread->wait();
     
     SAFE_DELETE(m_signal);
     SAFE_DELETE(m_thread);
     
     [m_recorder closeAudioFile];
     m_recorder = nil;
+    
     SAFE_DELETE_ARRAY(m_recorderBuffer);
     SAFE_DELETE(m_buffer);
 }
