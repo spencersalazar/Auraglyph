@@ -73,8 +73,12 @@ void AGMenu::render()
     
     if(!m_open)
     {
-        // draw frame (stroke circle)
-        drawGeometry(m_frameGeo.data(), m_frameGeo.size(), GL_LINE_LOOP);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::frameBackgroundColor());
+        // draw frame background (fill rect)
+        drawTriangleFan(m_frameGeo.data(), m_frameGeo.size());
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::foregroundColor);
+        // draw frame (stroke rect)
+        drawLineLoop(m_frameGeo.data(), m_frameGeo.size());
         // draw icon
         drawGeometry(m_iconGeo.data(), m_iconGeo.size(), m_iconGeoKind);
     }
@@ -90,6 +94,25 @@ void AGMenu::render()
     if(m_open || m_itemsAlpha > 0.001)
     {
         TexFont *text = AGStyle::standardFont64();
+        
+        // draw menu items background
+        GLcolor4f frameBackground = AGStyle::frameBackgroundColor();
+        frameBackground.a *= m_renderState.alpha*m_itemsAlpha;
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &frameBackground);
+        
+        float top = -m_size.y/2;
+        float bottom = -m_size.y/2-m_size.y*(m_items.size())*AGMenu_ItemSpacing-5;
+        float left = -m_size.x/2-5;
+        float itemsWidth = max(m_maxTextWidth+AGMenu_TextOffset*2+AGMenu_ItemInset*2, m_size.x);
+        float right = -m_size.x/2+itemsWidth+5;
+        
+        // fill background
+        drawTriangleFan((GLvertex3f[]) {
+            { left, bottom, 0},
+            { right, bottom, 0},
+            { right, top, 0},
+            { left, top, 0},
+        }, 4);
         
         // draw menu items
         for(int i = 0; i < m_items.size(); i++)
@@ -222,7 +245,8 @@ GLvrectf AGMenu::_boundingBoxForItem(int item)
     float top = centerY+m_size.y/2*AGMenu_ItemSpacing;
     float bottom = centerY-m_size.y/2*AGMenu_ItemSpacing;
     float left = -m_size.x/2;
-    float right = -m_size.x/2+m_maxTextWidth+AGMenu_TextOffset*2+AGMenu_ItemInset*2;
+    float itemsWidth = max(m_maxTextWidth+AGMenu_TextOffset*2+AGMenu_ItemInset*2, m_size.x);
+    float right = -m_size.x/2+itemsWidth;
     float z = 0;
     
     return GLvrectf({ left, bottom, z }, { right, top, z});
