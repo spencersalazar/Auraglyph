@@ -2159,7 +2159,7 @@ public:
 
         vector<GLvertex3f> _iconGeo() const override
         {
-            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_x = 0.0065*AGStyle::oldGlobalScale;
             float radius_y = radius_x;
             
             // SVF shape, including lowpass, highpass, and notch
@@ -2439,7 +2439,7 @@ public:
         
         vector<GLvertex3f> _iconGeo() const override
         {
-            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_x = 0.006*AGStyle::oldGlobalScale;
             float radius_y = radius_x;
             int NUM_SAMPS = 25;
             
@@ -2592,9 +2592,9 @@ public:
         
         vector<GLvertex3f> _iconGeo() const override
         {
-            float radius_x = 0.005*AGStyle::oldGlobalScale;
+            float radius_x = 0.006*AGStyle::oldGlobalScale;
             float radius_y = radius_x;
-            float radius_circ = radius_x * 0.9;
+            float radius_circ = radius_x * 0.8;
             int circleSize = 48;
             int GEO_SIZE = circleSize*2;
             vector<GLvertex3f> iconGeo = vector<GLvertex3f>(GEO_SIZE);
@@ -2690,6 +2690,133 @@ public:
     
 private:
     float sn_1, sn_2;
+};
+
+
+
+//------------------------------------------------------------------------------
+// ### AGAudioPannerNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGAudioPannerNode
+
+class AGAudioPannerNode : public AGAudioNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_INPUT = AUDIO_PARAM_LAST+1,
+        PARAM_OUTPUT_L,
+        PARAM_OUTPUT_R,
+        PARAM_PAN,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGAudioPannerNode>
+    {
+    public:
+        string _type() const override { return "Panner"; };
+        string _name() const override { return "Panner"; };
+        string _description() const override { return "Constant-power 2-channel panner."; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_INPUT, "input", true, false, .doc = "Input" },
+                { PARAM_PAN, "pan", true, true, 0, -1, 1, .doc = "Pan amount (-1.0 - 1.0)" },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { PARAM_PAN, "pan", true, true, 0, -1, 1, .doc = "Pan amount (-1.0 - 1.0)" },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+            };
+        };
+        
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT_L, "left output", true, false, .doc = "Left output" },
+                { PARAM_OUTPUT_R, "right output", true, false, .doc = "Right output" },
+            };
+        }
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius_x = 0.006*AGStyle::oldGlobalScale;
+            float radius_y = radius_x;
+            float radius_circ = radius_x * 0.8;
+            int circleSize = 24;
+            int GEO_SIZE = circleSize*2;
+            vector<GLvertex3f> iconGeo = vector<GLvertex3f>(GEO_SIZE);
+            
+            // Hemisphere
+            for(int i = 0; i < circleSize; i++)
+            {
+                float theta0 = M_PI*((float)i)/((float)(circleSize));
+                float theta1 = M_PI*((float)(i+1))/((float)(circleSize));
+                iconGeo[i*2+0] = GLvertex3f(radius_circ*cosf(theta0), radius_circ*sinf(theta0), 0);
+                iconGeo[i*2+1] = GLvertex3f(radius_circ*cosf(theta1), radius_circ*sinf(theta1), 0);
+            }
+            
+            // Axes
+            iconGeo.push_back(GLvertex3f(0,  radius_y, 0));
+            iconGeo.push_back(GLvertex3f(0,         0, 0));
+            iconGeo.push_back(GLvertex3f( radius_x, 0, 0));
+            iconGeo.push_back(GLvertex3f(-radius_x, 0, 0));
+            
+            // Arrow
+            iconGeo.push_back(GLvertex3f(-radius_x * 0.8, radius_y * 1.2, 0));
+            iconGeo.push_back(GLvertex3f(-radius_x * 0.6, radius_y * 1.4, 0));
+            iconGeo.push_back(GLvertex3f(-radius_x * 0.8, radius_y * 1.2, 0));
+            iconGeo.push_back(GLvertex3f(-radius_x * 0.6, radius_y * 1.0, 0));
+            iconGeo.push_back(GLvertex3f(-radius_x * 0.8, radius_y * 1.2, 0));
+            iconGeo.push_back(GLvertex3f( radius_x * 0.8, radius_y * 1.2, 0));
+            iconGeo.push_back(GLvertex3f( radius_x * 0.8, radius_y * 1.2, 0));
+            iconGeo.push_back(GLvertex3f( radius_x * 0.6, radius_y * 1.4, 0));
+            iconGeo.push_back(GLvertex3f( radius_x * 0.8, radius_y * 1.2, 0));
+            iconGeo.push_back(GLvertex3f( radius_x * 0.6, radius_y * 1.0, 0));
+            
+            // Nudge everything downwards a bit
+            for(int i = 0; i < iconGeo.size(); i++)
+            {
+                iconGeo[i].y -= radius_y * 0.6;
+            }
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINES; };
+    };
+    
+    using AGAudioNode::AGAudioNode;
+    
+    void initFinal() override { }
+    
+    virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override
+    {
+        if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
+        m_lastTime = t;
+        pullInputPorts(t, nFrames);
+        
+        float *inputv = inputPortVector(PARAM_INPUT);
+        float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
+        float *panv = inputPortVector(PARAM_PAN);
+        
+        for(int i = 0; i < nFrames; i++)
+        {
+            float theta = panv[i] * M_PI_4;
+            float gain_l = sqrt(2)/2 * (sin(theta) + cos(theta));
+            float gain_r = sqrt(2)/2 * (sin(theta) - cos(theta));
+
+            m_outputBuffer[0][i] = inputv[i] * gain_l;
+            m_outputBuffer[1][i] = inputv[i] * gain_r;
+            
+            output[i] += m_outputBuffer[chanNum][i] * gainv[i];
+        }
+    }    
 };
 
 //------------------------------------------------------------------------------
@@ -2874,7 +3001,9 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         
         nodeTypes.push_back(new AGAudioAllpassNode::Manifest);
         
-        nodeTypes.push_back(new AGAudioBiquadNode::Manifest);        
+        nodeTypes.push_back(new AGAudioBiquadNode::Manifest);
+        
+        nodeTypes.push_back(new AGAudioPannerNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();
