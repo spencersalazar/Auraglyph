@@ -54,7 +54,9 @@ public:
     void setNumSteps(int num);
     
     void setStepValue(int seq, int step, float value);
+    void setStepLength(int seq, int step, float length);
     float getStepValue(int seq, int step);
+    float getStepLength(int seq, int step);
     
     void receiveControl(int port, const AGControl &control) override;
     
@@ -70,8 +72,17 @@ private:
     
     int m_pos;
     int m_numSteps;
+    
+    struct Step
+    {
+        Step(float _value = 0, float _length = 0.5) : value(_value), length(_length) { }
+        
+        float value = 0; // [0,1]
+        float length = 0.5; // [0,1]
+    };
+    
     Mutex m_seqLock;
-    std::vector<std::vector<float> > m_sequence;
+    std::vector<std::vector<Step>> m_sequence;
     
     void updateStep();
 };
