@@ -6,17 +6,31 @@
 //  Copyright (c) 2013 Spencer Salazar. All rights reserved.
 //
 
+#ifdef __OBJC__
 #import <UIKit/UIKit.h>
 #import <GLKit/GLKit.h>
-#import "Geometry.h"
-#import "AGNode.h"
-#import <list>
+#endif // __OBJC__
+
+#include <CoreGraphics/CoreGraphics.h>
+#include "Geometry.h"
+#include "AGNode.h"
+#include <list>
 
 class AGConnection;
 class AGFreeDraw;
 class AGInteractiveObject;
+#ifdef __OBJC__
 @class AGTouchHandler;
+#endif // __OBJC__
 
+
+enum AGDrawMode
+{
+    DRAWMODE_NODE,
+    DRAWMODE_FREEDRAW
+};
+
+#ifdef __OBJC__
 
 @interface AGViewController : GLKViewController
 
@@ -52,3 +66,39 @@ class AGInteractiveObject;
 + (NSString *)styleFontPath;
 
 @end
+
+#else
+
+typedef void AGViewController;
+
+#endif // __OBJC__
+
+// bridge for C++-only code
+class AGViewController_
+{
+public:
+    AGViewController_(AGViewController *viewController);
+    ~AGViewController_();
+    
+    void createNew();
+    void save();
+    void saveAs();
+    void load();
+    
+    void showTrainer();
+    void showAbout();
+    
+    void startRecording();
+    void stopRecording();
+    
+    void setDrawMode(AGDrawMode mode);
+    
+    GLvertex3f worldCoordinateForScreenCoordinate(CGPoint p);
+    GLvertex3f fixedCoordinateForScreenCoordinate(CGPoint p);
+    
+    CGRect bounds();
+    
+private:
+    AGViewController *m_viewController = nil;
+};
+

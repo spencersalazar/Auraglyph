@@ -34,6 +34,7 @@
 		0944E8C11DCB322700EB8087 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0944E8C01DCB322700EB8087 /* libsqlite3.tbd */; };
 		0944E8C31DCB323000EB8087 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0944E8C21DCB323000EB8087 /* libz.tbd */; };
 		0944E8C61DCB325D00EB8087 /* AGAnalytics.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0944E8C41DCB325D00EB8087 /* AGAnalytics.mm */; };
+		095786191F031ED800286358 /* AGDashboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 095786171F031ED800286358 /* AGDashboard.cpp */; };
 		095D12C417ACA36C0048A012 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C317ACA36C0048A012 /* UIKit.framework */; };
 		095D12C617ACA36C0048A012 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C517ACA36C0048A012 /* Foundation.framework */; };
 		095D12C817ACA36C0048A012 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C717ACA36C0048A012 /* CoreGraphics.framework */; };
@@ -229,6 +230,8 @@
 		0944E8C21DCB323000EB8087 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		0944E8C41DCB325D00EB8087 /* AGAnalytics.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGAnalytics.mm; sourceTree = "<group>"; };
 		0944E8C51DCB325D00EB8087 /* AGAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAnalytics.h; sourceTree = "<group>"; };
+		095786171F031ED800286358 /* AGDashboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGDashboard.cpp; sourceTree = "<group>"; };
+		095786181F031ED800286358 /* AGDashboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGDashboard.h; sourceTree = "<group>"; };
 		095D12C017ACA36C0048A012 /* AURAGLPH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AURAGLPH.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		095D12C317ACA36C0048A012 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		095D12C517ACA36C0048A012 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -484,6 +487,8 @@
 		09030CEC1EFEFDDE00D4A4F2 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				095786181F031ED800286358 /* AGDashboard.h */,
+				095786171F031ED800286358 /* AGDashboard.cpp */,
 				098740B217BC61410098511A /* AGUserInterface.h */,
 				098740B117BC61410098511A /* AGUserInterface.cpp */,
 				09B962541DDB1488001DCFB1 /* AGUISaveLoadDialog.h */,
@@ -1036,6 +1041,7 @@
 				0933956E1A08799A009E4802 /* AGFormulaNode.mm in Sources */,
 				0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */,
 				09030CF11EFEFEFB00D4A4F2 /* AGMenu.cpp in Sources */,
+				095786191F031ED800286358 /* AGDashboard.cpp in Sources */,
 				09F29DAF1CCA086200502C01 /* AGSlider.cpp in Sources */,
 				095D12D817ACA36C0048A012 /* AGAppDelegate.mm in Sources */,
 				095D12E517ACA36C0048A012 /* AGViewController.mm in Sources */,
