@@ -190,7 +190,33 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
         AGAnalytics::instance().eventFreedrawMode();
         m_viewController->setDrawMode(DRAWMODE_FREEDRAW);
     }, false);
-    
+
+    /* freedraw erase button */
+    float freedrawEraseButtonWidth = freedrawButtonWidth;
+    AGRenderInfoV freedrawEraseRenderInfo;
+    freedrawEraseRenderInfo.numVertex = 5;
+    freedrawEraseRenderInfo.geoType = GL_LINE_LOOP;
+    //    freedrawEraseRenderInfo.geoOffset = 0;
+    freedrawEraseRenderInfo.geo = new GLvertex3f[freedrawEraseRenderInfo.numVertex];
+    w = freedrawEraseButtonWidth*(G_RATIO-1), h = w*0.3, t = h*0.75, rot = -M_PI/4;
+    freedrawEraseRenderInfo.geo[0] = rotateZ(GLvertex2f(-w/2,   -h/2), rot);
+    freedrawEraseRenderInfo.geo[1] = rotateZ(GLvertex2f( w/2-t, -h/2), rot);
+    freedrawEraseRenderInfo.geo[2] = rotateZ(GLvertex2f( w/2,      0), rot);
+    freedrawEraseRenderInfo.geo[3] = rotateZ(GLvertex2f( w/2-t,  h/2), rot);
+    freedrawEraseRenderInfo.geo[4] = rotateZ(GLvertex2f(-w/2,    h/2), rot);
+    freedrawEraseRenderInfo.color = AGStyle::lightColor();
+    m_freedrawEraseButton = new AGUIIconButton(modeButtonStartPos + GLvertex3f(freedrawEraseButtonWidth*1.25, 0, 0),
+                                          GLvertex2f(freedrawEraseButtonWidth, freedrawEraseButtonWidth),
+                                          freedrawEraseRenderInfo);
+    m_freedrawEraseButton->init();
+    m_freedrawEraseButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
+    m_freedrawEraseButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
+    modeButtonGroup->addButton(m_freedrawEraseButton, ^{
+        //NSLog(@"freedraw_erase");
+        //AGAnalytics::instance().eventFreedrawMode(); // XXX needed?
+        m_viewController->setDrawMode(DRAWMODE_FREEDRAW_ERASE);
+    }, false);
+
     /* node button */
     float nodeButtonWidth = freedrawButtonWidth;
     AGRenderInfoV nodeRenderInfo;
@@ -235,5 +261,6 @@ void AGDashboard::onInterfaceOrientationChange()
     
     GLvertex3f modeButtonStartPos = m_viewController->fixedCoordinateForScreenCoordinate(CGPointMake(27.5, m_viewController->bounds().size.height-7.5-m_freedrawButton->size().y/2));
     m_freedrawButton->setPosition(modeButtonStartPos);
+    m_freedrawEraseButton->setPosition(modeButtonStartPos + GLvertex3f(m_freedrawButton->size().y*1.25, 0, 0));
     m_nodeButton->setPosition(modeButtonStartPos + GLvertex3f(0, m_freedrawButton->size().y*1.25, 0));
 }

@@ -33,6 +33,7 @@ private:
     AGUIButton *m_recordButton;
     AGUIIconButton *m_nodeButton;
     AGUIIconButton *m_freedrawButton;
+    AGUIIconButton *m_freedrawEraseButton;
     
     bool m_isRecording = false;
 };

@@ -758,10 +758,10 @@ void AGFreeDraw::touchUp(const GLvertex3f &t)
 
 AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
 {
-    return NULL;
+    //return NULL;
     
-    if(!m_active)
-        return NULL;
+    //if(!m_active) // XXX not sure if we need this anymore...
+    //    return NULL;
     
     GLvertex2f t = _t.xy();
     GLvertex2f pos = m_position.xy();
@@ -773,7 +773,7 @@ AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
         
         if(pointOnLine(t, p0, p1, 0.0025*AGStyle::oldGlobalScale))
         {
-            m_touchPoint0 = i;
+            //m_touchPoint0 = i;
             return this;
         }
     }
