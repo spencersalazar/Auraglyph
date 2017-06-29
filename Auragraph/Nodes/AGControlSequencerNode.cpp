@@ -368,9 +368,12 @@ public:
                 float value = touch.startValue + (t.position.y - touch.startPos.y)*AGUISequencerEditor_adjustmentScale;
                 value = clampf(value, 0, 1);
                 m_node->setStepValue(touch.seq, touch.step, value);
+                float length = touch.startLength + (t.position.x - touch.startPos.x)*AGUISequencerEditor_adjustmentScale;
+                length = clampf(length, 0, 1);
+                m_node->setStepLength(touch.seq, touch.step, length);
 //                NSLog(@"step value: %f", value);
             }
-            else if(fabsf(touch.startPos.y - t.position.y) > AGUISequencerEditor_minClearance)
+            else if((touch.startPos - t.position).magnitudeSquared() > AGUISequencerEditor_minClearance*AGUISequencerEditor_minClearance)
             {
                 m_touchCapture[t.touchId].passedClearance = true;
                 m_touchCapture[t.touchId].startPos = t.position;
