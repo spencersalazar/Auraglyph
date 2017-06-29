@@ -28,7 +28,7 @@
 #import "AGAnalytics.h"
 #import "AGUISaveLoadDialog.h"
 #import "AGPreferences.h"
-#import "AGMenu.h"
+#import "AGDashboard.h"
 #import "NSString+STLString.h"
 
 #import <list>
@@ -59,12 +59,6 @@ enum
 };
 GLint uniforms[NUM_UNIFORMS];
 
-
-enum DrawMode
-{
-    DRAWMODE_NODE,
-    DRAWMODE_FREEDRAW
-};
 
 enum InterfaceMode
 {
@@ -114,26 +108,19 @@ enum InterfaceMode
     map<AGConnection *, string> _conectionUUID;
     map<AGFreeDraw *, string> _freedrawUUID;
     
-    DrawMode _drawMode;
+    AGDrawMode _drawMode;
     InterfaceMode _interfaceMode;
     
-    TexFont * _font;
-    
-    AGUIButton *_recordButton;
-    AGUIIconButton *_nodeButton;
-    AGUIIconButton *_freedrawButton;
-    
-    AGMenu *_fileMenu;
-    AGMenu *_editMenu;
-    AGMenu *_settingsMenu;
+    AGDashboard *_uiDashboard;
     
     std::string _currentDocumentFilename;
     
-    BOOL _isRecording;
+    AGViewController_ *_proxy;
 }
 
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) AGAudioManager *audioManager;
+@property (nonatomic) AGDrawMode drawMode;
 
 @property (strong) IBOutlet AGTrainerViewController *trainer;
 
@@ -180,6 +167,8 @@ static AGViewController * g_instance = nil;
         
     _t = 0;
     
+    _proxy = new AGViewController_(self);
+    
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 
     if (!self.context) {
@@ -203,9 +192,6 @@ static AGViewController * g_instance = nil;
     self.audioManager = [AGAudioManager new];
     // update matrices so that worldCoordinateForScreenCoordinate works
     [self updateMatrices];
-    
-    const char *fontPath = [[AGViewController styleFontPath] UTF8String];
-    _font = new TexFont(fontPath, 96);
     
     /* preload hw recognizer */
     (void) [AGHandwritingRecognizer instance];
@@ -294,200 +280,9 @@ static AGViewController * g_instance = nil;
     // needed for worldCoordinateForScreenCoordinate to work
     [self updateMatrices];
     
-    /* save button */
-    float saveButtonWidth = _font->width("  Save  ")*1.05;
-    float saveButtonHeight = _font->height()*1.05;
+    _uiDashboard = new AGDashboard(_proxy);
+    _uiDashboard->init();
     
-    float recordButtonWidth = saveButtonWidth;
-    float recordButtonHeight = saveButtonHeight;
-    _recordButton = new AGUIButton("Record",
-                                   [self fixedCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-recordButtonWidth-20, 20+recordButtonHeight/2)],
-                                   GLvertex2f(recordButtonWidth, recordButtonHeight));
-    _recordButton->init();
-    _recordButton->setRenderFixed(true);
-    _recordButton->setAction(^{
-        // AGAnalytics::instance().eventTrainer();
-        // TODO: analytics
-        // flip toggle
-        if((_isRecording = !_isRecording))
-        {
-            [_audioManager startSessionRecording];
-            _recordButton->setTitle("Stop");
-        }
-        else
-        {
-            [_audioManager stopSessionRecording];
-            _recordButton->setTitle("Record");
-        }
-    });
-    _dashboard.push_back(_recordButton);
-    
-    float fileMenuWidth = 75;
-    float fileMenuHeight = fileMenuWidth*0.4;
-    _fileMenu = new AGMenu([self fixedCoordinateForScreenCoordinate:CGPointMake(10+fileMenuWidth/2, 10+fileMenuHeight/2)],
-                           GLvertex2f(fileMenuWidth, fileMenuHeight));
-    _fileMenu->init();
-    float iconRadius = fileMenuHeight/2*0.8f;
-    _fileMenu->setIcon((GLvertex3f[]) {
-        { -iconRadius*0.7f, -iconRadius, 0 },
-        { -iconRadius*0.7f,  iconRadius, 0 },
-        {  iconRadius*0.7f,  iconRadius, 0 },
-        {  iconRadius*0.7f, -iconRadius, 0 },
-    }, 4, GL_LINE_LOOP);
-    _fileMenu->addMenuItem("New", [self](){
-        dbgprint("New\n");
-        [self _newDocument];
-    });
-    _fileMenu->addMenuItem("Load", [self](){
-        dbgprint("Load\n");
-        //AGAnalytics::instance().event();
-        // TODO: analytics
-        [self _openLoad];
-    });
-    _fileMenu->addMenuItem("Save", [self](){
-        dbgprint("Save\n");
-        AGAnalytics::instance().eventSave();
-        [self _save:NO];
-    });
-    _fileMenu->addMenuItem("Save As", [self](){
-        dbgprint("Save As\n");
-        [self _save:YES];
-    });
-    _dashboard.push_back(_fileMenu);
-    
-    _editMenu = new AGMenu([self fixedCoordinateForScreenCoordinate:CGPointMake(10+fileMenuWidth*1.2+fileMenuWidth/2, 10+fileMenuHeight/2)],
-                               GLvertex2f(fileMenuWidth, fileMenuHeight));
-    _editMenu->init();
-    float wrenchRadius = iconRadius*1.25;
-    float wrenchRadius2 = iconRadius*0.62;
-    float wrenchInnerRadius = wrenchRadius*0.3;
-    float sqrt2 = M_SQRT2;
-    float sqrt1_2 = M_SQRT1_2;
-    float wrenchRot = -M_PI*0.3;
-    vector<GLvertex3f> wrenchIcon = {
-        rotateZ({ -wrenchRadius2/3, 0, 0 }, wrenchRot),
-        rotateZ({ -wrenchRadius2/3, wrenchRadius-wrenchInnerRadius*(1+sqrt2), 0 }, wrenchRot),
-        rotateZ({ -wrenchRadius2/3-wrenchInnerRadius/sqrt2, wrenchRadius-wrenchInnerRadius*(1+sqrt1_2), 0 }, wrenchRot),
-        rotateZ({ -wrenchRadius2/3-wrenchInnerRadius/sqrt2, wrenchRadius-wrenchInnerRadius*(sqrt1_2), 0 }, wrenchRot),
-        rotateZ({ -wrenchRadius2/3, wrenchRadius, 0 }, wrenchRot),
-        rotateZ({ -wrenchRadius2/3, wrenchRadius-wrenchInnerRadius, 0 }, wrenchRot),
-        rotateZ({  wrenchRadius2/3, wrenchRadius-wrenchInnerRadius, 0 }, wrenchRot),
-        rotateZ({  wrenchRadius2/3, wrenchRadius, 0 }, wrenchRot),
-        rotateZ({  wrenchRadius2/3+wrenchInnerRadius/sqrt2, wrenchRadius-wrenchInnerRadius*(sqrt1_2), 0 }, wrenchRot),
-        rotateZ({  wrenchRadius2/3+wrenchInnerRadius/sqrt2, wrenchRadius-wrenchInnerRadius*(1+sqrt1_2), 0 }, wrenchRot),
-        rotateZ({  wrenchRadius2/3, wrenchRadius-wrenchInnerRadius*(1+sqrt2), 0 }, wrenchRot),
-        rotateZ({  wrenchRadius2/3, 0, 0 }, wrenchRot),
-        rotateZ({  wrenchRadius2/3, -wrenchRadius+wrenchInnerRadius*(1+sqrt2), 0 }, wrenchRot),
-        rotateZ({  wrenchRadius2/3+wrenchInnerRadius/sqrt2, -wrenchRadius+wrenchInnerRadius*(1+sqrt1_2), 0 }, wrenchRot),
-        rotateZ({  wrenchRadius2/3+wrenchInnerRadius/sqrt2, -wrenchRadius+wrenchInnerRadius*(sqrt1_2), 0 }, wrenchRot),
-        rotateZ({  wrenchRadius2/3, -wrenchRadius, 0 }, wrenchRot),
-        rotateZ({  wrenchRadius2/3, -wrenchRadius+wrenchInnerRadius, 0 }, wrenchRot),
-        rotateZ({ -wrenchRadius2/3, -wrenchRadius+wrenchInnerRadius, 0 }, wrenchRot),
-        rotateZ({ -wrenchRadius2/3, -wrenchRadius, 0 }, wrenchRot),
-        rotateZ({ -wrenchRadius2/3-wrenchInnerRadius/sqrt2, -wrenchRadius+wrenchInnerRadius*(sqrt1_2), 0 }, wrenchRot),
-        rotateZ({ -wrenchRadius2/3-wrenchInnerRadius/sqrt2, -wrenchRadius+wrenchInnerRadius*(1+sqrt1_2), 0 }, wrenchRot),
-        rotateZ({ -wrenchRadius2/3, -wrenchRadius+wrenchInnerRadius*(1+sqrt2), 0 }, wrenchRot),
-        rotateZ({ -wrenchRadius2/3, 0, 0 }, wrenchRot),
-    };
-    _editMenu->setIcon(wrenchIcon.data(), wrenchIcon.size(), GL_LINE_STRIP);
-    _editMenu->addMenuItem("Undo", [self](){
-        dbgprint("Undo\n");
-        // TODO: analytics
-    });
-    _editMenu->addMenuItem("Redo", [self](){
-        dbgprint("Redo\n");
-        // TODO: analytics
-    });
-    _dashboard.push_back(_editMenu);
-    
-    _settingsMenu = new AGMenu([self fixedCoordinateForScreenCoordinate:CGPointMake(10+fileMenuWidth*1.2*2+fileMenuWidth/2, 10+fileMenuHeight/2)],
-                               GLvertex2f(fileMenuWidth, fileMenuHeight));
-    _settingsMenu->init();
-    vector<GLvertex3f> gearIcon;
-    int numTeeth = 7;
-    float outerRadius = iconRadius;
-    float innerRadius = iconRadius*0.8;
-    float start = 0;
-    for(int i = 0; i < numTeeth; i++)
-    {
-        float rot = (2*M_PI)/numTeeth;
-        float pos = start+rot*i;
-        gearIcon.push_back({ innerRadius*cos(pos), innerRadius*sin(pos), 0 });
-        gearIcon.push_back({ outerRadius*cos(pos), outerRadius*sin(pos), 0 });
-        gearIcon.push_back({ outerRadius*cos(pos+rot/2), outerRadius*sin(pos+rot/2), 0 });
-        gearIcon.push_back({ innerRadius*cos(pos+rot/2), innerRadius*sin(pos+rot/2), 0 });
-        gearIcon.push_back({ innerRadius*cos(pos+rot), innerRadius*sin(pos+rot), 0 });
-    }
-    _settingsMenu->setIcon(gearIcon.data(), gearIcon.size(), GL_LINE_STRIP);
-    _settingsMenu->addMenuItem("Settings", [self](){
-        dbgprint("Settings\n");
-        // TODO: analytics
-    });
-    _settingsMenu->addMenuItem("Trainer", [self](){
-        dbgprint("Trainer\n");
-        AGAnalytics::instance().eventTrainer();
-        [self presentViewController:self.trainer animated:YES completion:nil];
-    });
-    _settingsMenu->addMenuItem("About", [self](){
-        dbgprint("About\n");
-        // TODO: analytics
-        AGAboutBox *aboutBox = new AGAboutBox([self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)]);
-        aboutBox->init();
-        [self addTopLevelObject:aboutBox];
-    });
-    _dashboard.push_back(_settingsMenu);
-
-    AGUIButtonGroup *modeButtonGroup = new AGUIButtonGroup();
-    modeButtonGroup->init();
-    
-    /* freedraw button */
-    float freedrawButtonWidth = 0.0095*AGStyle::oldGlobalScale;
-    GLvertex3f modeButtonStartPos = [self fixedCoordinateForScreenCoordinate:CGPointMake(27.5, self.view.bounds.size.height-20)];
-    AGRenderInfoV freedrawRenderInfo;
-    freedrawRenderInfo.numVertex = 5;
-    freedrawRenderInfo.geoType = GL_LINE_LOOP;
-//    freedrawRenderInfo.geoOffset = 0;
-    freedrawRenderInfo.geo = new GLvertex3f[freedrawRenderInfo.numVertex];
-    float w = freedrawButtonWidth*(G_RATIO-1), h = w*0.3, t = h*0.75, rot = -M_PI/4;
-    freedrawRenderInfo.geo[0] = rotateZ(GLvertex2f(-w/2,   -h/2), rot);
-    freedrawRenderInfo.geo[1] = rotateZ(GLvertex2f( w/2-t, -h/2), rot);
-    freedrawRenderInfo.geo[2] = rotateZ(GLvertex2f( w/2,      0), rot);
-    freedrawRenderInfo.geo[3] = rotateZ(GLvertex2f( w/2-t,  h/2), rot);
-    freedrawRenderInfo.geo[4] = rotateZ(GLvertex2f(-w/2,    h/2), rot);
-    freedrawRenderInfo.color = AGStyle::lightColor();
-    _freedrawButton = new AGUIIconButton(modeButtonStartPos,
-                                         GLvertex2f(freedrawButtonWidth, freedrawButtonWidth),
-                                         freedrawRenderInfo);
-    _freedrawButton->init();
-    _freedrawButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
-    _freedrawButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
-    modeButtonGroup->addButton(_freedrawButton, ^{
-        //NSLog(@"freedraw");
-        AGAnalytics::instance().eventFreedrawMode();
-        _drawMode = DRAWMODE_FREEDRAW;
-    }, false);
-    
-    /* node button */
-    float nodeButtonWidth = freedrawButtonWidth;
-    AGRenderInfoV nodeRenderInfo;
-    nodeRenderInfo.numVertex = 10;
-    nodeRenderInfo.geoType = GL_LINE_STRIP;
-    nodeRenderInfo.geo = new GLvertex3f[nodeRenderInfo.numVertex];
-    GeoGen::makeCircleStroke(nodeRenderInfo.geo, nodeRenderInfo.numVertex, nodeButtonWidth/2*(G_RATIO-1));
-    nodeRenderInfo.color = AGStyle::lightColor();
-    _nodeButton = new AGUIIconButton(modeButtonStartPos + GLvertex3f(0, nodeButtonWidth*1.25, 0),
-                                     GLvertex2f(nodeButtonWidth, nodeButtonWidth),
-                                     nodeRenderInfo);
-    _nodeButton->init();
-    _nodeButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
-    _nodeButton->setIconMode(AGUIIconButton::ICONMODE_CIRCLE);
-    modeButtonGroup->addButton(_nodeButton, ^{
-        //NSLog(@"node");
-        AGAnalytics::instance().eventNodeMode();
-        _drawMode = DRAWMODE_NODE;
-    }, true);
-    
-    _dashboard.push_back(modeButtonGroup);
     _drawMode = DRAWMODE_NODE;
     
 //    _interfaceMode = INTERFACEMODE_USER;
@@ -495,8 +290,6 @@ static AGViewController * g_instance = nil;
     
     /* trash */
     AGUITrash::instance().setPosition([self fixedCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
-    
-//    GLvertex3f vert = [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)];
 }
 
 - (void)_updateFixedUIPosition
@@ -504,21 +297,7 @@ static AGViewController * g_instance = nil;
     // needed for worldCoordinateForScreenCoordinate to work
     [self updateMatrices];
     
-    CGPoint fileMenuPos = CGPointMake(10+_fileMenu->size().x/2, 10+_fileMenu->size().y/2);
-    _fileMenu->setPosition([self fixedCoordinateForScreenCoordinate:fileMenuPos]);
-    
-    CGPoint editMenuPos = CGPointMake(10+_fileMenu->size().x*1.2+_fileMenu->size().x/2, 10+_fileMenu->size().y/2);
-    _editMenu->setPosition([self fixedCoordinateForScreenCoordinate:editMenuPos]);
-    
-    CGPoint settingsMenuPos = CGPointMake(10+_fileMenu->size().x*2*1.2+_fileMenu->size().x/2, 10+_fileMenu->size().y/2);
-    _settingsMenu->setPosition([self fixedCoordinateForScreenCoordinate:settingsMenuPos]);
-    
-    CGPoint recordPos = CGPointMake(self.view.bounds.size.width-_recordButton->size().x-20, 20+_recordButton->size().y/2);
-    _recordButton->setPosition([self fixedCoordinateForScreenCoordinate:recordPos]);
-    
-    GLvertex3f modeButtonStartPos = [self fixedCoordinateForScreenCoordinate:CGPointMake(27.5, self.view.bounds.size.height-7.5-_freedrawButton->size().y/2)];
-    _freedrawButton->setPosition(modeButtonStartPos);
-    _nodeButton->setPosition(modeButtonStartPos + GLvertex3f(0, _freedrawButton->size().y*1.25, 0));
+    _uiDashboard->onInterfaceOrientationChange();
     
     AGUITrash::instance().setPosition([self fixedCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-30)]);
 }
@@ -530,6 +309,8 @@ static AGViewController * g_instance = nil;
     if ([EAGLContext currentContext] == self.context) {
         [EAGLContext setCurrentContext:nil];
     }
+    
+    SAFE_DELETE(_proxy);
 }
 
 - (void)didReceiveMemoryWarning
@@ -552,16 +333,10 @@ static AGViewController * g_instance = nil;
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
-    _freedrawButton->hide();
-    _nodeButton->hide();
-    
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        
+        // 
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         [self _updateFixedUIPosition];
-        
-        _freedrawButton->unhide();
-        _nodeButton->unhide();
     }];
 }
 
@@ -605,9 +380,6 @@ static AGViewController * g_instance = nil;
     AGInteractiveObject * ui = node->userInterface();
     if(ui)
         _interfaceObjects.push_back(ui);
-    
-//    AGDocument::Node docNode = node->serialize();
-//    _defaultDocument.addNode(docNode);
 }
 
 - (void)removeNode:(AGNode *)node
@@ -876,6 +648,8 @@ static AGViewController * g_instance = nil;
     
     AGUITrash::instance().update(_t, dt);
     
+    _uiDashboard->update(_t, dt);
+    
     itmap_safe(_dashboard, ^(AGInteractiveObject *&object){
         object->update(_t, dt);
     });
@@ -1014,6 +788,7 @@ static AGViewController * g_instance = nil;
     for(AGInteractiveObject *removeObject : _fadingOut)
         removeObject->render();
     // render user interface
+    _uiDashboard->render();
     for(AGInteractiveObject *object : _dashboard)
         object->render();
     
@@ -1108,6 +883,13 @@ static AGViewController * g_instance = nil;
             }
         }
         
+        if(touchCapture == NULL)
+        {
+            touchCapture = _uiDashboard->hitTest(fixedPos);
+            if(touchCapture)
+                touchCaptureTopLevelObject = _uiDashboard;
+        }
+
         // search pending handlers
         if(touchCapture == NULL)
         {
@@ -1490,3 +1272,73 @@ static AGViewController * g_instance = nil;
 @end
 
 
+AGViewController_::AGViewController_(AGViewController *viewController)
+{
+    m_viewController = viewController;
+}
+
+AGViewController_::~AGViewController_()
+{ }
+    
+void AGViewController_::createNew()
+{
+    [m_viewController _newDocument];
+}
+
+void AGViewController_::save()
+{
+    [m_viewController _save:NO];
+}
+
+void AGViewController_::saveAs()
+{
+    [m_viewController _save:YES];
+}
+
+void AGViewController_::load()
+{
+    [m_viewController _openLoad];
+}
+
+void AGViewController_::showTrainer()
+{
+    [m_viewController presentViewController:m_viewController.trainer animated:YES completion:nil];
+}
+
+void AGViewController_::showAbout()
+{
+    AGAboutBox *aboutBox = new AGAboutBox([m_viewController worldCoordinateForScreenCoordinate:CGPointMake(m_viewController.view.bounds.size.width/2,
+                                                                                                           m_viewController.view.bounds.size.height/2)]);
+    aboutBox->init();
+    [m_viewController addTopLevelObject:aboutBox];
+}
+
+void AGViewController_::startRecording()
+{
+    [[AGAudioManager instance] startSessionRecording];
+}
+
+void AGViewController_::stopRecording()
+{
+    [[AGAudioManager instance] stopSessionRecording];
+}
+
+void AGViewController_::setDrawMode(AGDrawMode mode)
+{
+    m_viewController.drawMode = mode;
+}
+
+GLvertex3f AGViewController_::worldCoordinateForScreenCoordinate(CGPoint p)
+{
+    return [m_viewController worldCoordinateForScreenCoordinate:p];
+}
+
+GLvertex3f AGViewController_::fixedCoordinateForScreenCoordinate(CGPoint p)
+{
+    return [m_viewController fixedCoordinateForScreenCoordinate:p];
+}
+
+CGRect AGViewController_::bounds()
+{
+    return m_viewController.view.bounds;
+}

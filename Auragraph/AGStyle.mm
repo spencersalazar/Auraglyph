@@ -41,6 +41,18 @@ TexFont *AGStyle::standardFont64()
     return texFont64;
 }
 
+TexFont *AGStyle::standardFont96()
+{
+    static TexFont *texFont96 = NULL;
+    
+    if(texFont96 == NULL)
+    {
+        texFont96 = new TexFont(standardFontPath(), 96);
+    }
+    
+    return texFont96;
+}
+
 const GLcolor4f &AGStyle::lightColor()
 {
     static GLcolor4f s_lightColor = GLcolor4f::white;

@@ -21,6 +21,7 @@ class AGStyle
 public:
     static const string &standardFontPath();
     static TexFont *standardFont64();
+    static TexFont *standardFont96();
     constexpr static const float standardFontScale = 0.61f;
     constexpr static const float smallFontScale = standardFontScale*0.61f;
     
