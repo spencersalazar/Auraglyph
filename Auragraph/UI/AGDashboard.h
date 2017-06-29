@@ -23,6 +23,8 @@ public:
     
     void onInterfaceOrientationChange();
     
+    bool renderFixed() override { return true; }
+    
 private:
     AGViewController_ *m_viewController = nullptr;
     
