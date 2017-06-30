@@ -13,6 +13,7 @@
 #import "AGHandwritingRecognizer.h"
 #import "AGInteractiveObject.h"
 #import "AGNode.h"
+#import "AGFreeDraw.h"
 #import "AGAudioManager.h"
 #import "AGUserInterface.h"
 #import "TexFont.h"

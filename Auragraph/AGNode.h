@@ -297,49 +297,6 @@ protected:
     map<int, AGParamValue> m_params;
 };
 
-
-//------------------------------------------------------------------------------
-// ### AGFreeDraw ###
-//------------------------------------------------------------------------------
-#pragma mark - AGFreeDraw
-
-class AGFreeDraw : public AGUIObject
-{
-public:
-    AGFreeDraw(GLvertex3f *points, int nPoints);
-    AGFreeDraw(const AGDocument::Freedraw &docFreedraw);
-    ~AGFreeDraw();
-    
-    const string &uuid() { return m_uuid; }
-    
-    virtual void update(float t, float dt);
-    virtual void render();
-    
-    virtual void touchDown(const GLvertex3f &t);
-    virtual void touchMove(const GLvertex3f &t);
-    virtual void touchUp(const GLvertex3f &t);
-    
-    virtual AGUIObject *hitTest(const GLvertex3f &t);
-    
-    virtual AGDocument::Freedraw serialize();
-    
-private:
-    const string m_uuid;
-    
-    GLvertex3f *m_points;
-    int m_nPoints;
-    bool m_touchDown;
-    GLvertex3f m_position;
-    GLvertex3f m_touchLast;
-    
-    bool m_active;
-//    powcurvef m_alpha;
-    
-    // debug
-    int m_touchPoint0;
-};
-
-
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
 //------------------------------------------------------------------------------
@@ -493,5 +450,3 @@ private:
 
 
 #endif /* defined(__Auragraph__AGNode__) */
-
-

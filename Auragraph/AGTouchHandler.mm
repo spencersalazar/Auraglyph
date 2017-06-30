@@ -15,6 +15,7 @@
 #import "ES2Render.h"
 #import "AGHandwritingRecognizer.h"
 #import "AGNode.h"
+#import "AGFreeDraw.h"
 #import "AGCompositeNode.h"
 #import "AGAudioCapturer.h"
 #import "AGAudioManager.h"
@@ -409,6 +410,7 @@
         
         if(fd->hitTest(pos))
         {
+            
             GLvertex3f vert = GLvertex3f(0,0,0);
             AGFreeDraw *fd_new = new AGFreeDraw(&vert, 1); // empty
             fd_new->init();
@@ -451,36 +453,7 @@
 //    }
 }
 
-// XXX TODO: override hitTest here? or is that taken care of elsewhere?
-
 - (void)update:(float)t dt:(float)dt { }
-
-- (void)render
-{
-//    if(_linePoints.size() > 1)
-//    {
-//        GLKMatrix4 proj = AGNode::projectionMatrix();
-//        GLKMatrix4 modelView = AGNode::globalModelViewMatrix();
-//        
-//        AGGenericShader &shader = AGGenericShader::instance();
-//        shader.useProgram();
-//        shader.setProjectionMatrix(proj);
-//        shader.setModelViewMatrix(modelView);
-//        shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));
-//        
-//        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, &_linePoints[0]);
-//        glEnableVertexAttribArray(AGVertexAttribPosition);
-//        
-//        glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
-//        glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &GLcolor4f::white);
-//        
-//        glDisableVertexAttribArray(AGVertexAttribTexCoord0);
-//        glDisableVertexAttribArray(AGVertexAttribTexCoord1);
-//        glDisable(GL_TEXTURE_2D);
-//        
-//        glDrawArrays(GL_LINE_STRIP, 0, _linePoints.size());
-//    }
-}
 
 @end
 
