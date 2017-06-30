@@ -48,7 +48,8 @@ enum AGDrawMode
 - (void)fadeOutAndDelete:(AGInteractiveObject *)object;
 
 - (void)addFreeDraw:(AGFreeDraw *)freedraw;
-- (void)replaceFreeDraw:(AGFreeDraw *)freedrawOld freedrawNew:(AGFreeDraw *)freedrawNew;
+//- (void)replaceFreeDraw:(AGFreeDraw *)freedrawOld freedrawNew:(AGFreeDraw *)freedrawNew;
+- (void)resignFreeDraw:(AGFreeDraw *)freedraw;
 - (void)removeFreeDraw:(AGFreeDraw *)freedraw;
 - (const list<AGFreeDraw *> &)freedraws;
 

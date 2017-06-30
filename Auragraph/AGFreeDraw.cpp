@@ -138,6 +138,11 @@ void AGFreeDraw::touchUp(const GLvertex3f &t)
     m_touchPoint0 = -1;
 }
 
+const vector<GLvertex3f> &AGFreeDraw::points()
+{
+    return m_points;
+}
+
 AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
 {
     if(!m_active)

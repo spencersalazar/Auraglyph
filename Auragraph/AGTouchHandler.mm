@@ -401,22 +401,35 @@
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    list<AGFreeDraw*> freedraws = [_viewController freedraws];
-    
-    for(auto i = freedraws.begin(); i != freedraws.end(); i++)
-    {
-        AGFreeDraw *fd = *i;
-        assert(fd);
-        
-        if(fd->hitTest(pos))
-        {
-            
-            GLvertex3f vert = GLvertex3f(0,0,0);
-            AGFreeDraw *fd_new = new AGFreeDraw(&vert, 1); // empty
-            fd_new->init();
-            [_viewController replaceFreeDraw:fd freedrawNew:fd_new];
-        }
-    }
+//    list<AGFreeDraw*> freedraws = [_viewController freedraws];
+//    
+//    for(auto i = freedraws.begin(); i != freedraws.end(); )
+//    {
+//        AGFreeDraw *fd = *i++;
+//        assert(fd);
+//        
+//        if(fd->hitTest(pos))
+//        {
+//            const vector<GLvertex3f> &oldPoints = fd->points();
+//            vector<GLvertex3f> newPoints;
+//            GLvertex2f erasePos = pos.xy();
+//            
+//            for(int j = 0; j < fd->points().size()-1; j++)
+//            {
+//                GLvertex2f p0 = oldPoints[j].xy() + erasePos;
+//                GLvertex2f p1 = oldPoints[j+1].xy() + erasePos;
+//                
+//                if(!pointOnLine(erasePos, p0, p1, 0.0025*AGStyle::oldGlobalScale))
+//                {
+//                    newPoints.push_back(oldPoints[j]);
+//                }
+//            }
+//            
+//            AGFreeDraw *fd_new = new AGFreeDraw(newPoints.data(), newPoints.size());
+//            fd_new->init();
+//            [_viewController replaceFreeDraw:fd freedrawNew:fd_new];
+//        }
+//    }
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -424,19 +437,49 @@
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
-    list<AGFreeDraw*> freedraws = [_viewController freedraws];
+    const list<AGFreeDraw*> &freedraws = [_viewController freedraws];
     
-    for(auto i = freedraws.begin(); i != freedraws.end(); i++)
+    for(auto i = freedraws.begin(); i != freedraws.end(); )
     {
-        AGFreeDraw *fd = *i;
+        AGFreeDraw *fd = *i++;
         assert(fd);
         
         if(fd->hitTest(pos))
         {
-            GLvertex3f vert = GLvertex3f(0,0,0);
-            AGFreeDraw *fd_new = new AGFreeDraw(&vert, 1); // empty
-            fd_new->init();
-            [_viewController replaceFreeDraw:fd freedrawNew:fd_new];
+            const vector<GLvertex3f> &oldPoints = fd->points();
+            vector<vector<GLvertex3f> > newFreedraws;
+            vector<GLvertex3f> newPoints;
+            GLvertex2f erasePos = pos.xy();
+            
+            for(int j = 0; j < fd->points().size()-1; j++)
+            {
+                GLvertex2f p0 = oldPoints[j].xy();
+                GLvertex2f p1 = oldPoints[j+1].xy();
+                
+                if(!pointOnLine(erasePos, p0, p1, 0.0025*AGStyle::oldGlobalScale))
+                {
+                    newPoints.push_back(oldPoints[j]);
+                    
+                    if(j == fd->points().size()-2)
+                    {
+                        newFreedraws.push_back(newPoints);
+                    }
+                }
+                else if(newPoints.size())
+                {
+                    newFreedraws.push_back(newPoints);
+                    newPoints.clear();
+                }
+            }
+            
+            for(auto draw : newFreedraws)
+            {
+                AGFreeDraw *fd_new = new AGFreeDraw(draw.data(), draw.size());
+                fd_new->init();
+                [_viewController addFreeDraw:fd_new];
+            }
+            
+            [_viewController resignFreeDraw:fd];
         }
     }
 }

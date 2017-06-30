@@ -486,6 +486,10 @@ static AGViewController * g_instance = nil;
     if(node)
         _nodes.remove(node);
     _dashboard.remove(object);
+    
+    AGFreeDraw *draw = dynamic_cast<AGFreeDraw *>(object);
+    if(draw)
+        _freedraws.remove(draw);
 }
 
 - (void)removeFromTouchCapture:(AGInteractiveObject *)object
@@ -511,16 +515,25 @@ static AGViewController * g_instance = nil;
     _objects.push_back(freedraw);
 }
 
-- (void)replaceFreeDraw:(AGFreeDraw *)freedrawOld freedrawNew:(AGFreeDraw *)freedrawNew
+//- (void)replaceFreeDraw:(AGFreeDraw *)freedrawOld freedrawNew:(AGFreeDraw *)freedrawNew
+//{
+//    assert([NSThread isMainThread]);
+//    assert(freedrawOld);
+//    
+//    _freedraws.remove(freedrawOld);
+//    _objects.remove(freedrawOld);
+//    
+//    _freedraws.push_back(freedrawNew);
+//    _objects.push_back(freedrawNew);
+//}
+
+- (void)resignFreeDraw:(AGFreeDraw *)freedraw
 {
     assert([NSThread isMainThread]);
-    assert(freedrawOld);
+    assert(freedraw);
     
-    _freedraws.remove(freedrawOld);
-    _objects.remove(freedrawOld);
-    
-    _freedraws.push_back(freedrawNew);
-    _objects.push_back(freedrawNew);
+    _freedraws.remove(freedraw);
+    _objects.remove(freedraw);
 }
 
 - (void)removeFreeDraw:(AGFreeDraw *)freedraw

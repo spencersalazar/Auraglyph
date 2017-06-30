@@ -33,6 +33,7 @@ public:
     virtual void touchMove(const GLvertex3f &t);
     virtual void touchUp(const GLvertex3f &t);
     
+    const vector<GLvertex3f> &points();
     virtual AGUIObject *hitTest(const GLvertex3f &t);
     
     virtual AGDocument::Freedraw serialize();
