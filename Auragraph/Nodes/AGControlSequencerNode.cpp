@@ -14,6 +14,7 @@
 #include "AGGenericShader.h"
 #include "AGStyle.h"
 #include "AGSlider.h"
+#include "AGAudioNode.h" // for sample rate
 #include "spRandom.h"
 
 #include <string>
@@ -561,10 +562,11 @@ void AGControlSequencerNode::initFinal()
             *j = Step(Random::unit(), 0.5);
     
     // apparently Block_copy is necessary since ARC doesn't work in C++(?)
-    m_timer = AGTimer(60.0f/param(PARAM_BPM).getFloat(), Block_copy(^(AGTimer *) {
-        if(numInputsForPort(PARAM_ADVANCE) == 0)
-            updateStep();
-    }));
+//    m_timer = AGTimer(60.0f/param(PARAM_BPM).getFloat(), Block_copy(^(AGTimer *) {
+//        if(numInputsForPort(PARAM_ADVANCE) == 0)
+//            updateStep();
+//    }));
+    AGAudioManager_::instance().addAudioRateProcessor(this);
 }
 
 void AGControlSequencerNode::deserializeFinal(const AGDocument::Node &docNode)
@@ -606,6 +608,11 @@ void AGControlSequencerNode::deserializeFinal(const AGDocument::Node &docNode)
     }
 }
 
+AGControlSequencerNode::~AGControlSequencerNode()
+{
+    AGAudioManager_::instance().removeAudioRateProcessor(this);
+}
+
 AGUINodeEditor *AGControlSequencerNode::createCustomEditor()
 {
     return new AGUISequencerEditor(this);
@@ -614,6 +621,44 @@ AGUINodeEditor *AGControlSequencerNode::createCustomEditor()
 int AGControlSequencerNode::numOutputPorts() const
 {
     return m_sequence.size();
+}
+
+void AGControlSequencerNode::process(sampletime _t)
+{
+    float t = ((float)_t)/AGAudioNode::sampleRate();
+    
+    if(m_t == -1)
+    {
+        m_t = t;
+        m_lastStep = t;
+        
+        return;
+    }
+    
+    float bpm = param(PARAM_BPM);
+    float stepLength = 60.0/bpm;
+    float stepTime = t-m_lastStep;
+    if(stepTime >= stepLength)
+    {
+        updateStep();
+        m_lastStep = t;
+    }
+    else
+    {
+        m_seqLock.lock();
+        
+        for(int seq = 0; seq < m_sequence.size(); seq++)
+        {
+            if(stepTime > m_sequence[seq][m_pos].length*stepLength)
+            {
+                pushControl(seq, 0);
+            }
+        }
+        
+        m_seqLock.unlock();
+    }
+    
+    m_t = t;
 }
 
 void AGControlSequencerNode::receiveControl(int port, const AGControl &control)
