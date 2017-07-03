@@ -398,38 +398,7 @@
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    CGPoint p = [[touches anyObject] locationInView:_viewController.view];
-    GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
-    
-//    list<AGFreeDraw*> freedraws = [_viewController freedraws];
-//    
-//    for(auto i = freedraws.begin(); i != freedraws.end(); )
-//    {
-//        AGFreeDraw *fd = *i++;
-//        assert(fd);
-//        
-//        if(fd->hitTest(pos))
-//        {
-//            const vector<GLvertex3f> &oldPoints = fd->points();
-//            vector<GLvertex3f> newPoints;
-//            GLvertex2f erasePos = pos.xy();
-//            
-//            for(int j = 0; j < fd->points().size()-1; j++)
-//            {
-//                GLvertex2f p0 = oldPoints[j].xy() + erasePos;
-//                GLvertex2f p1 = oldPoints[j+1].xy() + erasePos;
-//                
-//                if(!pointOnLine(erasePos, p0, p1, 0.0025*AGStyle::oldGlobalScale))
-//                {
-//                    newPoints.push_back(oldPoints[j]);
-//                }
-//            }
-//            
-//            AGFreeDraw *fd_new = new AGFreeDraw(newPoints.data(), newPoints.size());
-//            fd_new->init();
-//            [_viewController replaceFreeDraw:fd freedrawNew:fd_new];
-//        }
-//    }
+
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -456,18 +425,25 @@
                 GLvertex2f p0 = oldPoints[j].xy();
                 GLvertex2f p1 = oldPoints[j+1].xy();
                 
-                if(!pointOnLine(erasePos, p0, p1, 0.0025*AGStyle::oldGlobalScale))
+                if(!pointOnLine(erasePos, p0, p1, 0.02*AGStyle::oldGlobalScale))
                 {
                     newPoints.push_back(oldPoints[j]);
                     
                     if(j == fd->points().size()-2)
                     {
+                        newPoints.push_back(oldPoints[j+1]);
                         newFreedraws.push_back(newPoints);
+                        newPoints.clear();
                     }
                 }
-                else if(newPoints.size())
+                else if(newPoints.size()>1)
                 {
+                    newPoints.push_back(oldPoints[j]);
                     newFreedraws.push_back(newPoints);
+                    newPoints.clear();
+                }
+                else
+                {
                     newPoints.clear();
                 }
             }
@@ -486,14 +462,7 @@
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-//    if(_linePoints.size() > 1)
-//    {
-//        AGAnalytics::instance().eventDrawFreedraw();
-//        
-//        AGFreeDraw *freeDraw = new AGFreeDraw(&_linePoints[0], _linePoints.size());
-//        freeDraw->init();
-//        [_viewController addFreeDraw:freeDraw];
-//    }
+
 }
 
 - (void)update:(float)t dt:(float)dt { }
