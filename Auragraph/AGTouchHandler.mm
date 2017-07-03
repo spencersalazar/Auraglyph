@@ -404,58 +404,72 @@
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
-    GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
+    GLvertex2f erasePos = [_viewController worldCoordinateForScreenCoordinate:p].xy();
     
     const list<AGFreeDraw*> &freedraws = [_viewController freedraws];
+    
+    float eraserThresh = 0.005;
     
     for(auto i = freedraws.begin(); i != freedraws.end(); )
     {
         AGFreeDraw *fd = *i++;
         assert(fd);
         
-        if(fd->hitTest(pos))
+        const vector<GLvertex3f> &oldPoints = fd->points();
+        
+        // Hit test for whole freedraw
+        for(int i = 0; i < oldPoints.size()-1; i++)
         {
-            const vector<GLvertex3f> &oldPoints = fd->points();
-            vector<vector<GLvertex3f> > newFreedraws;
-            vector<GLvertex3f> newPoints;
-            GLvertex2f erasePos = pos.xy();
+            GLvertex2f p0 = oldPoints[i].xy();
+            GLvertex2f p1 = oldPoints[i+1].xy();
             
-            for(int j = 0; j < fd->points().size()-1; j++)
+            if(pointOnLine(erasePos, p0, p1, eraserThresh*AGStyle::oldGlobalScale))
             {
-                GLvertex2f p0 = oldPoints[j].xy();
-                GLvertex2f p1 = oldPoints[j+1].xy();
-                
-                if(!pointOnLine(erasePos, p0, p1, 0.02*AGStyle::oldGlobalScale))
+                vector<vector<GLvertex3f> > newFreedraws;
+                vector<GLvertex3f> newPoints;
+            
+                // Hit test for individual segments within freedraw
+                // XXX we can (ahd should) optimize this later to start not at j=0,
+                // but wherever the enclosing hit was detected
+                for(int j = 0; j < fd->points().size()-1; j++)
                 {
-                    newPoints.push_back(oldPoints[j]);
-                    
-                    if(j == fd->points().size()-2)
+                    GLvertex2f p0 = oldPoints[j].xy();
+                    GLvertex2f p1 = oldPoints[j+1].xy();
+                
+                    if(!pointOnLine(erasePos, p0, p1, eraserThresh*AGStyle::oldGlobalScale))
                     {
-                        newPoints.push_back(oldPoints[j+1]);
+                        newPoints.push_back(oldPoints[j]);
+                    
+                        if(j == fd->points().size()-2)
+                        {
+                            newPoints.push_back(oldPoints[j+1]);
+                            newFreedraws.push_back(newPoints);
+                            newPoints.clear();
+                        }
+                    }
+                    else if(newPoints.size()>1)
+                    {
+                        newPoints.push_back(oldPoints[j]);
                         newFreedraws.push_back(newPoints);
                         newPoints.clear();
                     }
+                    else
+                    {
+                        newPoints.clear();
+                    }
                 }
-                else if(newPoints.size()>1)
-                {
-                    newPoints.push_back(oldPoints[j]);
-                    newFreedraws.push_back(newPoints);
-                    newPoints.clear();
-                }
-                else
-                {
-                    newPoints.clear();
-                }
-            }
             
-            for(auto draw : newFreedraws)
-            {
-                AGFreeDraw *fd_new = new AGFreeDraw(draw.data(), draw.size());
-                fd_new->init();
-                [_viewController addFreeDraw:fd_new];
-            }
+                for(auto draw : newFreedraws)
+                {
+                    AGFreeDraw *fd_new = new AGFreeDraw(draw.data(), draw.size());
+                    fd_new->init();
+                    [_viewController addFreeDraw:fd_new];
+                }
             
-            [_viewController resignFreeDraw:fd];
+                [_viewController resignFreeDraw:fd];
+                
+                break; // Break out of handling this freedraw
+            }
         }
     }
 }

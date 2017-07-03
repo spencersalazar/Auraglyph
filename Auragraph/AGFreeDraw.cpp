@@ -145,6 +145,8 @@ const vector<GLvertex3f> &AGFreeDraw::points()
 
 AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
 {
+    return NULL; // XXX we not longer use the hit-testing below
+    
     if(!m_active)
         return NULL;
     
