@@ -14,8 +14,8 @@ const float AGStyle::open_animTimeY = 0.15;
 const GLvertex2f AGStyle::editor_titleInset = GLvertex2f(0.002, 0.008);
 
 //const GLcolor4f AGStyle::foregroundColor = GLcolor4f(0.75f, 0.5f, 0.0f, 1.0f);
-const GLcolor4f AGStyle::foregroundColor = GLcolor4f(1.0f, 1.0f, 1.0f, 1.0f);
-const GLcolor4f AGStyle::backgroundColor = GLcolor4f(12.0f/255.0f, 16.0f/255.0f, 33.0f/255.0f, 1.0f);
+//const GLcolor4f AGStyle::foregroundColor = GLcolor4f(1.0f, 1.0f, 1.0f, 1.0f);
+//const GLcolor4f AGStyle::backgroundColor = GLcolor4f(12.0f/255.0f, 16.0f/255.0f, 33.0f/255.0f, 1.0f);
 
 const string &AGStyle::standardFontPath()
 {
@@ -53,27 +53,27 @@ TexFont *AGStyle::standardFont96()
     return texFont96;
 }
 
-const GLcolor4f &AGStyle::lightColor()
-{
-    static GLcolor4f s_lightColor = GLcolor4f::white;
-    return s_lightColor;
-}
-
-const GLcolor4f &AGStyle::darkColor()
-{
-    static GLcolor4f s_darkColor = GLcolor4f::black;
-    return s_darkColor;
-}
-
-const GLcolor4f &AGStyle::frameBackgroundColor()
-{
-    static GLcolor4f s_frameBackgroundColor = GLcolor4f(0, 0, 0, 0.75);
-    return s_frameBackgroundColor;
-}
-
-const GLcolor4f &AGStyle::errorColor()
-{
-    static GLcolor4f s_errorColor = GLcolor4f(1, 0, 0, 1);
-    return s_errorColor;
-}
+//const GLcolor4f &AGStyle::lightColor()
+//{
+//    static GLcolor4f s_lightColor = GLcolor4f::white;
+//    return s_lightColor;
+//}
+//
+//const GLcolor4f &AGStyle::darkColor()
+//{
+//    static GLcolor4f s_darkColor = GLcolor4f::black;
+//    return s_darkColor;
+//}
+//
+//const GLcolor4f &AGStyle::frameBackgroundColor()
+//{
+//    static GLcolor4f s_frameBackgroundColor = GLcolor4f(0, 0, 0, 0.75);
+//    return s_frameBackgroundColor;
+//}
+//
+//const GLcolor4f &AGStyle::errorColor()
+//{
+//    static GLcolor4f s_errorColor = GLcolor4f(1, 0, 0, 1);
+//    return s_errorColor;
+//}
 
