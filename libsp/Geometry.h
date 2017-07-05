@@ -132,6 +132,16 @@ struct GLcolor4f
     }
 #endif // ENABLE_GLKIT
     
+    inline GLcolor4f withAlpha(float alpha) const
+    {
+        return GLcolor4f(r, g, b, alpha);
+    }
+    
+    inline GLcolor4f blend(float _r, float _g, float _b, float _a = 1) const
+    {
+        return GLcolor4f(r*_r, g*_g, b*_b, a*_a);
+    }
+    
     static const GLcolor4f white;
     static const GLcolor4f red;
     static const GLcolor4f green;
