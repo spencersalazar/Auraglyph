@@ -682,7 +682,7 @@ static AGViewController * g_instance = nil;
     if(AG_ENABLE_FBO)
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     else
-        glClearColor(AGStyle::backgroundColor.r, AGStyle::backgroundColor.g, AGStyle::backgroundColor.b, 1.0f);
+        glClearColor(AGStyle::backgroundColor().r, AGStyle::backgroundColor().g, AGStyle::backgroundColor().b, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     [self renderEdit];
@@ -696,7 +696,7 @@ static AGViewController * g_instance = nil;
 //        [((GLKView *) self.view) bindDrawable];
         
         //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClearColor(AGStyle::backgroundColor.r, AGStyle::backgroundColor.g, AGStyle::backgroundColor.b, 1.0f);
+        glClearColor(AGStyle::backgroundColor().r, AGStyle::backgroundColor().g, AGStyle::backgroundColor().b, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         glBindVertexArrayOES(0);
@@ -742,7 +742,7 @@ static AGViewController * g_instance = nil;
         glVertexAttribPointer(AGVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLvertex2f), screenUV);
         glEnableVertexAttribArray(AGVertexAttribTexCoord0);
         
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::foregroundColor());
         glDisableVertexAttribArray(AGVertexAttribColor);
         
         glUniform1i(uniforms[UNIFORM_SCREEN_ORDERH], 8);

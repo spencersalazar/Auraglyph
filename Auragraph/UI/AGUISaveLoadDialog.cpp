@@ -111,7 +111,7 @@ public:
         }, 4);
         
         // draw outer frame
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::foregroundColor);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::foregroundColor());
         glLineWidth(4.0f);
         drawLineLoop((GLvertex3f[]){
             { -m_size.x/2, -m_size.y/2, 0 },
@@ -257,7 +257,7 @@ public:
     virtual void render() override
     {
         // draw inner box
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::frameBackgroundColor());
+        AGStyle::frameBackgroundColor().set();
         drawTriangleFan((GLvertex3f[]){
             { -m_size.x/2, -m_size.y/2, 0 },
             {  m_size.x/2, -m_size.y/2, 0 },
@@ -265,7 +265,7 @@ public:
             { -m_size.x/2,  m_size.y/2, 0 },
         }, 4);
         
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::foregroundColor);
+        AGStyle::foregroundColor().set();
         glLineWidth(4.0f);
         drawLineLoop((GLvertex3f[]){
             { -m_size.x/2, -m_size.y/2, 0 },
@@ -274,8 +274,7 @@ public:
             { -m_size.x/2,  m_size.y/2, 0 },
         }, 4);
         
-        GLcolor4f whiteA = AGStyle::foregroundColor;
-        whiteA.a = 0.75;
+        GLcolor4f whiteA = AGStyle::foregroundColor().withAlpha(0.75);
         float yPos = m_itemStart + m_verticalScrollPos;
         int i = 0;
         int len = m_documentList.size();
@@ -296,7 +295,7 @@ public:
             if(i == m_selection)
             {
                 // draw selection box
-                glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor);
+                glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor());
                 
                 drawTriangleFan(shader, (GLvertex3f[]){
                     { -m_size.x/2*margin,  m_itemHeight/2*margin, 0 },
@@ -309,7 +308,7 @@ public:
             }
             else
             {
-                glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor);
+                glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor());
             }
             
             // draw each "figure" in the "name"
@@ -344,7 +343,7 @@ public:
             float scroll_bar_y = m_verticalScrollPos/scroll_max_scroll*(scroll_bar_tray_height-scroll_bar_height);
             
             // load it up and draw
-            glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+            glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::foregroundColor());
             glLineWidth(1.0);
             drawLineStrip((GLvertex2f[]) {
                 { m_size.x/2*scroll_bar_margin, m_size.y/2*scroll_bar_margin-scroll_bar_y },

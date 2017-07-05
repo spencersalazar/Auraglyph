@@ -9,6 +9,7 @@
 #include "AGRenderObject.h"
 #include "AGViewController.h"
 #include "AGGenericShader.h"
+#include "AGStyle.h"
 #include "spstl.h"
 
 #define DEBUG_BOUNDS 0
@@ -48,10 +49,7 @@ void AGRenderInfoV::set(const AGRenderState &state)
 {
     if(geo && numVertex)
     {
-        GLcolor4f c = color;
-        c.a *= state.alpha;
-        
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &c);
+        color.blend(1, 1, 1, state.alpha).set();
         glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
         glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo);
     }
@@ -83,11 +81,8 @@ void AGRenderInfoVL::set(const AGRenderState &state)
 {
     if(geo && numVertex)
     {
-        GLcolor4f c = color;
-        c.a *= state.alpha;
-        
         glLineWidth(lineWidth);
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &c);
+        color.blend(1, 1, 1, state.alpha).set();
         glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
         glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo);
     }
@@ -464,7 +459,8 @@ void AGRenderObject::drawWaveform(float waveform[], int size, GLvertex2f from, G
     glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
     glDisableVertexAttribArray(AGVertexAttribNormal);
     
-    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+    // todo: pass color in
+    AGStyle::foregroundColor().set();
     glDisableVertexAttribArray(AGVertexAttribColor);
     
     glDisableVertexAttribArray(AGVertexAttribPosition);

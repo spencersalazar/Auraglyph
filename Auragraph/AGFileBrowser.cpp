@@ -108,7 +108,7 @@ void AGFileBrowser::render()
         }
         else
         {
-            textColor = AGStyle::foregroundColor;
+            textColor = AGStyle::foregroundColor();
         }
         
         // move to bottom left corner of box

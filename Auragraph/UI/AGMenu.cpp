@@ -69,14 +69,13 @@ void AGMenu::update(float t, float dt)
 void AGMenu::render()
 {
     glLineWidth(2.0);
-    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::foregroundColor);
     
     if(!m_open)
     {
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::frameBackgroundColor());
+        AGStyle::frameBackgroundColor().set();
         // draw frame background (fill rect)
         drawTriangleFan(m_frameGeo.data(), m_frameGeo.size());
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::foregroundColor);
+        AGStyle::foregroundColor().set();
         // draw frame (stroke rect)
         drawLineLoop(m_frameGeo.data(), m_frameGeo.size());
         // draw icon
@@ -84,10 +83,11 @@ void AGMenu::render()
     }
     else
     {
+        AGStyle::foregroundColor().set();
         // draw frame (fill circle)
         drawGeometry(m_frameGeo.data(), m_frameGeo.size(), GL_TRIANGLE_FAN);
         // draw icon (inverted color)
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::backgroundColor);
+        AGStyle::frameBackgroundColor().set();
         drawGeometry(m_iconGeo.data(), m_iconGeo.size(), m_iconGeoKind);
     }
     
@@ -96,9 +96,7 @@ void AGMenu::render()
         TexFont *text = AGStyle::standardFont64();
         
         // draw menu items background
-        GLcolor4f frameBackground = AGStyle::frameBackgroundColor();
-        frameBackground.a *= m_renderState.alpha*m_itemsAlpha;
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &frameBackground);
+        AGStyle::frameBackgroundColor().blend(1, 1, 1, m_renderState.alpha*m_itemsAlpha).set();
         
         float top = -m_size.y/2;
         float bottom = -m_size.y/2-m_size.y*(m_items.size())*AGMenu_ItemSpacing-5;
@@ -123,13 +121,13 @@ void AGMenu::render()
             GLcolor4f bgColor;
             if(i != m_selectedItem)
             {
-                fgColor = AGStyle::foregroundColor;
-                bgColor = AGStyle::backgroundColor; // not actually used
+                fgColor = AGStyle::foregroundColor();
+                bgColor = AGStyle::backgroundColor(); // not actually used
             }
             else
             {
-                fgColor = AGStyle::backgroundColor;
-                bgColor = AGStyle::foregroundColor;
+                fgColor = AGStyle::backgroundColor();
+                bgColor = AGStyle::foregroundColor();
             }
             
             fgColor.a = m_itemsAlpha;

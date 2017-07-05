@@ -98,11 +98,9 @@ void AGUIButton::render()
     shader.setModelViewMatrix(modelView);
     shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));
     
-    GLcolor4f color = GLcolor4f::white;
-    color.a = m_renderState.alpha;
-    GLcolor4f blackA = AGStyle::darkColor();
-    blackA.a = m_renderState.alpha*0.75;
-
+    GLcolor4f color = AGStyle::foregroundColor().withAlpha(m_renderState.alpha);
+    GLcolor4f blackA = AGStyle::darkColor().blend(1, 1, 1, m_renderState.alpha*0.75);
+    
     glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
     glEnableVertexAttribArray(AGVertexAttribPosition);
     
@@ -134,7 +132,7 @@ void AGUIButton::render()
         glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
         glDrawArrays(GL_LINE_LOOP, 0, 4);
         
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::black);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::frameBackgroundColor());
         glDrawArrays(GL_LINE_LOOP, 4, 4);
         
         color = AGStyle::lightColor();
@@ -461,9 +459,9 @@ void AGUITrash::render()
     
     GLcolor4f color;
     if(m_active)
-        color = GLcolor4f::red;
+        color = AGStyle::errorColor();
     else
-        color = GLcolor4f::white;
+        color = AGStyle::foregroundColor();
     color.a = m_renderState.alpha;
 
     glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
@@ -526,7 +524,7 @@ AGUITrace::AGUITrace()
     m_renderInfo.geo = m_traceGeo.data();
     m_renderInfo.geoType = GL_LINE_STRIP;
     m_renderInfo.geoOffset = 0;
-    m_renderInfo.color = GLcolor4f::white;
+    m_renderInfo.color = AGStyle::foregroundColor();
     m_renderInfo.lineWidth = 4.0;
     
     m_renderList.push_back(&m_renderInfo);
@@ -590,8 +588,7 @@ void AGUILabel::render()
         proj = projectionMatrix();
     }
     
-    GLcolor4f valueColor = GLcolor4f::white;
-    valueColor.a = m_renderState.alpha;
+    GLcolor4f valueColor = AGStyle::foregroundColor().withAlpha(m_renderState.alpha);
     
     GLKMatrix4 valueMV = modelView;
     valueMV = GLKMatrix4Translate(valueMV, m_position.x, m_position.y, m_position.z);

@@ -297,7 +297,7 @@ public:
             m_renderInfo.geo = m_geo;
             m_renderInfo.geoType = GL_LINE_STRIP;
             m_renderInfo.numVertex = 4;
-            m_renderInfo.color = lerp(0.5, GLcolor4f(0, 0, 0, 1), AGStyle::lightColor());
+            m_renderInfo.color = lerp(0.5, AGStyle::foregroundColor(), AGStyle::lightColor());
             m_renderList.push_back(&m_renderInfo);
         }
         
@@ -316,11 +316,11 @@ public:
             m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
             
             if(m_pressed)
-                m_renderInfo.color = lerp(0.5, GLcolor4f(1, 1, 1, 1), AGStyle::lightColor());
+                m_renderInfo.color = lerp(0.5, AGStyle::foregroundColor(), AGStyle::lightColor());
             else if(m_hasValue)
                 m_renderInfo.color = AGStyle::lightColor();
             else
-                m_renderInfo.color = lerp(0.5, GLcolor4f(0, 0, 0, 1), AGStyle::lightColor());
+                m_renderInfo.color = lerp(0.5, AGStyle::frameBackgroundColor(), AGStyle::lightColor());
         }
         
         virtual void render()
