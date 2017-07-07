@@ -131,6 +131,7 @@
 		09FC92471A14F55D005D14A3 /* AGTimer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09FC92451A14F55D005D14A3 /* AGTimer.mm */; };
 		09FC924B1A153A83005D14A3 /* AGConnection.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09FC92491A153A83005D14A3 /* AGConnection.mm */; };
 		09FC924D1A153C0A005D14A3 /* flare.png in Resources */ = {isa = PBXBuildFile; fileRef = 09FC924C1A153C0A005D14A3 /* flare.png */; };
+		49C8AB5D1F05E6F1005671BE /* AGFreeDraw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C8AB5C1F05E6F1005671BE /* AGFreeDraw.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -448,6 +449,8 @@
 		09FC92491A153A83005D14A3 /* AGConnection.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGConnection.mm; sourceTree = "<group>"; };
 		09FC924A1A153A83005D14A3 /* AGConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGConnection.h; sourceTree = "<group>"; };
 		09FC924C1A153C0A005D14A3 /* flare.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flare.png; sourceTree = "<group>"; };
+		49C8AB5A1F05E664005671BE /* AGFreeDraw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGFreeDraw.h; sourceTree = "<group>"; };
+		49C8AB5C1F05E6F1005671BE /* AGFreeDraw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGFreeDraw.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -589,6 +592,8 @@
 				0985E5341D8C952800B536C8 /* AGInteractiveObject.mm */,
 				0987409B17B98D7C0098511A /* AGNode.h */,
 				0987409A17B98D7C0098511A /* AGNode.mm */,
+				49C8AB5A1F05E664005671BE /* AGFreeDraw.h */,
+				49C8AB5C1F05E6F1005671BE /* AGFreeDraw.cpp */,
 				09FC924A1A153A83005D14A3 /* AGConnection.h */,
 				09FC92491A153A83005D14A3 /* AGConnection.mm */,
 				098740AC17BC377E0098511A /* AGAudioNode.h */,
@@ -1092,6 +1097,7 @@
 				09412E061A205A070065598D /* AGDocument.mm in Sources */,
 				091081801A0B63DB0063028B /* AGStyle.mm in Sources */,
 				09B962871DE2ED38001DCFB1 /* AGPreferences.mm in Sources */,
+				49C8AB5D1F05E6F1005671BE /* AGFreeDraw.cpp in Sources */,
 				099AF11317D12DD9000BAB7B /* AGTrainerViewController.mm in Sources */,
 				09F2D53A1D7EA33400F537C7 /* Delay.cpp in Sources */,
 				09EE65821EFB64C700B4ED62 /* SampleCircularBuffer.cpp in Sources */,

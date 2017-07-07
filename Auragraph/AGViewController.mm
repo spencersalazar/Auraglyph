@@ -13,6 +13,7 @@
 #import "AGHandwritingRecognizer.h"
 #import "AGInteractiveObject.h"
 #import "AGNode.h"
+#import "AGFreeDraw.h"
 #import "AGAudioManager.h"
 #import "AGUserInterface.h"
 #import "TexFont.h"
@@ -94,6 +95,7 @@ enum InterfaceMode
     AGTouchHandler *_touchHandlerQueue;
     
     std::list<AGNode *> _nodes;
+    std::list<AGFreeDraw *> _freedraws;
     std::list<AGInteractiveObject *> _dashboard;
     std::list<AGInteractiveObject *> _objects;
     std::list<AGInteractiveObject *> _interfaceObjects;
@@ -484,6 +486,10 @@ static AGViewController * g_instance = nil;
     if(node)
         _nodes.remove(node);
     _dashboard.remove(object);
+    
+    AGFreeDraw *draw = dynamic_cast<AGFreeDraw *>(object);
+    if(draw)
+        _freedraws.remove(draw);
 }
 
 - (void)removeFromTouchCapture:(AGInteractiveObject *)object
@@ -505,7 +511,29 @@ static AGViewController * g_instance = nil;
 {
     assert([NSThread isMainThread]);
     
+    _freedraws.push_back(freedraw);
     _objects.push_back(freedraw);
+}
+
+//- (void)replaceFreeDraw:(AGFreeDraw *)freedrawOld freedrawNew:(AGFreeDraw *)freedrawNew
+//{
+//    assert([NSThread isMainThread]);
+//    assert(freedrawOld);
+//    
+//    _freedraws.remove(freedrawOld);
+//    _objects.remove(freedrawOld);
+//    
+//    _freedraws.push_back(freedrawNew);
+//    _objects.push_back(freedrawNew);
+//}
+
+- (void)resignFreeDraw:(AGFreeDraw *)freedraw
+{
+    assert([NSThread isMainThread]);
+    assert(freedraw);
+    
+    _freedraws.remove(freedraw);
+    _objects.remove(freedraw);
 }
 
 - (void)removeFreeDraw:(AGFreeDraw *)freedraw
@@ -513,7 +541,13 @@ static AGViewController * g_instance = nil;
     assert([NSThread isMainThread]);
     assert(freedraw);
     
+    _freedraws.remove(freedraw);
     _fadingOut.push_back(freedraw);
+}
+
+- (const list<AGFreeDraw *> &)freedraws
+{
+    return _freedraws;
 }
 
 - (void)addTouchOutsideListener:(AGInteractiveObject *)listener
@@ -988,6 +1022,9 @@ static AGViewController * g_instance = nil;
                     case DRAWMODE_FREEDRAW:
                         handler = [[AGDrawFreedrawTouchHandler alloc] initWithViewController:self];
                         break;
+                    case DRAWMODE_FREEDRAW_ERASE:
+                        handler = [[AGEraseFreedrawTouchHandler alloc] initWithViewController:self];
+                        break;
                 }
                 
                 [handler touchesBegan:touches withEvent:event];
@@ -1263,7 +1300,9 @@ static AGViewController * g_instance = nil;
     }, ^(const AGDocument::Freedraw &docFreedraw) {
         AGFreeDraw *freedraw = new AGFreeDraw(docFreedraw);
         freedraw->init();
-        [self addTopLevelObject:freedraw];
+//        [self addTopLevelObject:freedraw];
+        [self addFreeDraw:freedraw];
+
     });
 }
 
