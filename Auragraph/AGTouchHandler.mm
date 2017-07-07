@@ -408,7 +408,7 @@
     
     const list<AGFreeDraw*> &freedraws = [_viewController freedraws];
     
-    float eraserThresh = 0.005;
+    float eraserThresh = 0.005 * AGStyle::oldGlobalScale;
     
     for(auto i = freedraws.begin(); i != freedraws.end(); )
     {
@@ -423,39 +423,66 @@
             GLvertex2f p0 = oldPoints[i].xy();
             GLvertex2f p1 = oldPoints[i+1].xy();
             
-            if(pointOnLine(erasePos, p0, p1, eraserThresh*AGStyle::oldGlobalScale))
+            if(pointInCircle(p0, erasePos, eraserThresh) ||
+                (i == oldPoints.size()-2 && pointInCircle(p1, erasePos, eraserThresh)) ||
+                pointOnLine(erasePos, p0, p1, eraserThresh))
             {
                 vector<vector<GLvertex3f> > newFreedraws;
                 vector<GLvertex3f> newPoints;
             
                 // Hit test for individual segments within freedraw
-                // XXX we can (ahd should) optimize this later to start not at j=0,
-                // but wherever the enclosing hit was detected
-                for(int j = 0; j < fd->points().size()-1; j++)
+                for(int j = 0; j < oldPoints.size()-1; j++)
                 {
                     GLvertex2f p0 = oldPoints[j].xy();
                     GLvertex2f p1 = oldPoints[j+1].xy();
                 
-                    if(!pointOnLine(erasePos, p0, p1, eraserThresh*AGStyle::oldGlobalScale))
+                    if(pointInCircle(p0, erasePos, eraserThresh))
                     {
+                        if(newPoints.size()>1)
+                        {
+                            newFreedraws.push_back(newPoints);
+                            newPoints.clear();
+                        }
+                        else
+                        {
+                            newPoints.clear();
+                        }
+                    }
+                    else if((j == oldPoints.size()-2) && pointInCircle(p1, erasePos, eraserThresh))
+                    {
+                        if(newPoints.size()>0)
+                        {
+                            newPoints.push_back(oldPoints[j]);
+                            newFreedraws.push_back(newPoints);
+                            newPoints.clear();
+                        }
+                        else
+                        {
+                            newPoints.clear();
+                        }
+                    }
+                    else if(pointOnLine(erasePos, p0, p1, eraserThresh))
+                    {
+                        if(newPoints.size()>1)
+                        {
+                            newPoints.push_back(oldPoints[j]);
+                            newFreedraws.push_back(newPoints);
+                            newPoints.clear();
+                        }
+                        else
+                        {
+                            newPoints.clear();
+                        }
+                    }
+                    else {
                         newPoints.push_back(oldPoints[j]);
                     
-                        if(j == fd->points().size()-2)
+                        if(j == oldPoints.size()-2)
                         {
                             newPoints.push_back(oldPoints[j+1]);
                             newFreedraws.push_back(newPoints);
                             newPoints.clear();
                         }
-                    }
-                    else if(newPoints.size()>1)
-                    {
-                        newPoints.push_back(oldPoints[j]);
-                        newFreedraws.push_back(newPoints);
-                        newPoints.clear();
-                    }
-                    else
-                    {
-                        newPoints.clear();
                     }
                 }
             
