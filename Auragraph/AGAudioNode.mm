@@ -440,7 +440,7 @@ public:
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { AUDIO_PARAM_GAIN, "gain", false, true, 1, 0, 0, AGPortInfo::LOG, .doc = "Output gain." }
+                { AUDIO_PARAM_GAIN, "gain", false, true, 1, 0, 0, AGPortInfo::EXP, .doc = "Output gain." }
             };
         }
         
@@ -547,8 +547,8 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_FREQ, "freq", true, true, 220, 0, 0, AGPortInfo::LOG, .doc = "Oscillator frequency. " },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, 0, 0, AGPortInfo::LOG, .doc = "Output gain." },
+                { PARAM_FREQ, "freq", true, true, 220, 0, 0, AGPortInfo::EXP, .doc = "Oscillator frequency. " },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, 0, 0, AGPortInfo::EXP, .doc = "Output gain." },
                 { PARAM_PHASE, "phase", true, true, 1, 0, 0, AGPortInfo::LIN, .doc = "Oscillator phase." },
             };
         };
@@ -556,8 +556,8 @@ public:
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_FREQ, "freq", true, true, 220, 0, 0, AGPortInfo::LOG, .doc = "Oscillator frequency" },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, 0, 0, AGPortInfo::LOG, .doc = "Output gain." }
+                { PARAM_FREQ, "freq", true, true, 220, 0, 0, AGPortInfo::EXP, .doc = "Oscillator frequency" },
+                { AUDIO_PARAM_GAIN, "gain", true, true, 1, 0, 0, AGPortInfo::EXP, .doc = "Output gain." }
             };
         };
 
@@ -2415,7 +2415,9 @@ public:
         {
             return {
                 { PARAM_INPUT, "input", true, false, .doc = "Input signal." },
-                { PARAM_DELAY, "delay", true, true, 0.5, 0, AGFloat_Max, .doc = "Delay length (seconds)." },
+                { PARAM_DELAY, "delay", true, true, 1, 1, AGInt_Max,
+                    .type = AGControl::TYPE_INT, .mode = AGPortInfo::LIN,
+                    .doc = "Delay length (samples)." },
                 { PARAM_COEFF, "coeff", true, true, 0.1, 0, 1, .doc = "Allpass coefficient." },
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
             };
@@ -2425,7 +2427,9 @@ public:
         {
             return {
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
-                { PARAM_DELAY, "delay", true, true, 0.5, 0, AGFloat_Max, .doc = "Delay length (seconds)." },
+                { PARAM_DELAY, "delay", true, true, 1, 1, AGInt_Max,
+                    .type = AGControl::TYPE_INT, .mode = AGPortInfo::LIN,
+                    .doc = "Delay length (samples)." },
                 { PARAM_COEFF, "coeff", true, true, 0.1, 0, 1, .doc = "Allpass coefficient." },
             };
         };

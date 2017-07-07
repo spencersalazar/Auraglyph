@@ -149,7 +149,8 @@ m_lastTraceWasRecognized(true)
     float rowHeight = s_radius*2.0/rowCount;
     for(int port = 0; port < numEditPorts; port++)
     {
-        AGControl::Type editPortType = m_node->editPortInfo(port).type;
+        AGPortInfo info = m_node->editPortInfo(port);
+        AGControl::Type editPortType = info.type;
         // only use sliders for float/int
         if(editPortType != AGControl::TYPE_NONE &&
            editPortType != AGControl::TYPE_FLOAT &&
@@ -166,8 +167,20 @@ m_lastTraceWasRecognized(true)
         AGSlider *slider = new AGSlider(GLvertex3f(s_radius/2, y+rowHeight/4, 0), v);
         slider->init();
         
-        slider->setType(AGSlider::CONTINUOUS);
-        slider->setScale(AGSlider::EXPONENTIAL);
+        if(editPortType == AGControl::TYPE_FLOAT)
+            slider->setType(AGSlider::CONTINUOUS);
+        else if(editPortType == AGControl::TYPE_INT)
+            slider->setType(AGSlider::DISCRETE);
+        else
+            slider->setType(AGSlider::CONTINUOUS);
+        
+        if(info.mode == AGPortInfo::LIN)
+            slider->setScale(AGSlider::LINEAR);
+        else if(info.mode == AGPortInfo::EXP)
+            slider->setScale(AGSlider::EXPONENTIAL);
+        else
+            slider->setScale(AGSlider::EXPONENTIAL);
+        
         slider->setSize(GLvertex2f(s_radius, rowHeight));
         slider->onUpdate([port, node] (float value) {
             node->setEditPortValue(port, value);

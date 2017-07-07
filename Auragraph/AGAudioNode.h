@@ -142,7 +142,7 @@ public:
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { AUDIO_PARAM_GAIN, "gain", false, true, 1, 0, AGFloat_Max, AGPortInfo::LOG, .doc = "Output gain." }
+                { AUDIO_PARAM_GAIN, "gain", false, true, 1, 0, AGFloat_Max, AGPortInfo::EXP, .doc = "Output gain." }
             };
         }
 

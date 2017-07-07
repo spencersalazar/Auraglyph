@@ -55,7 +55,9 @@ struct AGPortInfo
     
     enum Mode
     {
+        NONE = 0,
         LIN,
+        EXP,
         LOG,
     };
     
