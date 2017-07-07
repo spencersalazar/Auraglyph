@@ -352,6 +352,7 @@ void AGAudioNode::renderLast(float *output, int nFrames, int chanNum)
 
 float *AGAudioNode::inputPortVector(int paramId)
 {
+    assert(m_param2InputPort.count(paramId));
     return m_inputPortBuffer[m_param2InputPort.at(paramId)];
 }
 
@@ -1706,6 +1707,8 @@ public:
         if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         
+        float gain = param(AUDIO_PARAM_GAIN);
+        
         this->lock();
         
         int numInputs = numInputsForPort(PARAM_INPUT);
@@ -1731,7 +1734,10 @@ public:
         }
         
         for(int i = 0; i < nFrames; i++)
+        {
+            m_outputBuffer[chanNum][i] *= gain;
             output[i] += m_outputBuffer[chanNum][i];
+        }
         
         this->unlock();
     }
@@ -1817,6 +1823,8 @@ public:
         if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         
+        float gain = param(AUDIO_PARAM_GAIN);
+        
         this->lock();
         
         int numInputs = numInputsForPort(PARAM_INPUT);
@@ -1844,7 +1852,10 @@ public:
         this->unlock();
         
         for(int i = 0; i < nFrames; i++)
+        {
+            m_outputBuffer[chanNum][i] *= gain;
             output[i] += m_outputBuffer[chanNum][i];
+        }
     }
     
 private:
