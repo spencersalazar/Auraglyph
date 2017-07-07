@@ -408,7 +408,7 @@
     
     const list<AGFreeDraw*> &freedraws = [_viewController freedraws];
     
-    float eraserThresh = 0.005 * AGStyle::oldGlobalScale;
+    float eraserThresh = 25;
     
     for(auto i = freedraws.begin(); i != freedraws.end(); )
     {
