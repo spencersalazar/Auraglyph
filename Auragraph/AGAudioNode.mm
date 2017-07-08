@@ -2441,7 +2441,7 @@ public:
                 { PARAM_DELAY, "delay", true, true, 1, 1, AGInt_Max,
                     .type = AGControl::TYPE_INT, .mode = AGPortInfo::LIN,
                     .doc = "Delay length (samples)." },
-                { PARAM_COEFF, "coeff", true, true, 0.1, 0, 1, .doc = "Allpass coefficient." },
+                { PARAM_COEFF, "coeff", true, true, 0.1, -AGFloat_Max, AGFloat_Max, .doc = "Allpass coefficient." },
             };
         };
         
