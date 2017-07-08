@@ -1733,13 +1733,13 @@ public:
                 m_outputBuffer[chanNum][i] += m_inputBuffer[i];
         }
         
+        this->unlock();
+        
         for(int i = 0; i < nFrames; i++)
         {
             m_outputBuffer[chanNum][i] *= gain;
             output[i] += m_outputBuffer[chanNum][i];
         }
-        
-        this->unlock();
     }
     
 private:
