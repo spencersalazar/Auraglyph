@@ -20,6 +20,7 @@
 #include "FileWvIn.h"
 #include "AGCompressorNode.h"
 #include "AGWaveformAudioNode.h"
+#include "AGMatrixMixerNode.h"
 #include "AGStyle.h"
 #include "spdsp.h"
 
@@ -3019,6 +3020,8 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioBiquadNode::Manifest);
         
         nodeTypes.push_back(new AGAudioPannerNode::Manifest);
+        
+        nodeTypes.push_back(new AGAudioMatrixMixerNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();

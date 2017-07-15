@@ -131,6 +131,7 @@
 		09FC92471A14F55D005D14A3 /* AGTimer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09FC92451A14F55D005D14A3 /* AGTimer.mm */; };
 		09FC924B1A153A83005D14A3 /* AGConnection.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09FC92491A153A83005D14A3 /* AGConnection.mm */; };
 		09FC924D1A153C0A005D14A3 /* flare.png in Resources */ = {isa = PBXBuildFile; fileRef = 09FC924C1A153C0A005D14A3 /* flare.png */; };
+		4921A39C1F17FC3E0071823D /* AGMatrixMixerNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4921A39A1F17FC3E0071823D /* AGMatrixMixerNode.cpp */; };
 		49C8AB5D1F05E6F1005671BE /* AGFreeDraw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C8AB5C1F05E6F1005671BE /* AGFreeDraw.cpp */; };
 /* End PBXBuildFile section */
 
@@ -449,6 +450,8 @@
 		09FC92491A153A83005D14A3 /* AGConnection.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGConnection.mm; sourceTree = "<group>"; };
 		09FC924A1A153A83005D14A3 /* AGConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGConnection.h; sourceTree = "<group>"; };
 		09FC924C1A153C0A005D14A3 /* flare.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flare.png; sourceTree = "<group>"; };
+		4921A39A1F17FC3E0071823D /* AGMatrixMixerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGMatrixMixerNode.cpp; sourceTree = "<group>"; };
+		4921A39B1F17FC3E0071823D /* AGMatrixMixerNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGMatrixMixerNode.h; sourceTree = "<group>"; };
 		49C8AB5A1F05E664005671BE /* AGFreeDraw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGFreeDraw.h; sourceTree = "<group>"; };
 		49C8AB5C1F05E6F1005671BE /* AGFreeDraw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGFreeDraw.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -864,6 +867,8 @@
 				09B9624E1DD839A0001DCFB1 /* AGControlOrientationNode.mm */,
 				097A05421E8D8DC40048401E /* AGControlGestureNode.h */,
 				097A05411E8D8DC40048401E /* AGControlGestureNode.mm */,
+				4921A39B1F17FC3E0071823D /* AGMatrixMixerNode.h */,
+				4921A39A1F17FC3E0071823D /* AGMatrixMixerNode.cpp */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -1040,6 +1045,7 @@
 			files = (
 				09F2D53B1D7EA33400F537C7 /* DelayA.cpp in Sources */,
 				097A05431E8D8DC40048401E /* AGControlGestureNode.mm in Sources */,
+				4921A39C1F17FC3E0071823D /* AGMatrixMixerNode.cpp in Sources */,
 				091C70CC1C48A9A600B513C2 /* AGUINodeEditor.mm in Sources */,
 				09BE8B9B1C952386002097F0 /* AGControlSequencerNode.cpp in Sources */,
 				095D12D417ACA36C0048A012 /* main.m in Sources */,
