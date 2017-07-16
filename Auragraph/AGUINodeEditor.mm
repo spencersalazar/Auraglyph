@@ -206,7 +206,7 @@ m_lastTraceWasRecognized(true)
     pinInfo.geo = m_pinInfoGeo.data();
     pinInfo.numVertex = 2;
     pinInfo.geoType = GL_LINES;
-    pinInfo.color = AGStyle::foregroundColor;
+    pinInfo.color = AGStyle::foregroundColor();
     m_pinButton = new AGUIIconButton(GLvertex3f(pinButtonX, pinButtonY, 0),
                                      GLvertex2f(pinButtonWidth, pinButtonHeight),
                                      pinInfo);
@@ -277,7 +277,7 @@ void AGUIStandardNodeEditor::render()
     
     glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_geo);
     glEnableVertexAttribArray(AGVertexAttribPosition);
-    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+    AGStyle::foregroundColor().set();
     glDisableVertexAttribArray(AGVertexAttribColor);
     glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
     glDisableVertexAttribArray(AGVertexAttribNormal);
@@ -302,8 +302,8 @@ void AGUIStandardNodeEditor::render()
     glLineWidth(4.0f);
     glDrawArrays(GL_LINE_LOOP, s_boundingOffset, 4);
     
-    GLcolor4f blackA = GLcolor4f(0, 0, 0, 0.75);
-    glVertexAttrib4fv(AGVertexAttribColor, (const float*) &blackA);
+    GLcolor4f bg = AGStyle::frameBackgroundColor().withAlpha(0.75);
+    bg.set();
     
     // fill
     glDrawArrays(GL_TRIANGLE_FAN, s_boundingOffset, 4);
@@ -315,7 +315,7 @@ void AGUIStandardNodeEditor::render()
     
     GLKMatrix4 titleMV = GLKMatrix4Translate(modelview(), -s_radius*0.9, s_radius - s_radius*2.0/rowCount, 0);
     titleMV = GLKMatrix4Scale(titleMV, 0.61, 0.61, 0.61);
-    text->render(m_title, GLcolor4f::white, titleMV, projection());
+    text->render(m_title, AGStyle::foregroundColor(), titleMV, projection());
     
     
     /* draw items */
@@ -325,8 +325,8 @@ void AGUIStandardNodeEditor::render()
     for(int i = 0; i < numPorts; i++)
     {
         float y = s_radius - s_radius*2.0*(i+2)/rowCount;
-        GLcolor4f nameColor(0.61, 0.61, 0.61, 1);
-        GLcolor4f valueColor = GLcolor4f::white;
+        GLcolor4f nameColor = AGStyle::foregroundColor().blend(0.61, 0.61, 0.61);
+        GLcolor4f valueColor = AGStyle::foregroundColor();
         
         if(i == m_hit)
         {
@@ -337,7 +337,7 @@ void AGUIStandardNodeEditor::render()
             
             glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_geo);
             glEnableVertexAttribArray(AGVertexAttribPosition);
-            glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+            AGStyle::foregroundColor().set();
             glDisableVertexAttribArray(AGVertexAttribColor);
             glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
             glDisableVertexAttribArray(AGVertexAttribNormal);
@@ -385,7 +385,7 @@ void AGUIStandardNodeEditor::render()
         
         glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_geo);
         glEnableVertexAttribArray(AGVertexAttribPosition);
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+        AGStyle::foregroundColor().set();
         glDisableVertexAttribArray(AGVertexAttribColor);
         glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
         glDisableVertexAttribArray(AGVertexAttribNormal);
@@ -402,13 +402,12 @@ void AGUIStandardNodeEditor::render()
         // stroke
         glDrawArrays(GL_LINE_LOOP, s_itemEditBoxOffset, 4);
         
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &blackA);
+        bg.set();
         
         // fill
         glDrawArrays(GL_TRIANGLE_FAN, s_itemEditBoxOffset, 4);
         
-        
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+        AGStyle::foregroundColor().set();
         
         // accept button
         GLKMatrix4 buttonMV = GLKMatrix4Translate(modelview(), s_radius*1.65, y + s_radius/rowCount, 0);
@@ -435,31 +434,31 @@ void AGUIStandardNodeEditor::render()
         GLKMatrix4 textMV = GLKMatrix4Translate(modelview(), s_radius*1.2, y + s_radius/rowCount*0.1, 0);
         textMV = GLKMatrix4Scale(textMV, 0.5, 0.5, 0.5);
         if(m_hitAccept)
-            text->render("Accept", GLcolor4f::white, textMV, projection());
+            text->render("Accept", AGStyle::foregroundColor(), textMV, projection());
         else
-            text->render("Accept", GLcolor4f::black, textMV, projection());
+            text->render("Accept", AGStyle::frameBackgroundColor(), textMV, projection());
         
         
         textMV = GLKMatrix4Translate(modelview(), s_radius*1.2 + s_radius*1.2, y + s_radius/rowCount*0.1, 0);
         textMV = GLKMatrix4Scale(textMV, 0.5, 0.5, 0.5);
         if(m_hitDiscard)
-            text->render("Discard", GLcolor4f::white, textMV, projection());
+            text->render("Discard", AGStyle::foregroundColor(), textMV, projection());
         else
-            text->render("Discard", GLcolor4f::black, textMV, projection());
+            text->render("Discard", AGStyle::frameBackgroundColor(), textMV, projection());
         
         // text name + value
         GLKMatrix4 nameMV = GLKMatrix4Translate(modelview(), -s_radius*0.9, y + s_radius/rowCount*0.1, 0);
         nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
-        text->render(m_node->editPortInfo(m_editingPort).name, GLcolor4f::white, nameMV, projection());
+        text->render(m_node->editPortInfo(m_editingPort).name, AGStyle::foregroundColor(), nameMV, projection());
         
         GLKMatrix4 valueMV = GLKMatrix4Translate(modelview(), s_radius*0.1, y + s_radius/rowCount*0.1, 0);
         valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
 
         if(m_currentValueString.length() == 0)
             // show a 0 if there is no value yet
-            text->render("0", GLcolor4f::white, valueMV, projection());
+            text->render("0", AGStyle::foregroundColor(), valueMV, projection());
         else
-            text->render(m_currentValueString, GLcolor4f::white, valueMV, projection());
+            text->render(m_currentValueString, AGStyle::foregroundColor(), valueMV, projection());
         
         AGGenericShader::instance().useProgram();
         AGGenericShader::instance().setProjectionMatrix(projection());
@@ -475,14 +474,9 @@ void AGUIStandardNodeEditor::render()
             glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo.data());
             glEnableVertexAttribArray(AGVertexAttribPosition);
             if(next == m_drawline.end())
-            {
-                GLcolor4f traceColor = GLcolor4f(1, 1, 1, m_currentDrawlineAlpha);
-                glVertexAttrib4fv(AGVertexAttribColor, (const float *) &traceColor);
-            }
+                AGStyle::foregroundColor().withAlpha(m_currentDrawlineAlpha).set();
             else
-            {
-                glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
-            }
+                AGStyle::foregroundColor().set();
             glDisableVertexAttribArray(AGVertexAttribColor);
             glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
             glDisableVertexAttribArray(AGVertexAttribNormal);

@@ -328,9 +328,9 @@ void AGNode::render()
         shader.setMVPMatrix(mvpOutputPort);
         
         GLcolor4f color;
-        if(m_outputActivation == 1+port)       color = GLcolor4f(0, 1, 0, 1);
-        else if(m_outputActivation == -1-port) color = GLcolor4f(1, 0, 0, 1);
-        else                                   color = GLcolor4f(1, 1, 1, 1);
+        if(m_outputActivation == 1+port)       color = AGStyle::proceedColor();
+        else if(m_outputActivation == -1-port) color = AGStyle::errorColor();
+        else                                   color = AGStyle::foregroundColor();
         color.a = m_fadeOut;
         glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
         
@@ -351,9 +351,9 @@ void AGNode::render()
         shader.setMVPMatrix(mvpInputPort);
         
         GLcolor4f color;
-        if(m_inputActivation == 1+port)       color = GLcolor4f(0, 1, 0, 1);
-        else if(m_inputActivation == -1-port) color = GLcolor4f(1, 0, 0, 1);
-        else                                  color = GLcolor4f(1, 1, 1, 1);
+        if(m_inputActivation == 1+port)       color = AGStyle::proceedColor();
+        else if(m_inputActivation == -1-port) color = AGStyle::errorColor();
+        else                                  color = AGStyle::foregroundColor();
         color.a = m_fadeOut;
         glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
         
@@ -375,9 +375,7 @@ void AGNode::_renderIcon()
         shader.setMVPMatrix(m_modelViewProjectionMatrix);
         shader.setNormalMatrix(m_normalMatrix);
         
-        GLcolor4f color = GLcolor4f::white;
-        color.a = m_fadeOut;
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
+        AGStyle::foregroundColor().withAlpha(m_fadeOut).set();
         glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
         
         m_manifest->renderIcon();

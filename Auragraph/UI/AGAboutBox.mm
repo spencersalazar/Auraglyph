@@ -91,14 +91,16 @@ void AGAboutBox::render()
     glEnableVertexAttribArray(AGVertexAttribPosition);
     glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
     
+    GLcolor4f fg = AGStyle::foregroundColor();
+    GLcolor4f bg = AGStyle::frameBackgroundColor().withAlpha(0.75);
+    
     // stroke
-    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &fg);
     glLineWidth(4.0f);
     glDrawArrays(GL_LINE_LOOP, 0, m_geoSize);
     
     // fill
-    GLcolor4f blackA = GLcolor4f(0, 0, 0, 0.75);
-    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &blackA);
+    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &bg);
     glDrawArrays(GL_TRIANGLE_FAN, 0, m_geoSize);
     
     float titleScale = 2;
@@ -106,7 +108,7 @@ void AGAboutBox::render()
     string title = "AURAGLYPH";
     GLKMatrix4 titleMV = GLKMatrix4Translate(m_modelView, -text->width(title)*titleScale/2, titleHeight, 0);
     titleMV = GLKMatrix4Scale(titleMV, titleScale, titleScale, titleScale);
-    text->render(title, GLcolor4f::white, titleMV, m_projection);
+    text->render(title, fg, titleMV, m_projection);
     
     float lineHeight = text->height()*1.4;
     GLKMatrix4 lineMV = GLKMatrix4Translate(m_modelView, 0, titleHeight - lineHeight, 0);
@@ -116,7 +118,7 @@ void AGAboutBox::render()
         if(m_lines[i].length())
         {
             GLKMatrix4 textMV = GLKMatrix4Translate(lineMV, -text->width(m_lines[i])/2, 0, 0);
-            text->render(m_lines[i], GLcolor4f::white, textMV, m_projection);
+            text->render(m_lines[i], fg, textMV, m_projection);
         }
         
         lineMV = GLKMatrix4Translate(lineMV, 0, -lineHeight, 0);

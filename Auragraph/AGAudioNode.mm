@@ -135,7 +135,7 @@ void AGAudioNode::update(float t, float dt)
 
 void AGAudioNode::render()
 {
-    GLcolor4f color = GLcolor4f::white;
+    GLcolor4f color = AGStyle::foregroundColor();
     
     // draw base outline
     glBindVertexArrayOES(s_vertexArray);

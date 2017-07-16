@@ -85,7 +85,7 @@ m_stretchPoint(0.25, GLvertex3f()), m_controlVisScale(0.07, 0), m_uuid(makeUUID(
     // generate line
     updatePath();
     
-    m_color = GLcolor4f(0.75, 0.75, 0.75, 1);
+    m_color = AGStyle::foregroundColor().blend(0.75, 0.75, 0.75, 1);
     m_alpha.k = 0.5;
     m_alpha.rate = 4;
     m_alpha.finish(); // force to 1
@@ -130,9 +130,9 @@ void AGConnection::update(float t, float dt)
     m_controlVisScale.interp();
     
     if(m_break)
-        m_color = GLcolor4f::red;
+        m_color = AGStyle::errorColor();
     else
-        m_color = GLcolor4f::white;
+        m_color = AGStyle::foregroundColor();
     m_color.a = m_alpha;
     
     if(m_active)

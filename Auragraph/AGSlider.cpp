@@ -54,8 +54,7 @@ void AGSlider::render()
         proj = projectionMatrix();
     }
     
-    GLcolor4f valueColor = GLcolor4f::white;
-    valueColor.a = m_renderState.alpha;
+    GLcolor4f valueColor = AGStyle::foregroundColor().withAlpha(m_renderState.alpha);
     
     GLKMatrix4 valueMV = modelView;
     valueMV = GLKMatrix4Translate(valueMV, m_position.x, m_position.y, m_position.z);
