@@ -607,8 +607,12 @@ vector<AGPortInfo> AGControlArrayNode::Manifest::_inputPortInfo() const
 
 vector<AGPortInfo> AGControlArrayNode::Manifest::_editPortInfo() const { return { }; };
 
-// XXX TODO: shouldn't we be declaring outputs here? Control objects handle things differently...
-vector<AGPortInfo> AGControlArrayNode::Manifest::_outputPortInfo() const { return { }; };
+vector<AGPortInfo> AGControlArrayNode::Manifest::_outputPortInfo() const
+{
+    return {
+        { OUTPUT_VALUE, "value", true, true, .doc = "Value of selected array item." },
+    };
+};
 
 vector<GLvertex3f> AGControlArrayNode::Manifest::_iconGeo() const
 {
