@@ -719,7 +719,7 @@ public:
         m_posLerp.interp();
         m_textPosLerp.interp();
         
-        if(m_activate) m_portRenderInfo.color = m_textColor = AGStyle::errorColor();
+        if(m_activate) m_portRenderInfo.color = m_textColor = AGStyle::proceedColor();
         else m_portRenderInfo.color = m_textColor = AGStyle::foregroundColor();
         m_portRenderInfo.color.a = m_alpha;
         m_textColor.a = m_textAlpha;

@@ -85,7 +85,7 @@ public:
         pinInfo.geo = m_pinInfoGeo.data();
         pinInfo.numVertex = 2;
         pinInfo.geoType = GL_LINES;
-        pinInfo.color = AGStyle::foregroundColor;
+        pinInfo.color = AGStyle::foregroundColor();
         m_pinButton = new AGUIIconButton(GLvertex3f(pinButtonX, pinButtonY, 0),
                                          GLvertex2f(pinButtonWidth, pinButtonHeight),
                                          pinInfo);
