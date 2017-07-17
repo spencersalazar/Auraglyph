@@ -89,6 +89,8 @@ private:
     void initializeNodeEditor();
 
     float m_radius;
+    float m_radiusY;
+    
     GLuint m_geoSize;
     GLvertex3f * m_geo;
     GLuint m_boundingOffset;
