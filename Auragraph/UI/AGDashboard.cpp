@@ -194,16 +194,24 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
     /* freedraw erase button */
     float freedrawEraseButtonWidth = freedrawButtonWidth;
     AGRenderInfoV freedrawEraseRenderInfo;
-    freedrawEraseRenderInfo.numVertex = 5;
-    freedrawEraseRenderInfo.geoType = GL_LINE_LOOP;
+    freedrawEraseRenderInfo.numVertex = 18;
+    freedrawEraseRenderInfo.geoType = GL_LINES;
     //    freedrawEraseRenderInfo.geoOffset = 0;
     freedrawEraseRenderInfo.geo = new GLvertex3f[freedrawEraseRenderInfo.numVertex];
-    w = freedrawEraseButtonWidth*(G_RATIO-1), h = w*0.3, t = h*0.75, rot = -M_PI/4;
-    freedrawEraseRenderInfo.geo[0] = rotateZ(GLvertex2f(-w/2,   -h/2), rot);
-    freedrawEraseRenderInfo.geo[1] = rotateZ(GLvertex2f( w/2-t, -h/2), rot);
-    freedrawEraseRenderInfo.geo[2] = rotateZ(GLvertex2f( w/2,      0), rot);
-    freedrawEraseRenderInfo.geo[3] = rotateZ(GLvertex2f( w/2-t,  h/2), rot);
-    freedrawEraseRenderInfo.geo[4] = rotateZ(GLvertex2f(-w/2,    h/2), rot);
+    float W = freedrawEraseButtonWidth*(G_RATIO-1)*0.35f, _w = W*0.4f;
+    float H = W*0.4f, _h = W*(G_RATIO-1);
+    GLvertex3f geo[] = {
+        { -W-_w, H+_h, 0 }, { -_w, H+_h, 0 },
+        { -W-_w, H+_h, 0 }, { -W-_w, _h, 0 },
+        { -W-_w, H+_h, 0 }, { _w, -_h, 0 },
+        { -_w, H+_h, 0 }, { W+_w, -_h, 0 },
+        { W+_w, -_h, 0 }, { W+_w, -H-_h, 0 },
+        { W+_w, -H-_h, 0 }, { _w, -H-_h, 0 },
+        { _w, -H-_h, 0 }, { _w, -_h, 0 },
+        { _w, -_h, 0 }, { W+_w, -_h, 0 },
+        { _w, -H-_h, 0 }, { -W-_w, _h, 0 },
+    };
+    memcpy(freedrawEraseRenderInfo.geo, geo, sizeof(GLvertex3f)*freedrawEraseRenderInfo.numVertex);
     freedrawEraseRenderInfo.color = AGStyle::lightColor();
     m_freedrawEraseButton = new AGUIIconButton(modeButtonStartPos + GLvertex3f(freedrawEraseButtonWidth*1.25, 0, 0),
                                           GLvertex2f(freedrawEraseButtonWidth, freedrawEraseButtonWidth),
