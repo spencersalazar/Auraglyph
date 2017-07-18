@@ -550,13 +550,25 @@ int AGNode::numInputsForPort(int paramId, AGRate rate)
     return numInputs;
 }
 
-int AGNode::numOutputsForPort(int portId)
+int AGNode::numOutputsForParam(int paramId)
 {
-    int portNum = m_param2OutputPort[portId];
+    int portNum = m_param2OutputPort[paramId];
     int numOutputs = 0;
     for(auto conn : m_outbound)
     {
         if(conn->srcPort() == portNum)
+            numOutputs++;
+    }
+    
+    return numOutputs;
+}
+
+int AGNode::numOutputsForPort(int portId)
+{
+    int numOutputs = 0;
+    for(auto conn : m_outbound)
+    {
+        if(conn->srcPort() == portId)
             numOutputs++;
     }
     

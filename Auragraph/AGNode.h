@@ -207,6 +207,7 @@ public:
     // XXX TODO : not sure if we need this (only a handful of callers exist for 'numInputsForPort', namely the extra-tricky
     // add and mul), but for completeness I'm going to add an equivalent output function
     int numInputsForPort(int paramId, AGRate rate = RATE_NULL);
+    int numOutputsForParam(int paramId);
     int numOutputsForPort(int portId);
 
     /*** Subclassing note: override information as described ***/
