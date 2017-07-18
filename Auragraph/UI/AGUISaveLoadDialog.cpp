@@ -352,7 +352,7 @@ public:
         }
         
         // restore color
-        glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor);
+        glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor());
         
         AGInteractiveObject::render();
     }
