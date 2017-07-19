@@ -633,10 +633,14 @@ static AGViewController * g_instance = nil;
     int viewport[] = { (int)self.view.bounds.origin.x, (int)(self.view.bounds.origin.y),
         (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
     bool success;
-    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, 0.01f),
+    
+    // get window-z coordinate at (0, 0, 0)
+    GLKVector3 probe = GLKMathProject(GLKVector3Make(0, 0, 0), _modelView, _projection, viewport);
+    
+    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, probe.z),
                                       _modelView, _projection, viewport, &success);
     
-    //    vec = GLKMatrix4MultiplyVector3(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z), vec);
+//    vec = GLKMatrix4MultiplyVector3(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z), vec);
     
     return GLvertex3f(vec.x, vec.y, 0);
 }
@@ -1123,10 +1127,10 @@ static AGViewController * g_instance = nil;
                 _camera = _camera + (pos.xy() - pos_1.xy());
                 dbgprint("camera: %f, %f, %f\n", _camera.x, _camera.y, _camera.z);
                 
-//                float dist = GLvertex2f(p1).distanceTo(GLvertex2f(p2));
-//                float dist_1 = GLvertex2f(p1_1).distanceTo(GLvertex2f(p2_1));
-//                float zoom = (dist - dist_1)*0.05;
-//                _cameraZ += zoom;
+                float dist = GLvertex2f(p1).distanceTo(GLvertex2f(p2));
+                float dist_1 = GLvertex2f(p1_1).distanceTo(GLvertex2f(p2_1));
+                float zoom = (dist - dist_1)*0.5;
+                _cameraZ += zoom;
             }
         }
     }
