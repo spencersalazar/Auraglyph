@@ -132,6 +132,10 @@
 		09FC924B1A153A83005D14A3 /* AGConnection.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09FC92491A153A83005D14A3 /* AGConnection.mm */; };
 		09FC924D1A153C0A005D14A3 /* flare.png in Resources */ = {isa = PBXBuildFile; fileRef = 09FC924C1A153C0A005D14A3 /* flare.png */; };
 		4921A39C1F17FC3E0071823D /* AGMatrixMixerNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4921A39A1F17FC3E0071823D /* AGMatrixMixerNode.cpp */; };
+		498438621F1EF40B00FB2914 /* PGMidi.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4984385D1F1EF40B00FB2914 /* PGMidi.mm */; };
+		498438631F1EF40B00FB2914 /* PGMidiAllSources.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4984385F1F1EF40B00FB2914 /* PGMidiAllSources.mm */; };
+		498438641F1EF40B00FB2914 /* PGMidiFind.mm in Sources */ = {isa = PBXBuildFile; fileRef = 498438611F1EF40B00FB2914 /* PGMidiFind.mm */; };
+		498438671F1EF43600FB2914 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 498438661F1EF43600FB2914 /* CoreMIDI.framework */; };
 		49C8AB5D1F05E6F1005671BE /* AGFreeDraw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C8AB5C1F05E6F1005671BE /* AGFreeDraw.cpp */; };
 /* End PBXBuildFile section */
 
@@ -452,6 +456,15 @@
 		09FC924C1A153C0A005D14A3 /* flare.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flare.png; sourceTree = "<group>"; };
 		4921A39A1F17FC3E0071823D /* AGMatrixMixerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGMatrixMixerNode.cpp; sourceTree = "<group>"; };
 		4921A39B1F17FC3E0071823D /* AGMatrixMixerNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGMatrixMixerNode.h; sourceTree = "<group>"; };
+		4984385A1F1EF40B00FB2914 /* iOSVersionDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iOSVersionDetection.h; sourceTree = "<group>"; };
+		4984385B1F1EF40B00FB2914 /* PGArc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PGArc.h; sourceTree = "<group>"; };
+		4984385C1F1EF40B00FB2914 /* PGMidi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PGMidi.h; sourceTree = "<group>"; };
+		4984385D1F1EF40B00FB2914 /* PGMidi.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PGMidi.mm; sourceTree = "<group>"; };
+		4984385E1F1EF40B00FB2914 /* PGMidiAllSources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PGMidiAllSources.h; sourceTree = "<group>"; };
+		4984385F1F1EF40B00FB2914 /* PGMidiAllSources.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PGMidiAllSources.mm; sourceTree = "<group>"; };
+		498438601F1EF40B00FB2914 /* PGMidiFind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PGMidiFind.h; sourceTree = "<group>"; };
+		498438611F1EF40B00FB2914 /* PGMidiFind.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PGMidiFind.mm; sourceTree = "<group>"; };
+		498438661F1EF43600FB2914 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 		49C8AB5A1F05E664005671BE /* AGFreeDraw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGFreeDraw.h; sourceTree = "<group>"; };
 		49C8AB5C1F05E6F1005671BE /* AGFreeDraw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGFreeDraw.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -461,6 +474,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				498438671F1EF43600FB2914 /* CoreMIDI.framework in Frameworks */,
 				09B962521DD872C0001DCFB1 /* CoreMotion.framework in Frameworks */,
 				0944E8C31DCB323000EB8087 /* libz.tbd in Frameworks */,
 				0944E8C11DCB322700EB8087 /* libsqlite3.tbd in Frameworks */,
@@ -548,6 +562,8 @@
 		095D12C217ACA36C0048A012 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				498438661F1EF43600FB2914 /* CoreMIDI.framework */,
+				498438591F1EF40B00FB2914 /* PGMidi */,
 				09EE67311EFDB6F800B4ED62 /* EZAudio.xcodeproj */,
 				09B962511DD872C0001DCFB1 /* CoreMotion.framework */,
 				0944E8C21DCB323000EB8087 /* libz.tbd */,
@@ -922,6 +938,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		498438591F1EF40B00FB2914 /* PGMidi */ = {
+			isa = PBXGroup;
+			children = (
+				4984385A1F1EF40B00FB2914 /* iOSVersionDetection.h */,
+				4984385B1F1EF40B00FB2914 /* PGArc.h */,
+				4984385C1F1EF40B00FB2914 /* PGMidi.h */,
+				4984385D1F1EF40B00FB2914 /* PGMidi.mm */,
+				4984385E1F1EF40B00FB2914 /* PGMidiAllSources.h */,
+				4984385F1F1EF40B00FB2914 /* PGMidiAllSources.mm */,
+				498438601F1EF40B00FB2914 /* PGMidiFind.h */,
+				498438611F1EF40B00FB2914 /* PGMidiFind.mm */,
+			);
+			name = PGMidi;
+			path = libs/PGMidi;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1047,6 +1079,7 @@
 				097A05431E8D8DC40048401E /* AGControlGestureNode.mm in Sources */,
 				4921A39C1F17FC3E0071823D /* AGMatrixMixerNode.cpp in Sources */,
 				091C70CC1C48A9A600B513C2 /* AGUINodeEditor.mm in Sources */,
+				498438641F1EF40B00FB2914 /* PGMidiFind.mm in Sources */,
 				09BE8B9B1C952386002097F0 /* AGControlSequencerNode.cpp in Sources */,
 				095D12D417ACA36C0048A012 /* main.m in Sources */,
 				0933956E1A08799A009E4802 /* AGFormulaNode.mm in Sources */,
@@ -1116,6 +1149,8 @@
 				099AF12A17D1A6DA000BAB7B /* SSZipArchive.m in Sources */,
 				09030CEB1EFEF83D00D4A4F2 /* Signal.cpp in Sources */,
 				0934B67B1E223B47009259E2 /* AGFileManager.mm in Sources */,
+				498438621F1EF40B00FB2914 /* PGMidi.mm in Sources */,
+				498438631F1EF40B00FB2914 /* PGMidiAllSources.mm in Sources */,
 				0933957A1A0A3785009E4802 /* AGAboutBox.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
