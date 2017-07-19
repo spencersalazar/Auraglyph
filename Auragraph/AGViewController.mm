@@ -188,7 +188,7 @@ static AGViewController * g_instance = nil;
     [self setupGL];
     
     _camera = GLvertex3f(0, 0, 0);
-    _cameraZ.rate = 0.5;
+    _cameraZ.rate = 0.4;
     _cameraZ.reset(0);
     
     self.audioManager = [AGAudioManager new];
@@ -599,14 +599,20 @@ static AGViewController * g_instance = nil;
 //    if(UIInterfaceOrientationIsLandscape(self.interfaceOrientation))
 //    NSLog(@"width %f height %f", self.view.bounds.size.width, self.view.bounds.size.height);
     projectionMatrix = GLKMatrix4MakeFrustum(-self.view.bounds.size.width/2, self.view.bounds.size.width/2,
-                                             -self.view.bounds.size.height/2, self.view.bounds.size.height/2, 10.0f, 1000.0f);
+                                             -self.view.bounds.size.height/2, self.view.bounds.size.height/2,
+                                             10.0f, 10000.0f);
 //    else
 //        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f)/aspect, aspect, 0.1f, 100.0f);
     
     _fixedModelView = GLKMatrix4MakeTranslation(0, 0, -10.1f);
     
-    if(_cameraZ < 0)
-        _camera.z = _cameraZ;
+    dbgprint("cameraZ: %f\n", (float) _cameraZ);
+    
+    if(_cameraZ > 0)
+        _cameraZ.reset(0);
+    if(_cameraZ < -80)
+        _cameraZ.reset(-80);
+    _camera.z = -0.1-(-1+powf(2, -_cameraZ*0.09));
     
     GLKMatrix4 baseModelViewMatrix = GLKMatrix4Translate(_fixedModelView, _camera.x, _camera.y, _camera.z);
     if(_interfaceMode == INTERFACEMODE_USER)
