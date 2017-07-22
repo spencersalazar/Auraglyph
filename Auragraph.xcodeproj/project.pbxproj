@@ -132,10 +132,15 @@
 		09FC924B1A153A83005D14A3 /* AGConnection.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09FC92491A153A83005D14A3 /* AGConnection.mm */; };
 		09FC924D1A153C0A005D14A3 /* flare.png in Resources */ = {isa = PBXBuildFile; fileRef = 09FC924C1A153C0A005D14A3 /* flare.png */; };
 		4921A39C1F17FC3E0071823D /* AGMatrixMixerNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4921A39A1F17FC3E0071823D /* AGMatrixMixerNode.cpp */; };
+		494019C01F2092FE000F05E8 /* AGControlMidiInputNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 494019BE1F2092FE000F05E8 /* AGControlMidiInputNode.mm */; };
+		494019CA1F21CC6A000F05E8 /* AGPGMidiContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = 494019C81F21CC6A000F05E8 /* AGPGMidiContext.mm */; };
+		494019CD1F21CCF3000F05E8 /* AGPGMidiDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 494019CB1F21CCF3000F05E8 /* AGPGMidiDelegate.mm */; };
 		498438621F1EF40B00FB2914 /* PGMidi.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4984385D1F1EF40B00FB2914 /* PGMidi.mm */; };
 		498438631F1EF40B00FB2914 /* PGMidiAllSources.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4984385F1F1EF40B00FB2914 /* PGMidiAllSources.mm */; };
 		498438641F1EF40B00FB2914 /* PGMidiFind.mm in Sources */ = {isa = PBXBuildFile; fileRef = 498438611F1EF40B00FB2914 /* PGMidiFind.mm */; };
 		498438671F1EF43600FB2914 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 498438661F1EF43600FB2914 /* CoreMIDI.framework */; };
+		49C023011F229E2100963AD9 /* AGMidiConnectionListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49C023001F229E2100963AD9 /* AGMidiConnectionListener.mm */; };
+		49C023051F22A01B00963AD9 /* AGPGMidiSourceDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49C023031F22A01B00963AD9 /* AGPGMidiSourceDelegate.mm */; };
 		49C8AB5D1F05E6F1005671BE /* AGFreeDraw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C8AB5C1F05E6F1005671BE /* AGFreeDraw.cpp */; };
 /* End PBXBuildFile section */
 
@@ -456,6 +461,13 @@
 		09FC924C1A153C0A005D14A3 /* flare.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flare.png; sourceTree = "<group>"; };
 		4921A39A1F17FC3E0071823D /* AGMatrixMixerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGMatrixMixerNode.cpp; sourceTree = "<group>"; };
 		4921A39B1F17FC3E0071823D /* AGMatrixMixerNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGMatrixMixerNode.h; sourceTree = "<group>"; };
+		494019BE1F2092FE000F05E8 /* AGControlMidiInputNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGControlMidiInputNode.mm; sourceTree = "<group>"; };
+		494019BF1F2092FE000F05E8 /* AGControlMidiInputNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGControlMidiInputNode.h; sourceTree = "<group>"; };
+		494019C81F21CC6A000F05E8 /* AGPGMidiContext.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGPGMidiContext.mm; sourceTree = "<group>"; };
+		494019C91F21CC6A000F05E8 /* AGPGMidiContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGPGMidiContext.h; sourceTree = "<group>"; };
+		494019CB1F21CCF3000F05E8 /* AGPGMidiDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGPGMidiDelegate.mm; sourceTree = "<group>"; };
+		494019CC1F21CCF3000F05E8 /* AGPGMidiDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGPGMidiDelegate.h; sourceTree = "<group>"; };
+		494019CF1F21CFD6000F05E8 /* AGMidiConnectionListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGMidiConnectionListener.h; sourceTree = "<group>"; };
 		4984385A1F1EF40B00FB2914 /* iOSVersionDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iOSVersionDetection.h; sourceTree = "<group>"; };
 		4984385B1F1EF40B00FB2914 /* PGArc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PGArc.h; sourceTree = "<group>"; };
 		4984385C1F1EF40B00FB2914 /* PGMidi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PGMidi.h; sourceTree = "<group>"; };
@@ -465,6 +477,9 @@
 		498438601F1EF40B00FB2914 /* PGMidiFind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PGMidiFind.h; sourceTree = "<group>"; };
 		498438611F1EF40B00FB2914 /* PGMidiFind.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PGMidiFind.mm; sourceTree = "<group>"; };
 		498438661F1EF43600FB2914 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
+		49C023001F229E2100963AD9 /* AGMidiConnectionListener.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGMidiConnectionListener.mm; sourceTree = "<group>"; };
+		49C023031F22A01B00963AD9 /* AGPGMidiSourceDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGPGMidiSourceDelegate.mm; sourceTree = "<group>"; };
+		49C023041F22A01B00963AD9 /* AGPGMidiSourceDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGPGMidiSourceDelegate.h; sourceTree = "<group>"; };
 		49C8AB5A1F05E664005671BE /* AGFreeDraw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGFreeDraw.h; sourceTree = "<group>"; };
 		49C8AB5C1F05E6F1005671BE /* AGFreeDraw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGFreeDraw.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -885,6 +900,16 @@
 				097A05411E8D8DC40048401E /* AGControlGestureNode.mm */,
 				4921A39B1F17FC3E0071823D /* AGMatrixMixerNode.h */,
 				4921A39A1F17FC3E0071823D /* AGMatrixMixerNode.cpp */,
+				494019C91F21CC6A000F05E8 /* AGPGMidiContext.h */,
+				494019C81F21CC6A000F05E8 /* AGPGMidiContext.mm */,
+				494019CC1F21CCF3000F05E8 /* AGPGMidiDelegate.h */,
+				494019CB1F21CCF3000F05E8 /* AGPGMidiDelegate.mm */,
+				494019CF1F21CFD6000F05E8 /* AGMidiConnectionListener.h */,
+				49C023001F229E2100963AD9 /* AGMidiConnectionListener.mm */,
+				49C023041F22A01B00963AD9 /* AGPGMidiSourceDelegate.h */,
+				49C023031F22A01B00963AD9 /* AGPGMidiSourceDelegate.mm */,
+				494019BF1F2092FE000F05E8 /* AGControlMidiInputNode.h */,
+				494019BE1F2092FE000F05E8 /* AGControlMidiInputNode.mm */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -1112,6 +1137,7 @@
 				09D9C9D01C98F13A005514A4 /* spRandom.cpp in Sources */,
 				09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */,
 				09030CE71EFEF81300D4A4F2 /* Thread.cpp in Sources */,
+				494019C01F2092FE000F05E8 /* AGControlMidiInputNode.mm in Sources */,
 				09EE657F1EFB59BE00B4ED62 /* AGAudioRecorder.mm in Sources */,
 				09412E0C1A2112300065598D /* NSString+STLString.mm in Sources */,
 				09B962551DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp in Sources */,
@@ -1123,22 +1149,26 @@
 				09412E091A210B630065598D /* sputil.cpp in Sources */,
 				0987409C17B98D7C0098511A /* AGNode.mm in Sources */,
 				098740A017BA2AB90098511A /* mo_audio.mm in Sources */,
+				494019CA1F21CC6A000F05E8 /* AGPGMidiContext.mm in Sources */,
 				098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */,
 				098740AA17BB99DE0098511A /* TexFont.mm in Sources */,
 				098740AD17BC377E0098511A /* AGAudioNode.mm in Sources */,
 				098740B017BC527E0098511A /* ES2Render.mm in Sources */,
+				49C023011F229E2100963AD9 /* AGMidiConnectionListener.mm in Sources */,
 				09B9626E1DDE3F1E001DCFB1 /* AGDocumentManager.mm in Sources */,
 				0934B6781E22135E009259E2 /* AGFileBrowser.cpp in Sources */,
 				09FC924B1A153A83005D14A3 /* AGConnection.mm in Sources */,
 				098740B317BC61410098511A /* AGUserInterface.cpp in Sources */,
 				09B674441D6D9E8700F84E09 /* AGCompositeNode.mm in Sources */,
 				0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */,
+				49C023051F22A01B00963AD9 /* AGPGMidiSourceDelegate.mm in Sources */,
 				09412E061A205A070065598D /* AGDocument.mm in Sources */,
 				091081801A0B63DB0063028B /* AGStyle.mm in Sources */,
 				09B962871DE2ED38001DCFB1 /* AGPreferences.mm in Sources */,
 				49C8AB5D1F05E6F1005671BE /* AGFreeDraw.cpp in Sources */,
 				099AF11317D12DD9000BAB7B /* AGTrainerViewController.mm in Sources */,
 				09F2D53A1D7EA33400F537C7 /* Delay.cpp in Sources */,
+				494019CD1F21CCF3000F05E8 /* AGPGMidiDelegate.mm in Sources */,
 				09EE65821EFB64C700B4ED62 /* SampleCircularBuffer.cpp in Sources */,
 				099AF12617D1A6DA000BAB7B /* ioapi.c in Sources */,
 				099AF12717D1A6DA000BAB7B /* mztools.c in Sources */,

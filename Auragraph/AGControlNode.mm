@@ -17,6 +17,9 @@
 #include "AGControlOrientationNode.h"
 #include "AGControlGestureNode.h"
 
+// XXX new for MIDI input
+#include "AGControlMidiInputNode.h"
+
 //------------------------------------------------------------------------------
 // ### AGControlNode ###
 //------------------------------------------------------------------------------
@@ -732,6 +735,8 @@ const AGNodeManager &AGNodeManager::controlNodeManager()
         
         nodeTypes.push_back(new AGControlSlewNode::Manifest);
         nodeTypes.push_back(new AGControlRandomNode::Manifest);
+        
+        nodeTypes.push_back(new AGControlMidiInputNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();
