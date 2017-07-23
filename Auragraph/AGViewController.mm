@@ -586,15 +586,21 @@ static AGViewController * g_instance = nil;
     
     dbgprint_off("cameraZ: %f\n", (float) _cameraZ);
     
+    float cameraScale = 1.0;
     if(_cameraZ > 0)
         _cameraZ.reset(0);
-    if(_cameraZ < -80)
-        _cameraZ.reset(-80);
-    _camera.z = -0.1-(-1+powf(2, -_cameraZ*0.045));
+    if(_cameraZ < -160)
+        _cameraZ.reset(-160);
+    if(_cameraZ <= 0)
+        _camera.z = -0.1-(-1+powf(2, -_cameraZ*0.045));
+//    else
+//        cameraScale = _cameraZ*0.045;
     
     GLKMatrix4 baseModelViewMatrix = GLKMatrix4Translate(_fixedModelView, _camera.x, _camera.y, _camera.z);
     if(_interfaceMode == INTERFACEMODE_USER)
         baseModelViewMatrix = GLKMatrix4Translate(baseModelViewMatrix, 0, 0, -(G_RATIO-1));
+    if(cameraScale > 1.0f)
+        baseModelViewMatrix = GLKMatrix4Scale(baseModelViewMatrix, cameraScale, cameraScale, 1.0f);
     
     // Compute the model view matrix for the object rendered with GLKit
     GLKMatrix4 modelViewMatrix = GLKMatrix4Identity;
