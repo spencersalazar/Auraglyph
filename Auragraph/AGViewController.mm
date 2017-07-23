@@ -47,6 +47,8 @@ using namespace std;
 #define AG_EXPORT_NODES 1
 #define AG_EXPORT_NODES_FILE @"nodes.json"
 
+#define AG_ZOOM_DEADZONE (15)
+
 
 // Uniform index.
 enum
@@ -86,6 +88,8 @@ enum InterfaceMode
     
     GLvertex3f _camera;
     slewf _cameraZ;
+    float _initialZoomDist;
+    BOOL _passedZoomDeadzone;
     
     map<UITouch *, UITouch *> _touches;
     map<UITouch *, UITouch *> _freeTouches;
@@ -606,13 +610,13 @@ static AGViewController * g_instance = nil;
     
     _fixedModelView = GLKMatrix4MakeTranslation(0, 0, -10.1f);
     
-    dbgprint("cameraZ: %f\n", (float) _cameraZ);
+    dbgprint_off("cameraZ: %f\n", (float) _cameraZ);
     
     if(_cameraZ > 0)
         _cameraZ.reset(0);
     if(_cameraZ < -80)
         _cameraZ.reset(-80);
-    _camera.z = -0.1-(-1+powf(2, -_cameraZ*0.09));
+    _camera.z = -0.1-(-1+powf(2, -_cameraZ*0.045));
     
     GLKMatrix4 baseModelViewMatrix = GLKMatrix4Translate(_fixedModelView, _camera.x, _camera.y, _camera.z);
     if(_interfaceMode == INTERFACEMODE_USER)
@@ -896,7 +900,7 @@ static AGViewController * g_instance = nil;
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    dbgprint("touchesBegan, count = %i\n", [touches count]);
+    dbgprint_off("touchesBegan, count = %i\n", [touches count]);
     
     // hit test each touch
     for(UITouch *touch in touches)
@@ -1021,6 +1025,11 @@ static AGViewController * g_instance = nil;
                 }
                 
                 _scrollZoomTouches[1] = secondTouch;
+                
+                CGPoint p1 = [_scrollZoomTouches[0] locationInView:self.view];
+                CGPoint p2 = [_scrollZoomTouches[1] locationInView:self.view];
+                _initialZoomDist = GLvertex2f(p1).distanceTo(GLvertex2f(p2));
+                _passedZoomDeadzone = NO;
             }
             else
             {
@@ -1089,7 +1098,7 @@ static AGViewController * g_instance = nil;
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    dbgprint("touchesMoved, count = %i\n", [touches count]);
+    dbgprint_off("touchesMoved, count = %i\n", [touches count]);
     
     BOOL didScroll = NO;
     for(UITouch *touch in touches)
@@ -1131,12 +1140,22 @@ static AGViewController * g_instance = nil;
                 GLvertex3f pos_1 = [self worldCoordinateForScreenCoordinate:centroid_1];
                 
                 _camera = _camera + (pos.xy() - pos_1.xy());
-                dbgprint("camera: %f, %f, %f\n", _camera.x, _camera.y, _camera.z);
+                dbgprint_off("camera: %f, %f, %f\n", _camera.x, _camera.y, _camera.z);
                 
                 float dist = GLvertex2f(p1).distanceTo(GLvertex2f(p2));
                 float dist_1 = GLvertex2f(p1_1).distanceTo(GLvertex2f(p2_1));
-                float zoom = (dist - dist_1)*0.5;
-                _cameraZ += zoom;
+                if(!_passedZoomDeadzone &&
+                   (dist_1 > _initialZoomDist+AG_ZOOM_DEADZONE ||
+                    dist_1 < _initialZoomDist-AG_ZOOM_DEADZONE))
+                {
+                    dbgprint("passed zoom deadzone\n");
+                    _passedZoomDeadzone = YES;
+                }
+                if(_passedZoomDeadzone)
+                {
+                    float zoom = (dist - dist_1);
+                    _cameraZ += zoom;
+                }
             }
         }
     }
@@ -1144,7 +1163,7 @@ static AGViewController * g_instance = nil;
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    dbgprint("touchEnded, count = %i\n", [touches count]);
+    dbgprint_off("touchEnded, count = %i\n", [touches count]);
     
     for(UITouch *touch in touches)
     {
