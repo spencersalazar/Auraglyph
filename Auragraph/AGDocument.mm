@@ -293,6 +293,10 @@ void AGDocument::saveToPath(const std::string &path) const
                         [serialValue addObject:@(f)];
                     }
                     break;
+                case ParamValue::NONE:
+                case ParamValue::BIT:
+                    assert(0);
+                    break;
             }
             
             [params setObject:@{ @"type": serialType, @"value": serialValue }
