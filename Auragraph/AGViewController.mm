@@ -49,20 +49,6 @@ using namespace std;
 
 #define AG_ZOOM_DEADZONE (15)
 
-
-// Uniform index.
-enum
-{
-    UNIFORM_SCREEN_MVPMATRIX,
-    UNIFORM_SCREEN_TEX,
-    UNIFORM_SCREEN_ORDERH,
-    UNIFORM_SCREEN_ORDERV,
-    UNIFORM_SCREEN_OFFSET,
-    NUM_UNIFORMS,
-};
-GLint uniforms[NUM_UNIFORMS];
-
-
 enum InterfaceMode
 {
     INTERFACEMODE_EDIT,
@@ -355,19 +341,7 @@ static AGViewController * g_instance = nil;
 {
     [EAGLContext setCurrentContext:self.context];
     
-    _screenProgram = [ShaderHelper createProgram:@"Screen" withAttributes:SHADERHELPER_PTC];
-    uniforms[UNIFORM_SCREEN_MVPMATRIX] = glGetUniformLocation(_screenProgram, "modelViewProjectionMatrix");
-    uniforms[UNIFORM_SCREEN_TEX] = glGetUniformLocation(_screenProgram, "tex");
-    uniforms[UNIFORM_SCREEN_ORDERH] = glGetUniformLocation(_screenProgram, "orderH");
-    uniforms[UNIFORM_SCREEN_ORDERV] = glGetUniformLocation(_screenProgram, "orderV");
-    uniforms[UNIFORM_SCREEN_OFFSET] = glGetUniformLocation(_screenProgram, "offset");
-    
     glEnable(GL_DEPTH_TEST);
-    
-    float scale = [UIScreen mainScreen].scale;
-    glGenTextureFromFramebuffer(&_screenTexture, &_screenFBO,
-                                self.view.bounds.size.width*scale,
-                                self.view.bounds.size.height*scale);
 }
 
 - (void)tearDownGL
@@ -718,94 +692,10 @@ static AGViewController * g_instance = nil;
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
-    GLint sysFBO;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &sysFBO);
-    
-    /* render scene to FBO texture */
-    
-    if(AG_ENABLE_FBO)
-        glBindFramebuffer(GL_FRAMEBUFFER, _screenFBO);
-    
-    //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    if(AG_ENABLE_FBO)
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    else
-        glClearColor(AGStyle::backgroundColor().r, AGStyle::backgroundColor().g, AGStyle::backgroundColor().b, 1.0f);
+    glClearColor(AGStyle::backgroundColor().r, AGStyle::backgroundColor().g, AGStyle::backgroundColor().b, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     [self renderEdit];
-    
-    if(AG_ENABLE_FBO)
-    {
-        /* render screen texture */
-        
-        glBindFramebuffer(GL_FRAMEBUFFER, sysFBO);
-        
-//        [((GLKView *) self.view) bindDrawable];
-        
-        //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClearColor(AGStyle::backgroundColor().r, AGStyle::backgroundColor().g, AGStyle::backgroundColor().b, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
-        glBindVertexArrayOES(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        
-        glDisable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        // normal blending
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        // additive blending
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-        
-        glUseProgram(_screenProgram);
-        
-        glEnable(GL_TEXTURE_2D);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, _screenTexture);
-        
-        float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
-        GLKMatrix4 ortho = GLKMatrix4MakeOrtho(-1, 1, -1.0/aspect, 1.0/aspect, -1, 1);
-        
-        glUniformMatrix4fv(uniforms[UNIFORM_SCREEN_MVPMATRIX], 1, 0, ortho.m);
-        glUniform1i(uniforms[UNIFORM_SCREEN_TEX], 0);
-        
-        // GL_TRIANGLE_FAN quad
-        GLvertex3f screenGeo[] = {
-            GLvertex3f(-1, -1/aspect, 0),
-            GLvertex3f(1, -1/aspect, 0),
-            GLvertex3f(1, 1/aspect, 0),
-            GLvertex3f(-1, 1/aspect, 0),
-        };
-        
-        GLvertex2f screenUV[] = {
-            GLvertex2f(0, 0),
-            GLvertex2f(1, 0),
-            GLvertex2f(1, 1),
-            GLvertex2f(0, 1),
-        };
-        
-        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), screenGeo);
-        glEnableVertexAttribArray(AGVertexAttribPosition);
-        
-        glVertexAttribPointer(AGVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLvertex2f), screenUV);
-        glEnableVertexAttribArray(AGVertexAttribTexCoord0);
-        
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::foregroundColor());
-        glDisableVertexAttribArray(AGVertexAttribColor);
-        
-        glUniform1i(uniforms[UNIFORM_SCREEN_ORDERH], 8);
-        glUniform1i(uniforms[UNIFORM_SCREEN_ORDERV], 0);
-        glUniform2f(uniforms[UNIFORM_SCREEN_OFFSET], 1.0/768.0, 0);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-        
-        glUniform1i(uniforms[UNIFORM_SCREEN_ORDERH], 0);
-        glUniform1i(uniforms[UNIFORM_SCREEN_ORDERV], 8);
-        glUniform2f(uniforms[UNIFORM_SCREEN_OFFSET], 0, 1.0/1024.0);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-        
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
     
     if(_interfaceMode == INTERFACEMODE_USER)
         [self renderUser];
