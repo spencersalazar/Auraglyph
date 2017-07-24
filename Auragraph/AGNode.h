@@ -40,14 +40,11 @@ class AGUINodeEditor;
 
 typedef AGControl AGParamValue;
 
-
 struct AGPortInfo
 {
     int portId;
     
     string name;
-    bool canConnect; // can create connection btw this port and another port
-    bool canEdit; // should this port appear in the node's editor window
     
     float _default;
     float min;
@@ -65,13 +62,14 @@ struct AGPortInfo
     
     AGControl::Type type;
     
-    enum Editor
+    enum EditorMode
     {
         EDITOR_DEFAULT = 0,
         EDITOR_AUDIOFILES,
+        EDITOR_ENUM,
     };
     
-    Editor editor;
+    EditorMode editorMode;
     
     // TODO: min, max, units label, rate, etc.
     

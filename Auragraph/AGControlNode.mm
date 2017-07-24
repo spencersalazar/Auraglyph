@@ -190,21 +190,21 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INTERVAL, "interval", true, true, .doc = "Timer fire interval (seconds)." },
+                { PARAM_INTERVAL, "interval", .doc = "Timer fire interval (seconds)." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_INTERVAL, "interval", true, true, 0.5, 0.001, AGFloat_Max, .doc = "Timer fire interval (seconds)." },
+                { PARAM_INTERVAL, "interval", 0.5, 0.001, AGFloat_Max, .doc = "Timer fire interval (seconds)." },
             };
         };
 
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." },
+                { PARAM_OUTPUT, "output", .doc = "Output." },
             };
         };
         
@@ -299,21 +299,21 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_ADD, "add", true, true, .doc = "Input control value." },
+                { PARAM_ADD, "add", .doc = "Input control value." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_ADD, "add", true, true, 0, .doc = "Quantity to add to input." },
+                { PARAM_ADD, "add", 0, .doc = "Quantity to add to input." },
             };
         };
 
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." },
+                { PARAM_OUTPUT, "output", .doc = "Output." },
             };
         };
 
@@ -388,21 +388,21 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_MULTIPLY, "mult", true, true, .doc = "Input control value." },
+                { PARAM_MULTIPLY, "mult", .doc = "Input control value." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_MULTIPLY, "mult", true, true, 0, .doc = "Quantity to multiply input by." },
+                { PARAM_MULTIPLY, "mult", 0, .doc = "Quantity to multiply input by." },
             };
         };
 
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." },
+                { PARAM_OUTPUT, "output", .doc = "Output." },
             };
         };
 
@@ -476,7 +476,7 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_MIDI, "midi", true, true, .doc = "MIDI note input control value." },
+                { PARAM_MIDI, "midi", .doc = "MIDI note input control value." },
             };
         };
         
@@ -485,7 +485,7 @@ public:
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." },
+                { PARAM_OUTPUT, "output", .doc = "Output." },
             };
         };
 
@@ -543,21 +543,21 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", true, true, .doc = "Input value." },
+                { PARAM_INPUT, "input", .doc = "Input value." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_RATE, "rate", true, true, .doc = "Slew rate." },
+                { PARAM_RATE, "rate", .doc = "Slew rate." },
             };
         };
         
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." },
+                { PARAM_OUTPUT, "output", .doc = "Output." },
             };
         };
         
@@ -655,7 +655,7 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", true, true, .doc = "Input value." },
+                { PARAM_INPUT, "input", .doc = "Input value." },
             };
         };
         
@@ -664,7 +664,7 @@ public:
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, true, .doc = "Output." },
+                { PARAM_OUTPUT, "output", .doc = "Output." },
             };
         };
         

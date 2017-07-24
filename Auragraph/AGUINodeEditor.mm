@@ -744,7 +744,7 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                 AGAnalytics::instance().eventEditNodeParamDrawOpen(m_node->type(), m_node->editPortInfo(m_hit).name);
                 
                 const AGPortInfo &portInfo = m_node->editPortInfo(m_hit);
-                if(portInfo.editor == AGPortInfo::EDITOR_DEFAULT)
+                if(portInfo.editorMode == AGPortInfo::EDITOR_DEFAULT)
                 {
                     m_editingPort = m_hit;
                     m_hit = -1;
@@ -755,7 +755,7 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                     m_drawline.clear();
                     //m_node->getEditPortValue(m_editingPort, m_currentValue);
                 }
-                else if(portInfo.editor == AGPortInfo::EDITOR_AUDIOFILES)
+                else if(portInfo.editorMode == AGPortInfo::EDITOR_AUDIOFILES)
                 {
                     int hitPort = m_hit;
                     m_hit = -1;

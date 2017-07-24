@@ -56,45 +56,45 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_IN_1, "in 1", true, true, .doc = "Input 1." },
-                { PARAM_IN_2, "in 2", true, true, .doc = "Input 2." },
-                { PARAM_IN_3, "in 3", true, true, .doc = "Input 3." },
-                { PARAM_IN_4, "in 4", true, true, .doc = "Input 4." },
+                { PARAM_IN_1, "in 1", .doc = "Input 1." },
+                { PARAM_IN_2, "in 2", .doc = "Input 2." },
+                { PARAM_IN_3, "in 3", .doc = "Input 3." },
+                { PARAM_IN_4, "in 4", .doc = "Input 4." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_GAIN_1_1, "gain 1_1", true, true, 0, .doc = "In 1 - Out 1 Gain." },
-                { PARAM_GAIN_2_1, "gain 2_1", true, true, 0, .doc = "In 2 - Out 1 Gain." },
-                { PARAM_GAIN_3_1, "gain 3_1", true, true, 0, .doc = "In 3 - Out 1 Gain." },
-                { PARAM_GAIN_4_1, "gain 4_1", true, true, 0, .doc = "In 4 - Out 1 Gain." },
-                { PARAM_GAIN_1_2, "gain 1_2", true, true, 0, .doc = "In 1 - Out 2 Gain." },
-                { PARAM_GAIN_2_2, "gain 2_2", true, true, 0, .doc = "In 2 - Out 2 Gain." },
-                { PARAM_GAIN_3_2, "gain 3_2", true, true, 0, .doc = "In 3 - Out 2 Gain." },
-                { PARAM_GAIN_4_2, "gain 4_2", true, true, 0, .doc = "In 4 - Out 2 Gain." },
-                { PARAM_GAIN_1_3, "gain 1_3", true, true, 0, .doc = "In 1 - Out 3 Gain." },
-                { PARAM_GAIN_2_3, "gain 2_3", true, true, 0, .doc = "In 2 - Out 3 Gain." },
-                { PARAM_GAIN_3_3, "gain 3_3", true, true, 0, .doc = "In 3 - Out 3 Gain." },
-                { PARAM_GAIN_4_3, "gain 4_3", true, true, 0, .doc = "In 4 - Out 3 Gain." },
-                { PARAM_GAIN_1_4, "gain 1_4", true, true, 0, .doc = "In 1 - Out 4 Gain." },
-                { PARAM_GAIN_2_4, "gain 2_4", true, true, 0, .doc = "In 2 - Out 4 Gain." },
-                { PARAM_GAIN_3_4, "gain 3_4", true, true, 0, .doc = "In 3 - Out 4 Gain." },
-                { PARAM_GAIN_4_4, "gain 4_4", true, true, 0, .doc = "In 4 - Out 4 Gain." },
+                { PARAM_GAIN_1_1, "gain 1_1", 0, .doc = "In 1 - Out 1 Gain." },
+                { PARAM_GAIN_2_1, "gain 2_1", 0, .doc = "In 2 - Out 1 Gain." },
+                { PARAM_GAIN_3_1, "gain 3_1", 0, .doc = "In 3 - Out 1 Gain." },
+                { PARAM_GAIN_4_1, "gain 4_1", 0, .doc = "In 4 - Out 1 Gain." },
+                { PARAM_GAIN_1_2, "gain 1_2", 0, .doc = "In 1 - Out 2 Gain." },
+                { PARAM_GAIN_2_2, "gain 2_2", 0, .doc = "In 2 - Out 2 Gain." },
+                { PARAM_GAIN_3_2, "gain 3_2", 0, .doc = "In 3 - Out 2 Gain." },
+                { PARAM_GAIN_4_2, "gain 4_2", 0, .doc = "In 4 - Out 2 Gain." },
+                { PARAM_GAIN_1_3, "gain 1_3", 0, .doc = "In 1 - Out 3 Gain." },
+                { PARAM_GAIN_2_3, "gain 2_3", 0, .doc = "In 2 - Out 3 Gain." },
+                { PARAM_GAIN_3_3, "gain 3_3", 0, .doc = "In 3 - Out 3 Gain." },
+                { PARAM_GAIN_4_3, "gain 4_3", 0, .doc = "In 4 - Out 3 Gain." },
+                { PARAM_GAIN_1_4, "gain 1_4", 0, .doc = "In 1 - Out 4 Gain." },
+                { PARAM_GAIN_2_4, "gain 2_4", 0, .doc = "In 2 - Out 4 Gain." },
+                { PARAM_GAIN_3_4, "gain 3_4", 0, .doc = "In 3 - Out 4 Gain." },
+                { PARAM_GAIN_4_4, "gain 4_4", 0, .doc = "In 4 - Out 4 Gain." },
 
                 // XXX Dummy, we should not need this but we can't get rid of it
-                { AUDIO_PARAM_GAIN, "gain", true, false, 1, .doc = "Output gain." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
             };
         };
         
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUT_1, "out 1", true, false, .doc = "Output 1." },
-                { PARAM_OUT_2, "out 2", true, false, .doc = "Output 2." },
-                { PARAM_OUT_3, "out 3", true, false, .doc = "Output 3." },
-                { PARAM_OUT_4, "out 4", true, false, .doc = "Output 4." },
+                { PARAM_OUT_1, "out 1", .doc = "Output 1." },
+                { PARAM_OUT_2, "out 2", .doc = "Output 2." },
+                { PARAM_OUT_3, "out 3", .doc = "Output 3." },
+                { PARAM_OUT_4, "out 4", .doc = "Output 4." },
             };
         }
         
