@@ -71,6 +71,14 @@ struct AGPortInfo
     
     EditorMode editorMode;
     
+    struct EnumInfo
+    {
+        AGInt value;
+        AGString name;
+    };
+    
+    vector<EnumInfo> enumInfo;
+    
     // TODO: min, max, units label, rate, etc.
     
     string doc;
