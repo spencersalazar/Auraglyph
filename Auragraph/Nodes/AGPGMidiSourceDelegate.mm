@@ -5,15 +5,13 @@
 //  Created by Andrew Piepenbrink on 7/21/17.
 //  Copyright © 2017 Spencer Salazar. All rights reserved.
 //
+//  Parts of this code are based on ofxMidi by Dan Wilcox.
+//  See https://github.com/danomatika/ofxMidi for documentation
 
 #include "AGPGMidiSourceDelegate.h"
-
-//#import "pgmidi/iOSVersionDetection.h"
-#include <mach/mach_time.h>
-
-// XXX This becomes our node
-//#include "ofxPGMidiIn.h"
 #include "AGControlMidiInputNode.h"
+
+#include <mach/mach_time.h>
 
 // -----------------------------------------------------------------------------
 // there is no conversion fucntion on iOS, so we make one here
@@ -120,11 +118,11 @@ uint64_t AbsoluteToNanos(uint64_t time) {
                     break;
                 
                 // determine number of bytes in midi message
-                if(statusByte < 0xC0)
+                if(statusByte < 0xC0) // Note off, note on, polyphonic aftertouch, or CC
                     msgSize = 3;
-                else if(statusByte < 0xE0)
+                else if(statusByte < 0xE0) // Program change or channel aftertouch
                     msgSize = 2;
-                else if(statusByte < 0xF0)
+                else if(statusByte < 0xF0) // 14-bit pitch bend
                     msgSize = 3;
                 else if(statusByte == 0xF0) { // sysex message
                     

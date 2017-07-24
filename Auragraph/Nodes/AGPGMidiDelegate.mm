@@ -5,6 +5,8 @@
 //  Created by Andrew Piepenbrink on 7/20/17.
 //  Copyright © 2017 Spencer Salazar. All rights reserved.
 //
+//  Parts of this code are based on ofxMidi by Dan Wilcox.
+//  See https://github.com/danomatika/ofxMidi for documentation
 
 #include "AGPGMidiDelegate.h"
 

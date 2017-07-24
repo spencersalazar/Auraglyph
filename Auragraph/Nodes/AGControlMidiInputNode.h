@@ -1,18 +1,19 @@
 //
-//  AGControlMidiInputNode.hpp
+//  AGControlMidiInputNode.h
 //  Auragraph
 //
 //  Created by Andrew Piepenbrink on 7/20/17.
 //  Copyright © 2017 Spencer Salazar. All rights reserved.
 //
+//  Parts of this code are based on ofxMidi by Dan Wilcox.
+//  See https://github.com/danomatika/ofxMidi for documentation
 
-#ifndef AGControlMidiInputNode_hpp
-#define AGControlMidiInputNode_hpp
-
-//#include <stdio.h>
+#ifndef AGControlMidiInputNode_h
+#define AGControlMidiInputNode_h
 
 #include "AGControlNode.h"
 #include "AGTimer.h"
+#include "AGStyle.h"
 
 #include "AGMidiConnectionListener.h"
 #include "AGPGMidiContext.h"
@@ -28,13 +29,6 @@ public:
     
     enum Param
     {
-
-// XXX Old...
-//        PARAM_OUTPUT,
-//        PARAM_READ,
-//        PARAM_RATE,
-        
-// XXX New...
         PARAM_NOTEOUT_PITCH,
         PARAM_NOTEOUT_VELOCITY,
         PARAM_CCOUT_CCNUM,
@@ -48,24 +42,9 @@ public:
         string _name() const override { return "MIDI Input"; };
         string _description() const override { return "MIDI Input Node."; };
         
-//        vector<AGPortInfo> _inputPortInfo() const override
-//        {
-//            return {
-//                { PARAM_READ, "read", true, true, .doc = "Triggers sensor reading and output." }
-//            };
-//        };
         vector<AGPortInfo> _inputPortInfo() const override { return { }; };
-
         
-// XXX TODO: This is where we probably want to set up things like channel filtering, etc.
-//        vector<AGPortInfo> _editPortInfo() const override
-//        {
-//            return {
-//                { PARAM_RATE, "rate", true, true, 60, 0, 100, AGPortInfo::LIN, .doc = "Rate at which to read sensors." },
-//            };
-//        };
         vector<AGPortInfo> _editPortInfo() const override { return { }; };
-
         
         vector<AGPortInfo> _outputPortInfo() const override
         {
@@ -77,14 +56,45 @@ public:
             };
         };
         
-        vector<GLvertex3f> _iconGeo() const override;
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius = 0.006*AGStyle::oldGlobalScale;
+            float radius_circ = radius * 0.8;
+            int circleSize = 16;
+            int GEO_SIZE = circleSize*2;
+            vector<GLvertex3f> iconGeo = vector<GLvertex3f>(GEO_SIZE);
+            
+            // Outer circle
+            for(int i = 0; i < circleSize; i++)
+            {
+                float theta0 = 2*M_PI*((float)i)/((float)(circleSize));
+                float theta1 = 2*M_PI*((float)(i+1))/((float)(circleSize));
+                iconGeo[i*2+0] = GLvertex3f(radius_circ*cosf(theta0), radius_circ*sinf(theta0), 0);
+                iconGeo[i*2+1] = GLvertex3f(radius_circ*cosf(theta1), radius_circ*sinf(theta1), 0);
+            }
+            
+            // Circles for MIDI "pins"
+            for(int i = 0; i < 5; i++)
+            {
+                for(int j = 0; j < GEO_SIZE; j++)
+                {
+                    GLvertex3f vert = iconGeo[j];
+                    float radius_pins = radius_circ * 0.6; // Radius described by arc of pins
+                    vert = vert * 0.1; // Size of pin circle
+                    float theta = M_PI * 0.25 * i; // rotate each pin by 1/5 pi
+                    vert = vert + GLvertex3f(radius_pins*cosf(theta), radius_pins*sinf(theta), 0);
+                    iconGeo.push_back(vert);
+                }
+            }
+            
+            return iconGeo;
+        };
         
         GLuint _iconGeoType() const override { return GL_LINES; };
     };
-    
+
     using AGControlNode::AGControlNode;
     
-    // XXX Will definitely be doing stuff with this in the .mm file to interact with PGMidi
     void initFinal() override;
     
     ~AGControlMidiInputNode();
@@ -169,18 +179,6 @@ public:
 
     
 private:
-    
-    // XXX Okay, so this is a straight-up Objective-C thingy, and apparently the Orientation node has already been able
-    // to use it with no fuss... so why should MIDI be so hard? is it because PGMidi uses delegates?
-    //CMMotionManager *m_manager;
-//    PGMidi *m_midi;
-//    
-//    AGTimer m_timer;
-    
-    // XXX should we keep this all-encompassing method, or split it up into 'pushNote', 'pushCC', and/or similar?
-//    void _pushData();
-    
-    // XXX from ofx
     struct InputDelegate; // forward declaration for Obj-C wrapper
     InputDelegate *inputDelegate; ///< Obj-C midi input interface
 };

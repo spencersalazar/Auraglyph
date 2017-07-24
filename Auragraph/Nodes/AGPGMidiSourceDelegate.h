@@ -5,23 +5,20 @@
 //  Created by Andrew Piepenbrink on 7/21/17.
 //  Copyright © 2017 Spencer Salazar. All rights reserved.
 //
+//  Parts of this code are based on ofxMidi by Dan Wilcox.
+//  See https://github.com/danomatika/ofxMidi for documentation
 
 #pragma once
 
 #import "PGMidi.h"
 #include <vector>
 
-// XXX this becomes our node
-//class ofxPGMidiIn;
 class AGControlMidiInputNode;
 
 /// interface to pgmidi input
 @interface AGPGMidiSourceDelegate : NSObject <PGMidiSourceDelegate> {
     
-    // XXX Now this points to our Auraglyph-stylee node
-    //ofxPGMidiIn *inputPtr; ///< object to send receieved midi messages to
     AGControlMidiInputNode *inputPtr; ///< object to send receieved midi messages to
-
     
     bool bIgnoreSysex, bIgnoreTiming, bIgnoreSense;	///< ignore midi types?
     

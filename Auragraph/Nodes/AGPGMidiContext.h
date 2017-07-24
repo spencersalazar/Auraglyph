@@ -5,6 +5,8 @@
 //  Created by Andrew Piepenbrink on 7/20/17.
 //  Copyright © 2017 Spencer Salazar. All rights reserved.
 //
+//  Parts of this code are based on ofxMidi by Dan Wilcox.
+//  See https://github.com/danomatika/ofxMidi for documentation
 
 #pragma once
 
@@ -29,10 +31,6 @@ public:
     static void enableNetwork(bool enable=true);
     
 private:
-    
-    // XXX Yay, we don't need this, thanks ARC!
-    //static NSAutoreleasePool *pool; // for happy garbage collection ...
-    
     static PGMidi *midi; ///< global Obj-C PGMidi instance
     static AGPGMidiDelegate *delegate; ///< device (dis)connection interface
 };

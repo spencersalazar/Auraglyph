@@ -710,6 +710,199 @@ private:
 };
 
 //------------------------------------------------------------------------------
+// ### AGControlComparisonEQNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGControlComparisonEQNode
+
+class AGControlComparisonEQNode : public AGControlNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_IN_HOT,
+        PARAM_IN_COLD,
+        PARAM_OUTPUT,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGControlComparisonEQNode>
+    {
+    public:
+        string _type() const override { return "equals"; };
+        string _name() const override { return "equals"; };
+        string _description() const override { return "Tests equality of two values."; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_IN_HOT, "hot in", true, false, .type = AGControl::TYPE_INT,
+                    .doc = "Hot inlet." },
+                { PARAM_IN_COLD, "cold in", true, true, .type = AGControl::TYPE_INT,
+                    .mode = AGPortInfo::LIN, .doc = "Cold inlet." },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { PARAM_IN_COLD, "cold in", true, true, .type = AGControl::TYPE_INT,
+                    .mode = AGPortInfo::LIN,.doc = "Cold inlet." },
+            };
+        };
+        
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .type = AGControl::TYPE_INT,
+                    .doc = "Output." },
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {
+            float radius = 0.005*AGStyle::oldGlobalScale;
+            
+            return {
+                { -radius*0.9f,  radius*0.2f, 0 }, { -radius*0.2f,  radius*0.2f, 0 },
+                {  radius*0.9f,  radius*0.2f, 0 }, {  radius*0.2f,  radius*0.2f, 0 },
+                { -radius*0.9f, -radius*0.2f, 0 }, { -radius*0.2f, -radius*0.2f, 0 },
+                {  radius*0.9f, -radius*0.2f, 0 }, {  radius*0.2f, -radius*0.2f, 0 },
+            };
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINES; };
+    };
+    
+    using AGControlNode::AGControlNode;
+    
+    virtual int numOutputPorts() const override { return 1; }
+    
+    virtual void receiveControl(int port, const AGControl &control) override
+    {
+        if(port == 0)
+        {
+            int val = control.getInt();
+            pushControl(0, AGControl(val == testVal));
+        }
+        else if(port == 1)
+        {
+            testVal = control.getInt();
+        }
+    }
+    
+private:
+    int testVal = 0;
+};
+
+//------------------------------------------------------------------------------
+// ### AGControlGateNode ###
+//------------------------------------------------------------------------------
+#pragma mark - AGControlGateNode
+
+class AGControlGateNode : public AGControlNode
+{
+public:
+    
+    enum Param
+    {
+        PARAM_IN_GATE,
+        PARAM_IN_VAL,
+        PARAM_OUTPUT,
+    };
+    
+    class Manifest : public AGStandardNodeManifest<AGControlGateNode>
+    {
+    public:
+        string _type() const override { return "gate"; };
+        string _name() const override { return "gate"; };
+        string _description() const override { return "First inlet gates signal present at second inlet"; };
+        
+        vector<AGPortInfo> _inputPortInfo() const override
+        {
+            return {
+                { PARAM_IN_GATE, "gate in", true, false, .type = AGControl::TYPE_INT,
+                    .doc = "Gate signal inlet." },
+                { PARAM_IN_VAL, "value in", true, true, .doc = "Value signal inlet." },
+            };
+        };
+        
+        vector<AGPortInfo> _editPortInfo() const override { return { }; };
+        
+        vector<AGPortInfo> _outputPortInfo() const override
+        {
+            return {
+                { PARAM_OUTPUT, "output", true, false, .doc = "Output." },
+            };
+        };
+        
+        vector<GLvertex3f> _iconGeo() const override
+        {            
+            float radius = 0.006*AGStyle::oldGlobalScale;
+            float radius_x = radius;
+            float radius_y = radius_x;
+            float radius_circ = radius_x * 0.4;
+            int circleSize = 16;
+            int GEO_SIZE = circleSize*2;
+            vector<GLvertex3f> iconGeo = vector<GLvertex3f>(GEO_SIZE);
+            
+            for(int i = 0; i < circleSize; i++)
+            {
+                float theta0 = 2*M_PI*((float)i)/((float)(circleSize));
+                float theta1 = 2*M_PI*((float)(i+1))/((float)(circleSize));
+                iconGeo[i*2+0] = GLvertex3f(radius_circ*cosf(theta0), radius_circ*sinf(theta0), 0);
+                iconGeo[i*2+1] = GLvertex3f(radius_circ*cosf(theta1), radius_circ*sinf(theta1), 0);
+            }
+            
+            vector<GLvertex3f> lines = {
+                rotateZ(GLvertex3f(-radius_circ, 0, 0), -M_PI_4),
+                rotateZ(GLvertex3f( radius_circ, 0, 0), -M_PI_4),
+                rotateZ(GLvertex3f(-radius_circ, 0, 0),  M_PI_4),
+                rotateZ(GLvertex3f( radius_circ, 0, 0),  M_PI_4),
+                { -radius*0.9f,  radius*0.2f, 0 }, { -radius*0.2f,  radius*0.2f, 0 },
+                {  radius*0.9f,  radius*0.2f, 0 }, {  radius*0.2f,  radius*0.2f, 0 },
+                { -radius*0.9f, -radius*0.2f, 0 }, { -radius*0.2f, -radius*0.2f, 0 },
+                {  radius*0.9f, -radius*0.2f, 0 }, {  radius*0.2f, -radius*0.2f, 0 },
+            };
+            
+            for(int i = 0; i < lines.size(); i++)
+            {
+                GLvertex3f vert = lines[i];
+                iconGeo.push_back(vert);
+            }
+            
+            return iconGeo;
+        };
+        
+        GLuint _iconGeoType() const override { return GL_LINES; };
+    };
+    
+    using AGControlNode::AGControlNode;
+    
+    virtual int numOutputPorts() const override { return 1; }
+    
+    virtual void receiveControl(int port, const AGControl &control) override
+    {
+        if(port == 0)
+        {
+            int val = control.getInt();
+            
+            if(val)
+                isOpen = true;
+            else
+                isOpen = false;
+        }
+        else if(port == 1)
+        {
+            if(isOpen)
+                pushControl(0, control);
+        }
+    }
+    
+private:
+    bool isOpen = false;
+};
+
+//------------------------------------------------------------------------------
 // ### AGNodeManager ###
 //------------------------------------------------------------------------------
 #pragma mark - AGNodeManager
@@ -737,6 +930,8 @@ const AGNodeManager &AGNodeManager::controlNodeManager()
         nodeTypes.push_back(new AGControlRandomNode::Manifest);
         
         nodeTypes.push_back(new AGControlMidiInputNode::Manifest);
+        nodeTypes.push_back(new AGControlComparisonEQNode::Manifest);
+        nodeTypes.push_back(new AGControlGateNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();
