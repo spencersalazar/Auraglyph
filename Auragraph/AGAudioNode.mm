@@ -528,11 +528,21 @@ public:
         PARAM_OUTPUT = AUDIO_PARAM_LAST+1,
         PARAM_FREQ,
         PARAM_PHASE,
+        PARAM_TEST, // test param for enum
     };
 
     class Manifest : public AGStandardNodeManifest<AGAudioSineWaveNode>
     {
     public:
+        
+        enum TestTypes
+        {
+            TEST_SINOSC,
+            TEST_TRIOSC,
+            TEST_SAWOSC,
+            TEST_SQROSC,
+        };
+        
         string _type() const override { return "SineWave"; };
         string _name() const override { return "SineWave"; };
         string _description() const override { return "Standard sinusoidal oscillator."; };
@@ -548,9 +558,19 @@ public:
         
         vector<AGPortInfo> _editPortInfo() const override
         {
+            vector<AGPortInfo::EnumInfo> testEnumInfo = {
+                { TEST_SINOSC, "SinOsc" },
+                { TEST_TRIOSC, "TriOsc" },
+                { TEST_SAWOSC, "SawOsc" },
+                { TEST_SQROSC, "SqrOsc" },
+            };
+            
             return {
                 { PARAM_FREQ, "freq", 220, 0, 0, AGPortInfo::EXP, .doc = "Oscillator frequency" },
-                { AUDIO_PARAM_GAIN, "gain", 1, 0, 0, AGPortInfo::EXP, .doc = "Output gain." }
+                { AUDIO_PARAM_GAIN, "gain", 1, 0, 0, AGPortInfo::EXP, .doc = "Output gain." },
+                { PARAM_TEST, "test", .type = AGControl::TYPE_INT,
+                    .editorMode = AGPortInfo::EDITOR_ENUM, .enumInfo = testEnumInfo,
+                    .doc = "Enum test." },
             };
         };
 

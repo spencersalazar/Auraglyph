@@ -55,6 +55,105 @@ void AGUINodeEditor::touchOutside()
     }
 }
 
+
+/*------------------------------------------------------------------------------
+ - AGUIPicker -
+ Pick 1 of a list of values.
+ -----------------------------------------------------------------------------*/
+#pragma mark - AGUIPicker
+
+class AGUIPicker : public AGInteractiveObject
+{
+public:
+    AGUIPicker(const GLvertex3f &pos, const GLvertex2f &size) :
+    m_pos(pos), m_size(size)
+    { }
+    
+    ~AGUIPicker() { }
+    
+    void setValues(const vector<string> &values)
+    {
+        m_values = values;
+    }
+    
+    void setCurrentValue(int current)
+    {
+        m_current = current;
+    }
+    
+    void onValuePicked(const std::function<void (int)> &valuePicked)
+    {
+        m_valuePicked = valuePicked;
+    }
+    
+    void update(float t, float dt) override
+    {
+        AGRenderObject::update(t, dt);
+        m_renderState.modelview = GLKMatrix4Translate(modelview(), m_pos.x, m_pos.y, m_pos.z);
+    }
+    
+    void render() override
+    {
+        TexFont *text = AGStyle::standardFont64();
+        
+        if(!m_open)
+        {
+            if(m_current >= 0)
+            {
+                GLKMatrix4 textModelView = GLKMatrix4Translate(modelview(), -m_size.x/2+MARGIN_LEFT, (-text->descender()-text->ascender()/2)*TEXT_SCALE, 0);
+                textModelView = GLKMatrix4Scale(textModelView, TEXT_SCALE, TEXT_SCALE, TEXT_SCALE);
+                text->render(m_values[m_current], AGStyle::foregroundColor(), textModelView, projection());
+            }
+        }
+        
+        
+        
+        // debug: draw bounds
+//        AGStyle::foregroundColor().set();
+//        drawLineLoop((GLvertex2f[]) {
+//            { -m_size.x/2, -m_size.y/2 },
+//            {  m_size.x/2, -m_size.y/2 },
+//            {  m_size.x/2,  m_size.y/2 },
+//            { -m_size.x/2,  m_size.y/2 },
+//        }, 4);
+    }
+    
+    GLvrectf effectiveBounds() override
+    {
+        return GLvrectf(m_pos-m_size, m_pos+m_size);
+    }
+    
+    void touchDown(const AGTouchInfo &t) override
+    {
+        //m_open = true;
+    }
+    
+    void touchMove(const AGTouchInfo &t) override
+    {
+        
+    }
+    
+    void touchUp(const AGTouchInfo &t) override
+    {
+        
+    }
+    
+private:
+    
+    constexpr const static float MARGIN_LEFT = 5;
+    constexpr const static float TEXT_SCALE = G_RATIO-1;
+    
+    GLvertex3f m_pos;
+    GLvertex2f m_size;
+    
+    bool m_open = false;
+    
+    vector<string> m_values;
+    int m_current = -1;
+    
+    std::function<void (int)> m_valuePicked = [](int){};
+};
+
 //------------------------------------------------------------------------------
 // ### AGUIStandardNodeEditor ###
 //------------------------------------------------------------------------------
@@ -141,49 +240,73 @@ m_lastTraceWasRecognized(true)
     {
         AGPortInfo info = m_node->editPortInfo(port);
         AGControl::Type editPortType = info.type;
+        AGPortInfo::EditorMode editorMode = info.editorMode;
+        
+        if(editorMode == AGPortInfo::EDITOR_ENUM)
+        {
+            float y = m_radiusY-rowHeight*(port+2);
+            
+            AGParamValue v;
+            m_node->getEditPortValue(port, v);
+            
+            AGUIPicker *picker = new AGUIPicker(GLvertex3f(m_radius/2, y+rowHeight/4, 0),
+                                                GLvertex2f(m_radius*0.9, rowHeight*0.9));
+            picker->init();
+            
+            vector<string> values;
+            for(int i = 0; i < info.enumInfo.size(); i++)
+            {
+                values.push_back(info.enumInfo[i].name);
+                if(v.getInt() == info.enumInfo[i].value)
+                    picker->setCurrentValue(i);
+            }
+            picker->setValues(values);
+            
+            addChild(picker);
+        }
         // only use sliders for float/int
-        if(editPortType != AGControl::TYPE_NONE &&
-           editPortType != AGControl::TYPE_FLOAT &&
-           editPortType != AGControl::TYPE_INT)
-            continue;
-        
-        AGNode *node = m_node;
-        
-        AGParamValue v;
-        m_node->getEditPortValue(port, v);
-        
-        float y = m_radiusY-rowHeight*(port+2);
-        
-        AGSlider *slider = new AGSlider(GLvertex3f(m_radius/2, y+rowHeight/4, 0), v);
-        slider->init();
-        
-        if(editPortType == AGControl::TYPE_FLOAT)
-            slider->setType(AGSlider::CONTINUOUS);
-        else if(editPortType == AGControl::TYPE_INT)
-            slider->setType(AGSlider::DISCRETE);
-        else
-            slider->setType(AGSlider::CONTINUOUS);
-        
-        if(info.mode == AGPortInfo::LIN)
-            slider->setScale(AGSlider::LINEAR);
-        else if(info.mode == AGPortInfo::EXP)
-            slider->setScale(AGSlider::EXPONENTIAL);
-        else
-            slider->setScale(AGSlider::EXPONENTIAL);
-        
-        slider->setSize(GLvertex2f(m_radius, rowHeight));
-        slider->onUpdate([port, node] (float value) {
-            node->setEditPortValue(port, value);
-        });
-        slider->onStartStopUpdating([](){}, [port, node](){
-            AGAnalytics::instance().eventEditNodeParamSlider(node->type(), node->editPortInfo(port).name);
-        });
-        slider->setValidator([port, node] (float _old, float _new) {
-            return node->validateEditPortValue(port, _new);
-        });
-        
-        m_editSliders.push_back(slider);
-        this->addChild(slider);
+        else if(editPortType == AGControl::TYPE_NONE ||
+                editPortType == AGControl::TYPE_FLOAT ||
+                editPortType == AGControl::TYPE_INT)
+        {
+            AGNode *node = m_node;
+            
+            AGParamValue v;
+            m_node->getEditPortValue(port, v);
+            
+            float y = m_radiusY-rowHeight*(port+2);
+            
+            AGSlider *slider = new AGSlider(GLvertex3f(m_radius/2, y+rowHeight/4, 0), v);
+            slider->init();
+            
+            if(editPortType == AGControl::TYPE_FLOAT)
+                slider->setType(AGSlider::CONTINUOUS);
+            else if(editPortType == AGControl::TYPE_INT)
+                slider->setType(AGSlider::DISCRETE);
+            else
+                slider->setType(AGSlider::CONTINUOUS);
+            
+            if(info.mode == AGPortInfo::LIN)
+                slider->setScale(AGSlider::LINEAR);
+            else if(info.mode == AGPortInfo::EXP)
+                slider->setScale(AGSlider::EXPONENTIAL);
+            else
+                slider->setScale(AGSlider::EXPONENTIAL);
+            
+            slider->setSize(GLvertex2f(m_radius, rowHeight));
+            slider->onUpdate([port, node] (float value) {
+                node->setEditPortValue(port, value);
+            });
+            slider->onStartStopUpdating([](){}, [port, node](){
+                AGAnalytics::instance().eventEditNodeParamSlider(node->type(), node->editPortInfo(port).name);
+            });
+            slider->setValidator([port, node] (float _old, float _new) {
+                return node->validateEditPortValue(port, _new);
+            });
+            
+            m_editSliders.push_back(slider);
+            this->addChild(slider);
+        }
     }
     
     float pinButtonWidth = 20;
