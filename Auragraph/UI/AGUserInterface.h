@@ -192,7 +192,6 @@ public:
     
 private:
     GLvertex3f *m_boxGeo;
-    AGRenderInfoV m_boxInfo;
     AGRenderInfoV m_iconInfo;
     
     IconMode m_iconMode;

@@ -260,11 +260,6 @@ m_iconInfo(iconRenderInfo)
 {
     m_boxGeo = NULL;
     setIconMode(ICONMODE_SQUARE);
-    
-    m_boxInfo.color = AGStyle::lightColor();
-    m_renderList.push_back(&m_boxInfo);
-    
-    m_renderList.push_back(&m_iconInfo);
 }
 
 AGUIIconButton::~AGUIIconButton()
@@ -282,10 +277,6 @@ void AGUIIconButton::setIconMode(AGUIIconButton::IconMode m)
         
         m_boxGeo = new GLvertex3f[4];
         GeoGen::makeRect(m_boxGeo, m_size.x, m_size.y);
-        
-        m_boxInfo.geo = m_boxGeo;
-        m_boxInfo.geoType = GL_TRIANGLE_FAN;
-        m_boxInfo.numVertex = 4;
     }
     else if (m_iconMode == ICONMODE_CIRCLE)
     {
@@ -293,11 +284,6 @@ void AGUIIconButton::setIconMode(AGUIIconButton::IconMode m)
         
         m_boxGeo = new GLvertex3f[48];
         GeoGen::makeCircle(m_boxGeo, 48, m_size.x/2);
-        
-        m_boxInfo.geo = m_boxGeo;
-        m_boxInfo.geoType = GL_LINE_LOOP;
-        m_boxInfo.numVertex = 48;
-        m_boxInfo.geoOffset = 1;
     }
 }
 
@@ -317,21 +303,6 @@ void AGUIIconButton::update(float t, float dt)
     
     m_renderState.modelview = GLKMatrix4Translate(parentModelview, m_pos.x, m_pos.y, m_pos.z);
     m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
-    
-    if(isPressed())
-    {
-        m_iconInfo.color = AGStyle::darkColor();
-        m_boxInfo.geoType = GL_TRIANGLE_FAN;
-        m_boxInfo.geoOffset = 0;
-        m_boxInfo.numVertex = (m_iconMode == ICONMODE_CIRCLE ? 48 : 4);
-    }
-    else
-    {
-        m_iconInfo.color = AGStyle::lightColor();
-        m_boxInfo.geoType = GL_LINE_LOOP;
-        m_boxInfo.geoOffset = (m_iconMode == ICONMODE_CIRCLE ? 1 : 0);
-        m_boxInfo.numVertex = (m_iconMode == ICONMODE_CIRCLE ? 47 : 4);
-    }
 }
 
 void AGUIIconButton::render()
@@ -340,7 +311,37 @@ void AGUIIconButton::render()
     
     glLineWidth(2.0);
 
-    AGInteractiveObject::render();
+    if(m_iconMode == ICONMODE_SQUARE)
+    {
+        AGStyle::lightColor().set();
+        // fill square
+        if(isPressed()) drawTriangleFan(m_boxGeo, 4);
+        // stroke square
+        else drawLineLoop(m_boxGeo, 4);
+    }
+    else if(m_iconMode == ICONMODE_CIRCLE)
+    {
+        // fill circle
+        if(isPressed())
+        {
+            AGStyle::lightColor().set();
+            drawTriangleFan(m_boxGeo, 48);
+        }
+        // stroke circle + fill circle in bg color
+        else
+        {
+            AGStyle::frameBackgroundColor().set();
+            drawTriangleFan(m_boxGeo, 48);
+            AGStyle::lightColor().set();
+            drawLineLoop(m_boxGeo+1, 47);
+        }
+    }
+    
+    if(isPressed())
+        AGStyle::darkColor().set();
+    else
+        AGStyle::lightColor().set();
+    drawGeometry(m_iconInfo.geo, m_iconInfo.numVertex, m_iconInfo.geoType);
 }
 
 
