@@ -900,16 +900,7 @@
 				097A05411E8D8DC40048401E /* AGControlGestureNode.mm */,
 				4921A39B1F17FC3E0071823D /* AGMatrixMixerNode.h */,
 				4921A39A1F17FC3E0071823D /* AGMatrixMixerNode.cpp */,
-				494019C91F21CC6A000F05E8 /* AGPGMidiContext.h */,
-				494019C81F21CC6A000F05E8 /* AGPGMidiContext.mm */,
-				494019CC1F21CCF3000F05E8 /* AGPGMidiDelegate.h */,
-				494019CB1F21CCF3000F05E8 /* AGPGMidiDelegate.mm */,
-				494019CF1F21CFD6000F05E8 /* AGMidiConnectionListener.h */,
-				49C023001F229E2100963AD9 /* AGMidiConnectionListener.mm */,
-				49C023041F22A01B00963AD9 /* AGPGMidiSourceDelegate.h */,
-				49C023031F22A01B00963AD9 /* AGPGMidiSourceDelegate.mm */,
-				494019BF1F2092FE000F05E8 /* AGControlMidiInputNode.h */,
-				494019BE1F2092FE000F05E8 /* AGControlMidiInputNode.mm */,
+				49942E561F30515A00914E75 /* MIDI */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -977,6 +968,23 @@
 			);
 			name = PGMidi;
 			path = libs/PGMidi;
+			sourceTree = "<group>";
+		};
+		49942E561F30515A00914E75 /* MIDI */ = {
+			isa = PBXGroup;
+			children = (
+				494019C91F21CC6A000F05E8 /* AGPGMidiContext.h */,
+				494019C81F21CC6A000F05E8 /* AGPGMidiContext.mm */,
+				494019CC1F21CCF3000F05E8 /* AGPGMidiDelegate.h */,
+				494019CB1F21CCF3000F05E8 /* AGPGMidiDelegate.mm */,
+				494019CF1F21CFD6000F05E8 /* AGMidiConnectionListener.h */,
+				49C023001F229E2100963AD9 /* AGMidiConnectionListener.mm */,
+				49C023041F22A01B00963AD9 /* AGPGMidiSourceDelegate.h */,
+				49C023031F22A01B00963AD9 /* AGPGMidiSourceDelegate.mm */,
+				494019BF1F2092FE000F05E8 /* AGControlMidiInputNode.h */,
+				494019BE1F2092FE000F05E8 /* AGControlMidiInputNode.mm */,
+			);
+			name = MIDI;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
