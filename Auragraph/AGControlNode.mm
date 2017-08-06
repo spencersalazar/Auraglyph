@@ -18,7 +18,8 @@
 #include "AGControlGestureNode.h"
 
 // XXX new for MIDI input
-#include "AGControlMidiInputNode.h"
+#include "AGControlMidiNoteIn.h"
+#include "AGControlMidiCCIn.h"
 
 //------------------------------------------------------------------------------
 // ### AGControlNode ###
@@ -929,7 +930,8 @@ const AGNodeManager &AGNodeManager::controlNodeManager()
         nodeTypes.push_back(new AGControlSlewNode::Manifest);
         nodeTypes.push_back(new AGControlRandomNode::Manifest);
         
-        nodeTypes.push_back(new AGControlMidiInputNode::Manifest);
+        nodeTypes.push_back(new AGControlMidiNoteIn::Manifest);
+        nodeTypes.push_back(new AGControlMidiCCIn::Manifest);
         nodeTypes.push_back(new AGControlComparisonEQNode::Manifest);
         nodeTypes.push_back(new AGControlGateNode::Manifest);
         

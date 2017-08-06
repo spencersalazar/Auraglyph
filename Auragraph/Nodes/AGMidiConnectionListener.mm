@@ -10,18 +10,20 @@
 
 #include "AGMidiConnectionListener.h"
 
+#include <iostream>
+
 void AGMidiConnectionListener::midiInputAdded(string name, bool isNetwork) {
-    // do nothing for now
+    cout << "Added MIDI input: " << name << endl;
 }
 
 void AGMidiConnectionListener::midiInputRemoved(string name, bool isNetwork) {
-    // do nothing for now
+    cout << "Removed MIDI input: " << name << endl;
 }
 
 void AGMidiConnectionListener::midiOutputAdded(string name, bool isNetwork) {
-    // do nothing for now
+    cout << "Added MIDI output: " << name << endl;
 }
 
 void AGMidiConnectionListener::midiOutputRemoved(string name, bool isNetwork) {
-    // do nothing for now
+    cout << "Removed MIDI output: " << name << endl;
 }

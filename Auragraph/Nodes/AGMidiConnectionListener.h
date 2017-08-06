@@ -8,6 +8,9 @@
 //  Parts of this code are based on ofxMidi by Dan Wilcox.
 //  See https://github.com/danomatika/ofxMidi for documentation
 
+#ifndef AGMidiConnectionListener_h
+#define AGMidiConnectionListener_h
+
 #include <string>
 
 using namespace std;
@@ -25,3 +28,5 @@ public:
     virtual void midiOutputAdded(string name, bool isNetwork=false);
     virtual void midiOutputRemoved(string name, bool isNetwork=false);
 };
+
+#endif /* AGMidiConnectionListener_h */

@@ -9,9 +9,11 @@
 //  See https://github.com/danomatika/ofxMidi for documentation
 
 #include "AGPGMidiSourceDelegate.h"
-#include "AGControlMidiInputNode.h"
+#include "AGControlMidiInput.h"
 
 #include <mach/mach_time.h>
+
+#include <sstream>
 
 // -----------------------------------------------------------------------------
 // there is no conversion fucntion on iOS, so we make one here
@@ -53,7 +55,7 @@ uint64_t AbsoluteToNanos(uint64_t time) {
 - (void) midiSource:(PGMidiSource *)input midiReceived:(const MIDIPacketList *)packetList {
     
     const MIDIPacket *packet = &packetList->packet[0];
-    stringstream msg;
+    std::stringstream msg;
     unsigned char statusByte;
     unsigned short nBytes, curByte, msgSize;
     unsigned long long time;
@@ -185,8 +187,8 @@ uint64_t AbsoluteToNanos(uint64_t time) {
 }
 
 // -----------------------------------------------------------------------------
-- (void) setInputPtr:(void *)p {
-    inputPtr = (AGControlMidiInputNode*) p;
+- (void) setInputPtr:(AGControlMidiInput *)p {
+    inputPtr = p;
 }
 
 @end

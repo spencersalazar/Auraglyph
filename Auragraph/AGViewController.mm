@@ -31,6 +31,7 @@
 #import "AGPreferences.h"
 #import "AGDashboard.h"
 #import "NSString+STLString.h"
+#import "AGPGMidiContext.h"
 
 #import <list>
 #import <map>
@@ -109,6 +110,8 @@ enum InterfaceMode
     map<AGNode *, string> _nodeUUID;
     map<AGConnection *, string> _conectionUUID;
     map<AGFreeDraw *, string> _freedrawUUID;
+    
+    AGPGMidiContext *midiManager;
     
     AGDrawMode _drawMode;
     InterfaceMode _interfaceMode;
@@ -190,6 +193,10 @@ static AGViewController * g_instance = nil;
     _camera = GLvertex3f(0, 0, 0);
     _cameraZ.rate = 0.5;
     _cameraZ.reset(0);
+    
+    // Set up our MIDI context
+    midiManager = new AGPGMidiContext;
+    midiManager->setup();
     
     self.audioManager = [AGAudioManager new];
     // update matrices so that worldCoordinateForScreenCoordinate works
