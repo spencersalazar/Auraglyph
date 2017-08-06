@@ -635,6 +635,10 @@ void AGControlSequencerNode::process(sampletime _t)
         return;
     }
     
+    // don't automatically advance if there is an advance input
+    if(numInputsForPort(PARAM_ADVANCE))
+        return;
+    
     float bpm = param(PARAM_BPM);
     float stepLength = 60.0/bpm;
     float stepTime = t-m_lastStep;
