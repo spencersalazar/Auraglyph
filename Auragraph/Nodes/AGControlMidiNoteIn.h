@@ -94,19 +94,13 @@ public:
     
     void initFinal() override;
     
-    ~AGControlMidiNoteIn(); // XXX TODO
+    ~AGControlMidiNoteIn();
     
     void attachToAllExistingSources();
     void detachFromAllExistingSources();
     
-    // XXX not needed for now (i.e. for early-stage proof-of-concept), but will be needed to implement channel filtering
     void editPortValueChanged(int paramId) override;
     
-    // XXX will not be needed for this (i.e. MIDI input), but *WILL* be needed for MIDI output!
-    //void receiveControl(int port, const AGControl &control) override;
-    
-    // XXX didn't we get rid of this in a generic fashion?! Oh... no, not at all. It's still *everywhere* in ther codebase :-/
-    // Oh well, not really pertinent to the problem at hand...
     virtual int numOutputPorts() const override { return 2; }
     
     // MIDI message handler

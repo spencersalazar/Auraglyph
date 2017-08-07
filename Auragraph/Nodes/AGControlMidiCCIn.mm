@@ -36,6 +36,9 @@ void AGControlMidiCCIn::initFinal()
     
     // Go for it!
     attachToAllExistingSources();
+    
+    ccNum = param(PARAM_CCNUM);
+    bLearn = false;
 }
 
 AGControlMidiCCIn::~AGControlMidiCCIn()
@@ -65,7 +68,15 @@ void AGControlMidiCCIn::detachFromAllExistingSources()
 
 void AGControlMidiCCIn::editPortValueChanged(int paramId)
 {
-    // XXX when we implement channel filtering we will need to address this
+    if(paramId == PARAM_CCLEARN)
+    {
+        int flag = param(PARAM_CCLEARN);
+        bLearn = static_cast<bool>(flag);
+    }
+    else if(paramId == PARAM_CCNUM)
+    {
+        ccNum = param(PARAM_CCNUM);
+    }
 }
 
 void AGControlMidiCCIn::messageReceived(double deltatime, vector<unsigned char> *message)
@@ -74,17 +85,22 @@ void AGControlMidiCCIn::messageReceived(double deltatime, vector<unsigned char> 
     uint8_t chr = message->at(0);
     
     chr &= 0xF0; // Ignore channel information for now by clearing the lower nibble
-    
-    static bool noteStatus = false; // Kludgy flag for legato tracking
-    static uint8_t curNote = 0x00; //
-    
+        
     if(chr == 0x80) { }// Note off
     else if(chr == 0x90) { }// Note on
     else if(chr == 0xA0) { } // Mmmm... polyphonic aftertouch
     else if(chr == 0xB0) // CC
     {
-        pushControl(0, AGControl(message->at(1))); // CC number
-        pushControl(1, AGControl(message->at(2)));; // CC value
+        if(bLearn)
+        {
+            ccNum = message->at(1);
+            setEditPortValue(1, AGParamValue(ccNum));
+        }
+        
+        if(message->at(1) == ccNum)
+        {
+            pushControl(0, AGControl(message->at(2)));; // CC value
+        }
     }
 }
 

@@ -30,8 +30,9 @@ public:
     
     enum Param
     {
-        PARAM_CCOUT_CCNUM,
-        PARAM_CCOUT_CCVAL,
+        PARAM_CCLEARN, // XXX TODO: this will eventually be a string type
+        PARAM_CCNUM,
+        PARAM_CCVAL,
     };
     
     class Manifest : public AGStandardNodeManifest<AGControlMidiCCIn>
@@ -43,13 +44,22 @@ public:
         
         vector<AGPortInfo> _inputPortInfo() const override { return { }; };
         
-        vector<AGPortInfo> _editPortInfo() const override { return { }; };
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { PARAM_CCLEARN, "Learn", ._default = 0, .min = 0, .max = 1,
+                    .type = AGControl::TYPE_INT, .mode = AGPortInfo::LIN,
+                    .doc = "CC learn" },
+                { PARAM_CCNUM, "CC num", ._default = -1, .min = 0, .max = 127,
+                    .type = AGControl::TYPE_INT, .mode = AGPortInfo::LIN,
+                    .doc = "CC number." },
+            };
+        };
         
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_CCOUT_CCNUM, "CC out: CC number", true, false, .doc = "CC number." },
-                { PARAM_CCOUT_CCVAL, "CC out: CC value", true, false, .doc = "CC value." },
+                { PARAM_CCVAL, "CC out: CC value", .doc = "CC value." },
             };
         };
         
@@ -108,24 +118,17 @@ public:
     
     void initFinal() override;
     
-    ~AGControlMidiCCIn(); // XXX TODO
+    ~AGControlMidiCCIn();
     
     void attachToAllExistingSources();
     void detachFromAllExistingSources();
     
-    // XXX not needed for now (i.e. for early-stage proof-of-concept), but will be needed to implement channel filtering
     void editPortValueChanged(int paramId) override;
     
-    // XXX will not be needed for this (i.e. MIDI input), but *WILL* be needed for MIDI output!
-    //void receiveControl(int port, const AGControl &control) override;
-    
-    // XXX didn't we get rid of this in a generic fashion?! Oh... no, not at all. It's still *everywhere* in ther codebase :-/
-    // Oh well, not really pertinent to the problem at hand...
-    virtual int numOutputPorts() const override { return 2; }
+    virtual int numOutputPorts() const override { return 1; }
     
     // MIDI message handler
-    void messageReceived(double deltatime, vector<unsigned char> *message) override;
-    
+    void messageReceived(double deltatime, vector<unsigned char> *message) override;    
     
     // XXX Should the below functions/members even be public? That seemed to make sense
     // in ofx because other classes were calling these methods to hook things
@@ -155,6 +158,9 @@ public:
 private:
     struct InputDelegate; // forward declaration for Obj-C wrapper
     InputDelegate *inputDelegate; ///< Obj-C midi input interface
+    
+    bool bLearn;
+    int ccNum;
     
     int portNum;     //< current port num, -2 if not connected, -1 if we're listening to all
     string portName; //< current port name, "" if not connected
