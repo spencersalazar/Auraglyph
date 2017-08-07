@@ -135,8 +135,7 @@ public:
     /** Make a pin button that will cause the (optional) node editor argument
      to be pinned when pressed.
      */
-    static AGUIButton *makePinButton(const GLvertex3f &pos, const GLvertex2f &size,
-                                     AGUINodeEditor *node = nullptr);
+    static AGUIButton *makePinButton(AGUINodeEditor *node = nullptr);
     
 protected:
     

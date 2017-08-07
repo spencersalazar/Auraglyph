@@ -204,13 +204,13 @@ const std::string &AGUIButton::title()
 }
 
 
-AGUIButton *AGUIButton::makePinButton(const GLvertex3f &pos, const GLvertex2f &size, AGUINodeEditor *nodeEditor)
+AGUIButton *AGUIButton::makePinButton(AGUINodeEditor *nodeEditor)
 {
-    float w = size.x;
-    float h = size.y;
+    float w = 20;
+    float h = 20;
     float f = 0.9f; // fraction of size occupied by pin icon
     
-    AGUIIconButton *pinButton = new AGUIIconButton(pos, size, vector<GLvertex3f>({
+    AGUIIconButton *pinButton = new AGUIIconButton(GLvertex2f(0, 0), GLvertex2f(w, h), vector<GLvertex3f>({
         { -w/2*f, -h/2*f, 0 },
         { w/2*f, h/2*f, 0 },
     }), GL_LINES);
