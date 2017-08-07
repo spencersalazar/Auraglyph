@@ -94,6 +94,12 @@ public:
             return _new;
         });
         addChild(m_bpmSlider);
+        
+        GLvertex2f pinSize = { 20, 20 };
+        GLvertex2f pinPos = { m_width/2-10-pinSize.x/2, m_height/2-10-pinSize.y/2 };
+        
+        m_pinButton = AGUIButton::makePinButton(pinPos, pinSize, this);
+        addChild(m_pinButton);
     }
     
     ~AGUISequencerEditor()
@@ -492,6 +498,7 @@ private:
     expcurvef m_lastStepAlpha;
     
     AGSlider *m_bpmSlider;
+    AGUIButton *m_pinButton;
 };
 
 
