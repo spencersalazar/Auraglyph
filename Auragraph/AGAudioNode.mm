@@ -2142,8 +2142,8 @@ public:
         {
             return {
                 { PARAM_INPUT, "input", true, false, .doc = "Input signal." },
-                { PARAM_CUTOFF, "cutoff", true, true, 220.0, 0.0001, 7000.0, .doc = "Filter cutoff." },
-                { PARAM_Q, "Q", true, true, 1.0, 0.0001, 100.0, .doc = "Filter Q." },
+                { PARAM_CUTOFF, "cutoff", true, true, 220.0, 0.0001, 22000.0, .doc = "Filter cutoff." },
+                { PARAM_Q, "Q", true, true, 1.0, 0.0001, 10000.0, .doc = "Filter Q." },
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
 
             };
@@ -2152,8 +2152,8 @@ public:
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_CUTOFF, "cutoff", true, true, 220.0, 0.0001, 7000.0, .doc = "Filter cutoff." },
-                { PARAM_Q, "Q", true, true, 1.0, 0.0001, 100.0, .doc = "Filter Q." },
+                { PARAM_CUTOFF, "cutoff", true, true, 220.0, 0.0001, 22000.0, .doc = "Filter cutoff." },
+                { PARAM_Q, "Q", true, true, 1.0, 0.0001, 10000.0, .doc = "Filter Q." },
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
             };
         };
