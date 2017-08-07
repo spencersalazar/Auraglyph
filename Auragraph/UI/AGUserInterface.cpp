@@ -12,6 +12,7 @@
 #include "AGGenericShader.h"
 #include "AGDef.h"
 #include "AGStyle.h"
+#include "AGUINodeEditor.h"
 
 #include "TexFont.h"
 #include "Texture.h"
@@ -203,6 +204,32 @@ const std::string &AGUIButton::title()
 }
 
 
+AGUIButton *AGUIButton::makePinButton(const GLvertex3f &pos, const GLvertex2f &size, AGUINodeEditor *nodeEditor)
+{
+    float w = size.x;
+    float h = size.y;
+    float f = 0.9f; // fraction of size occupied by pin icon
+    
+    AGUIIconButton *pinButton = new AGUIIconButton(pos, size, vector<GLvertex3f>({
+        { -w/2*f, -h/2*f, 0 },
+        { w/2*f, h/2*f, 0 },
+    }), GL_LINES);
+    
+    pinButton->init();
+    pinButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
+    pinButton->setIconMode(AGUIIconButton::ICONMODE_SQUARE);
+    
+    if(nodeEditor != nullptr)
+    {
+        pinButton->setAction(^{
+            nodeEditor->pin(pinButton->isPressed());
+        });
+    }
+    
+    return pinButton;
+}
+
+
 
 //------------------------------------------------------------------------------
 // ### AGUITextButton ###
@@ -256,7 +283,18 @@ void AGUITextButton::render()
 #pragma mark - AGUIIconButton
 AGUIIconButton::AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size, const AGRenderInfoV &iconRenderInfo) :
 AGUIButton("", pos, size),
-m_iconInfo(iconRenderInfo)
+m_iconInfo(iconRenderInfo),
+m_iconGeoType(0)
+{
+    m_boxGeo = NULL;
+    setIconMode(ICONMODE_SQUARE);
+}
+
+AGUIIconButton::AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size,
+                               const vector<GLvertex3f> &iconGeo, int geoType) :
+AGUIButton("", pos, size),
+m_iconGeo(iconGeo),
+m_iconGeoType(geoType)
 {
     m_boxGeo = NULL;
     setIconMode(ICONMODE_SQUARE);
@@ -341,7 +379,11 @@ void AGUIIconButton::render()
         AGStyle::darkColor().set();
     else
         AGStyle::lightColor().set();
-    drawGeometry(m_iconInfo.geo, m_iconInfo.numVertex, m_iconInfo.geoType);
+    
+    if(m_iconGeo.size())
+        drawGeometry(m_iconGeo.data(), m_iconGeo.size(), m_iconGeoType);
+    else
+        drawGeometry(m_iconInfo.geo, m_iconInfo.numVertex, m_iconInfo.geoType);
 }
 
 
