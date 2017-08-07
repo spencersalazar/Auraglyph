@@ -778,6 +778,13 @@ public:
     
     virtual int numOutputPorts() const override { return 1; }
     
+    void editPortValueChanged(int paramId) override
+    {
+        if(paramId == PARAM_IN_COLD) {
+            testVal = param(PARAM_IN_COLD);
+        }
+    }
+    
     virtual void receiveControl(int port, const AGControl &control) override
     {
         if(port == 0)
@@ -788,6 +795,7 @@ public:
         else if(port == 1)
         {
             testVal = control.getInt();
+            setEditPortValue(0, AGParamValue(testVal));            
         }
     }
     
