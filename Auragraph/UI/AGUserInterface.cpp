@@ -12,6 +12,7 @@
 #include "AGGenericShader.h"
 #include "AGDef.h"
 #include "AGStyle.h"
+#include "AGUINodeEditor.h"
 
 #include "TexFont.h"
 #include "Texture.h"
@@ -98,11 +99,9 @@ void AGUIButton::render()
     shader.setModelViewMatrix(modelView);
     shader.setNormalMatrix(GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL));
     
-    GLcolor4f color = GLcolor4f::white;
-    color.a = m_renderState.alpha;
-    GLcolor4f blackA = AGStyle::darkColor();
-    blackA.a = m_renderState.alpha*0.75;
-
+    GLcolor4f color = AGStyle::foregroundColor().withAlpha(m_renderState.alpha);
+    GLcolor4f blackA = AGStyle::darkColor().blend(1, 1, 1, m_renderState.alpha*0.75);
+    
     glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
     glEnableVertexAttribArray(AGVertexAttribPosition);
     
@@ -134,7 +133,7 @@ void AGUIButton::render()
         glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
         glDrawArrays(GL_LINE_LOOP, 0, 4);
         
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::black);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::frameBackgroundColor());
         glDrawArrays(GL_LINE_LOOP, 4, 4);
         
         color = AGStyle::lightColor();
@@ -205,6 +204,32 @@ const std::string &AGUIButton::title()
 }
 
 
+AGUIButton *AGUIButton::makePinButton(const GLvertex3f &pos, const GLvertex2f &size, AGUINodeEditor *nodeEditor)
+{
+    float w = size.x;
+    float h = size.y;
+    float f = 0.9f; // fraction of size occupied by pin icon
+    
+    AGUIIconButton *pinButton = new AGUIIconButton(pos, size, vector<GLvertex3f>({
+        { -w/2*f, -h/2*f, 0 },
+        { w/2*f, h/2*f, 0 },
+    }), GL_LINES);
+    
+    pinButton->init();
+    pinButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
+    pinButton->setIconMode(AGUIIconButton::ICONMODE_SQUARE);
+    
+    if(nodeEditor != nullptr)
+    {
+        pinButton->setAction(^{
+            nodeEditor->pin(pinButton->isPressed());
+        });
+    }
+    
+    return pinButton;
+}
+
+
 
 //------------------------------------------------------------------------------
 // ### AGUITextButton ###
@@ -258,15 +283,21 @@ void AGUITextButton::render()
 #pragma mark - AGUIIconButton
 AGUIIconButton::AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size, const AGRenderInfoV &iconRenderInfo) :
 AGUIButton("", pos, size),
-m_iconInfo(iconRenderInfo)
+m_iconInfo(iconRenderInfo),
+m_iconGeoType(0)
 {
     m_boxGeo = NULL;
     setIconMode(ICONMODE_SQUARE);
-    
-    m_boxInfo.color = AGStyle::lightColor();
-    m_renderList.push_back(&m_boxInfo);
-    
-    m_renderList.push_back(&m_iconInfo);
+}
+
+AGUIIconButton::AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size,
+                               const vector<GLvertex3f> &iconGeo, int geoType) :
+AGUIButton("", pos, size),
+m_iconGeo(iconGeo),
+m_iconGeoType(geoType)
+{
+    m_boxGeo = NULL;
+    setIconMode(ICONMODE_SQUARE);
 }
 
 AGUIIconButton::~AGUIIconButton()
@@ -284,10 +315,6 @@ void AGUIIconButton::setIconMode(AGUIIconButton::IconMode m)
         
         m_boxGeo = new GLvertex3f[4];
         GeoGen::makeRect(m_boxGeo, m_size.x, m_size.y);
-        
-        m_boxInfo.geo = m_boxGeo;
-        m_boxInfo.geoType = GL_TRIANGLE_FAN;
-        m_boxInfo.numVertex = 4;
     }
     else if (m_iconMode == ICONMODE_CIRCLE)
     {
@@ -295,11 +322,6 @@ void AGUIIconButton::setIconMode(AGUIIconButton::IconMode m)
         
         m_boxGeo = new GLvertex3f[48];
         GeoGen::makeCircle(m_boxGeo, 48, m_size.x/2);
-        
-        m_boxInfo.geo = m_boxGeo;
-        m_boxInfo.geoType = GL_LINE_LOOP;
-        m_boxInfo.numVertex = 48;
-        m_boxInfo.geoOffset = 1;
     }
 }
 
@@ -319,21 +341,6 @@ void AGUIIconButton::update(float t, float dt)
     
     m_renderState.modelview = GLKMatrix4Translate(parentModelview, m_pos.x, m_pos.y, m_pos.z);
     m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
-    
-    if(isPressed())
-    {
-        m_iconInfo.color = AGStyle::darkColor();
-        m_boxInfo.geoType = GL_TRIANGLE_FAN;
-        m_boxInfo.geoOffset = 0;
-        m_boxInfo.numVertex = (m_iconMode == ICONMODE_CIRCLE ? 48 : 4);
-    }
-    else
-    {
-        m_iconInfo.color = AGStyle::lightColor();
-        m_boxInfo.geoType = GL_LINE_LOOP;
-        m_boxInfo.geoOffset = (m_iconMode == ICONMODE_CIRCLE ? 1 : 0);
-        m_boxInfo.numVertex = (m_iconMode == ICONMODE_CIRCLE ? 47 : 4);
-    }
 }
 
 void AGUIIconButton::render()
@@ -342,7 +349,41 @@ void AGUIIconButton::render()
     
     glLineWidth(2.0);
 
-    AGInteractiveObject::render();
+    if(m_iconMode == ICONMODE_SQUARE)
+    {
+        AGStyle::lightColor().set();
+        // fill square
+        if(isPressed()) drawTriangleFan(m_boxGeo, 4);
+        // stroke square
+        else drawLineLoop(m_boxGeo, 4);
+    }
+    else if(m_iconMode == ICONMODE_CIRCLE)
+    {
+        // fill circle
+        if(isPressed())
+        {
+            AGStyle::lightColor().set();
+            drawTriangleFan(m_boxGeo, 48);
+        }
+        // stroke circle + fill circle in bg color
+        else
+        {
+            AGStyle::frameBackgroundColor().set();
+            drawTriangleFan(m_boxGeo, 48);
+            AGStyle::lightColor().set();
+            drawLineLoop(m_boxGeo+1, 47);
+        }
+    }
+    
+    if(isPressed())
+        AGStyle::darkColor().set();
+    else
+        AGStyle::lightColor().set();
+    
+    if(m_iconGeo.size())
+        drawGeometry(m_iconGeo.data(), m_iconGeo.size(), m_iconGeoType);
+    else
+        drawGeometry(m_iconInfo.geo, m_iconInfo.numVertex, m_iconInfo.geoType);
 }
 
 
@@ -461,9 +502,9 @@ void AGUITrash::render()
     
     GLcolor4f color;
     if(m_active)
-        color = GLcolor4f::red;
+        color = AGStyle::errorColor();
     else
-        color = GLcolor4f::white;
+        color = AGStyle::foregroundColor();
     color.a = m_renderState.alpha;
 
     glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
@@ -526,7 +567,7 @@ AGUITrace::AGUITrace()
     m_renderInfo.geo = m_traceGeo.data();
     m_renderInfo.geoType = GL_LINE_STRIP;
     m_renderInfo.geoOffset = 0;
-    m_renderInfo.color = GLcolor4f::white;
+    m_renderInfo.color = AGStyle::foregroundColor();
     m_renderInfo.lineWidth = 4.0;
     
     m_renderList.push_back(&m_renderInfo);
@@ -590,8 +631,7 @@ void AGUILabel::render()
         proj = projectionMatrix();
     }
     
-    GLcolor4f valueColor = GLcolor4f::white;
-    valueColor.a = m_renderState.alpha;
+    GLcolor4f valueColor = AGStyle::foregroundColor().withAlpha(m_renderState.alpha);
     
     GLKMatrix4 valueMV = modelView;
     valueMV = GLKMatrix4Translate(valueMV, m_position.x, m_position.y, m_position.z);

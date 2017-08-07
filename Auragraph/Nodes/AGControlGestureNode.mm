@@ -49,12 +49,12 @@ public:
         GeoGen::makeRect(box, m_size.x, m_size.y);
         
         // fill frame
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::black);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::frameBackgroundColor());
         drawTriangleFan(box, 4);
         
         // stroke frame
         glLineWidth(2.0f);
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::foregroundColor());
         drawLineLoop(box, 4);
     }
     

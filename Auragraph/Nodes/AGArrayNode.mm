@@ -297,7 +297,7 @@ public:
             m_renderInfo.geo = m_geo;
             m_renderInfo.geoType = GL_LINE_STRIP;
             m_renderInfo.numVertex = 4;
-            m_renderInfo.color = lerp(0.5, GLcolor4f(0, 0, 0, 1), AGStyle::lightColor());
+            m_renderInfo.color = lerp(0.5, AGStyle::foregroundColor(), AGStyle::lightColor());
             m_renderList.push_back(&m_renderInfo);
         }
         
@@ -316,11 +316,11 @@ public:
             m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
             
             if(m_pressed)
-                m_renderInfo.color = lerp(0.5, GLcolor4f(1, 1, 1, 1), AGStyle::lightColor());
+                m_renderInfo.color = lerp(0.5, AGStyle::foregroundColor(), AGStyle::lightColor());
             else if(m_hasValue)
                 m_renderInfo.color = AGStyle::lightColor();
             else
-                m_renderInfo.color = lerp(0.5, GLcolor4f(0, 0, 0, 1), AGStyle::lightColor());
+                m_renderInfo.color = lerp(0.5, AGStyle::frameBackgroundColor(), AGStyle::lightColor());
         }
         
         virtual void render()
@@ -601,14 +601,18 @@ string AGControlArrayNode::Manifest::_name() const { return "Array"; };
 vector<AGPortInfo> AGControlArrayNode::Manifest::_inputPortInfo() const
 {
     return {
-        { PARAM_ITERATE, "iterate", true, true, .doc = "Advance array by one item and push that item." }
+        { PARAM_ITERATE, "iterate", .doc = "Advance array by one item and push that item." }
     };
 };
 
 vector<AGPortInfo> AGControlArrayNode::Manifest::_editPortInfo() const { return { }; };
 
-// XXX TODO: shouldn't we be declaring outputs here? Control objects handle things differently...
-vector<AGPortInfo> AGControlArrayNode::Manifest::_outputPortInfo() const { return { }; };
+vector<AGPortInfo> AGControlArrayNode::Manifest::_outputPortInfo() const
+{
+    return {
+        { OUTPUT_VALUE, "value", .doc = "Value of selected array item." },
+    };
+};
 
 vector<GLvertex3f> AGControlArrayNode::Manifest::_iconGeo() const
 {

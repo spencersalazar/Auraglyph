@@ -193,12 +193,11 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
     glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
     
     // fill
-    GLcolor4f blackA = GLcolor4f(0, 0, 0, 0.75);
-    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &blackA);
+    AGStyle::frameBackgroundColor().withAlpha(0.75).set();
     glDrawArrays(GL_TRIANGLE_FAN, 0, m_geoSize);
     
     // stroke
-    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+    AGStyle::foregroundColor().set();
     glLineWidth(4.0f);
     glDrawArrays(GL_LINE_LOOP, 0, m_geoSize);
     
@@ -221,7 +220,7 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
         scroll_bar_geo[1] = GLvertex2f(m_radius*scroll_bar_margin, m_radius*scroll_bar_margin-(scroll_bar_y+scroll_bar_height));
         
         // load it up and draw
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+        AGStyle::foregroundColor().set();
         glLineWidth(1.0);
         glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), scroll_bar_geo);
         glDrawArrays(GL_LINES, 0, 2);
@@ -261,22 +260,19 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
             GLKMatrix3 hitNormal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
             GLKMatrix4 hitMvp = GLKMatrix4Multiply(projection, hitModelView);
             
-            GLcolor4f whiteA = GLcolor4f::white;
-            whiteA.a = 0.75;
-            
             clipShader.setMVPMatrix(hitMvp);
             clipShader.setNormalMatrix(hitNormal);
-            glVertexAttrib4fv(AGVertexAttribColor, (const float*) &whiteA);
+            AGStyle::foregroundColor().withAlpha(0.75).set();
             
             glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, m_geo);
             
             glDrawArrays(GL_TRIANGLE_FAN, 0, m_geoSize);
             
-            glVertexAttrib4fv(AGVertexAttribColor, (const float*) &GLcolor4f::black);
+            AGStyle::frameBackgroundColor().set();
         }
         else
         {
-            glVertexAttrib4fv(AGVertexAttribColor, (const float*) &GLcolor4f::white);
+            AGStyle::foregroundColor().set();
         }
         
         clipShader.setMVPMatrix(mvp);

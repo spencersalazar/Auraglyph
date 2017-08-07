@@ -20,6 +20,7 @@
 #include "FileWvIn.h"
 #include "AGCompressorNode.h"
 #include "AGWaveformAudioNode.h"
+#include "AGMatrixMixerNode.h"
 #include "AGStyle.h"
 #include "spdsp.h"
 
@@ -134,7 +135,7 @@ void AGAudioNode::update(float t, float dt)
 
 void AGAudioNode::render()
 {
-    GLcolor4f color = GLcolor4f::white;
+    GLcolor4f color = AGStyle::foregroundColor();
     
     // draw base outline
     glBindVertexArrayOES(s_vertexArray);
@@ -226,17 +227,8 @@ void AGAudioNode::allocatePortBuffers()
         m_inputPortBuffer = new float*[numInputPorts()];
         for(int i = 0; i < numInputPorts(); i++)
         {
-            // edit: why would it be in port buffer if it can't connect?
-            // pretty sure this is only historical
-//            if(m_manifest->inputPortInfo()[i].canConnect)
-//            {
             m_inputPortBuffer[i] = new float[bufferSize()];
             memset(m_inputPortBuffer[i], 0, sizeof(float)*bufferSize());
-//            }
-//            else
-//            {
-//                m_inputPortBuffer[i] = NULL;
-//            }
         }
     }
     else
@@ -352,6 +344,7 @@ void AGAudioNode::renderLast(float *output, int nFrames, int chanNum)
 
 float *AGAudioNode::inputPortVector(int paramId)
 {
+    assert(m_param2InputPort.count(paramId));
     return m_inputPortBuffer[m_param2InputPort.at(paramId)];
 }
 
@@ -440,14 +433,14 @@ public:
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { AUDIO_PARAM_GAIN, "gain", false, true, 1, 0, 0, AGPortInfo::LOG, .doc = "Output gain." }
+                { AUDIO_PARAM_GAIN, "gain", 1, 0, 0, AGPortInfo::EXP, .doc = "Output gain." }
             };
         }
         
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
         
@@ -547,24 +540,24 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_FREQ, "freq", true, true, 220, 0, 0, AGPortInfo::LOG, .doc = "Oscillator frequency. " },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, 0, 0, AGPortInfo::LOG, .doc = "Output gain." },
-                { PARAM_PHASE, "phase", true, true, 1, 0, 0, AGPortInfo::LIN, .doc = "Oscillator phase." },
+                { PARAM_FREQ, "freq", 220, 0, 0, AGPortInfo::EXP, .doc = "Oscillator frequency. " },
+                { AUDIO_PARAM_GAIN, "gain", 1, 0, 0, AGPortInfo::EXP, .doc = "Output gain." },
+                { PARAM_PHASE, "phase", 1, 0, 0, AGPortInfo::LIN, .doc = "Oscillator phase." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_FREQ, "freq", true, true, 220, 0, 0, AGPortInfo::LOG, .doc = "Oscillator frequency" },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, 0, 0, AGPortInfo::LOG, .doc = "Output gain." }
+                { PARAM_FREQ, "freq", 220, 0, 0, AGPortInfo::EXP, .doc = "Oscillator frequency" },
+                { AUDIO_PARAM_GAIN, "gain", 1, 0, 0, AGPortInfo::EXP, .doc = "Output gain." }
             };
         };
 
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
 
@@ -660,26 +653,26 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_FREQ, "freq", true, true, 220, .doc = "Oscillator frequency." },
-                { PARAM_WIDTH, "width", true, true, 0.5, 0, 1, .doc = "Pulse width of wave as fraction of full wavelength." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
-                { PARAM_PHASE, "phase", true, true, 1, 0, 0, AGPortInfo::LIN, .doc = "Oscillator phase." },
+                { PARAM_FREQ, "freq", 220, .doc = "Oscillator frequency." },
+                { PARAM_WIDTH, "width", 0.5, 0, 1, .doc = "Pulse width of wave as fraction of full wavelength." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
+                { PARAM_PHASE, "phase", 1, 0, 0, AGPortInfo::LIN, .doc = "Oscillator phase." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_FREQ, "freq", true, true, 220, .doc = "Oscillator frequency" },
-                { PARAM_WIDTH, "width", true, true, 0.5, 0, 1, .doc = "Pulse width of wave as fraction of full wavelength." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+                { PARAM_FREQ, "freq", 220, .doc = "Oscillator frequency" },
+                { PARAM_WIDTH, "width", 0.5, 0, 1, .doc = "Pulse width of wave as fraction of full wavelength." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." }
             };
         };
 
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
         
@@ -776,24 +769,24 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_FREQ, "freq", true, true, 220, .doc = "Oscillator frequency" },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
-                { PARAM_PHASE, "phase", true, true, 1, 0, 0, AGPortInfo::LIN, .doc = "Oscillator phase." },
+                { PARAM_FREQ, "freq", 220, .doc = "Oscillator frequency" },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
+                { PARAM_PHASE, "phase", 1, 0, 0, AGPortInfo::LIN, .doc = "Oscillator phase." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_FREQ, "freq", true, true, 220, .doc = "Oscillator frequency" },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+                { PARAM_FREQ, "freq", 220, .doc = "Oscillator frequency" },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." }
             };
         };
         
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
         
@@ -887,24 +880,24 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_FREQ, "freq", true, true, 220, .doc = "Oscillator frequency" },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
-                { PARAM_PHASE, "phase", true, true, 1, 0, 0, AGPortInfo::LIN, .doc = "Oscillator phase." },
+                { PARAM_FREQ, "freq", 220, .doc = "Oscillator frequency" },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
+                { PARAM_PHASE, "phase", 1, 0, 0, AGPortInfo::LIN, .doc = "Oscillator phase." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_FREQ, "freq", true, true, 220, .doc = "Oscillator frequency" },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+                { PARAM_FREQ, "freq", 220, .doc = "Oscillator frequency" },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." }
             };
         };
 
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
         
@@ -1005,27 +998,27 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", true, false, .doc = "Input to apply envelope. " },
-                { AUDIO_PARAM_GAIN, "gain", true, true, .doc = "Output gain." },
-                { PARAM_TRIGGER, "trigger", true, false, .doc = "Envelope trigger (triggered for any value above 0)." },
+                { PARAM_INPUT, "input", .doc = "Input to apply envelope. " },
+                { AUDIO_PARAM_GAIN, "gain", .doc = "Output gain." },
+                { PARAM_TRIGGER, "trigger", .doc = "Envelope trigger (triggered for any value above 0)." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
-                { PARAM_ATTACK, "attack", true, true, 0.01, .doc = "Attack duration (seconds)." },
-                { PARAM_DECAY, "decay", true, true, 0.01, .doc = "Decay duration (seconds)." },
-                { PARAM_SUSTAIN, "sustain", true, true, 0.5, .doc = "Sustain level (linear amplitude)." },
-                { PARAM_RELEASE, "release", true, true, 0.1, .doc = "Release duration (seconds)." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
+                { PARAM_ATTACK, "attack", 0.01, .doc = "Attack duration (seconds)." },
+                { PARAM_DECAY, "decay", 0.01, .doc = "Decay duration (seconds)." },
+                { PARAM_SUSTAIN, "sustain", 0.5, .doc = "Sustain level (linear amplitude)." },
+                { PARAM_RELEASE, "release", 0.1, .doc = "Release duration (seconds)." },
             };
         };
         
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
 
@@ -1150,26 +1143,26 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", true, false, .doc = "Filter input." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
-                { PARAM_FREQ, "freq", true, true, 220, .doc = "Filter cutoff frequency. " },
-                { PARAM_Q, "Q", true, true, 1, 0.001, 1000, .doc = "Filter Q (bandwidth)." },
+                { PARAM_INPUT, "input", .doc = "Filter input." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
+                { PARAM_FREQ, "freq", 220, .doc = "Filter cutoff frequency. " },
+                { PARAM_Q, "Q", 1, 0.001, 1000, .doc = "Filter Q (bandwidth)." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
-                { PARAM_FREQ, "freq", true, true, 220, .doc = "Filter cutoff frequency." },
-                { PARAM_Q, "Q", true, true, 1, 0.001, 1000, .doc = "Filter Q (bandwidth)." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
+                { PARAM_FREQ, "freq", 220, .doc = "Filter cutoff frequency." },
+                { PARAM_Q, "Q", 1, 0.001, 1000, .doc = "Filter Q (bandwidth)." },
             };
         };
         
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
 
@@ -1203,26 +1196,26 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", true, false, .doc = "Filter input." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
-                { PARAM_FREQ, "freq", true, true, 220, .doc = "Filter cutoff frequency." },
-                { PARAM_Q, "Q", true, true, 1, 0.001, 1000, .doc = "Filter Q (bandwidth)." },
+                { PARAM_INPUT, "input", .doc = "Filter input." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
+                { PARAM_FREQ, "freq", 220, .doc = "Filter cutoff frequency." },
+                { PARAM_Q, "Q", 1, 0.001, 1000, .doc = "Filter Q (bandwidth)." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
-                { PARAM_FREQ, "freq", true, true, 220, .doc = "Filter cutoff frequency." },
-                { PARAM_Q, "Q", true, true, 1, 0.001, 1000, .doc = "Filter Q (bandwidth)." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
+                { PARAM_FREQ, "freq", 220, .doc = "Filter cutoff frequency." },
+                { PARAM_Q, "Q", 1, 0.001, 1000, .doc = "Filter Q (bandwidth)." },
             };
         };
 
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
 
@@ -1256,26 +1249,26 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", true, false, .doc = "Filter input." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
-                { PARAM_FREQ, "freq", true, true, 220, .doc = "Filter cutoff frequency." },
-                { PARAM_Q, "Q", true, true, 1, 0.001, 1000, .doc = "Filter Q (bandwidth)." },
+                { PARAM_INPUT, "input", .doc = "Filter input." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
+                { PARAM_FREQ, "freq", 220, .doc = "Filter cutoff frequency." },
+                { PARAM_Q, "Q", 1, 0.001, 1000, .doc = "Filter Q (bandwidth)." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
-                { PARAM_FREQ, "freq", true, true, 220, .doc = "Filter cutoff frequency." },
-                { PARAM_Q, "Q", true, true, 1, 0.001, 1000, .doc = "Filter Q (bandwidth)." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
+                { PARAM_FREQ, "freq", 220, .doc = "Filter cutoff frequency." },
+                { PARAM_Q, "Q", 1, 0.001, 1000, .doc = "Filter Q (bandwidth)." },
             };
         };
 
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
         
@@ -1526,26 +1519,26 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", true, false, .doc = "Input signal." },
-                { PARAM_DELAY, "delay", true, true, 0.5, 0, AGFloat_Max, .doc = "Delay length (seconds)." },
-                { PARAM_FEEDBACK, "feedback", true, true, 0.1, 0, 1, .doc = "Feedback gain." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
+                { PARAM_INPUT, "input", .doc = "Input signal." },
+                { PARAM_DELAY, "delay", 0.5, 0, AGFloat_Max, .doc = "Delay length (seconds)." },
+                { PARAM_FEEDBACK, "feedback", 0.1, 0, 1, .doc = "Feedback gain." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
-                { PARAM_DELAY, "delay", true, true, 0.5, 0, AGFloat_Max, .doc = "Delay length (seconds)." },
-                { PARAM_FEEDBACK, "feedback", true, true, 0.1, 0, 1, .doc = "Feedback gain." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
+                { PARAM_DELAY, "delay", 0.5, 0, AGFloat_Max, .doc = "Delay length (seconds)." },
+                { PARAM_FEEDBACK, "feedback", 0.1, 0, 1, .doc = "Feedback gain." },
             };
         };
 
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
         
@@ -1658,22 +1651,22 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "add", true, false, .doc = "Quantity to add, if only one input." },
+                { PARAM_INPUT, "add", .doc = "Quantity to add, if only one input." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_ADD, "add", true, true, 0, .doc = "Input(s) to add." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
+                { PARAM_ADD, "add", 0, .doc = "Input(s) to add." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
             };
         };
 
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
 
@@ -1706,6 +1699,8 @@ public:
         if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         
+        float gain = param(AUDIO_PARAM_GAIN);
+        
         this->lock();
         
         int numInputs = numInputsForPort(PARAM_INPUT);
@@ -1730,10 +1725,13 @@ public:
                 m_outputBuffer[chanNum][i] += m_inputBuffer[i];
         }
         
-        for(int i = 0; i < nFrames; i++)
-            output[i] += m_outputBuffer[chanNum][i];
-        
         this->unlock();
+        
+        for(int i = 0; i < nFrames; i++)
+        {
+            m_outputBuffer[chanNum][i] *= gain;
+            output[i] += m_outputBuffer[chanNum][i];
+        }
     }
     
 private:
@@ -1769,22 +1767,22 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "multiply", true, false, .doc = "Quantity to multiply by, if only one input." },
+                { PARAM_INPUT, "multiply", .doc = "Quantity to multiply by, if only one input." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_MULTIPLY, "multiply", true, true, 1, .doc = "Input(s) to multiply together." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
+                { PARAM_MULTIPLY, "multiply", 1, .doc = "Input(s) to multiply together." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
             };
         };
 
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
 
@@ -1817,6 +1815,8 @@ public:
         if(t <= m_lastTime) { renderLast(output, nFrames, chanNum); return; }
         m_lastTime = t;
         
+        float gain = param(AUDIO_PARAM_GAIN);
+        
         this->lock();
         
         int numInputs = numInputsForPort(PARAM_INPUT);
@@ -1844,7 +1844,10 @@ public:
         this->unlock();
         
         for(int i = 0; i < nFrames; i++)
+        {
+            m_outputBuffer[chanNum][i] *= gain;
             output[i] += m_outputBuffer[chanNum][i];
+        }
     }
     
 private:
@@ -1878,21 +1881,21 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { AUDIO_PARAM_GAIN, "gain", true, true, .doc = "Output gain." },
+                { AUDIO_PARAM_GAIN, "gain", .doc = "Output gain." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
             };
         };
 
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
 
@@ -1973,24 +1976,24 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", true, false, .doc = "Input signal." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+                { PARAM_INPUT, "input", .doc = "Input signal." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." }
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_ATTACK, "attack", true, true, 0.01, 0.0001, 1.0, .doc = "Attack time." },
-                { PARAM_RELEASE, "release", true, true, 0.01, 0.0001, 1.0, .doc = "Release time." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+                { PARAM_ATTACK, "attack", 0.01, 0.0001, 1.0, .doc = "Attack time." },
+                { PARAM_RELEASE, "release", 0.01, 0.0001, 1.0, .doc = "Release time." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." }
             };
         };
 
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
         
@@ -2129,10 +2132,10 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", true, false, .doc = "Input signal." },
-                { PARAM_CUTOFF, "cutoff", true, true, 220.0, 0.0001, 7000.0, .doc = "Filter cutoff." },
-                { PARAM_Q, "Q", true, true, 1.0, 0.0001, 100.0, .doc = "Filter Q." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+                { PARAM_INPUT, "input", .doc = "Input signal." },
+                { PARAM_CUTOFF, "cutoff", 220.0, 0.0001, 7000.0, .doc = "Filter cutoff." },
+                { PARAM_Q, "Q", 1.0, 0.0001, 100.0, .doc = "Filter Q." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." }
 
             };
         };
@@ -2140,19 +2143,19 @@ public:
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_CUTOFF, "cutoff", true, true, 220.0, 0.0001, 7000.0, .doc = "Filter cutoff." },
-                { PARAM_Q, "Q", true, true, 1.0, 0.0001, 100.0, .doc = "Filter Q." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+                { PARAM_CUTOFF, "cutoff", 220.0, 0.0001, 7000.0, .doc = "Filter cutoff." },
+                { PARAM_Q, "Q", 1.0, 0.0001, 100.0, .doc = "Filter Q." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." }
             };
         };
 
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_LPF_OUTPUT, "lp output", true, false, .doc = "LP Output." },
-                { PARAM_HPF_OUTPUT, "hp output", true, false, .doc = "HP Output." },
-                { PARAM_BPF_OUTPUT, "bp output", true, false, .doc = "BP Output." },
-                { PARAM_BRF_OUTPUT, "br output", true, false, .doc = "Notch Output." }
+                { PARAM_LPF_OUTPUT, "lp output", .doc = "LP Output." },
+                { PARAM_HPF_OUTPUT, "hp output", .doc = "HP Output." },
+                { PARAM_BPF_OUTPUT, "bp output", .doc = "BP Output." },
+                { PARAM_BRF_OUTPUT, "br output", .doc = "Notch Output." }
 
             };
         }
@@ -2414,26 +2417,30 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", true, false, .doc = "Input signal." },
-                { PARAM_DELAY, "delay", true, true, 0.5, 0, AGFloat_Max, .doc = "Delay length (seconds)." },
-                { PARAM_COEFF, "coeff", true, true, 0.1, 0, 1, .doc = "Allpass coefficient." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
+                { PARAM_INPUT, "input", .doc = "Input signal." },
+                { PARAM_DELAY, "delay", 1, 1, AGInt_Max,
+                    .type = AGControl::TYPE_INT, .mode = AGPortInfo::LIN,
+                    .doc = "Delay length (samples)." },
+                { PARAM_COEFF, "coeff", 0.1, 0, 1, .doc = "Allpass coefficient." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
-                { PARAM_DELAY, "delay", true, true, 0.5, 0, AGFloat_Max, .doc = "Delay length (seconds)." },
-                { PARAM_COEFF, "coeff", true, true, 0.1, 0, 1, .doc = "Allpass coefficient." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
+                { PARAM_DELAY, "delay", 1, 1, AGInt_Max,
+                    .type = AGControl::TYPE_INT, .mode = AGPortInfo::LIN,
+                    .doc = "Delay length (samples)." },
+                { PARAM_COEFF, "coeff", 0.1, -AGFloat_Max, AGFloat_Max, .doc = "Allpass coefficient." },
             };
         };
         
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
         
@@ -2566,27 +2573,27 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", true, false, .doc = "Input signal." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+                { PARAM_INPUT, "input", .doc = "Input signal." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." }
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_A1, "a1", true, true, 0.00, -2.0, 2.0, .doc = "A1 coefficient." },
-                { PARAM_A2, "a2", true, true, 0.00, -2.0, 2.0, .doc = "A2 coefficient." },
-                { PARAM_B0, "b0", true, true, 0.00, -2.0, 2.0, .doc = "B0 coefficient." },
-                { PARAM_B1, "b1", true, true, 0.00, -2.0, 2.0, .doc = "B1 coefficient." },
-                { PARAM_B2, "b2", true, true, 0.00, -2.0, 2.0, .doc = "B2 coefficient." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+                { PARAM_A1, "a1", 0.00, -2.0, 2.0, .doc = "A1 coefficient." },
+                { PARAM_A2, "a2", 0.00, -2.0, 2.0, .doc = "A2 coefficient." },
+                { PARAM_B0, "b0", 0.00, -2.0, 2.0, .doc = "B0 coefficient." },
+                { PARAM_B1, "b1", 0.00, -2.0, 2.0, .doc = "B1 coefficient." },
+                { PARAM_B2, "b2", 0.00, -2.0, 2.0, .doc = "B2 coefficient." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." }
             };
         };
         
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
         
@@ -2721,25 +2728,25 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", true, false, .doc = "Input" },
-                { PARAM_PAN, "pan", true, true, 0, -1, 1, .doc = "Pan amount (-1.0 - 1.0)" },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+                { PARAM_INPUT, "input", .doc = "Input" },
+                { PARAM_PAN, "pan", 0, -1, 1, .doc = "Pan amount (-1.0 - 1.0)" },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." }
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_PAN, "pan", true, true, 0, -1, 1, .doc = "Pan amount (-1.0 - 1.0)" },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." }
+                { PARAM_PAN, "pan", 0, -1, 1, .doc = "Pan amount (-1.0 - 1.0)" },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." }
             };
         };
         
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT_L, "left output", true, false, .doc = "Left output" },
-                { PARAM_OUTPUT_R, "right output", true, false, .doc = "Right output" },
+                { PARAM_OUTPUT_L, "left output", .doc = "Left output" },
+                { PARAM_OUTPUT_R, "right output", .doc = "Right output" },
             };
         }
         
@@ -2855,9 +2862,9 @@ public:
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_FILE, "file", ._default = 0,
+                { PARAM_FILE, "file", ._default = AGControl(""),
                     .type = AGControl::TYPE_STRING,
-                    .editor = AGPortInfo::EDITOR_AUDIOFILES },
+                    .editorMode = AGPortInfo::EDITOR_AUDIOFILES },
                 { PARAM_RATE, "rate", ._default = 1 },
                 { AUDIO_PARAM_GAIN, "gain", ._default = 1 }
             };
@@ -2866,7 +2873,7 @@ public:
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
         
@@ -3004,6 +3011,8 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioBiquadNode::Manifest);
         
         nodeTypes.push_back(new AGAudioPannerNode::Manifest);
+        
+        nodeTypes.push_back(new AGAudioMatrixMixerNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();

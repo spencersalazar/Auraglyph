@@ -45,21 +45,21 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_READ, "read", true, true, .doc = "Triggers sensor reading and output." }
+                { PARAM_READ, "read", .doc = "Triggers sensor reading and output." }
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_RATE, "rate", true, true, 60, 0, 100, AGPortInfo::LIN, .doc = "Rate at which to read sensors." },
+                { PARAM_RATE, "rate", 60, 0, 100, AGPortInfo::LIN, .doc = "Rate at which to read sensors." },
             };
         };
 
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." },
+                { PARAM_OUTPUT, "output", .doc = "Output." },
             };
         };
 

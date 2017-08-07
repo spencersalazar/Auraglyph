@@ -170,7 +170,7 @@ public:
                                                  m_height/2-AGStyle::editor_titleInset.y,
                                                  0);
         titleMV = GLKMatrix4Scale(titleMV, 0.61, 0.61, 0.61);
-        text->render(m_title, GLcolor4f::white, titleMV, proj);
+        text->render(m_title, AGStyle::foregroundColor(), titleMV, proj);
         
         /* render step indicator */
         
@@ -297,11 +297,11 @@ public:
                                       m_height/2-AGUISequencerEditor_stepSize/2-text->height()*0.61/2,
                                       0);
         titleMV = GLKMatrix4Scale(titleMV, 0.61, 0.61, 0.61);
-        text->render("bpm", GLcolor4f::white, titleMV, proj);
+        text->render("bpm", AGStyle::foregroundColor(), titleMV, proj);
         
         /* render pull tab */
         
-        GLcolor4f::white.set();
+        AGStyle::foregroundColor().set();
         drawTriangleFan((GLvertex3f[]) {
             m_boxGeo[2],
             m_boxGeo[2]+GLvertex3f(-m_pullTabSize, 0, 0),
@@ -506,15 +506,15 @@ string AGControlSequencerNode::Manifest::_name() const { return "Sequencer"; };
 vector<AGPortInfo> AGControlSequencerNode::Manifest::_inputPortInfo() const
 {
     return {
-        { PARAM_ADVANCE, "advance", true, true, .doc = "Triggers step to advance by one." },
-        { PARAM_BPM, "bpm", true, true, 120, 0, AGFloat_Max, .doc = "BPM of sequencer." },
+        { PARAM_ADVANCE, "advance", .doc = "Triggers step to advance by one." },
+        { PARAM_BPM, "bpm", 120, 0, AGFloat_Max, .doc = "BPM of sequencer." },
     };
 };
 
 vector<AGPortInfo> AGControlSequencerNode::Manifest::_editPortInfo() const
 {
     return {
-        { PARAM_BPM, "bpm", true, true, 120, 0, AGFloat_Max, .doc = "BPM of sequencer." },
+        { PARAM_BPM, "bpm", 120, 0, AGFloat_Max, .doc = "BPM of sequencer." },
     };
 };
 

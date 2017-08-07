@@ -22,6 +22,8 @@ typedef string AGString;
 
 const static float AGFloat_Min = FLT_MIN;
 const static float AGFloat_Max = FLT_MAX;
+const static int AGInt_Min = INT_MIN;
+const static float AGInt_Max = INT_MAX;
 
 class AGControl
 {

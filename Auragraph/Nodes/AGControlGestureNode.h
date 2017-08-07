@@ -51,11 +51,11 @@ public:
         vector<AGPortInfo> _editPortInfo() const override { return { }; };
         
         vector<AGPortInfo> _outputPortInfo() const override { return {
-            { PARAM_X, "x", true, false, .doc = "X-position of pencil or touch within the bounding box of the node window." },
-            { PARAM_Y, "y", true, false, .doc = "Y-position of pencil or touch within the bounding box of the node window." },
-            { PARAM_PRESSURE, "pressure", true, false, .doc = "Pencil pressure." },
-            { PARAM_TILT, "tilt", true, false, .doc = "Pencil tilt." },
-            { PARAM_ROTATION, "rotation", true, false, .doc = "Pencil rotation." },
+            { PARAM_X, "x", .doc = "X-position of pencil or touch within the bounding box of the node window." },
+            { PARAM_Y, "y", .doc = "Y-position of pencil or touch within the bounding box of the node window." },
+            { PARAM_PRESSURE, "pressure", .doc = "Pencil pressure." },
+            { PARAM_TILT, "tilt", .doc = "Pencil tilt." },
+            { PARAM_ROTATION, "rotation", .doc = "Pencil rotation." },
         }; };
         
         vector<GLvertex3f> _iconGeo() const override

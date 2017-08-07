@@ -150,17 +150,17 @@ public:
         GeoGen::makeRect(box, m_width, m_height);
         
         // fill frame
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::black);
+        AGStyle::frameBackgroundColor().set();
         drawTriangleFan(box, 4);
         
         // stroke frame
         glLineWidth(2.0f);
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+        AGStyle::foregroundColor().set();
         drawLineLoop(box, 4);
         
         // draw y-axis
         glLineWidth(1.0f);
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+        AGStyle::foregroundColor().set();
         drawLineStrip((GLvertex2f[]) {
             m_waveformPos + GLvertex2f{ -m_waveformSize.x*0.5f,  m_waveformSize.y*0.5f },
             m_waveformPos + GLvertex2f{ -m_waveformSize.x*0.5f, -m_waveformSize.y*0.5f },
@@ -168,7 +168,7 @@ public:
         
         // draw x-axis
         glLineWidth(1.0f);
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+        AGStyle::foregroundColor().set();
         drawLineStrip((GLvertex2f[]) {
             m_waveformPos + GLvertex2f{ -m_waveformSize.x*0.5f, 0 },
             m_waveformPos + GLvertex2f{  m_waveformSize.x*0.5f, 0 },
@@ -176,7 +176,7 @@ public:
         
         // draw waveform
         glLineWidth(3.0f);
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+        AGStyle::foregroundColor().set();
         drawWaveform(m_node->m_waveform.data(), m_node->m_waveform.size(),
                      m_waveformPos+GLvertex2f(-m_waveformSize.x*0.5f, 0),
                      m_waveformPos+GLvertex2f( m_waveformSize.x*0.5f, 0),

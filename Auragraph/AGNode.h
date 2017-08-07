@@ -40,14 +40,11 @@ class AGUINodeEditor;
 
 typedef AGControl AGParamValue;
 
-
 struct AGPortInfo
 {
     int portId;
     
     string name;
-    bool canConnect; // can create connection btw this port and another port
-    bool canEdit; // should this port appear in the node's editor window
     
     float _default;
     float min;
@@ -55,7 +52,9 @@ struct AGPortInfo
     
     enum Mode
     {
+        NONE = 0,
         LIN,
+        EXP,
         LOG,
     };
     
@@ -63,13 +62,22 @@ struct AGPortInfo
     
     AGControl::Type type;
     
-    enum Editor
+    enum EditorMode
     {
         EDITOR_DEFAULT = 0,
         EDITOR_AUDIOFILES,
+        EDITOR_ENUM,
     };
     
-    Editor editor;
+    EditorMode editorMode;
+    
+    struct EnumInfo
+    {
+        AGInt value;
+        AGString name;
+    };
+    
+    vector<EnumInfo> enumInfo;
     
     // TODO: min, max, units label, rate, etc.
     
@@ -205,6 +213,7 @@ public:
     // XXX TODO : not sure if we need this (only a handful of callers exist for 'numInputsForPort', namely the extra-tricky
     // add and mul), but for completeness I'm going to add an equivalent output function
     int numInputsForPort(int paramId, AGRate rate = RATE_NULL);
+    int numOutputsForParam(int paramId);
     int numOutputsForPort(int portId);
 
     /*** Subclassing note: override information as described ***/
@@ -296,49 +305,6 @@ protected:
     map<int, int> m_param2OutputPort;
     map<int, AGParamValue> m_params;
 };
-
-
-//------------------------------------------------------------------------------
-// ### AGFreeDraw ###
-//------------------------------------------------------------------------------
-#pragma mark - AGFreeDraw
-
-class AGFreeDraw : public AGUIObject
-{
-public:
-    AGFreeDraw(GLvertex3f *points, int nPoints);
-    AGFreeDraw(const AGDocument::Freedraw &docFreedraw);
-    ~AGFreeDraw();
-    
-    const string &uuid() { return m_uuid; }
-    
-    virtual void update(float t, float dt);
-    virtual void render();
-    
-    virtual void touchDown(const GLvertex3f &t);
-    virtual void touchMove(const GLvertex3f &t);
-    virtual void touchUp(const GLvertex3f &t);
-    
-    virtual AGUIObject *hitTest(const GLvertex3f &t);
-    
-    virtual AGDocument::Freedraw serialize();
-    
-private:
-    const string m_uuid;
-    
-    GLvertex3f *m_points;
-    int m_nPoints;
-    bool m_touchDown;
-    GLvertex3f m_position;
-    GLvertex3f m_touchLast;
-    
-    bool m_active;
-//    powcurvef m_alpha;
-    
-    // debug
-    int m_touchPoint0;
-};
-
 
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
@@ -493,5 +459,3 @@ private:
 
 
 #endif /* defined(__Auragraph__AGNode__) */
-
-

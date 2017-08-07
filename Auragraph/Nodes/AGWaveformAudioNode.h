@@ -38,25 +38,25 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_FREQ, "freq", true, true, .doc = "Oscillator frequency." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, .doc = "Output gain." },
-                { PARAM_PHASE, "phase", true, true, .doc = "Oscillator phase." },
+                { PARAM_FREQ, "freq", .doc = "Oscillator frequency." },
+                { AUDIO_PARAM_GAIN, "gain", .doc = "Output gain." },
+                { PARAM_PHASE, "phase", .doc = "Oscillator phase." },
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
-                { PARAM_FREQ, "freq", true, true, 220, .doc = "Oscillator frequency." },
-                { PARAM_DURATION, "dur", true, true, 1.0f/220.0f, .doc = "Oscillator duration or wavelength (seconds)." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
+                { PARAM_FREQ, "freq", 220, .doc = "Oscillator frequency." },
+                { PARAM_DURATION, "dur", 1.0f/220.0f, .doc = "Oscillator duration or wavelength (seconds)." },
             };
         };
 
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
 

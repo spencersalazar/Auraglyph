@@ -57,8 +57,6 @@ private:
 class AGUIStandardNodeEditor : public AGUINodeEditor
 {
 public:
-    static void initializeNodeEditor();
-    
     AGUIStandardNodeEditor(AGNode *node);
     ~AGUIStandardNodeEditor();
     
@@ -87,16 +85,18 @@ protected:
     
     virtual GLvrectf effectiveBounds();
     
-private:
+private:    
+    void initializeNodeEditor();
+
+    float m_radius;
+    float m_radiusY;
     
-    static bool s_init;
-    static float s_radius;
-    static GLuint s_geoSize;
-    static GLvertex3f * s_geo;
-    static GLuint s_boundingOffset;
-    static GLuint s_innerboxOffset;
-    static GLuint s_buttonBoxOffset;
-    static GLuint s_itemEditBoxOffset;
+    GLuint m_geoSize;
+    GLvertex3f * m_geo;
+    GLuint m_boundingOffset;
+    GLuint m_innerboxOffset;
+    GLuint m_buttonBoxOffset;
+    GLuint m_itemEditBoxOffset;
     
     AGNode * const m_node;
     string m_title;

@@ -24,6 +24,7 @@ public:
     enum Param
     {
         PARAM_ITERATE,
+        OUTPUT_VALUE,
     };
     
     class Manifest : public AGStandardNodeManifest<AGControlArrayNode>

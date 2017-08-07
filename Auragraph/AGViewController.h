@@ -27,7 +27,8 @@ class AGInteractiveObject;
 enum AGDrawMode
 {
     DRAWMODE_NODE,
-    DRAWMODE_FREEDRAW
+    DRAWMODE_FREEDRAW,
+    DRAWMODE_FREEDRAW_ERASE
 };
 
 #ifdef __OBJC__
@@ -47,7 +48,10 @@ enum AGDrawMode
 - (void)fadeOutAndDelete:(AGInteractiveObject *)object;
 
 - (void)addFreeDraw:(AGFreeDraw *)freedraw;
+//- (void)replaceFreeDraw:(AGFreeDraw *)freedrawOld freedrawNew:(AGFreeDraw *)freedrawNew;
+- (void)resignFreeDraw:(AGFreeDraw *)freedraw;
 - (void)removeFreeDraw:(AGFreeDraw *)freedraw;
+- (const list<AGFreeDraw *> &)freedraws;
 
 - (void)addTouchOutsideListener:(AGInteractiveObject *)listener;
 - (void)addTouchOutsideHandler:(AGTouchHandler *)listener;

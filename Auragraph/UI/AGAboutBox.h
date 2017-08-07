@@ -23,15 +23,17 @@ public:
     AGAboutBox(const GLvertex3f &pos);
     ~AGAboutBox();
     
-    virtual void update(float t, float dt);
-    virtual void render();
+    virtual void update(float t, float dt) override;
+    virtual void render() override;
     
-    virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
+    virtual AGInteractiveObject *hitTest(const GLvertex3f &t) override;
 
-    virtual void renderOut();
-    virtual bool finishedRenderingOut();
+    virtual void renderOut() override;
+    virtual bool finishedRenderingOut() override;
     
-    virtual GLvrectf effectiveBounds();
+    bool renderFixed() override { return true; }
+    
+    virtual GLvrectf effectiveBounds() override;
 
 private:
 

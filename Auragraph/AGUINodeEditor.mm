@@ -63,61 +63,45 @@ void AGUINodeEditor::touchOutside()
 
 static const int NODEEDITOR_ROWCOUNT = 5;
 
-
-bool AGUIStandardNodeEditor::s_init = false;
-float AGUIStandardNodeEditor::s_radius = 0;
-GLuint AGUIStandardNodeEditor::s_geoSize = 0;
-GLvertex3f * AGUIStandardNodeEditor::s_geo = NULL;
-GLuint AGUIStandardNodeEditor::s_boundingOffset = 0;
-GLuint AGUIStandardNodeEditor::s_innerboxOffset = 0;
-GLuint AGUIStandardNodeEditor::s_buttonBoxOffset = 0;
-GLuint AGUIStandardNodeEditor::s_itemEditBoxOffset = 0;
-
 void AGUIStandardNodeEditor::initializeNodeEditor()
 {
-    if(!s_init)
-    {
-        s_init = true;
-        
-        s_geoSize = 16;
-        s_geo = new GLvertex3f[s_geoSize];
-        
-        s_radius = AGNODESELECTOR_RADIUS;
-        float radius = s_radius;
-        
-        // outer box
-        // stroke GL_LINE_STRIP + fill GL_TRIANGLE_FAN
-        s_geo[0] = GLvertex3f(-radius, radius, 0);
-        s_geo[1] = GLvertex3f(-radius, -radius, 0);
-        s_geo[2] = GLvertex3f(radius, -radius, 0);
-        s_geo[3] = GLvertex3f(radius, radius, 0);
-        
-        // inner selection box
-        // stroke GL_LINE_STRIP + fill GL_TRIANGLE_FAN
-        s_geo[4] = GLvertex3f(-radius*0.95, radius/NODEEDITOR_ROWCOUNT, 0);
-        s_geo[5] = GLvertex3f(-radius*0.95, -radius/NODEEDITOR_ROWCOUNT, 0);
-        s_geo[6] = GLvertex3f(radius*0.95, -radius/NODEEDITOR_ROWCOUNT, 0);
-        s_geo[7] = GLvertex3f(radius*0.95, radius/NODEEDITOR_ROWCOUNT, 0);
-        
-        // button box
-        // stroke GL_LINE_STRIP + fill GL_TRIANGLE_FAN
-        s_geo[8] = GLvertex3f(-radius*0.9*0.60, radius/NODEEDITOR_ROWCOUNT * 0.95, 0);
-        s_geo[9] = GLvertex3f(-radius*0.9*0.60, -radius/NODEEDITOR_ROWCOUNT * 0.95, 0);
-        s_geo[10] = GLvertex3f(radius*0.9*0.60, -radius/NODEEDITOR_ROWCOUNT * 0.95, 0);
-        s_geo[11] = GLvertex3f(radius*0.9*0.60, radius/NODEEDITOR_ROWCOUNT * 0.95, 0);
-        
-        // item edit bounding box
-        // stroke GL_LINE_STRIP + fill GL_TRIANGLE_FAN
-        s_geo[12] = GLvertex3f(-radius*1.05, radius, 0);
-        s_geo[13] = GLvertex3f(-radius*1.05, -radius, 0);
-        s_geo[14] = GLvertex3f(radius*3.45, -radius, 0);
-        s_geo[15] = GLvertex3f(radius*3.45, radius, 0);
-        
-        s_boundingOffset = 0;
-        s_innerboxOffset = 4;
-        s_buttonBoxOffset = 8;
-        s_itemEditBoxOffset = 12;
-    }
+    m_geoSize = 16;
+    m_geo = new GLvertex3f[m_geoSize];
+    
+    float radius = m_radius;
+    
+    // outer box
+    // stroke GL_LINE_STRIP + fill GL_TRIANGLE_FAN
+    m_geo[0] = GLvertex3f(-radius, m_radiusY, 0);
+    m_geo[1] = GLvertex3f(-radius, -m_radiusY, 0);
+    m_geo[2] = GLvertex3f(radius, -m_radiusY, 0);
+    m_geo[3] = GLvertex3f(radius, m_radiusY, 0);
+    
+    // inner selection box
+    // stroke GL_LINE_STRIP + fill GL_TRIANGLE_FAN
+    m_geo[4] = GLvertex3f(-radius*0.95, radius/NODEEDITOR_ROWCOUNT, 0);
+    m_geo[5] = GLvertex3f(-radius*0.95, -radius/NODEEDITOR_ROWCOUNT, 0);
+    m_geo[6] = GLvertex3f(radius*0.95, -radius/NODEEDITOR_ROWCOUNT, 0);
+    m_geo[7] = GLvertex3f(radius*0.95, radius/NODEEDITOR_ROWCOUNT, 0);
+    
+    // button box
+    // stroke GL_LINE_STRIP + fill GL_TRIANGLE_FAN
+    m_geo[8] = GLvertex3f(-radius*0.9*0.60, radius/NODEEDITOR_ROWCOUNT * 0.95, 0);
+    m_geo[9] = GLvertex3f(-radius*0.9*0.60, -radius/NODEEDITOR_ROWCOUNT * 0.95, 0);
+    m_geo[10] = GLvertex3f(radius*0.9*0.60, -radius/NODEEDITOR_ROWCOUNT * 0.95, 0);
+    m_geo[11] = GLvertex3f(radius*0.9*0.60, radius/NODEEDITOR_ROWCOUNT * 0.95, 0);
+    
+    // item edit bounding box
+    // stroke GL_LINE_STRIP + fill GL_TRIANGLE_FAN
+    m_geo[12] = GLvertex3f(-radius*1.05, radius, 0);
+    m_geo[13] = GLvertex3f(-radius*1.05, -radius, 0);
+    m_geo[14] = GLvertex3f(radius*3.45, -radius, 0);
+    m_geo[15] = GLvertex3f(radius*3.45, radius, 0);
+    
+    m_boundingOffset = 0;
+    m_innerboxOffset = 4;
+    m_buttonBoxOffset = 8;
+    m_itemEditBoxOffset = 12;
 }
 
 AGUIStandardNodeEditor::AGUIStandardNodeEditor(AGNode *node) :
@@ -132,24 +116,31 @@ m_hitDiscard(false),
 m_startedInDiscard(false),
 m_lastTraceWasRecognized(true)
 {
+    m_radius = AGNODESELECTOR_RADIUS;
+    
+    float rowCount = NODEEDITOR_ROWCOUNT;
+    float rowHeight = m_radius*2.0/rowCount;
+    int numEditPorts = m_node->numEditPorts();
+    
+    if(numEditPorts <= 4)
+        m_radiusY = m_radius;
+    else
+        m_radiusY = m_radius+rowHeight/2.0f*1.1f*(numEditPorts-4);
+
     initializeNodeEditor();
     
     string ucname = m_node->title();
     for(int i = 0; i < ucname.length(); i++)
         ucname[i] = toupper(ucname[i]);
-    //    m_title = "EDIT " + ucname;
-    //    m_title = "EDIT";
     m_title = ucname;
     
     m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
     m_yScale = lincurvef(AGStyle::open_animTimeY, AGStyle::open_squeezeHeight, 1);
     
-    int numEditPorts = m_node->numEditPorts();
-    float rowCount = NODEEDITOR_ROWCOUNT;
-    float rowHeight = s_radius*2.0/rowCount;
     for(int port = 0; port < numEditPorts; port++)
     {
-        AGControl::Type editPortType = m_node->editPortInfo(port).type;
+        AGPortInfo info = m_node->editPortInfo(port);
+        AGControl::Type editPortType = info.type;
         // only use sliders for float/int
         if(editPortType != AGControl::TYPE_NONE &&
            editPortType != AGControl::TYPE_FLOAT &&
@@ -161,14 +152,26 @@ m_lastTraceWasRecognized(true)
         AGParamValue v;
         m_node->getEditPortValue(port, v);
         
-        float y = s_radius-rowHeight*(port+2);
+        float y = m_radiusY-rowHeight*(port+2);
         
-        AGSlider *slider = new AGSlider(GLvertex3f(s_radius/2, y+rowHeight/4, 0), v);
+        AGSlider *slider = new AGSlider(GLvertex3f(m_radius/2, y+rowHeight/4, 0), v);
         slider->init();
         
-        slider->setType(AGSlider::CONTINUOUS);
-        slider->setScale(AGSlider::EXPONENTIAL);
-        slider->setSize(GLvertex2f(s_radius, rowHeight));
+        if(editPortType == AGControl::TYPE_FLOAT)
+            slider->setType(AGSlider::CONTINUOUS);
+        else if(editPortType == AGControl::TYPE_INT)
+            slider->setType(AGSlider::DISCRETE);
+        else
+            slider->setType(AGSlider::CONTINUOUS);
+        
+        if(info.mode == AGPortInfo::LIN)
+            slider->setScale(AGSlider::LINEAR);
+        else if(info.mode == AGPortInfo::EXP)
+            slider->setScale(AGSlider::EXPONENTIAL);
+        else
+            slider->setScale(AGSlider::EXPONENTIAL);
+        
+        slider->setSize(GLvertex2f(m_radius, rowHeight));
         slider->onUpdate([port, node] (float value) {
             node->setEditPortValue(port, value);
         });
@@ -185,15 +188,16 @@ m_lastTraceWasRecognized(true)
     
     float pinButtonWidth = 20;
     float pinButtonHeight = 20;
-    float pinButtonX = s_radius-10-pinButtonWidth/2;
-    float pinButtonY = s_radius-10-pinButtonHeight/2;
+    float pinButtonX = m_radius-10-pinButtonWidth/2;
+    float pinButtonY = m_radiusY-10-pinButtonHeight/2;
     AGRenderInfoV pinInfo;
     float pinRadius = (pinButtonWidth*0.9)/2;
     m_pinInfoGeo = std::vector<GLvertex3f>({{ pinRadius, pinRadius, 0 }, { -pinRadius, -pinRadius, 0 }});
+    // TODO: how does this even work? data is not copied and is junked when ctor exits
     pinInfo.geo = m_pinInfoGeo.data();
     pinInfo.numVertex = 2;
     pinInfo.geoType = GL_LINES;
-    pinInfo.color = AGStyle::foregroundColor;
+    pinInfo.color = AGStyle::foregroundColor();
     m_pinButton = new AGUIIconButton(GLvertex3f(pinButtonX, pinButtonY, 0),
                                      GLvertex2f(pinButtonWidth, pinButtonHeight),
                                      pinInfo);
@@ -244,10 +248,6 @@ void AGUIStandardNodeEditor::update(float t, float dt)
     
     m_currentDrawlineAlpha.update(dt);
     
-//    for(auto slider : m_editSliders)
-//        slider->update(t, dt);
-//    m_pinButton->update(t, dt);
-    
     updateChildren(t, dt);
     
     m_t += dt;
@@ -262,9 +262,9 @@ void AGUIStandardNodeEditor::render()
     
     /* draw bounding box */
     
-    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_geo);
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
     glEnableVertexAttribArray(AGVertexAttribPosition);
-    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+    AGStyle::foregroundColor().set();
     glDisableVertexAttribArray(AGVertexAttribColor);
     glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
     glDisableVertexAttribArray(AGVertexAttribNormal);
@@ -287,23 +287,24 @@ void AGUIStandardNodeEditor::render()
     
     // stroke
     glLineWidth(4.0f);
-    glDrawArrays(GL_LINE_LOOP, s_boundingOffset, 4);
+    glDrawArrays(GL_LINE_LOOP, m_boundingOffset, 4);
     
-    GLcolor4f blackA = GLcolor4f(0, 0, 0, 0.75);
-    glVertexAttrib4fv(AGVertexAttribColor, (const float*) &blackA);
+    GLcolor4f bg = AGStyle::frameBackgroundColor().withAlpha(0.75);
+    bg.set();
     
     // fill
-    glDrawArrays(GL_TRIANGLE_FAN, s_boundingOffset, 4);
+    glDrawArrays(GL_TRIANGLE_FAN, m_boundingOffset, 4);
     
     
     /* draw title */
     
     float rowCount = NODEEDITOR_ROWCOUNT;
+    float textScale = 0.61;
     
-    GLKMatrix4 titleMV = GLKMatrix4Translate(modelview(), -s_radius*0.9, s_radius - s_radius*2.0/rowCount, 0);
-    titleMV = GLKMatrix4Scale(titleMV, 0.61, 0.61, 0.61);
-    text->render(m_title, GLcolor4f::white, titleMV, projection());
-    
+    float textAscender = text->ascender();
+    GLKMatrix4 titleMV = GLKMatrix4Translate(modelview(), -m_radius*0.9, m_radiusY-m_radius*2.0/rowCount+textAscender*textScale*0.5f, 0);
+    titleMV = GLKMatrix4Scale(titleMV, textScale, textScale, textScale);
+    text->render(m_title, AGStyle::foregroundColor(), titleMV, projection());
     
     /* draw items */
     
@@ -311,9 +312,9 @@ void AGUIStandardNodeEditor::render()
     
     for(int i = 0; i < numPorts; i++)
     {
-        float y = s_radius - s_radius*2.0*(i+2)/rowCount;
-        GLcolor4f nameColor(0.61, 0.61, 0.61, 1);
-        GLcolor4f valueColor = GLcolor4f::white;
+        float y = m_radiusY - m_radius*2.0*(i+2)/rowCount;
+        GLcolor4f nameColor = AGStyle::foregroundColor().blend(0.61, 0.61, 0.61);
+        GLcolor4f valueColor = AGStyle::foregroundColor();
         
         if(i == m_hit)
         {
@@ -322,33 +323,33 @@ void AGUIStandardNodeEditor::render()
             
             /* draw hit box */
             
-            glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_geo);
+            glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
             glEnableVertexAttribArray(AGVertexAttribPosition);
-            glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+            AGStyle::foregroundColor().set();
             glDisableVertexAttribArray(AGVertexAttribColor);
             glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
             glDisableVertexAttribArray(AGVertexAttribNormal);
             
             AGGenericShader::instance().useProgram();
-            GLKMatrix4 hitMV = GLKMatrix4Translate(modelview(), 0, y + s_radius/rowCount, 0);
+            GLKMatrix4 hitMV = GLKMatrix4Translate(modelview(), 0, y + m_radius/rowCount, 0);
             AGGenericShader::instance().setModelViewMatrix(hitMV);
             AGGenericShader::instance().setProjectionMatrix(projection());
             
             // fill
-            glDrawArrays(GL_TRIANGLE_FAN, s_innerboxOffset, 4);
+            glDrawArrays(GL_TRIANGLE_FAN, m_innerboxOffset, 4);
             
             // invert colors
             nameColor = GLcolor4f(1-nameColor.r, 1-nameColor.g, 1-nameColor.b, 1);
             valueColor = GLcolor4f(1-valueColor.r, 1-valueColor.g, 1-valueColor.b, 1);
         }
         
-        GLKMatrix4 nameMV = GLKMatrix4Translate(modelview(), -s_radius*0.9, y + s_radius/rowCount*0.1, 0);
+        GLKMatrix4 nameMV = GLKMatrix4Translate(modelview(), -m_radius*0.9, y + m_radius/rowCount*0.1, 0);
         nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
         text->render(m_node->editPortInfo(i).name, nameColor, nameMV, projection());
         
         if(m_node->editPortInfo(i).type == AGControl::TYPE_STRING)
         {
-            GLKMatrix4 valueMV = GLKMatrix4Translate(modelview(), s_radius*0.1, y + s_radius/rowCount*0.1, 0);
+            GLKMatrix4 valueMV = GLKMatrix4Translate(modelview(), m_radius*0.1, y + m_radius/rowCount*0.1, 0);
             valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
             AGParamValue v;
             m_node->getEditPortValue(i, v);
@@ -370,83 +371,82 @@ void AGUIStandardNodeEditor::render()
         glBindVertexArrayOES(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         
-        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), s_geo);
+        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_geo);
         glEnableVertexAttribArray(AGVertexAttribPosition);
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+        AGStyle::foregroundColor().set();
         glDisableVertexAttribArray(AGVertexAttribColor);
         glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
         glDisableVertexAttribArray(AGVertexAttribNormal);
         
-        float y = s_radius - s_radius*2.0*(m_editingPort+2)/rowCount;
+        float y = m_radiusY - m_radius*2.0*(m_editingPort+2)/rowCount;
         
         AGGenericShader::instance().useProgram();
         AGGenericShader::instance().setProjectionMatrix(projection());
         
         // bounding box
-        GLKMatrix4 bbMV = GLKMatrix4Translate(modelview(), 0, y - s_radius + s_radius*2/rowCount, 0);
+        GLKMatrix4 bbMV = GLKMatrix4Translate(modelview(), 0, y - m_radius + m_radius*2/rowCount, 0);
         AGGenericShader::instance().setModelViewMatrix(bbMV);
         
         // stroke
-        glDrawArrays(GL_LINE_LOOP, s_itemEditBoxOffset, 4);
+        glDrawArrays(GL_LINE_LOOP, m_itemEditBoxOffset, 4);
         
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &blackA);
+        bg.set();
         
         // fill
-        glDrawArrays(GL_TRIANGLE_FAN, s_itemEditBoxOffset, 4);
+        glDrawArrays(GL_TRIANGLE_FAN, m_itemEditBoxOffset, 4);
         
-        
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
+        AGStyle::foregroundColor().set();
         
         // accept button
-        GLKMatrix4 buttonMV = GLKMatrix4Translate(modelview(), s_radius*1.65, y + s_radius/rowCount, 0);
+        GLKMatrix4 buttonMV = GLKMatrix4Translate(modelview(), m_radius*1.65, y + m_radius/rowCount, 0);
         AGGenericShader::instance().setModelViewMatrix(buttonMV);
         if(m_hitAccept)
             // stroke
-            glDrawArrays(GL_LINE_LOOP, s_buttonBoxOffset, 4);
+            glDrawArrays(GL_LINE_LOOP, m_buttonBoxOffset, 4);
         else
             // fill
-            glDrawArrays(GL_TRIANGLE_FAN, s_buttonBoxOffset, 4);
+            glDrawArrays(GL_TRIANGLE_FAN, m_buttonBoxOffset, 4);
         
         // discard button
-        buttonMV = GLKMatrix4Translate(modelview(), s_radius*1.65 + s_radius*1.2, y + s_radius/rowCount, 0);
+        buttonMV = GLKMatrix4Translate(modelview(), m_radius*1.65 + m_radius*1.2, y + m_radius/rowCount, 0);
         AGGenericShader::instance().setModelViewMatrix(buttonMV);
         // fill
         if(m_hitDiscard)
             // stroke
-            glDrawArrays(GL_LINE_LOOP, s_buttonBoxOffset, 4);
+            glDrawArrays(GL_LINE_LOOP, m_buttonBoxOffset, 4);
         else
             // fill
-            glDrawArrays(GL_TRIANGLE_FAN, s_buttonBoxOffset, 4);
+            glDrawArrays(GL_TRIANGLE_FAN, m_buttonBoxOffset, 4);
         
         // text
-        GLKMatrix4 textMV = GLKMatrix4Translate(modelview(), s_radius*1.2, y + s_radius/rowCount*0.1, 0);
+        GLKMatrix4 textMV = GLKMatrix4Translate(modelview(), m_radius*1.2, y + m_radius/rowCount*0.1, 0);
         textMV = GLKMatrix4Scale(textMV, 0.5, 0.5, 0.5);
         if(m_hitAccept)
-            text->render("Accept", GLcolor4f::white, textMV, projection());
+            text->render("Accept", AGStyle::foregroundColor(), textMV, projection());
         else
-            text->render("Accept", GLcolor4f::black, textMV, projection());
+            text->render("Accept", AGStyle::frameBackgroundColor(), textMV, projection());
         
         
-        textMV = GLKMatrix4Translate(modelview(), s_radius*1.2 + s_radius*1.2, y + s_radius/rowCount*0.1, 0);
+        textMV = GLKMatrix4Translate(modelview(), m_radius*1.2 + m_radius*1.2, y + m_radius/rowCount*0.1, 0);
         textMV = GLKMatrix4Scale(textMV, 0.5, 0.5, 0.5);
         if(m_hitDiscard)
-            text->render("Discard", GLcolor4f::white, textMV, projection());
+            text->render("Discard", AGStyle::foregroundColor(), textMV, projection());
         else
-            text->render("Discard", GLcolor4f::black, textMV, projection());
+            text->render("Discard", AGStyle::frameBackgroundColor(), textMV, projection());
         
         // text name + value
-        GLKMatrix4 nameMV = GLKMatrix4Translate(modelview(), -s_radius*0.9, y + s_radius/rowCount*0.1, 0);
+        GLKMatrix4 nameMV = GLKMatrix4Translate(modelview(), -m_radius*0.9, y + m_radius/rowCount*0.1, 0);
         nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
-        text->render(m_node->editPortInfo(m_editingPort).name, GLcolor4f::white, nameMV, projection());
+        text->render(m_node->editPortInfo(m_editingPort).name, AGStyle::foregroundColor(), nameMV, projection());
         
-        GLKMatrix4 valueMV = GLKMatrix4Translate(modelview(), s_radius*0.1, y + s_radius/rowCount*0.1, 0);
+        GLKMatrix4 valueMV = GLKMatrix4Translate(modelview(), m_radius*0.1, y + m_radius/rowCount*0.1, 0);
         valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
 
         if(m_currentValueString.length() == 0)
             // show a 0 if there is no value yet
-            text->render("0", GLcolor4f::white, valueMV, projection());
+            text->render("0", AGStyle::foregroundColor(), valueMV, projection());
         else
-            text->render(m_currentValueString, GLcolor4f::white, valueMV, projection());
+            text->render(m_currentValueString, AGStyle::foregroundColor(), valueMV, projection());
         
         AGGenericShader::instance().useProgram();
         AGGenericShader::instance().setProjectionMatrix(projection());
@@ -462,14 +462,9 @@ void AGUIStandardNodeEditor::render()
             glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), geo.data());
             glEnableVertexAttribArray(AGVertexAttribPosition);
             if(next == m_drawline.end())
-            {
-                GLcolor4f traceColor = GLcolor4f(1, 1, 1, m_currentDrawlineAlpha);
-                glVertexAttrib4fv(AGVertexAttribColor, (const float *) &traceColor);
-            }
+                AGStyle::foregroundColor().withAlpha(m_currentDrawlineAlpha).set();
             else
-            {
-                glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
-            }
+                AGStyle::foregroundColor().set();
             glDisableVertexAttribArray(AGVertexAttribColor);
             glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
             glDisableVertexAttribArray(AGVertexAttribNormal);
@@ -504,29 +499,29 @@ int AGUIStandardNodeEditor::hitTestX(const GLvertex3f &t, bool *inBbox)
     
     if(m_editingPort >= 0)
     {
-        float y = s_radius - s_radius*2.0*(m_editingPort+2)/rowCount;
+        float y = m_radiusY - m_radius*2.0*(m_editingPort+2)/rowCount;
         
-        float bb_center = y - s_radius + s_radius*2/rowCount;
-        if(t.x > pos.x+s_geo[s_itemEditBoxOffset].x && t.x < pos.x+s_geo[s_itemEditBoxOffset+2].x &&
-           t.y > pos.y+bb_center+s_geo[s_itemEditBoxOffset+2].y && t.y < pos.y+bb_center+s_geo[s_itemEditBoxOffset].y)
+        float bb_center = y - m_radiusY + m_radius*2/rowCount;
+        if(t.x > pos.x+m_geo[m_itemEditBoxOffset].x && t.x < pos.x+m_geo[m_itemEditBoxOffset+2].x &&
+           t.y > pos.y+bb_center+m_geo[m_itemEditBoxOffset+2].y && t.y < pos.y+bb_center+m_geo[m_itemEditBoxOffset].y)
         {
             *inBbox = true;
             
-            GLvertex3f acceptCenter = pos + GLvertex3f(s_radius*1.65, y + s_radius/rowCount, pos.z);
-            GLvertex3f discardCenter = pos + GLvertex3f(s_radius*1.65 + s_radius*1.2, y + s_radius/rowCount, pos.z);
+            GLvertex3f acceptCenter = pos + GLvertex3f(m_radius*1.65, y + m_radius/rowCount, pos.z);
+            GLvertex3f discardCenter = pos + GLvertex3f(m_radius*1.65 + m_radius*1.2, y + m_radius/rowCount, pos.z);
             
-            if(t.x > acceptCenter.x+s_geo[s_buttonBoxOffset].x && t.x < acceptCenter.x+s_geo[s_buttonBoxOffset+2].x &&
-               t.y > acceptCenter.y+s_geo[s_buttonBoxOffset+2].y && t.y < acceptCenter.y+s_geo[s_buttonBoxOffset].y)
+            if(t.x > acceptCenter.x+m_geo[m_buttonBoxOffset].x && t.x < acceptCenter.x+m_geo[m_buttonBoxOffset+2].x &&
+               t.y > acceptCenter.y+m_geo[m_buttonBoxOffset+2].y && t.y < acceptCenter.y+m_geo[m_buttonBoxOffset].y)
                 return 1;
-            if(t.x > discardCenter.x+s_geo[s_buttonBoxOffset].x && t.x < discardCenter.x+s_geo[s_buttonBoxOffset+2].x &&
-               t.y > discardCenter.y+s_geo[s_buttonBoxOffset+2].y && t.y < discardCenter.y+s_geo[s_buttonBoxOffset].y)
+            if(t.x > discardCenter.x+m_geo[m_buttonBoxOffset].x && t.x < discardCenter.x+m_geo[m_buttonBoxOffset+2].x &&
+               t.y > discardCenter.y+m_geo[m_buttonBoxOffset+2].y && t.y < discardCenter.y+m_geo[m_buttonBoxOffset].y)
                 return 0;
         }
     }
     
     // check if in entire bounds
-    else if(t.x > pos.x-s_radius && t.x < pos.x+s_radius &&
-            t.y > pos.y-s_radius && t.y < pos.y+s_radius)
+    else if(t.x > pos.x-m_radius && t.x < pos.x+m_radius &&
+            t.y > pos.y-m_radius && t.y < pos.y+m_radius)
     {
         *inBbox = true;
         
@@ -534,8 +529,8 @@ int AGUIStandardNodeEditor::hitTestX(const GLvertex3f &t, bool *inBbox)
         
         for(int i = 0; i < numPorts; i++)
         {
-            float y_max = pos.y + s_radius - s_radius*2.0*(i+1)/rowCount;
-            float y_min = pos.y + s_radius - s_radius*2.0*(i+2)/rowCount;
+            float y_max = pos.y + m_radiusY - m_radius*2.0*(i+1)/rowCount;
+            float y_min = pos.y + m_radiusY - m_radius*2.0*(i+2)/rowCount;
             if(t.y > y_min && t.y < y_max)
             {
                 return i;
@@ -749,7 +744,7 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                 AGAnalytics::instance().eventEditNodeParamDrawOpen(m_node->type(), m_node->editPortInfo(m_hit).name);
                 
                 const AGPortInfo &portInfo = m_node->editPortInfo(m_hit);
-                if(portInfo.editor == AGPortInfo::EDITOR_DEFAULT)
+                if(portInfo.editorMode == AGPortInfo::EDITOR_DEFAULT)
                 {
                     m_editingPort = m_hit;
                     m_hit = -1;
@@ -760,7 +755,7 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
                     m_drawline.clear();
                     //m_node->getEditPortValue(m_editingPort, m_currentValue);
                 }
-                else if(portInfo.editor == AGPortInfo::EDITOR_AUDIOFILES)
+                else if(portInfo.editorMode == AGPortInfo::EDITOR_AUDIOFILES)
                 {
                     int hitPort = m_hit;
                     m_hit = -1;
@@ -803,22 +798,22 @@ GLvrectf AGUIStandardNodeEditor::effectiveBounds()
     {
         // TODO HACK: overestimate bounds
         // because figuring out the item editor box bounds is too hard right now
-        //        GLvertex2f size = GLvertex2f(s_radius*2, s_radius*2);
+        //        GLvertex2f size = GLvertex2f(m_radius*2, m_radius*2);
         //        return GLvrectf(m_node->position()-size, m_node->position()+size);
         
         float rowCount = NODEEDITOR_ROWCOUNT;
         GLvertex3f pos = m_node->position();
-        float y = s_radius - s_radius*2.0*(m_editingPort+2)/rowCount;
+        float y = m_radius - m_radius*2.0*(m_editingPort+2)/rowCount;
         
-        float bb_center = y - s_radius + s_radius*2/rowCount;
-        return GLvrectf(GLvertex2f(pos.x+s_geo[s_itemEditBoxOffset].x,
-                                   pos.y+bb_center+s_geo[s_itemEditBoxOffset+2].y),
-                        GLvertex2f(pos.x+s_geo[s_itemEditBoxOffset+2].x,
-                                   pos.y+bb_center+s_geo[s_itemEditBoxOffset].y));
+        float bb_center = y - m_radius + m_radius*2/rowCount;
+        return GLvrectf(GLvertex2f(pos.x+m_geo[m_itemEditBoxOffset].x,
+                                   pos.y+bb_center+m_geo[m_itemEditBoxOffset+2].y),
+                        GLvertex2f(pos.x+m_geo[m_itemEditBoxOffset+2].x,
+                                   pos.y+bb_center+m_geo[m_itemEditBoxOffset].y));
     }
     else
     {
-        GLvertex2f size = GLvertex2f(s_radius, s_radius);
+        GLvertex2f size = GLvertex2f(m_radius, m_radius);
         return GLvrectf(m_node->position()-size, m_node->position()+size);
     }
 }

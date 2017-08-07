@@ -15,6 +15,7 @@
 #import "ES2Render.h"
 #import "AGHandwritingRecognizer.h"
 #import "AGNode.h"
+#import "AGFreeDraw.h"
 #import "AGCompositeNode.h"
 #import "AGAudioCapturer.h"
 #import "AGAudioManager.h"
@@ -373,7 +374,7 @@
         glEnableVertexAttribArray(AGVertexAttribPosition);
         
         glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
-        glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &GLcolor4f::white);
+        AGStyle::foregroundColor().set();
         
         glDisableVertexAttribArray(AGVertexAttribTexCoord0);
         glDisableVertexAttribArray(AGVertexAttribTexCoord1);
@@ -382,6 +383,130 @@
         glDrawArrays(GL_LINE_STRIP, 0, _linePoints.size());
     }
 }
+
+@end
+
+
+
+//------------------------------------------------------------------------------
+// ### AGEraseFreedrawTouchHandler ###
+//------------------------------------------------------------------------------
+#pragma mark -
+#pragma mark AGEraseFreedrawTouchHandler
+
+@implementation AGEraseFreedrawTouchHandler
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    CGPoint p = [[touches anyObject] locationInView:_viewController.view];
+    GLvertex2f erasePos = [_viewController worldCoordinateForScreenCoordinate:p].xy();
+    
+    const list<AGFreeDraw*> &freedraws = [_viewController freedraws];
+    
+    float eraserThresh = 25;
+    
+    for(auto i = freedraws.begin(); i != freedraws.end(); )
+    {
+        AGFreeDraw *fd = *i++;
+        assert(fd);
+        
+        const vector<GLvertex3f> &oldPoints = fd->points();
+        
+        // Hit test for whole freedraw
+        for(int i = 0; i < oldPoints.size()-1; i++)
+        {
+            GLvertex2f p0 = oldPoints[i].xy();
+            GLvertex2f p1 = oldPoints[i+1].xy();
+            
+            if(pointInCircle(p0, erasePos, eraserThresh) ||
+                (i == oldPoints.size()-2 && pointInCircle(p1, erasePos, eraserThresh)) ||
+                pointOnLine(erasePos, p0, p1, eraserThresh))
+            {
+                vector<vector<GLvertex3f> > newFreedraws;
+                vector<GLvertex3f> newPoints;
+            
+                // Hit test for individual segments within freedraw
+                for(int j = 0; j < oldPoints.size()-1; j++)
+                {
+                    GLvertex2f p0 = oldPoints[j].xy();
+                    GLvertex2f p1 = oldPoints[j+1].xy();
+                
+                    if(pointInCircle(p0, erasePos, eraserThresh))
+                    {
+                        if(newPoints.size()>1)
+                        {
+                            newFreedraws.push_back(newPoints);
+                            newPoints.clear();
+                        }
+                        else
+                        {
+                            newPoints.clear();
+                        }
+                    }
+                    else if((j == oldPoints.size()-2) && pointInCircle(p1, erasePos, eraserThresh))
+                    {
+                        if(newPoints.size()>0)
+                        {
+                            newPoints.push_back(oldPoints[j]);
+                            newFreedraws.push_back(newPoints);
+                            newPoints.clear();
+                        }
+                        else
+                        {
+                            newPoints.clear();
+                        }
+                    }
+                    else if(pointOnLine(erasePos, p0, p1, eraserThresh))
+                    {
+                        if(newPoints.size()>1)
+                        {
+                            newPoints.push_back(oldPoints[j]);
+                            newFreedraws.push_back(newPoints);
+                            newPoints.clear();
+                        }
+                        else
+                        {
+                            newPoints.clear();
+                        }
+                    }
+                    else {
+                        newPoints.push_back(oldPoints[j]);
+                    
+                        if(j == oldPoints.size()-2)
+                        {
+                            newPoints.push_back(oldPoints[j+1]);
+                            newFreedraws.push_back(newPoints);
+                            newPoints.clear();
+                        }
+                    }
+                }
+            
+                for(auto draw : newFreedraws)
+                {
+                    AGFreeDraw *fd_new = new AGFreeDraw(draw.data(), draw.size());
+                    fd_new->init();
+                    [_viewController addFreeDraw:fd_new];
+                }
+            
+                [_viewController resignFreeDraw:fd];
+                
+                break; // Break out of handling this freedraw
+            }
+        }
+    }
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+
+}
+
+- (void)update:(float)t dt:(float)dt { }
 
 @end
 
@@ -494,7 +619,7 @@ public:
         m_renderInfo.numVertex = 2;
         m_renderInfo.geoType = GL_LINES;
         m_renderInfo.geo = m_points;
-        m_renderInfo.color = GLcolor4f::white;
+        m_renderInfo.color = AGStyle::foregroundColor();
         
         sourcePoint() = srcPt;
         destPoint() = dstPt;
@@ -504,9 +629,9 @@ public:
     
     void setActivation(int activation) // 0: neutral, 1: positive, -1: negative
     {
-        if(activation > 0) m_renderInfo.color = GLcolor4f::green;
-        else if(activation < 0) m_renderInfo.color = GLcolor4f::red;
-        else m_renderInfo.color = GLcolor4f::white;
+        if(activation > 0) m_renderInfo.color = AGStyle::proceedColor();
+        else if(activation < 0) m_renderInfo.color = AGStyle::errorColor();
+        else m_renderInfo.color = AGStyle::foregroundColor();
     }
     
     const GLvertex3f &sourcePoint() const { return m_points[0]; }
@@ -549,10 +674,10 @@ public:
         m_portRenderInfo.geo = &(GeoGen::circle64())[1];
         m_portRenderInfo.geoType = GL_LINE_LOOP;
         m_portRenderInfo.numVertex = 64-1;
-        m_portRenderInfo.color = GLcolor4f::white;
+        m_portRenderInfo.color = AGStyle::foregroundColor();
         m_renderList.push_back(&m_portRenderInfo);
         
-        m_textColor = GLcolor4f::white;
+        m_textColor = AGStyle::foregroundColor();
         
         float textScale = AGPortBrowserPort_TextScale;
         float textWidth = s_texFont->width(m_portInfo.name)*textScale;
@@ -594,8 +719,8 @@ public:
         m_posLerp.interp();
         m_textPosLerp.interp();
         
-        if(m_activate) m_portRenderInfo.color = m_textColor = GLcolor4f::green;
-        else m_portRenderInfo.color = m_textColor = GLcolor4f::white;
+        if(m_activate) m_portRenderInfo.color = m_textColor = AGStyle::proceedColor();
+        else m_portRenderInfo.color = m_textColor = AGStyle::foregroundColor();
         m_portRenderInfo.color.a = m_alpha;
         m_textColor.a = m_textAlpha;
         
@@ -675,13 +800,13 @@ public:
         m_strokeInfo.geo = &(GeoGen::circle64())[1];
         m_strokeInfo.geoType = GL_LINE_LOOP;
         m_strokeInfo.numVertex = 64-1;
-        m_strokeInfo.color = GLcolor4f::white;
+        m_strokeInfo.color = AGStyle::foregroundColor();
         
         m_fillInfo.shader = &AGGenericShader::instance();
         m_fillInfo.geo = GeoGen::circle64();
         m_fillInfo.geoType = GL_TRIANGLE_FAN;
         m_fillInfo.numVertex = 64;
-        m_fillInfo.color = GLcolor4f::black;
+        m_fillInfo.color = AGStyle::frameBackgroundColor();
         
         m_renderList.push_back(&m_fillInfo);
         m_renderList.push_back(&m_strokeInfo);

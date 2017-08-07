@@ -8,6 +8,7 @@
 
 #include "AGOutputNode.h"
 #include "AGGenericShader.h"
+#include "AGStyle.h"
 
 //------------------------------------------------------------------------------
 // ### AGOutputNode ###
@@ -80,9 +81,7 @@ void AGOutputNode::render()
 {
     glBindVertexArrayOES(s_vertexArray);
     
-    GLcolor4f color = GLcolor4f::white;
-    color.a = m_fadeOut;
-    glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &color);
+    AGStyle::foregroundColor().withAlpha(m_fadeOut).set();
     glDisableVertexAttribArray(AGVertexAttribColor);
     
     // TODO

@@ -69,7 +69,7 @@ void AGFileBrowser::render()
     }, 4);
     
     // draw outer frame
-    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::foregroundColor);
+    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::foregroundColor());
     glLineWidth(4.0f);
     drawLineLoop((GLvertex3f[]){
         { -m_size.x/2, -m_size.y/2, 0 },
@@ -95,7 +95,7 @@ void AGFileBrowser::render()
             GLKMatrix4 xform = GLKMatrix4MakeTranslation(0, yPos, 0);
             float margin = 0.975f;
             // draw selection box
-            glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor);
+            glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor());
             
             drawTriangleFan((GLvertex3f[]){
                 { -m_size.x/2*margin,  m_itemHeight/2*margin, 0 },
@@ -108,7 +108,7 @@ void AGFileBrowser::render()
         }
         else
         {
-            textColor = AGStyle::foregroundColor;
+            textColor = AGStyle::foregroundColor();
         }
         
         // move to bottom left corner of box

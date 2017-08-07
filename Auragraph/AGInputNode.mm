@@ -97,7 +97,7 @@ void AGInputNode::render()
 {
     glBindVertexArrayOES(s_vertexArray);
     
-    GLcolor4f color = GLcolor4f::white;
+    GLcolor4f color = AGStyle::foregroundColor();
     color.a = m_fadeOut;
     glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &color);
     glDisableVertexAttribArray(AGVertexAttribColor);
