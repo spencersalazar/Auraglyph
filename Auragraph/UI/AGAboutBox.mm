@@ -32,19 +32,21 @@ m_done(false)
     m_geo[2] = GLvertex3f(m_radius, -m_radius, 0);
     m_geo[3] = GLvertex3f(m_radius, m_radius, 0);
     
-    m_lines.push_back("an infinite modular");
-    m_lines.push_back("musical sketchpad");
-    m_lines.push_back("");
-    m_lines.push_back("created and designed");
-    m_lines.push_back("by Spencer Salazar");
-    m_lines.push_back("https://auragly.ph/");
-    m_lines.push_back("");
-    m_lines.push_back("Auraglyph Team");
-    m_lines.push_back("Spencer Salazar");
-    m_lines.push_back("Andrew Piepenbrink, April Gerloff");
-    m_lines.push_back("");
-    m_lines.push_back("Copyright 2017");
-    m_lines.push_back("All rights reserved");
+    m_lines = {
+        "is an infinite modular",
+        "musical sketchpad",
+        "",
+        "created and designed",
+        "by Spencer Salazar",
+        "",
+        "The Auraglyph Team is",
+        "Spencer Salazar",
+        "Andrew Piepenbrink, April Gerloff",
+        "",
+        "Copyright 2017",
+        "All rights reserved",
+        "https://auragly.ph/",
+    };
 }
 
 AGAboutBox::~AGAboutBox()
