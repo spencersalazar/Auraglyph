@@ -95,10 +95,10 @@ public:
         });
         addChild(m_bpmSlider);
         
-        GLvertex2f pinSize = { 20, 20 };
+        m_pinButton = AGUIButton::makePinButton(this);
+        GLvertex2f pinSize = m_pinButton->size();
         GLvertex2f pinPos = { m_width/2-10-pinSize.x/2, m_height/2-10-pinSize.y/2 };
-        
-        m_pinButton = AGUIButton::makePinButton(pinPos, pinSize, this);
+        m_pinButton->setPosition(pinPos);
         addChild(m_pinButton);
     }
     
@@ -390,6 +390,14 @@ public:
         if(m_pullTabCapture && t.touchId == m_pullTabStartTouch.touchId)
         {
             m_pullTabDistance.reset(t.position.xy() - m_pullTabStartTouch.position.xy());
+            
+            // reposition pin button
+            GLvertex2f pinSize = m_pinButton->size();
+            GLvertex2f pinPos = {
+                m_width/2-10-pinSize.x/2 + ((GLvertex2f)m_pullTabDistance).x,
+                m_height/2-10-pinSize.y/2
+            };
+            m_pinButton->setPosition(pinPos);
         }
     }
     
