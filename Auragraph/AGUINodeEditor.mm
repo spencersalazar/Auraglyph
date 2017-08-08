@@ -141,49 +141,60 @@ m_lastTraceWasRecognized(true)
     {
         AGPortInfo info = m_node->editPortInfo(port);
         AGControl::Type editPortType = info.type;
-        // only use sliders for float/int
-        if(editPortType != AGControl::TYPE_NONE &&
-           editPortType != AGControl::TYPE_FLOAT &&
-           editPortType != AGControl::TYPE_INT)
-            continue;
-        
-        AGNode *node = m_node;
-        
-        AGParamValue v;
-        m_node->getEditPortValue(port, v);
         
         float y = m_radiusY-rowHeight*(port+2);
         
-        AGSlider *slider = new AGSlider(GLvertex3f(m_radius/2, y+rowHeight/4, 0), v);
-        slider->init();
-        
-        if(editPortType == AGControl::TYPE_FLOAT)
-            slider->setType(AGSlider::CONTINUOUS);
-        else if(editPortType == AGControl::TYPE_INT)
-            slider->setType(AGSlider::DISCRETE);
-        else
-            slider->setType(AGSlider::CONTINUOUS);
-        
-        if(info.mode == AGPortInfo::LIN)
-            slider->setScale(AGSlider::LINEAR);
-        else if(info.mode == AGPortInfo::EXP)
-            slider->setScale(AGSlider::EXPONENTIAL);
-        else
-            slider->setScale(AGSlider::EXPONENTIAL);
-        
-        slider->setSize(GLvertex2f(m_radius, rowHeight));
-        slider->onUpdate([port, node] (float value) {
-            node->setEditPortValue(port, value);
-        });
-        slider->onStartStopUpdating([](){}, [port, node](){
-            AGAnalytics::instance().eventEditNodeParamSlider(node->type(), node->editPortInfo(port).name);
-        });
-        slider->setValidator([port, node] (float _old, float _new) {
-            return node->validateEditPortValue(port, _new);
-        });
-        
-        m_editSliders.push_back(slider);
-        this->addChild(slider);
+        // only use sliders for float/int
+        if(editPortType == AGControl::TYPE_NONE ||
+           editPortType == AGControl::TYPE_FLOAT ||
+           editPortType == AGControl::TYPE_INT)
+        {
+            AGParamValue v;
+            m_node->getEditPortValue(port, v);
+            
+            AGSlider *slider = new AGSlider(GLvertex3f(m_radius/2, y+rowHeight/4, 0), v);
+            slider->init();
+            
+            if(editPortType == AGControl::TYPE_FLOAT)
+                slider->setType(AGSlider::CONTINUOUS);
+            else if(editPortType == AGControl::TYPE_INT)
+                slider->setType(AGSlider::DISCRETE);
+            else
+                slider->setType(AGSlider::CONTINUOUS);
+            
+            if(info.mode == AGPortInfo::LIN)
+                slider->setScale(AGSlider::LINEAR);
+            else if(info.mode == AGPortInfo::EXP)
+                slider->setScale(AGSlider::EXPONENTIAL);
+            else
+                slider->setScale(AGSlider::EXPONENTIAL);
+            
+            slider->setSize(GLvertex2f(m_radius, rowHeight));
+            slider->onUpdate([this, port] (float value) {
+                m_node->setEditPortValue(port, value);
+            });
+            slider->onStartStopUpdating([](){}, [this, port](){
+                AGAnalytics::instance().eventEditNodeParamSlider(m_node->type(), m_node->editPortInfo(port).name);
+            });
+            slider->setValidator([this, port] (float _old, float _new) {
+                return m_node->validateEditPortValue(port, _new);
+            });
+            
+            m_editSliders.push_back(slider);
+            this->addChild(slider);
+        }
+        else if(editPortType == AGControl::TYPE_BIT)
+        {
+            AGUIButton *checkButton = AGUIButton::makeCheckButton();
+            checkButton->setAction(^{
+                m_node->setEditPortValue(port, AGControl(checkButton->isPressed()));
+            });
+            
+            float x = m_radius/2;
+            checkButton->setPosition(GLvertex3f(x, y+checkButton->size().y*0.75f, 0));
+            
+            addChild(checkButton);
+        }
     }
     
     float pinButtonWidth = 20;
