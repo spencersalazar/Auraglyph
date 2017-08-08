@@ -137,6 +137,10 @@ public:
      */
     static AGUIButton *makePinButton(AGUINodeEditor *node = nullptr);
     
+    /** Make a standard check mark button.
+     */
+    static AGUIButton *makeCheckButton();
+    
 protected:
     
     GLvrectf effectiveBounds();

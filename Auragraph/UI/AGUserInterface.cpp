@@ -229,6 +229,21 @@ AGUIButton *AGUIButton::makePinButton(AGUINodeEditor *nodeEditor)
     return pinButton;
 }
 
+AGUIButton *AGUIButton::makeCheckButton()
+{
+    float w = 20;
+    float h = 20;
+    float f = 0.8f; // fraction of size occupied by pin icon
+    
+    AGUIIconButton *checkButton = new AGUIIconButton(GLvertex2f(0, 0), GLvertex2f(w, h), vector<GLvertex3f>({
+    }), GL_LINE_STRIP);
+    
+    checkButton->init();
+    checkButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
+    checkButton->setIconMode(AGUIIconButton::ICONMODE_SQUARE);
+    
+    return checkButton;
+}
 
 
 //------------------------------------------------------------------------------
