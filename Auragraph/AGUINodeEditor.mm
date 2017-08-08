@@ -541,7 +541,14 @@ int AGUIStandardNodeEditor::hitTestX(const GLvertex3f &t, bool *inBbox)
         {
             float y_max = pos.y + m_radiusY - m_radius*2.0*(i+1)/rowCount;
             float y_min = pos.y + m_radiusY - m_radius*2.0*(i+2)/rowCount;
-            if(t.y > y_min && t.y < y_max)
+            
+            AGPortInfo info = m_node->editPortInfo(i);
+            AGControl::Type editPortType = info.type;
+            
+            if(t.y > y_min && t.y < y_max &&
+               (editPortType == AGControl::TYPE_NONE ||
+                editPortType == AGControl::TYPE_FLOAT ||
+                editPortType == AGControl::TYPE_INT))
             {
                 return i;
             }
