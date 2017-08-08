@@ -204,7 +204,6 @@ m_lastTraceWasRecognized(true)
     AGRenderInfoV pinInfo;
     float pinRadius = (pinButtonWidth*0.9)/2;
     m_pinInfoGeo = std::vector<GLvertex3f>({{ pinRadius, pinRadius, 0 }, { -pinRadius, -pinRadius, 0 }});
-    // TODO: how does this even work? data is not copied and is junked when ctor exits
     pinInfo.geo = m_pinInfoGeo.data();
     pinInfo.numVertex = 2;
     pinInfo.geoType = GL_LINES;
