@@ -364,6 +364,22 @@ void AGRenderObject::drawLineLoop(GLvertex3f geo[], int size)
     glDrawArrays(GL_LINE_LOOP, 0, size);
 }
 
+void AGRenderObject::drawLineLoop(GLvertex3f geo[], int size, const GLKMatrix4 &xform)
+{
+    AGGenericShader &shader = AGGenericShader::instance();
+    
+    shader.useProgram();
+    
+    GLKMatrix4 modelview = GLKMatrix4Multiply(m_renderState.modelview, xform);
+    shader.setModelViewMatrix(modelview);
+    shader.setProjectionMatrix(m_renderState.projection);
+    
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
+    
+    glDrawArrays(GL_LINE_LOOP, 0, size);
+}
+
 void AGRenderObject::drawLineStrip(GLvertex2f geo[], int size)
 {
     AGGenericShader &shader = AGGenericShader::instance();

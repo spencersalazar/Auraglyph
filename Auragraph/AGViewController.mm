@@ -1271,7 +1271,7 @@ void AGViewController_::showTrainer()
 
 void AGViewController_::showAbout()
 {
-    AGAboutBox *aboutBox = new AGAboutBox([m_viewController worldCoordinateForScreenCoordinate:CGPointMake(m_viewController.view.bounds.size.width/2,
+    AGAboutBox *aboutBox = new AGAboutBox([m_viewController fixedCoordinateForScreenCoordinate:CGPointMake(m_viewController.view.bounds.size.width/2,
                                                                                                            m_viewController.view.bounds.size.height/2)]);
     aboutBox->init();
     [m_viewController addTopLevelObject:aboutBox];

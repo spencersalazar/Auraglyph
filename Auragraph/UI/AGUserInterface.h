@@ -17,6 +17,9 @@
 #include <string>
 #include <vector>
 
+// forward declaration
+class AGUINodeEditor;
+
 
 /*------------------------------------------------------------------------------
  - AGUIObject -
@@ -129,6 +132,15 @@ public:
     void setInteractionType(InteractionType t) { m_interactionType = t; }
     InteractionType getInteractionType() { return m_interactionType; }
     
+    /** Make a pin button that will cause the (optional) node editor argument
+     to be pinned when pressed.
+     */
+    static AGUIButton *makePinButton(AGUINodeEditor *node = nullptr);
+    
+    /** Make a standard check mark button.
+     */
+    static AGUIButton *makeCheckButton();
+    
 protected:
     
     GLvrectf effectiveBounds();
@@ -172,6 +184,8 @@ class AGUIIconButton : public AGUIButton
 {
 public:
     AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size, const AGRenderInfoV &iconRenderInfo);
+    AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size,
+                   const vector<GLvertex3f> &iconGeo, int geoType);
     ~AGUIIconButton();
     
     virtual void update(float t, float dt);
@@ -193,6 +207,9 @@ public:
 private:
     GLvertex3f *m_boxGeo;
     AGRenderInfoV m_iconInfo;
+    
+    vector<GLvertex3f> m_iconGeo;
+    int m_iconGeoType;
     
     IconMode m_iconMode;
 };

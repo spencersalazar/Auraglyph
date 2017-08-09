@@ -116,6 +116,9 @@ public:
     virtual GLvrectf effectiveBounds() { return GLvrectf(position()-size()*0.5, position()+size()*0.5); }
     AGRenderObject *parent() const { return m_parent; }
     
+    /** recursive transform matrix from global modelview -> this object (including parents) */
+    GLKMatrix4 globalTransform();
+    
     // draw functions
     void drawGeometry(GLvertex3f geo[], int size, int kind);
     void drawTriangleFan(GLvertex3f geo[], int size);
@@ -123,6 +126,7 @@ public:
     void drawTriangleFan(AGGenericShader &shader, GLvertex3f geo[], int size, const GLKMatrix4 &xform);
     void drawLineLoop(GLvertex2f geo[], int size);
     void drawLineLoop(GLvertex3f geo[], int size);
+    void drawLineLoop(GLvertex3f geo[], int size, const GLKMatrix4 &xform);
     void drawLineStrip(GLvertex2f geo[], int size);
     void drawLineStrip(GLvertex2f geo[], int size, const GLKMatrix4 &xform);
     void drawLineStrip(AGGenericShader &shader, GLvertex2f geo[], int size, const GLKMatrix4 &xform);

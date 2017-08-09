@@ -52,6 +52,8 @@ private:
     Mutex _capturersMutex;
     list<AGTimer *> _timers;
     Mutex _timersMutex;
+    list<AGAudioRateProcessor *> _processors;
+    Mutex _processorsMutex;
     
     float _inputBuffer[1024];
     Buffer<float> _outputBuffer;
@@ -149,6 +151,20 @@ static AGAudioManager *g_audioManager;
     _timersMutex.unlock();
 }
 
+- (void)addAudioRateProcessor:(AGAudioRateProcessor *)processor
+{
+    _processorsMutex.lock();
+    _processors.push_back(processor);
+    _processorsMutex.unlock();
+}
+
+- (void)removeAudioRateProcessor:(AGAudioRateProcessor *)processor
+{
+    _processorsMutex.lock();
+    _processors.remove(processor);
+    _processorsMutex.unlock();
+}
+
 
 - (void)renderAudio:(Float32 *)buffer numFrames:(UInt32)numFrames
 {
@@ -172,6 +188,11 @@ static AGAudioManager *g_audioManager;
     for(AGAudioCapturer *capturer : _capturers)
         capturer->captureAudio(_inputBuffer, numFrames);
     _capturersMutex.unlock();
+    
+    _processorsMutex.lock();
+    for(auto processor : _processors)
+        processor->process(t);
+    _processorsMutex.unlock();
     
     _renderersMutex.lock();
     for(AGAudioRenderer *renderer : _renderers)
@@ -203,7 +224,7 @@ static AGAudioManager *g_audioManager;
         _sessionRecorder = new AGAudioRecorder;
         string file = AGAudioRecorder::pathForSessionRecording("m4a");
         NSLog(@"Starting session recording to %s", file.c_str());
-        _sessionRecorder->startRecording(file, 2, 44100);
+        _sessionRecorder->startRecording(file, 2, AGAudioNode::sampleRate());
     }
     
     _sessionRecorderMutex.unlock();
@@ -226,3 +247,41 @@ static AGAudioManager *g_audioManager;
 
 
 @end
+
+
+AGAudioManager_ &AGAudioManager_::instance()
+{
+    static AGAudioManager_ *s_instance = nullptr;
+    if(s_instance == nullptr)
+    {
+        s_instance = new AGAudioManager_([AGAudioManager instance]);
+    }
+    
+    return *s_instance;
+}
+
+AGAudioManager_::AGAudioManager_(AGAudioManager *audioManager)
+{
+    m_audioManager = audioManager;
+}
+
+void AGAudioManager_::startSessionRecording()
+{
+    [m_audioManager startSessionRecording];
+}
+
+void AGAudioManager_::stopSessionRecording()
+{
+    [m_audioManager stopSessionRecording];
+}
+
+void AGAudioManager_::addAudioRateProcessor(AGAudioRateProcessor *processor)
+{
+    [m_audioManager addAudioRateProcessor:processor];
+}
+
+void AGAudioManager_::removeAudioRateProcessor(AGAudioRateProcessor *processor)
+{
+    [m_audioManager removeAudioRateProcessor:processor];
+}
+

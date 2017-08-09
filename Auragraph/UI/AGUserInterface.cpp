@@ -12,6 +12,7 @@
 #include "AGGenericShader.h"
 #include "AGDef.h"
 #include "AGStyle.h"
+#include "AGUINodeEditor.h"
 
 #include "TexFont.h"
 #include "Texture.h"
@@ -68,22 +69,8 @@ void AGUIButton::render()
     
     float textScale = 0.5;
     
-    GLKMatrix4 proj;
-    GLKMatrix4 modelView;
-    
-    if(parent())
-    {
-        modelView = parent()->m_renderState.modelview;
-        proj = parent()->m_renderState.projection;
-    }
-    else
-    {
-        proj = projectionMatrix();
-        if(renderFixed())
-            modelView = AGNode::fixedModelViewMatrix();
-        else
-            modelView = AGNode::globalModelViewMatrix();
-    }
+    GLKMatrix4 proj = projection();
+    GLKMatrix4 modelView = modelview();
     
     modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
     GLKMatrix4 textMV = GLKMatrix4Translate(modelView, m_size.x/2-text->width(m_title)*textScale/2, m_size.y/2-text->height()*textScale/2*1.25, 0);
@@ -203,6 +190,46 @@ const std::string &AGUIButton::title()
 }
 
 
+AGUIButton *AGUIButton::makePinButton(AGUINodeEditor *nodeEditor)
+{
+    float w = 20;
+    float h = 20;
+    float f = 0.9f; // fraction of size occupied by pin icon
+    
+    AGUIIconButton *pinButton = new AGUIIconButton(GLvertex2f(0, 0), GLvertex2f(w, h), vector<GLvertex3f>({
+        { -w/2*f, -h/2*f, 0 },
+        { w/2*f, h/2*f, 0 },
+    }), GL_LINES);
+    
+    pinButton->init();
+    pinButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
+    pinButton->setIconMode(AGUIIconButton::ICONMODE_SQUARE);
+    
+    if(nodeEditor != nullptr)
+    {
+        pinButton->setAction(^{
+            nodeEditor->pin(pinButton->isPressed());
+        });
+    }
+    
+    return pinButton;
+}
+
+AGUIButton *AGUIButton::makeCheckButton()
+{
+    float w = 20;
+    float h = 20;
+    
+    AGUIIconButton *checkButton = new AGUIIconButton(GLvertex2f(0, 0), GLvertex2f(w, h), vector<GLvertex3f>({
+    }), GL_LINE_STRIP);
+    
+    checkButton->init();
+    checkButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
+    checkButton->setIconMode(AGUIIconButton::ICONMODE_SQUARE);
+    
+    return checkButton;
+}
+
 
 //------------------------------------------------------------------------------
 // ### AGUITextButton ###
@@ -256,7 +283,18 @@ void AGUITextButton::render()
 #pragma mark - AGUIIconButton
 AGUIIconButton::AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size, const AGRenderInfoV &iconRenderInfo) :
 AGUIButton("", pos, size),
-m_iconInfo(iconRenderInfo)
+m_iconInfo(iconRenderInfo),
+m_iconGeoType(0)
+{
+    m_boxGeo = NULL;
+    setIconMode(ICONMODE_SQUARE);
+}
+
+AGUIIconButton::AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size,
+                               const vector<GLvertex3f> &iconGeo, int geoType) :
+AGUIButton("", pos, size),
+m_iconGeo(iconGeo),
+m_iconGeoType(geoType)
 {
     m_boxGeo = NULL;
     setIconMode(ICONMODE_SQUARE);
@@ -341,7 +379,11 @@ void AGUIIconButton::render()
         AGStyle::darkColor().set();
     else
         AGStyle::lightColor().set();
-    drawGeometry(m_iconInfo.geo, m_iconInfo.numVertex, m_iconInfo.geoType);
+    
+    if(m_iconGeo.size())
+        drawGeometry(m_iconGeo.data(), m_iconGeo.size(), m_iconGeoType);
+    else
+        drawGeometry(m_iconInfo.geo, m_iconInfo.numVertex, m_iconInfo.geoType);
 }
 
 

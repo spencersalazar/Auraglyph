@@ -10,10 +10,12 @@
 
 #include "AGControlNode.h"
 #include "AGTimer.h"
+#include "AGAudioManager.h"
+
 #include <list>
 #include <vector>
 
-class AGControlSequencerNode : public AGControlNode
+class AGControlSequencerNode : public AGControlNode, public AGAudioRateProcessor
 {
 public:
     
@@ -39,6 +41,8 @@ public:
     
     using AGControlNode::AGControlNode;
     
+    ~AGControlSequencerNode();
+    
     void initFinal() override;
     void deserializeFinal(const AGDocument::Node &docNode) override;
     
@@ -54,9 +58,12 @@ public:
     void setNumSteps(int num);
     
     void setStepValue(int seq, int step, float value);
+    void setStepLength(int seq, int step, float length);
     float getStepValue(int seq, int step);
+    float getStepLength(int seq, int step);
     
     void receiveControl(int port, const AGControl &control) override;
+    void process(sampletime t) override;
     
     float bpm();
     void setBpm(float bpm);
@@ -70,8 +77,20 @@ private:
     
     int m_pos;
     int m_numSteps;
+    
+    float m_t = -1;
+    float m_lastStep = -1;
+    
+    struct Step
+    {
+        Step(float _value = 0, float _length = 0.5) : value(_value), length(_length) { }
+        
+        float value = 0; // [0,1]
+        float length = 0.5; // [0,1]
+    };
+    
     Mutex m_seqLock;
-    std::vector<std::vector<float> > m_sequence;
+    std::vector<std::vector<Step>> m_sequence;
     
     void updateStep();
 };
