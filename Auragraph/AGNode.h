@@ -66,7 +66,8 @@ struct AGPortInfo
     {
         EDITOR_DEFAULT = 0,
         EDITOR_AUDIOFILES,
-        EDITOR_ENUM,
+        EDITOR_ENUM, // for TYPE_INT: editor item is a list of enumerated types
+        EDITOR_ACTION, // for TYPE_BIT: instead of a checkbox, editor item is a push button
     };
     
     EditorMode editorMode;
