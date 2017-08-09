@@ -30,6 +30,7 @@ public:
     
     enum Param
     {
+        PARAM_NOTEOUT_CHANNEL,
         PARAM_NOTEOUT_PITCH,
         PARAM_NOTEOUT_VELOCITY,
     };
@@ -43,7 +44,14 @@ public:
         
         vector<AGPortInfo> _inputPortInfo() const override { return { }; };
         
-        vector<AGPortInfo> _editPortInfo() const override { return { }; };
+        vector<AGPortInfo> _editPortInfo() const override
+        {
+            return {
+                { PARAM_NOTEOUT_CHANNEL, "Channel", ._default = 0, .min = 0, .max = 16,
+                    .type = AGControl::TYPE_INT, .mode = AGPortInfo::LIN,
+                    .doc = "Channel." },
+            };
+        };
         
         vector<AGPortInfo> _outputPortInfo() const override
         {
@@ -110,9 +118,6 @@ public:
     // in ofx because other classes were calling these methods to hook things
     // together, but our architecture is different.
     
-    // Should these still be static? I think they can be since they pertain to,
-    // and interact with, the global context. But if we know it's always
-    // this way, do *these* still need to / benefit from being static?
     static void listPorts();
     static vector<string>& getPortList();
     static int getNumPorts();
@@ -125,8 +130,6 @@ public:
     
     void ignoreTypes(bool midiSysex=true, bool midiTiming=true, bool midiSense=true);
     
-    // Still not sure about these ones, now that we're architecting things
-    // so we can have many instances of this node.
     static void setConnectionListener(AGMidiConnectionListener * listener);
     static void clearConnectionListener();
     static void enableNetworking();
@@ -143,7 +146,7 @@ private:
     // themselves need to be static? Leave it for now, wait until we have functional nodes
     // so we can see if port browsing causes contention among node instances. Sheesh...
     static vector<string> portList; //< list of port names
-    
+        
     bool bOpen;    //< is the port currently open?
     bool bVerbose; //< print incoming bytes?
     bool bVirtual; //< are we connected to a virtual port?

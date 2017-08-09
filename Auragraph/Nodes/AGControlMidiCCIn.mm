@@ -83,9 +83,25 @@ void AGControlMidiCCIn::messageReceived(double deltatime, vector<unsigned char> 
 {
     // Examine our first byte to determine the type of message
     uint8_t chr = message->at(0);
-    
-    chr &= 0xF0; // Ignore channel information for now by clearing the lower nibble
         
+    int nodeChan = param(PARAM_CHANNEL);
+    
+    if(nodeChan == 0)
+    {
+        chr &= 0xF0; // All channels, just clear the lower nibble
+    }
+    else {
+        int msgChan = (chr & 0x0F) + 1; // Extract channel information, nudge to 1-indexed
+        
+        if(msgChan != nodeChan)
+        {
+            return; // If channel doesn't match, return
+        }
+        else {
+            chr &= 0xF0; // Clear lower nibble, continue parsing message below
+        }
+    }
+    
     if(chr == 0x80) { }// Note off
     else if(chr == 0x90) { }// Note on
     else if(chr == 0xA0) { } // Mmmm... polyphonic aftertouch

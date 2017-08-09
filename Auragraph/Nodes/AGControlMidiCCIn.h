@@ -32,6 +32,7 @@ public:
     {
         PARAM_CCLEARN, // XXX TODO: this will eventually be a string type
         PARAM_CCNUM,
+        PARAM_CHANNEL,
         PARAM_CCVAL,
     };
     
@@ -53,6 +54,9 @@ public:
                 { PARAM_CCNUM, "CC num", ._default = -1, .min = 0, .max = 127,
                     .type = AGControl::TYPE_INT, .mode = AGPortInfo::LIN,
                     .doc = "CC number." },
+                { PARAM_CHANNEL, "Channel", ._default = 0, .min = 0, .max = 16,
+                    .type = AGControl::TYPE_INT, .mode = AGPortInfo::LIN,
+                    .doc = "Channel." },
             };
         };
         
@@ -134,9 +138,6 @@ public:
     // in ofx because other classes were calling these methods to hook things
     // together, but our architecture is different.
     
-    // Should these still be static? I think they can be since they pertain to,
-    // and interact with, the global context. But if we know it's always
-    // this way, do *these* still need to / benefit from being static?
     static void listPorts();
     static vector<string>& getPortList();
     static int getNumPorts();
@@ -149,8 +150,6 @@ public:
     
     void ignoreTypes(bool midiSysex=true, bool midiTiming=true, bool midiSense=true);
     
-    // Still not sure about these ones, now that we're architecting things
-    // so we can have many instances of this node.
     static void setConnectionListener(AGMidiConnectionListener * listener);
     static void clearConnectionListener();
     static void enableNetworking();
