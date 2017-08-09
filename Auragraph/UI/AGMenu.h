@@ -26,7 +26,7 @@ public:
     void addMenuItem(const std::string &title, const std::function<void ()> &action);
     
     GLvertex3f position() override { return m_pos; }
-    void setPosition(const GLvertex3f &pos) { m_pos = pos; }
+    void setPosition(const GLvertex3f &pos) override { m_pos = pos; }
     
     GLvertex2f size() override { return m_size; }
     
@@ -58,7 +58,6 @@ private:
     std::vector<MenuItem> m_items;
     
     GLvertex2f m_size;
-    GLvertex3f m_pos;
     float m_maxTextWidth = 0;
     
     bool m_open = false;

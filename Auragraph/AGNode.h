@@ -171,9 +171,6 @@ public:
     void unhit();
     AGInteractiveObject *hitTest(const GLvertex3f &t);
     
-    void setPosition(const GLvertex3f &pos) { m_pos = pos; }
-    const GLvertex3f &position() const { return m_pos; }
-    
     virtual void touchDown(const GLvertex3f &t);
     virtual void touchMove(const GLvertex3f &t);
     virtual void touchUp(const GLvertex3f &t);
@@ -287,7 +284,6 @@ protected:
     
 //    AGPortInfo * m_inputPortInfo;
     
-    GLvertex3f m_pos;
     GLKMatrix4 m_modelViewProjectionMatrix;
     GLKMatrix3 m_normalMatrix;
     

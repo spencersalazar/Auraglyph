@@ -34,6 +34,8 @@ public:
     bool renderFixed() override { return true; }
     
     virtual GLvrectf effectiveBounds() override;
+    
+    virtual GLKMatrix4 localTransform() override;
 
 private:
 
@@ -41,7 +43,6 @@ private:
     float m_radius;
     GLuint m_geoSize;
     
-    GLvertex3f m_pos;
     AGSqueezeAnimation m_squeeze;
     
     GLKMatrix4 m_projection;

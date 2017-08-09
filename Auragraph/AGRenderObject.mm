@@ -144,6 +144,20 @@ AGRenderObject::~AGRenderObject()
         delete *i;
 }
 
+GLKMatrix4 AGRenderObject::localTransform()
+{
+    GLvertex3f pos = position();
+    return GLKMatrix4MakeTranslation(pos.x, pos.y, pos.y);
+}
+
+GLKMatrix4 AGRenderObject::globalTransform()
+{
+    GLKMatrix4 global = localTransform();
+    if(parent())
+        global = GLKMatrix4Multiply(global, parent()->globalTransform());
+    return global;
+}
+
 void AGRenderObject::addChild(AGRenderObject *child)
 {
     m_children.push_front(child);
@@ -172,7 +186,7 @@ void AGRenderObject::update(float t, float dt)
     if(renderFixed())
         m_renderState.modelview = fixedModelViewMatrix();
     else if(parent())
-        m_renderState.modelview = parent()->m_renderState.modelview;
+        m_renderState.modelview = parent()->globalTransform();
     else
         m_renderState.modelview = globalModelViewMatrix();
     m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);

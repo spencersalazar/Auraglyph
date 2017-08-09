@@ -21,7 +21,7 @@
 		093395711A088612009E4802 /* AGArrayNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0933956F1A088612009E4802 /* AGArrayNode.mm */; };
 		093395741A088849009E4802 /* AGControlNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 093395721A088849009E4802 /* AGControlNode.mm */; };
 		093395771A08BFAC009E4802 /* AGNodeSelector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 093395751A08BFAC009E4802 /* AGNodeSelector.cpp */; };
-		0933957A1A0A3785009E4802 /* AGAboutBox.mm in Sources */ = {isa = PBXBuildFile; fileRef = 093395781A0A3785009E4802 /* AGAboutBox.mm */; };
+		0933957A1A0A3785009E4802 /* AGAboutBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 093395781A0A3785009E4802 /* AGAboutBox.cpp */; };
 		0934B6781E22135E009259E2 /* AGFileBrowser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0934B6761E22135E009259E2 /* AGFileBrowser.cpp */; };
 		0934B67B1E223B47009259E2 /* AGFileManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0934B6791E223B47009259E2 /* AGFileManager.mm */; };
 		09412E061A205A070065598D /* AGDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09412E041A205A070065598D /* AGDocument.mm */; };
@@ -200,7 +200,7 @@
 		093395731A088849009E4802 /* AGControlNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGControlNode.h; sourceTree = "<group>"; };
 		093395751A08BFAC009E4802 /* AGNodeSelector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGNodeSelector.cpp; sourceTree = "<group>"; };
 		093395761A08BFAC009E4802 /* AGNodeSelector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGNodeSelector.h; sourceTree = "<group>"; };
-		093395781A0A3785009E4802 /* AGAboutBox.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGAboutBox.mm; sourceTree = "<group>"; };
+		093395781A0A3785009E4802 /* AGAboutBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAboutBox.cpp; sourceTree = "<group>"; };
 		093395791A0A3785009E4802 /* AGAboutBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAboutBox.h; sourceTree = "<group>"; };
 		0934B6761E22135E009259E2 /* AGFileBrowser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGFileBrowser.cpp; sourceTree = "<group>"; };
 		0934B6771E22135E009259E2 /* AGFileBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGFileBrowser.h; sourceTree = "<group>"; };
@@ -500,7 +500,7 @@
 				09B962541DDB1488001DCFB1 /* AGUISaveLoadDialog.h */,
 				09B962531DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp */,
 				093395791A0A3785009E4802 /* AGAboutBox.h */,
-				093395781A0A3785009E4802 /* AGAboutBox.mm */,
+				093395781A0A3785009E4802 /* AGAboutBox.cpp */,
 				09030CF01EFEFEFB00D4A4F2 /* AGMenu.h */,
 				09030CEF1EFEFEFB00D4A4F2 /* AGMenu.cpp */,
 			);
@@ -1116,7 +1116,7 @@
 				099AF12A17D1A6DA000BAB7B /* SSZipArchive.m in Sources */,
 				09030CEB1EFEF83D00D4A4F2 /* Signal.cpp in Sources */,
 				0934B67B1E223B47009259E2 /* AGFileManager.mm in Sources */,
-				0933957A1A0A3785009E4802 /* AGAboutBox.mm in Sources */,
+				0933957A1A0A3785009E4802 /* AGAboutBox.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

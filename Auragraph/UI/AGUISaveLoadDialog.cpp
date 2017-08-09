@@ -19,7 +19,6 @@
 class AGUIConcreteSaveDialog : public AGUISaveDialog
 {
 private:
-    GLvertex3f m_pos;
     GLvertex2f m_size;
     
     lincurvef m_xScale;
@@ -36,9 +35,10 @@ private:
     
 public:
     AGUIConcreteSaveDialog(const AGDocument &doc, const GLvertex3f &pos) :
-    m_doc(doc),
-    m_pos(pos)
+    m_doc(doc)
     {
+        setPosition(pos);
+        
         m_onSave = [](const std::string &file){};
         m_size = GLvertex2f(500, 500/AGStyle::aspect16_9);
         m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
@@ -183,7 +183,6 @@ AGUISaveDialog *AGUISaveDialog::save(const AGDocument &doc, const GLvertex3f &po
 class AGUIConcreteLoadDialog : public AGUILoadDialog
 {
 private:
-    GLvertex3f m_pos;
     GLvertex2f m_size;
     
     float m_itemStart;
@@ -205,9 +204,10 @@ private:
     
 public:
     AGUIConcreteLoadDialog(const GLvertex3f &pos) :
-    m_pos(pos),
     m_documentList(AGDocumentManager::instance().list())
     {
+        setPosition(pos);
+        
         m_selection = -1;
         
         m_onLoad = [](const std::string &, AGDocument &){};
