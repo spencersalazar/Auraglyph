@@ -83,8 +83,6 @@ public:
     
     virtual void update(float t, float dt) override
     {
-        AGInteractiveObject::update(t, dt);
-        
         m_renderState.projection = projectionMatrix();
         
         m_renderState.modelview = fixedModelViewMatrix();
@@ -97,6 +95,8 @@ public:
                                                   m_yScale <= AGStyle::open_squeezeHeight ? (float)m_xScale : 1.0f,
                                                   m_xScale >= 0.99f ? (float)m_yScale : AGStyle::open_squeezeHeight,
                                                   1);
+            
+        updateChildren(t, dt);
     }
     
     virtual void render() override
@@ -129,7 +129,7 @@ public:
     
     GLvrectf effectiveBounds() override
     {
-        return GLvrectf(m_pos-m_size, m_pos+m_size);
+        return GLvrectf(m_pos-m_size/2, m_pos+m_size/2);
     }
     
     bool renderFixed() override { return true; }
@@ -238,8 +238,6 @@ public:
     
     virtual void update(float t, float dt) override
     {
-        AGInteractiveObject::update(t, dt);
-        
         m_renderState.projection = projectionMatrix();
         
         m_renderState.modelview = fixedModelViewMatrix();
@@ -252,6 +250,8 @@ public:
                                                   m_yScale <= AGStyle::open_squeezeHeight ? (float)m_xScale : 1.0f,
                                                   m_xScale >= 0.99f ? (float)m_yScale : AGStyle::open_squeezeHeight,
                                                   1);
+        
+        updateChildren(t, dt);
     }
     
     virtual void render() override
@@ -359,7 +359,7 @@ public:
     
     GLvrectf effectiveBounds() override
     {
-        return GLvrectf(m_pos-m_size, m_pos+m_size);
+        return GLvrectf(m_pos-m_size/2, m_pos+m_size/2);
     }
     
     bool renderFixed() override { return true; }
