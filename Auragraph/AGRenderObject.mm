@@ -171,6 +171,8 @@ void AGRenderObject::update(float t, float dt)
     m_renderState.projection = projectionMatrix();
     if(renderFixed())
         m_renderState.modelview = fixedModelViewMatrix();
+    else if(parent())
+        m_renderState.modelview = parent()->m_renderState.modelview;
     else
         m_renderState.modelview = globalModelViewMatrix();
     m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);

@@ -116,6 +116,9 @@ public:
     virtual GLvrectf effectiveBounds() { return GLvrectf(position()-size()*0.5, position()+size()*0.5); }
     AGRenderObject *parent() const { return m_parent; }
     
+    /** recursive transform matrix from global modelview -> this object (including parents) */
+    GLKMatrix4 globalTransform();
+    
     // draw functions
     void drawGeometry(GLvertex3f geo[], int size, int kind);
     void drawTriangleFan(GLvertex3f geo[], int size);
