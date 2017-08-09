@@ -69,22 +69,8 @@ void AGUIButton::render()
     
     float textScale = 0.5;
     
-    GLKMatrix4 proj;
-    GLKMatrix4 modelView;
-    
-    if(parent())
-    {
-        modelView = parent()->m_renderState.modelview;
-        proj = parent()->m_renderState.projection;
-    }
-    else
-    {
-        proj = projectionMatrix();
-        if(renderFixed())
-            modelView = AGNode::fixedModelViewMatrix();
-        else
-            modelView = AGNode::globalModelViewMatrix();
-    }
+    GLKMatrix4 proj = projection();
+    GLKMatrix4 modelView = modelview();
     
     modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
     GLKMatrix4 textMV = GLKMatrix4Translate(modelView, m_size.x/2-text->width(m_title)*textScale/2, m_size.y/2-text->height()*textScale/2*1.25, 0);
@@ -233,7 +219,6 @@ AGUIButton *AGUIButton::makeCheckButton()
 {
     float w = 20;
     float h = 20;
-    float f = 0.8f; // fraction of size occupied by pin icon
     
     AGUIIconButton *checkButton = new AGUIIconButton(GLvertex2f(0, 0), GLvertex2f(w, h), vector<GLvertex3f>({
     }), GL_LINE_STRIP);
