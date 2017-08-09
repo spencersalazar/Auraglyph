@@ -226,7 +226,6 @@ public:
         }
     }
     
-    virtual GLvertex3f position() { return m_pos; }
     virtual GLvertex2f size() { return m_size; }
     
     void undo()

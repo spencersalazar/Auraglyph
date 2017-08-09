@@ -19,10 +19,11 @@
 #define AGSlider_HitOffset (10)
 
 AGSlider::AGSlider(const GLvertex3f &position, float value)
-: m_value(value), m_position(position),
+: m_value(value),
 m_update([](float){}), m_start([](){}), m_stop([](){}),
 m_validator([](float _old, float _new) { return _new; })
 {
+    setPosition(position);
     _updateValue(value);
 }
 
@@ -57,7 +58,7 @@ void AGSlider::render()
     GLcolor4f valueColor = AGStyle::foregroundColor().withAlpha(m_renderState.alpha);
     
     GLKMatrix4 valueMV = modelView;
-    valueMV = GLKMatrix4Translate(valueMV, m_position.x, m_position.y, m_position.z);
+    valueMV = GLKMatrix4Translate(valueMV, m_pos.x, m_pos.y, m_pos.z);
     if(m_alignment == ALIGN_CENTER)
         valueMV = GLKMatrix4Translate(valueMV, -m_textSize.x/2, -m_textSize.y/2, 0);
     else if(m_alignment == ALIGN_RIGHT)
@@ -78,7 +79,7 @@ void AGSlider::render()
         shader.setProjectionMatrix(proj);
         
         GLvertex3f geo[4];
-        GeoGen::makeRect(geo, m_position.x, m_position.y, m_size.x, m_size.y);
+        GeoGen::makeRect(geo, m_pos.x, m_pos.y, m_size.x, m_size.y);
         glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, geo);
         glEnableVertexAttribArray(AGVertexAttribPosition);
         
@@ -156,16 +157,6 @@ void AGSlider::touchUp(const AGTouchInfo &t)
 AGInteractiveObject *AGSlider::hitTest(const GLvertex3f &t)
 {
     return AGInteractiveObject::hitTest(t);
-}
-
-void AGSlider::setPosition(const GLvertex3f &position)
-{
-    m_position = position;
-}
-
-GLvertex3f AGSlider::position()
-{
-    return m_position;
 }
 
 GLvertex2f AGSlider::size()

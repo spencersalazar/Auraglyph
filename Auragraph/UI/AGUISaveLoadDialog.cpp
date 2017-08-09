@@ -53,6 +53,7 @@ public:
                                                  0),
                                       GLvertex2f(buttonWidth, buttonHeight));
         m_saveButton->init();
+        m_saveButton->setRenderFixed(false);
         
         m_saveButton->setAction(^{
             AGDocumentManager &manager = AGDocumentManager::instance();
@@ -72,6 +73,8 @@ public:
                                                    0),
                                         GLvertex2f(buttonWidth, buttonHeight));
         m_cancelButton->init();
+        m_cancelButton->setRenderFixed(false);
+
         m_cancelButton->setAction(^{
             removeFromTopLevel();
         });
@@ -228,6 +231,7 @@ public:
                                                    -m_size.y/2+buttonMargin, 0),
                                         GLvertex2f(buttonWidth, buttonHeight));
         m_cancelButton->init();
+        m_cancelButton->setRenderFixed(false);
         m_cancelButton->setAction(^{
             removeFromTopLevel();
         });

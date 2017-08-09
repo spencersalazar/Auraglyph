@@ -27,8 +27,6 @@ public:
     
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
     
-    void setPosition(const GLvertex3f &position);
-    virtual GLvertex3f position();
     virtual GLvertex2f size();
     void setSize(const GLvertex2f &size);
     
@@ -77,7 +75,6 @@ private:
     
     void _updateValue(float value);
     
-    GLvertex3f m_position;
     GLvertex2f m_size;
     GLvertex2f m_textSize;
     

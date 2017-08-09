@@ -44,7 +44,6 @@ private:
     vector<GLvertex3f> m_points;
     
     bool m_touchDown;
-    GLvertex3f m_position;
     GLvertex3f m_touchLast;
     
     bool m_active;

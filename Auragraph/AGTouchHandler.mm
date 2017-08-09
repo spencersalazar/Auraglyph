@@ -661,9 +661,11 @@ public:
     
     AGPortBrowserPort(AGNode *node, int portNum, const GLvertex3f &position, TextPosition textPosition) :
     m_node(node), m_portNum(portNum), m_portInfo(m_node->inputPortInfo(portNum)),
-    m_position(position), m_textPosition(textPosition), m_activate(false),
-    m_alpha(0.2, 0), m_posLerp(0.2, 0), m_textAlpha(0.4, -1), m_textPosLerp(0.4, 0)
+    m_textPosition(textPosition), m_activate(false), m_alpha(0.2, 0),
+    m_posLerp(0.2, 0), m_textAlpha(0.4, -1), m_textPosLerp(0.4, 0)
     {
+        setPosition(position);
+        
         if(s_texFont == NULL)
         {
             const char *fontPath = [[AGViewController styleFontPath] UTF8String];
@@ -724,7 +726,7 @@ public:
         m_portRenderInfo.color.a = m_alpha;
         m_textColor.a = m_textAlpha;
         
-        GLvertex3f position = lerp(m_posLerp, m_node->position(), m_position);
+        GLvertex3f position = lerp(m_posLerp, m_node->position(), m_pos);
         m_renderState.modelview = GLKMatrix4Multiply(baseModelView, GLKMatrix4MakeTranslation(position.x, position.y, position.z));
         float radius = 0.00275*AGStyle::oldGlobalScale;
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeScale(radius, radius, radius));
@@ -768,7 +770,6 @@ private:
     AGNode * const m_node;
     const AGPortInfo &m_portInfo;
     const int m_portNum;
-    const GLvertex3f m_position;
     
     bool m_activate;
     
