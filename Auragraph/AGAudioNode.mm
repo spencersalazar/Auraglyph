@@ -25,6 +25,9 @@
 #include "spdsp.h"
 
 
+//#define AGDEBUG_SINE_MUTE_BUTTON
+
+
 //------------------------------------------------------------------------------
 // ### AGAudioNode ###
 //------------------------------------------------------------------------------
@@ -528,6 +531,9 @@ public:
         PARAM_OUTPUT = AUDIO_PARAM_LAST+1,
         PARAM_FREQ,
         PARAM_PHASE,
+#ifdef AGDEBUG_SINE_MUTE_BUTTON
+        PARAM_MUTE,
+#endif // AGDEBUG_SINE_MUTE_BUTTON
     };
 
     class Manifest : public AGStandardNodeManifest<AGAudioSineWaveNode>
@@ -550,6 +556,9 @@ public:
         {
             return {
                 { PARAM_FREQ, "freq", 220, 0, 0, AGPortInfo::EXP, .doc = "Oscillator frequency" },
+#ifdef AGDEBUG_SINE_MUTE_BUTTON
+                { PARAM_MUTE, "mute", 0, 0, 1, .type = AGControl::TYPE_BIT, .editorMode = AGPortInfo::EDITOR_ACTION, .doc = "Mute." },
+#endif // AGDEBUG_SINE_MUTE_BUTTON
                 { AUDIO_PARAM_GAIN, "gain", 1, 0, 0, AGPortInfo::EXP, .doc = "Output gain." }
             };
         };
