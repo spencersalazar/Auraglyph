@@ -144,6 +144,30 @@ AGRenderObject::~AGRenderObject()
         delete *i;
 }
 
+GLKMatrix4 AGRenderObject::localTransform()
+{
+    GLvertex3f pos = position();
+    return GLKMatrix4MakeTranslation(pos.x, pos.y, pos.y);
+}
+
+GLKMatrix4 AGRenderObject::globalTransform()
+{
+    GLKMatrix4 global = localTransform();
+    if(parent())
+        global = GLKMatrix4Multiply(global, parent()->globalTransform());
+    return global;
+}
+
+GLvertex3f AGRenderObject::globalToLocalCoordinateSpace(const GLvertex3f &position)
+{
+    return GLKMatrix4MultiplyVector4(GLKMatrix4Invert(globalTransform(), NULL), position.asGLKVector4());
+}
+
+GLvertex3f AGRenderObject::parentToLocalCoordinateSpace(const GLvertex3f &position)
+{
+    return GLKMatrix4MultiplyVector4(GLKMatrix4Invert(localTransform(), NULL), position.asGLKVector4());
+}
+
 void AGRenderObject::addChild(AGRenderObject *child)
 {
     m_children.push_front(child);
@@ -171,6 +195,8 @@ void AGRenderObject::update(float t, float dt)
     m_renderState.projection = projectionMatrix();
     if(renderFixed())
         m_renderState.modelview = fixedModelViewMatrix();
+    else if(parent())
+        m_renderState.modelview = parent()->m_renderState.modelview;
     else
         m_renderState.modelview = globalModelViewMatrix();
     m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
@@ -354,6 +380,22 @@ void AGRenderObject::drawLineLoop(GLvertex3f geo[], int size)
     shader.useProgram();
     
     shader.setModelViewMatrix(m_renderState.modelview);
+    shader.setProjectionMatrix(m_renderState.projection);
+    
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
+    
+    glDrawArrays(GL_LINE_LOOP, 0, size);
+}
+
+void AGRenderObject::drawLineLoop(GLvertex3f geo[], int size, const GLKMatrix4 &xform)
+{
+    AGGenericShader &shader = AGGenericShader::instance();
+    
+    shader.useProgram();
+    
+    GLKMatrix4 modelview = GLKMatrix4Multiply(m_renderState.modelview, xform);
+    shader.setModelViewMatrix(modelview);
     shader.setProjectionMatrix(m_renderState.projection);
     
     glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);

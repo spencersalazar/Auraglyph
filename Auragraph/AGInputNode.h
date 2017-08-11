@@ -27,16 +27,16 @@ public:
     
     AGDocument::Node::Class nodeClass() const override { return AGDocument::Node::INPUT; }
     
-    virtual void update(float t, float dt);
-    virtual void render();
+    void update(float t, float dt) override;
+    void render() override;
     virtual void renderUI() { }
     
-    virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
+    AGInteractiveObject *hitTest(const GLvertex3f &t) override;
     
     virtual HitTestResult hit(const GLvertex3f &hit);
     virtual void unhit();
     
-    virtual GLvertex3f relativePositionForOutputPort(int port) const;
+    GLvertex3f relativePositionForOutputPort(int port) const override;
         
 private:
     

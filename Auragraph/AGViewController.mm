@@ -48,19 +48,7 @@ using namespace std;
 #define AG_EXPORT_NODES 1
 #define AG_EXPORT_NODES_FILE @"nodes.json"
 
-
-// Uniform index.
-enum
-{
-    UNIFORM_SCREEN_MVPMATRIX,
-    UNIFORM_SCREEN_TEX,
-    UNIFORM_SCREEN_ORDERH,
-    UNIFORM_SCREEN_ORDERV,
-    UNIFORM_SCREEN_OFFSET,
-    NUM_UNIFORMS,
-};
-GLint uniforms[NUM_UNIFORMS];
-
+#define AG_ZOOM_DEADZONE (15)
 
 enum InterfaceMode
 {
@@ -87,6 +75,8 @@ enum InterfaceMode
     
     GLvertex3f _camera;
     slewf _cameraZ;
+    float _initialZoomDist;
+    BOOL _passedZoomDeadzone;
     
     map<UITouch *, UITouch *> _touches;
     map<UITouch *, UITouch *> _freeTouches;
@@ -191,7 +181,7 @@ static AGViewController * g_instance = nil;
     [self setupGL];
     
     _camera = GLvertex3f(0, 0, 0);
-    _cameraZ.rate = 0.5;
+    _cameraZ.rate = 0.4;
     _cameraZ.reset(0);
     
     // Set up our MIDI context
@@ -358,19 +348,7 @@ static AGViewController * g_instance = nil;
 {
     [EAGLContext setCurrentContext:self.context];
     
-    _screenProgram = [ShaderHelper createProgram:@"Screen" withAttributes:SHADERHELPER_PTC];
-    uniforms[UNIFORM_SCREEN_MVPMATRIX] = glGetUniformLocation(_screenProgram, "modelViewProjectionMatrix");
-    uniforms[UNIFORM_SCREEN_TEX] = glGetUniformLocation(_screenProgram, "tex");
-    uniforms[UNIFORM_SCREEN_ORDERH] = glGetUniformLocation(_screenProgram, "orderH");
-    uniforms[UNIFORM_SCREEN_ORDERV] = glGetUniformLocation(_screenProgram, "orderV");
-    uniforms[UNIFORM_SCREEN_OFFSET] = glGetUniformLocation(_screenProgram, "offset");
-    
     glEnable(GL_DEPTH_TEST);
-    
-    float scale = [UIScreen mainScreen].scale;
-    glGenTextureFromFramebuffer(&_screenTexture, &_screenFBO,
-                                self.view.bounds.size.width*scale,
-                                self.view.bounds.size.height*scale);
 }
 
 - (void)tearDownGL
@@ -606,18 +584,30 @@ static AGViewController * g_instance = nil;
 //    if(UIInterfaceOrientationIsLandscape(self.interfaceOrientation))
 //    NSLog(@"width %f height %f", self.view.bounds.size.width, self.view.bounds.size.height);
     projectionMatrix = GLKMatrix4MakeFrustum(-self.view.bounds.size.width/2, self.view.bounds.size.width/2,
-                                             -self.view.bounds.size.height/2, self.view.bounds.size.height/2, 10.0f, 1000.0f);
+                                             -self.view.bounds.size.height/2, self.view.bounds.size.height/2,
+                                             10.0f, 10000.0f);
 //    else
 //        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f)/aspect, aspect, 0.1f, 100.0f);
     
     _fixedModelView = GLKMatrix4MakeTranslation(0, 0, -10.1f);
     
-    if(_cameraZ < 0)
-        _camera.z = _cameraZ;
+    dbgprint_off("cameraZ: %f\n", (float) _cameraZ);
+    
+    float cameraScale = 1.0;
+    if(_cameraZ > 0)
+        _cameraZ.reset(0);
+    if(_cameraZ < -160)
+        _cameraZ.reset(-160);
+    if(_cameraZ <= 0)
+        _camera.z = -0.1-(-1+powf(2, -_cameraZ*0.045));
+//    else
+//        cameraScale = _cameraZ*0.045;
     
     GLKMatrix4 baseModelViewMatrix = GLKMatrix4Translate(_fixedModelView, _camera.x, _camera.y, _camera.z);
     if(_interfaceMode == INTERFACEMODE_USER)
         baseModelViewMatrix = GLKMatrix4Translate(baseModelViewMatrix, 0, 0, -(G_RATIO-1));
+    if(cameraScale > 1.0f)
+        baseModelViewMatrix = GLKMatrix4Scale(baseModelViewMatrix, cameraScale, cameraScale, 1.0f);
     
     // Compute the model view matrix for the object rendered with GLKit
     GLKMatrix4 modelViewMatrix = GLKMatrix4Identity;
@@ -640,10 +630,14 @@ static AGViewController * g_instance = nil;
     int viewport[] = { (int)self.view.bounds.origin.x, (int)(self.view.bounds.origin.y),
         (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
     bool success;
-    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, 0.01f),
+    
+    // get window-z coordinate at (0, 0, 0)
+    GLKVector3 probe = GLKMathProject(GLKVector3Make(0, 0, 0), _modelView, _projection, viewport);
+    
+    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, probe.z),
                                       _modelView, _projection, viewport, &success);
     
-    //    vec = GLKMatrix4MultiplyVector3(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z), vec);
+//    vec = GLKMatrix4MultiplyVector3(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z), vec);
     
     return GLvertex3f(vec.x, vec.y, 0);
 }
@@ -711,94 +705,10 @@ static AGViewController * g_instance = nil;
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
-    GLint sysFBO;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &sysFBO);
-    
-    /* render scene to FBO texture */
-    
-    if(AG_ENABLE_FBO)
-        glBindFramebuffer(GL_FRAMEBUFFER, _screenFBO);
-    
-    //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    if(AG_ENABLE_FBO)
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    else
-        glClearColor(AGStyle::backgroundColor().r, AGStyle::backgroundColor().g, AGStyle::backgroundColor().b, 1.0f);
+    glClearColor(AGStyle::backgroundColor().r, AGStyle::backgroundColor().g, AGStyle::backgroundColor().b, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     [self renderEdit];
-    
-    if(AG_ENABLE_FBO)
-    {
-        /* render screen texture */
-        
-        glBindFramebuffer(GL_FRAMEBUFFER, sysFBO);
-        
-//        [((GLKView *) self.view) bindDrawable];
-        
-        //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClearColor(AGStyle::backgroundColor().r, AGStyle::backgroundColor().g, AGStyle::backgroundColor().b, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
-        glBindVertexArrayOES(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        
-        glDisable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        // normal blending
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        // additive blending
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-        
-        glUseProgram(_screenProgram);
-        
-        glEnable(GL_TEXTURE_2D);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, _screenTexture);
-        
-        float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
-        GLKMatrix4 ortho = GLKMatrix4MakeOrtho(-1, 1, -1.0/aspect, 1.0/aspect, -1, 1);
-        
-        glUniformMatrix4fv(uniforms[UNIFORM_SCREEN_MVPMATRIX], 1, 0, ortho.m);
-        glUniform1i(uniforms[UNIFORM_SCREEN_TEX], 0);
-        
-        // GL_TRIANGLE_FAN quad
-        GLvertex3f screenGeo[] = {
-            GLvertex3f(-1, -1/aspect, 0),
-            GLvertex3f(1, -1/aspect, 0),
-            GLvertex3f(1, 1/aspect, 0),
-            GLvertex3f(-1, 1/aspect, 0),
-        };
-        
-        GLvertex2f screenUV[] = {
-            GLvertex2f(0, 0),
-            GLvertex2f(1, 0),
-            GLvertex2f(1, 1),
-            GLvertex2f(0, 1),
-        };
-        
-        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), screenGeo);
-        glEnableVertexAttribArray(AGVertexAttribPosition);
-        
-        glVertexAttribPointer(AGVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(GLvertex2f), screenUV);
-        glEnableVertexAttribArray(AGVertexAttribTexCoord0);
-        
-        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::foregroundColor());
-        glDisableVertexAttribArray(AGVertexAttribColor);
-        
-        glUniform1i(uniforms[UNIFORM_SCREEN_ORDERH], 8);
-        glUniform1i(uniforms[UNIFORM_SCREEN_ORDERV], 0);
-        glUniform2f(uniforms[UNIFORM_SCREEN_OFFSET], 1.0/768.0, 0);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-        
-        glUniform1i(uniforms[UNIFORM_SCREEN_ORDERH], 0);
-        glUniform1i(uniforms[UNIFORM_SCREEN_ORDERV], 8);
-        glUniform2f(uniforms[UNIFORM_SCREEN_OFFSET], 0, 1.0/1024.0);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-        
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
     
     if(_interfaceMode == INTERFACEMODE_USER)
         [self renderUser];
@@ -893,7 +803,7 @@ static AGViewController * g_instance = nil;
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    dbgprint("touchesBegan, count = %i\n", [touches count]);
+    dbgprint_off("touchesBegan, count = %i\n", [touches count]);
     
     // hit test each touch
     for(UITouch *touch in touches)
@@ -1018,6 +928,11 @@ static AGViewController * g_instance = nil;
                 }
                 
                 _scrollZoomTouches[1] = secondTouch;
+                
+                CGPoint p1 = [_scrollZoomTouches[0] locationInView:self.view];
+                CGPoint p2 = [_scrollZoomTouches[1] locationInView:self.view];
+                _initialZoomDist = GLvertex2f(p1).distanceTo(GLvertex2f(p2));
+                _passedZoomDeadzone = NO;
             }
             else
             {
@@ -1056,7 +971,13 @@ static AGViewController * g_instance = nil;
             if(touchCapture->renderFixed())
                 touchCapture->touchDown(AGTouchInfo(fixedPos, p, (TouchID) touch, touch));
             else
-                touchCapture->touchDown(AGTouchInfo(pos, p, (TouchID) touch, touch));
+            {
+                GLvertex3f localPos = pos;
+                if(touchCapture->parent())
+                    // touchDown/Move/Up events treat the position as if it were in the parent coordinate space
+                    localPos = touchCapture->parent()->globalToLocalCoordinateSpace(localPos);
+                touchCapture->touchDown(AGTouchInfo(localPos, p, (TouchID) touch, touch));
+            }
         }
         
         // has
@@ -1086,7 +1007,7 @@ static AGViewController * g_instance = nil;
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    dbgprint("touchesMoved, count = %i\n", [touches count]);
+    dbgprint_off("touchesMoved, count = %i\n", [touches count]);
     
     BOOL didScroll = NO;
     for(UITouch *touch in touches)
@@ -1096,14 +1017,21 @@ static AGViewController * g_instance = nil;
             AGInteractiveObject *touchCapture = _touchCaptures[touch];
             if(touchCapture != NULL)
             {
-                CGPoint p = [touch locationInView:self.view];
-                GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
-                GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:p];
+                CGPoint screenPos = [touch locationInView:self.view];
                 
                 if(touchCapture->renderFixed())
-                    touchCapture->touchMove(AGTouchInfo(fixedPos, p, (TouchID) touch, touch));
+                {
+                    GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:screenPos];
+                    touchCapture->touchMove(AGTouchInfo(fixedPos, screenPos, (TouchID) touch, touch));
+                }
                 else
-                    touchCapture->touchMove(AGTouchInfo(pos, p, (TouchID) touch, touch));
+                {
+                    GLvertex3f localPos = [self worldCoordinateForScreenCoordinate:screenPos];
+                    if(touchCapture->parent())
+                        // touchDown/Move/Up events treat the position as if it were in the parent coordinate space
+                        localPos = touchCapture->parent()->globalToLocalCoordinateSpace(localPos);
+                    touchCapture->touchMove(AGTouchInfo(localPos, screenPos, (TouchID) touch, touch));
+                }
             }
         }
         else if(_touchHandlers.count(touch))
@@ -1128,12 +1056,22 @@ static AGViewController * g_instance = nil;
                 GLvertex3f pos_1 = [self worldCoordinateForScreenCoordinate:centroid_1];
                 
                 _camera = _camera + (pos.xy() - pos_1.xy());
-                dbgprint("camera: %f, %f, %f\n", _camera.x, _camera.y, _camera.z);
+                dbgprint_off("camera: %f, %f, %f\n", _camera.x, _camera.y, _camera.z);
                 
-//                float dist = GLvertex2f(p1).distanceTo(GLvertex2f(p2));
-//                float dist_1 = GLvertex2f(p1_1).distanceTo(GLvertex2f(p2_1));
-//                float zoom = (dist - dist_1)*0.05;
-//                _cameraZ += zoom;
+                float dist = GLvertex2f(p1).distanceTo(GLvertex2f(p2));
+                float dist_1 = GLvertex2f(p1_1).distanceTo(GLvertex2f(p2_1));
+                if(!_passedZoomDeadzone &&
+                   (dist_1 > _initialZoomDist+AG_ZOOM_DEADZONE ||
+                    dist_1 < _initialZoomDist-AG_ZOOM_DEADZONE))
+                {
+                    dbgprint("passed zoom deadzone\n");
+                    _passedZoomDeadzone = YES;
+                }
+                if(_passedZoomDeadzone)
+                {
+                    float zoom = (dist - dist_1);
+                    _cameraZ += zoom;
+                }
             }
         }
     }
@@ -1141,7 +1079,7 @@ static AGViewController * g_instance = nil;
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    dbgprint("touchEnded, count = %i\n", [touches count]);
+    dbgprint_off("touchEnded, count = %i\n", [touches count]);
     
     for(UITouch *touch in touches)
     {
@@ -1150,14 +1088,21 @@ static AGViewController * g_instance = nil;
             AGInteractiveObject *touchCapture = _touchCaptures[touch];
             if(touchCapture != NULL)
             {
-                CGPoint p = [touch locationInView:self.view];
-                GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
-                GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:p];
-                
+                CGPoint screenPos = [touch locationInView:self.view];
+
                 if(touchCapture->renderFixed())
-                    touchCapture->touchUp(AGTouchInfo(fixedPos, p, (TouchID) touch, touch));
+                {
+                    GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:screenPos];
+                    touchCapture->touchUp(AGTouchInfo(fixedPos, screenPos, (TouchID) touch, touch));
+                }
                 else
-                    touchCapture->touchUp(AGTouchInfo(pos, p, (TouchID) touch, touch));
+                {
+                    GLvertex3f localPos = [self worldCoordinateForScreenCoordinate:screenPos];
+                    if(touchCapture->parent())
+                        // touchDown/Move/Up events treat the position as if it were in the parent coordinate space
+                        localPos = touchCapture->parent()->globalToLocalCoordinateSpace(localPos);
+                    touchCapture->touchUp(AGTouchInfo(localPos, screenPos, (TouchID) touch, touch));
+                }
 
                 _touchCaptures.erase(touch);
             }
@@ -1353,7 +1298,7 @@ void AGViewController_::showTrainer()
 
 void AGViewController_::showAbout()
 {
-    AGAboutBox *aboutBox = new AGAboutBox([m_viewController worldCoordinateForScreenCoordinate:CGPointMake(m_viewController.view.bounds.size.width/2,
+    AGAboutBox *aboutBox = new AGAboutBox([m_viewController fixedCoordinateForScreenCoordinate:CGPointMake(m_viewController.view.bounds.size.width/2,
                                                                                                            m_viewController.view.bounds.size.height/2)]);
     aboutBox->init();
     [m_viewController addTopLevelObject:aboutBox];

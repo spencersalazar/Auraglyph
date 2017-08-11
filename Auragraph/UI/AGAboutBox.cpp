@@ -7,7 +7,6 @@
 //
 
 #include "AGAboutBox.h"
-#include "AGViewController.h"
 #include "AGStyle.h"
 #include "AGGenericShader.h"
 
@@ -19,9 +18,10 @@ static const float AGABOUTBOX_RADIUS = 0.066*AGStyle::oldGlobalScale;
 #pragma mark - AGAboutBox
 
 AGAboutBox::AGAboutBox(const GLvertex3f &pos) :
-m_pos(pos),
 m_done(false)
 {
+    setPosition(pos);
+    
     m_geoSize = 4;
     
     m_radius = AGABOUTBOX_RADIUS;
@@ -32,35 +32,41 @@ m_done(false)
     m_geo[2] = GLvertex3f(m_radius, -m_radius, 0);
     m_geo[3] = GLvertex3f(m_radius, m_radius, 0);
     
-    m_lines.push_back("an infinite modular");
-    m_lines.push_back("musical sketchpad");
-    m_lines.push_back("");
-    m_lines.push_back("created and designed");
-    m_lines.push_back("by Spencer Salazar");
-    m_lines.push_back("https://auragly.ph/");
-    m_lines.push_back("");
-    m_lines.push_back("Auraglyph Team");
-    m_lines.push_back("Spencer Salazar");
-    m_lines.push_back("Andrew Piepenbrink, April Gerloff");
-    m_lines.push_back("");
-    m_lines.push_back("Copyright 2017");
-    m_lines.push_back("All rights reserved");
+    m_lines = {
+        "is an infinite modular",
+        "musical sketchpad",
+        "",
+        "created and designed",
+        "by Spencer Salazar",
+        "",
+        "The Auraglyph Team is",
+        "Spencer Salazar",
+        "Andrew Piepenbrink, April Gerloff",
+        "",
+        "Copyright 2017",
+        "All rights reserved",
+        "https://auragly.ph/",
+    };
 }
 
 AGAboutBox::~AGAboutBox()
 {
 }
 
+GLKMatrix4 AGAboutBox::localTransform()
+{
+    GLKMatrix4 local = GLKMatrix4MakeTranslation(m_pos.x, m_pos.y, m_pos.z);
+    local = GLKMatrix4Multiply(local, m_squeeze.matrix());
+    return local;
+}
+
 void AGAboutBox::update(float t, float dt)
 {
-    AGInteractiveObject::update(t, dt);
     m_squeeze.update(t, dt);
+    AGInteractiveObject::update(t, dt);
     
-    m_modelView = AGNode::fixedModelViewMatrix();
+    m_modelView = GLKMatrix4Multiply(AGNode::fixedModelViewMatrix(), localTransform());
     m_projection = AGNode::projectionMatrix();
-    
-    m_modelView = GLKMatrix4Translate(m_modelView, m_pos.x, m_pos.y, m_pos.z);
-    m_modelView = GLKMatrix4Multiply(m_modelView, m_squeeze.matrix());
 }
 
 void AGAboutBox::render()

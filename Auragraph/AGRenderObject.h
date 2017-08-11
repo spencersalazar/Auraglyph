@@ -110,11 +110,22 @@ public:
     // override to force fixed-position rendering (e.g. ignores camera movement)
     virtual bool renderFixed() { return false; }
     
-    virtual GLvertex3f position() { return GLvertex3f(); }
+    virtual void setPosition(const GLvertex3f &pos) { m_pos = pos; }
+    virtual GLvertex3f position() { return m_pos; }
     virtual GLvertex2f size() { return GLvertex2f(); }
     // TODO: make non-virtual
     virtual GLvrectf effectiveBounds() { return GLvrectf(position()-size()*0.5, position()+size()*0.5); }
     AGRenderObject *parent() const { return m_parent; }
+    
+    /** transform matrix from global/parent -> this object 
+     RenderObjects that do more than just position themselves should override this. 
+     */
+    virtual GLKMatrix4 localTransform();
+    /** recursive transform matrix from global modelview -> this object (including parents) */
+    GLKMatrix4 globalTransform();
+
+    GLvertex3f globalToLocalCoordinateSpace(const GLvertex3f &position);
+    GLvertex3f parentToLocalCoordinateSpace(const GLvertex3f &position);
     
     // draw functions
     void drawGeometry(GLvertex3f geo[], int size, int kind);
@@ -123,6 +134,7 @@ public:
     void drawTriangleFan(AGGenericShader &shader, GLvertex3f geo[], int size, const GLKMatrix4 &xform);
     void drawLineLoop(GLvertex2f geo[], int size);
     void drawLineLoop(GLvertex3f geo[], int size);
+    void drawLineLoop(GLvertex3f geo[], int size, const GLKMatrix4 &xform);
     void drawLineStrip(GLvertex2f geo[], int size);
     void drawLineStrip(GLvertex2f geo[], int size, const GLKMatrix4 &xform);
     void drawLineStrip(AGGenericShader &shader, GLvertex2f geo[], int size, const GLKMatrix4 &xform);
@@ -146,6 +158,8 @@ protected:
     
     bool m_renderingOut;
     powcurvef m_alpha;
+    
+    GLvertex3f m_pos;
     
     bool m_debug_initCalled;
     

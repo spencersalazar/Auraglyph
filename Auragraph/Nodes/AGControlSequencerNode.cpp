@@ -14,6 +14,7 @@
 #include "AGGenericShader.h"
 #include "AGStyle.h"
 #include "AGSlider.h"
+#include "AGAudioNode.h" // for sample rate
 #include "spRandom.h"
 
 #include <string>
@@ -93,6 +94,12 @@ public:
             return _new;
         });
         addChild(m_bpmSlider);
+        
+        m_pinButton = AGUIButton::makePinButton(this);
+        GLvertex2f pinSize = m_pinButton->size();
+        GLvertex2f pinPos = { m_width/2-10-pinSize.x/2, m_height/2-10-pinSize.y/2 };
+        m_pinButton->setPosition(pinPos);
+        addChild(m_pinButton);
     }
     
     ~AGUISequencerEditor()
@@ -214,12 +221,8 @@ public:
 //        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
         /* render step grid */
-        AGRenderInfoV stepInfo;
-        stepInfo.numVertex = 4;
-        stepInfo.geoOffset = 0;
-        stepInfo.geoType = GL_LINE_LOOP;
-        stepInfo.geo = m_stepGeo;
-        stepInfo.color = AGStyle::lightColor();
+        GLcolor4f stepColor = AGStyle::lightColor();
+        GLcolor4f shadeColor = GLcolor4f(stepColor.r*0.5f, stepColor.g*0.5f, stepColor.b*0.5f, stepColor.a);
         
         for(int i = 0; i < numSeq+newSeq; i++)
         {
@@ -235,44 +238,57 @@ public:
                         alpha *= stepAlpha;
                 }
                 
-                stepInfo.color = AGStyle::foregroundColor().withAlpha(alpha);
+                stepColor.a = alpha;
+                shadeColor.a = alpha;
                 
-                // render outline
-                GLKMatrix4 stepMV = GLKMatrix4Translate(m_renderState.modelview,
-                                                        -m_width/2+AGUISequencerEditor_stepSize*0.75+AGUISequencerEditor_stepSize*j,
-                                                        m_height/2-AGUISequencerEditor_stepSize*1.375-AGUISequencerEditor_stepSize*i,
-                                                        0);
+                float stepVal = 0;
+                float stepLength = 1;
+                if(i < numSeq && j < numStep)
+                {
+                    stepVal = m_node->getStepValue(i, j);
+                    stepLength = m_node->getStepLength(i, j);
+                }
+                assert(stepVal >= 0 && stepVal <= 1);
+                assert(stepLength >= 0 && stepLength <= 1);
+                
+                GLKMatrix4 stepMV = GLKMatrix4MakeTranslation(-m_width/2+AGUISequencerEditor_stepSize*0.75+AGUISequencerEditor_stepSize*j,
+                                                              m_height/2-AGUISequencerEditor_stepSize*1.375-AGUISequencerEditor_stepSize*i,
+                                                              0);
                 stepMV = GLKMatrix4Scale(stepMV, G_RATIO-1, G_RATIO-1, G_RATIO-1);
                 
-                stepInfo.shader->useProgram();
-                stepInfo.shader->setMVPMatrix(GLKMatrix4Multiply(m_renderState.projection, stepMV));
-                stepInfo.shader->setNormalMatrix(m_renderState.normal);
-                stepInfo.geoType = GL_LINE_LOOP;
-                stepInfo.set(m_renderState);
+                // render step background
+                glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &shadeColor);
                 
-                glDrawArrays(GL_LINE_LOOP, 0, 4);
+                drawTriangleFan((GLvertex3f[]) {
+                    { -AGUISequencerEditor_stepSize/2+AGUISequencerEditor_stepSize*stepLength, -AGUISequencerEditor_stepSize/2, 0 },
+                    {  AGUISequencerEditor_stepSize/2, -AGUISequencerEditor_stepSize/2, 0 },
+                    {  AGUISequencerEditor_stepSize/2, -AGUISequencerEditor_stepSize/2+AGUISequencerEditor_stepSize*stepVal, 0 },
+                    { -AGUISequencerEditor_stepSize/2+AGUISequencerEditor_stepSize*stepLength, -AGUISequencerEditor_stepSize/2+AGUISequencerEditor_stepSize*stepVal, 0 },
+                }, 4, stepMV);
+
+                glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &stepColor);
                 
                 // render fill
-                float stepVal = 0;
-                if(i < numSeq && j < numStep)
-                    stepVal = m_node->getStepValue(i, j);
-                assert(stepVal >= 0 && stepVal <= 1);
-                
-                stepMV = GLKMatrix4Translate(m_renderState.modelview,
-                                             -m_width/2+AGUISequencerEditor_stepSize*0.75+AGUISequencerEditor_stepSize*j,
-                                             m_height/2-AGUISequencerEditor_stepSize*1.375-AGUISequencerEditor_stepSize*i,
-                                             0);
+                stepMV = GLKMatrix4MakeTranslation(-m_width/2+AGUISequencerEditor_stepSize*0.75+AGUISequencerEditor_stepSize*j,
+                                                   m_height/2-AGUISequencerEditor_stepSize*1.375-AGUISequencerEditor_stepSize*i,
+                                                   0);
                 stepMV = GLKMatrix4Scale(stepMV, G_RATIO-1, G_RATIO-1, G_RATIO-1);
-                stepMV = GLKMatrix4Translate(stepMV, 0, -AGUISequencerEditor_stepSize*(1.0f-stepVal)/2.0, 0);
-                stepMV = GLKMatrix4Scale(stepMV, 1, stepVal, 1);
                 
-                stepInfo.shader->useProgram();
-                stepInfo.shader->setMVPMatrix(GLKMatrix4Multiply(m_renderState.projection, stepMV));
-                stepInfo.shader->setNormalMatrix(m_renderState.normal);
-                stepInfo.geoType = GL_TRIANGLE_FAN;
-                stepInfo.set(m_renderState);
+                drawTriangleFan((GLvertex3f[]) {
+                    { -AGUISequencerEditor_stepSize/2, -AGUISequencerEditor_stepSize/2, 0 },
+                    { -AGUISequencerEditor_stepSize/2+AGUISequencerEditor_stepSize*stepLength, -AGUISequencerEditor_stepSize/2, 0 },
+                    { -AGUISequencerEditor_stepSize/2+AGUISequencerEditor_stepSize*stepLength, -AGUISequencerEditor_stepSize/2+AGUISequencerEditor_stepSize*stepVal, 0 },
+                    { -AGUISequencerEditor_stepSize/2, -AGUISequencerEditor_stepSize/2+AGUISequencerEditor_stepSize*stepVal, 0 },
+                }, 4, stepMV);
                 
-                glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+                // render outline
+                drawLineLoop((GLvertex3f[]) {
+                    { -AGUISequencerEditor_stepSize/2, -AGUISequencerEditor_stepSize/2, 0 },
+                    {  AGUISequencerEditor_stepSize/2, -AGUISequencerEditor_stepSize/2, 0 },
+                    {  AGUISequencerEditor_stepSize/2,  AGUISequencerEditor_stepSize/2, 0 },
+                    { -AGUISequencerEditor_stepSize/2,  AGUISequencerEditor_stepSize/2, 0 },
+                }, 4, stepMV);
+
             }
         }
         
@@ -333,8 +349,14 @@ public:
                                         stepPos-stepSize/2.0f,
                                         stepPos+stepSize/2.0f))
                     {
-                        m_touchCapture[t.touchId] = { i, j, t.position, m_node->getStepValue(i, j), false };
-                        //                    NSLog(@"caught %i %i", i, j);
+                        m_touchCapture[t.touchId] = {
+                            .seq = i, .step = j,
+                            .startPos = t.position,
+                            .startValue = m_node->getStepValue(i, j),
+                            .startLength = m_node->getStepLength(i, j),
+                            .passedClearance = false
+                        };
+                        // NSLog(@"caught %i %i", i, j);
                     }
                 }
             }
@@ -353,9 +375,12 @@ public:
                 float value = touch.startValue + (t.position.y - touch.startPos.y)*AGUISequencerEditor_adjustmentScale;
                 value = clampf(value, 0, 1);
                 m_node->setStepValue(touch.seq, touch.step, value);
+                float length = touch.startLength + (t.position.x - touch.startPos.x)*AGUISequencerEditor_adjustmentScale;
+                length = clampf(length, 0, 1);
+                m_node->setStepLength(touch.seq, touch.step, length);
 //                NSLog(@"step value: %f", value);
             }
-            else if(fabsf(touch.startPos.y - t.position.y) > AGUISequencerEditor_minClearance)
+            else if((touch.startPos - t.position).magnitudeSquared() > AGUISequencerEditor_minClearance*AGUISequencerEditor_minClearance)
             {
                 m_touchCapture[t.touchId].passedClearance = true;
                 m_touchCapture[t.touchId].startPos = t.position;
@@ -365,6 +390,14 @@ public:
         if(m_pullTabCapture && t.touchId == m_pullTabStartTouch.touchId)
         {
             m_pullTabDistance.reset(t.position.xy() - m_pullTabStartTouch.position.xy());
+            
+            // reposition pin button
+            GLvertex2f pinSize = m_pinButton->size();
+            GLvertex2f pinPos = {
+                m_width/2-10-pinSize.x/2 + ((GLvertex2f)m_pullTabDistance).x,
+                m_height/2-10-pinSize.y/2
+            };
+            m_pinButton->setPosition(pinPos);
         }
     }
     
@@ -459,6 +492,7 @@ private:
         int step;
         GLvertex3f startPos;
         float startValue;
+        float startLength;
         bool passedClearance;
     };
     
@@ -472,6 +506,7 @@ private:
     expcurvef m_lastStepAlpha;
     
     AGSlider *m_bpmSlider;
+    AGUIButton *m_pinButton;
 };
 
 
@@ -486,15 +521,15 @@ string AGControlSequencerNode::Manifest::_name() const { return "Sequencer"; };
 vector<AGPortInfo> AGControlSequencerNode::Manifest::_inputPortInfo() const
 {
     return {
-        { PARAM_ADVANCE, "advance", true, true, .doc = "Triggers step to advance by one." },
-        { PARAM_BPM, "bpm", true, true, 120, 0, AGFloat_Max, .doc = "BPM of sequencer." },
+        { PARAM_ADVANCE, "advance", .doc = "Triggers step to advance by one." },
+        { PARAM_BPM, "bpm", 120, 0, AGFloat_Max, .doc = "BPM of sequencer." },
     };
 };
 
 vector<AGPortInfo> AGControlSequencerNode::Manifest::_editPortInfo() const
 {
     return {
-        { PARAM_BPM, "bpm", true, true, 120, 0, AGFloat_Max, .doc = "BPM of sequencer." },
+        { PARAM_BPM, "bpm", 120, 0, AGFloat_Max, .doc = "BPM of sequencer." },
     };
 };
 
@@ -536,16 +571,17 @@ void AGControlSequencerNode::initFinal()
     m_numSteps = 8;
     m_pos = 0;
     // add default sequence
-    m_sequence.push_back(std::vector<float>(m_numSteps, 0));
+    m_sequence.push_back(std::vector<Step>(m_numSteps));
     for(auto i = m_sequence.begin(); i != m_sequence.end(); i++)
         for(auto j = i->begin(); j != i->end(); j++)
-            *j = Random::unit();
+            *j = Step(Random::unit(), 0.5);
     
     // apparently Block_copy is necessary since ARC doesn't work in C++(?)
-    m_timer = AGTimer(60.0f/param(PARAM_BPM).getFloat(), Block_copy(^(AGTimer *) {
-        if(numInputsForPort(PARAM_ADVANCE) == 0)
-            updateStep();
-    }));
+//    m_timer = AGTimer(60.0f/param(PARAM_BPM).getFloat(), Block_copy(^(AGTimer *) {
+//        if(numInputsForPort(PARAM_ADVANCE) == 0)
+//            updateStep();
+//    }));
+    AGAudioManager_::instance().addAudioRateProcessor(this);
 }
 
 void AGControlSequencerNode::deserializeFinal(const AGDocument::Node &docNode)
@@ -562,21 +598,34 @@ void AGControlSequencerNode::deserializeFinal(const AGDocument::Node &docNode)
         m_sequence.clear();
         for(int seq = 0; seq < num_seqs; seq++)
         {
-            m_sequence.push_back(std::vector<float>(m_numSteps, 0));
+            m_sequence.push_back(std::vector<Step>(m_numSteps));
             
             string seqkey = "seq" + std::to_string(seq);
             if(docNode.params.count(seqkey))
             {
                 auto stepValue = docNode.params.at(seqkey).fa.begin();
                 for(int step = 0; step < numSteps(); step++)
-                    m_sequence[seq][step] = *stepValue++;
+                    m_sequence[seq][step].value = *stepValue++;
+            }
+            
+            string seqlenkey = "seq" + std::to_string(seq) + "len";
+            if(docNode.params.count(seqlenkey))
+            {
+                auto stepValue = docNode.params.at(seqlenkey).fa.begin();
+                for(int step = 0; step < numSteps(); step++)
+                    m_sequence[seq][step].length = *stepValue++;
             }
         }
     }
     else
     {
-        m_sequence.push_back(std::vector<float>(m_numSteps, 0));
+        m_sequence.push_back(std::vector<Step>(m_numSteps));
     }
+}
+
+AGControlSequencerNode::~AGControlSequencerNode()
+{
+    AGAudioManager_::instance().removeAudioRateProcessor(this);
 }
 
 AGUINodeEditor *AGControlSequencerNode::createCustomEditor()
@@ -587,6 +636,48 @@ AGUINodeEditor *AGControlSequencerNode::createCustomEditor()
 int AGControlSequencerNode::numOutputPorts() const
 {
     return m_sequence.size();
+}
+
+void AGControlSequencerNode::process(sampletime _t)
+{
+    float t = ((float)_t)/AGAudioNode::sampleRate();
+    
+    if(m_t == -1)
+    {
+        m_t = t;
+        m_lastStep = t;
+        
+        return;
+    }
+    
+    // don't automatically advance if there is an advance input
+    if(numInputsForPort(PARAM_ADVANCE))
+        return;
+    
+    float bpm = param(PARAM_BPM);
+    float stepLength = 60.0/bpm;
+    float stepTime = t-m_lastStep;
+    if(stepTime >= stepLength)
+    {
+        updateStep();
+        m_lastStep = t;
+    }
+    else
+    {
+        m_seqLock.lock();
+        
+        for(int seq = 0; seq < m_sequence.size(); seq++)
+        {
+            if(stepTime > m_sequence[seq][m_pos].length*stepLength)
+            {
+                pushControl(seq, 0);
+            }
+        }
+        
+        m_seqLock.unlock();
+    }
+    
+    m_t = t;
 }
 
 void AGControlSequencerNode::receiveControl(int port, const AGControl &control)
@@ -617,7 +708,7 @@ void AGControlSequencerNode::setNumSequences(int num)
     if(num < m_sequence.size())
         m_sequence.resize(num);
     else if(num > m_sequence.size())
-        m_sequence.resize(num, std::vector<float>(m_numSteps, 0));
+        m_sequence.resize(num, std::vector<Step>(m_numSteps));
     
     m_seqLock.unlock();
 }
@@ -637,7 +728,7 @@ void AGControlSequencerNode::setNumSteps(int num)
     if(m_numSteps != num)
     {
         for(int i = 0; i < m_sequence.size(); i++)
-            m_sequence[i].resize(num, 0);
+            m_sequence[i].resize(num);
         m_numSteps = num;
     }
     
@@ -663,7 +754,7 @@ void AGControlSequencerNode::updateStep()
     m_pos = (m_pos + 1) % m_numSteps;
     
     for(int seq = 0; seq < m_sequence.size(); seq++)
-        pushControl(seq, AGControl(m_sequence[seq][m_pos]));
+        pushControl(seq, AGControl(m_sequence[seq][m_pos].value));
     
     m_seqLock.unlock();
 }
@@ -672,14 +763,28 @@ void AGControlSequencerNode::setStepValue(int seq, int step, float value)
 {
     m_seqLock.lock();
     
-    m_sequence[seq][step] = value;
+    m_sequence[seq][step].value = value;
+    
+    m_seqLock.unlock();
+}
+
+void AGControlSequencerNode::setStepLength(int seq, int step, float length)
+{
+    m_seqLock.lock();
+    
+    m_sequence[seq][step].length = length;
     
     m_seqLock.unlock();
 }
 
 float AGControlSequencerNode::getStepValue(int seq, int step)
 {
-    return m_sequence[seq][step];
+    return m_sequence[seq][step].value;
+}
+
+float AGControlSequencerNode::getStepLength(int seq, int step)
+{
+    return m_sequence[seq][step].length;
 }
 
 void AGControlSequencerNode::editPortValueChanged(int paramId)
@@ -699,8 +804,13 @@ AGDocument::Node AGControlSequencerNode::serialize()
     {
         string seqkey = "seq" + std::to_string(seq);
         docNode.params[seqkey].type = AGDocument::ParamValue::FLOAT_ARRAY;
+        string seqlenkey = "seq" + std::to_string(seq) + "len";
+        docNode.params[seqlenkey].type = AGDocument::ParamValue::FLOAT_ARRAY;
         for(int step = 0; step < numSteps(); step++)
+        {
             docNode.params[seqkey].fa.push_back(getStepValue(seq, step));
+            docNode.params[seqlenkey].fa.push_back(getStepLength(seq, step));
+        }
     }
     
     return std::move(docNode);

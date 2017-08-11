@@ -134,15 +134,15 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_LEFT, "left", true, false, .doc = "Left output channel" },
-                { PARAM_RIGHT, "right", true, false, .doc = "Right output channel" }
+                { PARAM_LEFT, "left", .doc = "Left output channel" },
+                { PARAM_RIGHT, "right", .doc = "Right output channel" }
             };
         }
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { AUDIO_PARAM_GAIN, "gain", false, true, 1, 0, AGFloat_Max, AGPortInfo::EXP, .doc = "Output gain." }
+                { AUDIO_PARAM_GAIN, "gain", 1, 0, AGFloat_Max, AGPortInfo::EXP, .doc = "Output gain." }
             };
         }
 

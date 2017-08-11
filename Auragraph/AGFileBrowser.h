@@ -32,8 +32,6 @@ public:
     void touchMove(const AGTouchInfo &t) override;
     void touchUp(const AGTouchInfo &t) override;
     
-    void setPosition(const GLvertex3f &position);
-    virtual GLvertex3f position() override;
     void setSize(const GLvertex2f &size);
     virtual GLvertex2f size() override;
     
@@ -51,7 +49,6 @@ public:
     
 private:
     
-    GLvertex3f m_pos = GLvertex3f();
     GLvertex2f m_size = GLvertex2f();
     
     string m_file = "";

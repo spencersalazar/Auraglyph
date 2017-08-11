@@ -40,14 +40,11 @@ class AGUINodeEditor;
 
 typedef AGControl AGParamValue;
 
-
 struct AGPortInfo
 {
     int portId;
     
     string name;
-    bool canConnect; // can create connection btw this port and another port
-    bool canEdit; // should this port appear in the node's editor window
     
     float _default;
     float min;
@@ -65,13 +62,23 @@ struct AGPortInfo
     
     AGControl::Type type;
     
-    enum Editor
+    enum EditorMode
     {
         EDITOR_DEFAULT = 0,
         EDITOR_AUDIOFILES,
+        EDITOR_ENUM, // for TYPE_INT: editor item is a list of enumerated types
+        EDITOR_ACTION, // for TYPE_BIT: instead of a checkbox, editor item is a push button
     };
     
-    Editor editor;
+    EditorMode editorMode;
+    
+    struct EnumInfo
+    {
+        AGInt value;
+        AGString name;
+    };
+    
+    vector<EnumInfo> enumInfo;
     
     // TODO: min, max, units label, rate, etc.
     
@@ -163,9 +170,6 @@ public:
     HitTestResult hit(const GLvertex3f &hit, int *port);
     void unhit();
     AGInteractiveObject *hitTest(const GLvertex3f &t);
-    
-    void setPosition(const GLvertex3f &pos) { m_pos = pos; }
-    const GLvertex3f &position() const { return m_pos; }
     
     virtual void touchDown(const GLvertex3f &t);
     virtual void touchMove(const GLvertex3f &t);
@@ -280,7 +284,6 @@ protected:
     
 //    AGPortInfo * m_inputPortInfo;
     
-    GLvertex3f m_pos;
     GLKMatrix4 m_modelViewProjectionMatrix;
     GLKMatrix3 m_normalMatrix;
     

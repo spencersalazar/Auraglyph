@@ -17,6 +17,9 @@
 #include <string>
 #include <vector>
 
+// forward declaration
+class AGUINodeEditor;
+
 
 /*------------------------------------------------------------------------------
  - AGUIObject -
@@ -64,14 +67,11 @@ public:
     virtual void update(float t, float dt);
     virtual void render();
     
-    void setPosition(const GLvertex3f &position);
-    virtual GLvertex3f position();
     virtual GLvertex2f size();
     void setSize(const GLvertex2f &size);
     GLvertex2f naturalSize() const;
     
 private:
-    GLvertex3f m_position;
     GLvertex2f m_size;
     GLvertex2f m_textSize;
     
@@ -95,9 +95,6 @@ public:
     virtual void touchDown(const GLvertex3f &t);
     virtual void touchMove(const GLvertex3f &t);
     virtual void touchUp(const GLvertex3f &t);
-    
-    GLvertex3f position() { return m_pos; }
-    void setPosition(const GLvertex3f &pos) { m_pos = pos; }
     
     virtual GLvertex2f size() { return m_size.xy(); }
     
@@ -129,13 +126,22 @@ public:
     void setInteractionType(InteractionType t) { m_interactionType = t; }
     InteractionType getInteractionType() { return m_interactionType; }
     
+    /** Make a pin button that will cause the (optional) node editor argument
+     to be pinned when pressed.
+     */
+    static AGUIButton *makePinButton(AGUINodeEditor *node = nullptr);
+    
+    /** Make a standard check mark button.
+     */
+    static AGUIButton *makeCheckButton();
+    
 protected:
     
     GLvrectf effectiveBounds();
     
     std::string m_title;
     
-    GLvertex3f m_pos, m_size;
+    GLvertex3f m_size;
     GLvertex3f m_geo[8];
     bool m_renderFixed = false;
     
@@ -172,12 +178,13 @@ class AGUIIconButton : public AGUIButton
 {
 public:
     AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size, const AGRenderInfoV &iconRenderInfo);
+    AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size,
+                   const vector<GLvertex3f> &iconGeo, int geoType);
     ~AGUIIconButton();
     
     virtual void update(float t, float dt);
     virtual void render();
     
-    virtual GLvertex3f position() { return m_pos; }
     virtual GLvertex2f size() { return m_size.xy(); }
     virtual GLvrectf effectiveBounds() { return GLvrectf(position()-size()*0.5, position()+size()*0.5); }
     
@@ -192,8 +199,10 @@ public:
     
 private:
     GLvertex3f *m_boxGeo;
-    AGRenderInfoV m_boxInfo;
     AGRenderInfoV m_iconInfo;
+    
+    vector<GLvertex3f> m_iconGeo;
+    int m_iconGeoType;
     
     IconMode m_iconMode;
 };
@@ -242,8 +251,6 @@ public:
     
     virtual AGUIObject *hitTest(const GLvertex3f &t) override;
     
-    virtual void setPosition(const GLvertex3f &pos) { m_position = pos; }
-    
     virtual bool renderFixed() override { return true; }
     
 private:
@@ -254,7 +261,6 @@ private:
     slewf m_scale;
     
     float m_radius;
-    GLvertex3f m_position;
     GLuint m_tex;
     GLvertex3f m_geo[4];
     GLvertex2f m_uv[4];

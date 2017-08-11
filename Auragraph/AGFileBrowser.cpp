@@ -191,16 +191,6 @@ void AGFileBrowser::touchUp(const AGTouchInfo &t)
     }
 }
 
-void AGFileBrowser::setPosition(const GLvertex3f &position)
-{
-    m_pos = position;
-}
-
-GLvertex3f AGFileBrowser::position()
-{
-    return m_pos;
-}
-
 void AGFileBrowser::setSize(const GLvertex2f &size)
 {
     m_size = size;

@@ -124,6 +124,8 @@
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
+    
     self.title.transform = CGAffineTransformMakeRotation(-M_PI/2.0);
 }
 

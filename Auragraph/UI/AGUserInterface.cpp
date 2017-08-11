@@ -12,6 +12,7 @@
 #include "AGGenericShader.h"
 #include "AGDef.h"
 #include "AGStyle.h"
+#include "AGUINodeEditor.h"
 
 #include "TexFont.h"
 #include "Texture.h"
@@ -68,22 +69,8 @@ void AGUIButton::render()
     
     float textScale = 0.5;
     
-    GLKMatrix4 proj;
-    GLKMatrix4 modelView;
-    
-    if(parent())
-    {
-        modelView = parent()->m_renderState.modelview;
-        proj = parent()->m_renderState.projection;
-    }
-    else
-    {
-        proj = projectionMatrix();
-        if(renderFixed())
-            modelView = AGNode::fixedModelViewMatrix();
-        else
-            modelView = AGNode::globalModelViewMatrix();
-    }
+    GLKMatrix4 proj = projection();
+    GLKMatrix4 modelView = modelview();
     
     modelView = GLKMatrix4Translate(modelView, m_pos.x, m_pos.y, m_pos.z);
     GLKMatrix4 textMV = GLKMatrix4Translate(modelView, m_size.x/2-text->width(m_title)*textScale/2, m_size.y/2-text->height()*textScale/2*1.25, 0);
@@ -203,6 +190,46 @@ const std::string &AGUIButton::title()
 }
 
 
+AGUIButton *AGUIButton::makePinButton(AGUINodeEditor *nodeEditor)
+{
+    float w = 20;
+    float h = 20;
+    float f = 0.9f; // fraction of size occupied by pin icon
+    
+    AGUIIconButton *pinButton = new AGUIIconButton(GLvertex2f(0, 0), GLvertex2f(w, h), vector<GLvertex3f>({
+        { -w/2*f, -h/2*f, 0 },
+        { w/2*f, h/2*f, 0 },
+    }), GL_LINES);
+    
+    pinButton->init();
+    pinButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
+    pinButton->setIconMode(AGUIIconButton::ICONMODE_SQUARE);
+    
+    if(nodeEditor != nullptr)
+    {
+        pinButton->setAction(^{
+            nodeEditor->pin(pinButton->isPressed());
+        });
+    }
+    
+    return pinButton;
+}
+
+AGUIButton *AGUIButton::makeCheckButton()
+{
+    float w = 20;
+    float h = 20;
+    
+    AGUIIconButton *checkButton = new AGUIIconButton(GLvertex2f(0, 0), GLvertex2f(w, h), vector<GLvertex3f>({
+    }), GL_LINE_STRIP);
+    
+    checkButton->init();
+    checkButton->setInteractionType(AGUIButton::INTERACTION_LATCH);
+    checkButton->setIconMode(AGUIIconButton::ICONMODE_SQUARE);
+    
+    return checkButton;
+}
+
 
 //------------------------------------------------------------------------------
 // ### AGUITextButton ###
@@ -256,15 +283,21 @@ void AGUITextButton::render()
 #pragma mark - AGUIIconButton
 AGUIIconButton::AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size, const AGRenderInfoV &iconRenderInfo) :
 AGUIButton("", pos, size),
-m_iconInfo(iconRenderInfo)
+m_iconInfo(iconRenderInfo),
+m_iconGeoType(0)
 {
     m_boxGeo = NULL;
     setIconMode(ICONMODE_SQUARE);
-    
-    m_boxInfo.color = AGStyle::lightColor();
-    m_renderList.push_back(&m_boxInfo);
-    
-    m_renderList.push_back(&m_iconInfo);
+}
+
+AGUIIconButton::AGUIIconButton(const GLvertex3f &pos, const GLvertex2f &size,
+                               const vector<GLvertex3f> &iconGeo, int geoType) :
+AGUIButton("", pos, size),
+m_iconGeo(iconGeo),
+m_iconGeoType(geoType)
+{
+    m_boxGeo = NULL;
+    setIconMode(ICONMODE_SQUARE);
 }
 
 AGUIIconButton::~AGUIIconButton()
@@ -282,10 +315,6 @@ void AGUIIconButton::setIconMode(AGUIIconButton::IconMode m)
         
         m_boxGeo = new GLvertex3f[4];
         GeoGen::makeRect(m_boxGeo, m_size.x, m_size.y);
-        
-        m_boxInfo.geo = m_boxGeo;
-        m_boxInfo.geoType = GL_TRIANGLE_FAN;
-        m_boxInfo.numVertex = 4;
     }
     else if (m_iconMode == ICONMODE_CIRCLE)
     {
@@ -293,11 +322,6 @@ void AGUIIconButton::setIconMode(AGUIIconButton::IconMode m)
         
         m_boxGeo = new GLvertex3f[48];
         GeoGen::makeCircle(m_boxGeo, 48, m_size.x/2);
-        
-        m_boxInfo.geo = m_boxGeo;
-        m_boxInfo.geoType = GL_LINE_LOOP;
-        m_boxInfo.numVertex = 48;
-        m_boxInfo.geoOffset = 1;
     }
 }
 
@@ -317,21 +341,6 @@ void AGUIIconButton::update(float t, float dt)
     
     m_renderState.modelview = GLKMatrix4Translate(parentModelview, m_pos.x, m_pos.y, m_pos.z);
     m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
-    
-    if(isPressed())
-    {
-        m_iconInfo.color = AGStyle::darkColor();
-        m_boxInfo.geoType = GL_TRIANGLE_FAN;
-        m_boxInfo.geoOffset = 0;
-        m_boxInfo.numVertex = (m_iconMode == ICONMODE_CIRCLE ? 48 : 4);
-    }
-    else
-    {
-        m_iconInfo.color = AGStyle::lightColor();
-        m_boxInfo.geoType = GL_LINE_LOOP;
-        m_boxInfo.geoOffset = (m_iconMode == ICONMODE_CIRCLE ? 1 : 0);
-        m_boxInfo.numVertex = (m_iconMode == ICONMODE_CIRCLE ? 47 : 4);
-    }
 }
 
 void AGUIIconButton::render()
@@ -340,7 +349,41 @@ void AGUIIconButton::render()
     
     glLineWidth(2.0);
 
-    AGInteractiveObject::render();
+    if(m_iconMode == ICONMODE_SQUARE)
+    {
+        AGStyle::lightColor().set();
+        // fill square
+        if(isPressed()) drawTriangleFan(m_boxGeo, 4);
+        // stroke square
+        else drawLineLoop(m_boxGeo, 4);
+    }
+    else if(m_iconMode == ICONMODE_CIRCLE)
+    {
+        // fill circle
+        if(isPressed())
+        {
+            AGStyle::lightColor().set();
+            drawTriangleFan(m_boxGeo, 48);
+        }
+        // stroke circle + fill circle in bg color
+        else
+        {
+            AGStyle::frameBackgroundColor().set();
+            drawTriangleFan(m_boxGeo, 48);
+            AGStyle::lightColor().set();
+            drawLineLoop(m_boxGeo+1, 47);
+        }
+    }
+    
+    if(isPressed())
+        AGStyle::darkColor().set();
+    else
+        AGStyle::lightColor().set();
+    
+    if(m_iconGeo.size())
+        drawGeometry(m_iconGeo.data(), m_iconGeo.size(), m_iconGeoType);
+    else
+        drawGeometry(m_iconInfo.geo, m_iconInfo.numVertex, m_iconInfo.geoType);
 }
 
 
@@ -443,7 +486,7 @@ void AGUITrash::render()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     GLKMatrix4 proj = AGNode::projectionMatrix();
-    GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::fixedModelViewMatrix(), m_position.x, m_position.y, m_position.z);
+    GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::fixedModelViewMatrix(), m_pos.x, m_pos.y, m_pos.z);
     modelView = GLKMatrix4Scale(modelView, m_scale, m_scale, m_scale);
     
     AGGenericShader &shader = AGTextureShader::instance();
@@ -497,7 +540,7 @@ void AGUITrash::touchUp(const GLvertex3f &t)
 AGUIObject *AGUITrash::hitTest(const GLvertex3f &t)
 {
     // point in circle
-    if((t-m_position).magnitudeSquared() < m_radius*m_radius)
+    if((t-m_pos).magnitudeSquared() < m_radius*m_radius)
         return this;
     return NULL;
 }
@@ -552,8 +595,9 @@ const vector<GLvertex3f> AGUITrace::points() const
 static const float AGUILabel_TextScale = 0.61f;
 
 AGUILabel::AGUILabel(const GLvertex3f &position, const string &text)
-: m_text(text), m_position(position)
+: m_text(text)
 {
+    setPosition(position);
     TexFont *texFont = AGStyle::standardFont64();
     
     m_textSize.x = texFont->width(m_text)*AGUILabel_TextScale;
@@ -591,20 +635,10 @@ void AGUILabel::render()
     GLcolor4f valueColor = AGStyle::foregroundColor().withAlpha(m_renderState.alpha);
     
     GLKMatrix4 valueMV = modelView;
-    valueMV = GLKMatrix4Translate(valueMV, m_position.x, m_position.y, m_position.z);
+    valueMV = GLKMatrix4Translate(valueMV, m_pos.x, m_pos.y, m_pos.z);
     valueMV = GLKMatrix4Translate(valueMV, -m_textSize.x/2, -m_textSize.y/2, 0);
     valueMV = GLKMatrix4Scale(valueMV, AGUILabel_TextScale, AGUILabel_TextScale, AGUILabel_TextScale);
     text->render(m_text, valueColor, valueMV, proj);
-}
-
-void AGUILabel::setPosition(const GLvertex3f &position)
-{
-    m_position = position;
-}
-
-GLvertex3f AGUILabel::position()
-{
-    return m_position;
 }
 
 GLvertex2f AGUILabel::size()

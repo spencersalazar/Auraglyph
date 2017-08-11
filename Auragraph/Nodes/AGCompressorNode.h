@@ -98,25 +98,25 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", true, true, .doc = "Input signal. " }
+                { PARAM_INPUT, "input", .doc = "Input signal. " }
             };
         };
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_THRESHOLD, "threshold", true, true, -20, -200, 0, .doc = "Compressor threshold (dB)." },
-                { PARAM_RATIO, "ratio", true, true, 2, 1, AGFloat_Max, .doc = "Compressor ratio." },
-                { PARAM_ATTACK, "attack", true, true, 0.025, 0, 1, .doc = "Compressor attack." },
-                { PARAM_RELEASE, "release", true, true, 0.1, 0, 1, .doc = "Compressor release." },
-                { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
+                { PARAM_THRESHOLD, "threshold", -20, -200, 0, .doc = "Compressor threshold (dB)." },
+                { PARAM_RATIO, "ratio", 2, 1, AGFloat_Max, .doc = "Compressor ratio." },
+                { PARAM_ATTACK, "attack", 0.025, 0, 1, .doc = "Compressor attack." },
+                { PARAM_RELEASE, "release", 0.1, 0, 1, .doc = "Compressor release." },
+                { AUDIO_PARAM_GAIN, "gain", 1, .doc = "Output gain." },
             };
         };
 
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_OUTPUT, "output", true, false, .doc = "Output." }
+                { PARAM_OUTPUT, "output", .doc = "Output." }
             };
         }
 

@@ -30,7 +30,7 @@ m_uuid(makeUUID())
     m_points = vector<GLvertex3f>(points, points + nPoints);
     
     m_touchDown = false;
-    m_position = GLvertex3f();
+    m_pos = GLvertex3f();
     
     m_alpha = powcurvef(0, 1, 0.5, 2);
     m_alpha.forceTo(1);
@@ -57,7 +57,7 @@ m_uuid(docFreedraw.uuid)
         m_points.push_back(GLvertex3f(x, y, z));
     }
     m_touchDown = false;
-    m_position = GLvertex3f(docFreedraw.x, docFreedraw.y, docFreedraw.z);
+    m_pos = GLvertex3f(docFreedraw.x, docFreedraw.y, docFreedraw.z);
     
     m_touchPoint0 = -1;
 }
@@ -78,7 +78,7 @@ void AGFreeDraw::update(float t, float dt)
 void AGFreeDraw::render()
 {
     GLKMatrix4 proj = AGNode::projectionMatrix();
-    GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::globalModelViewMatrix(), m_position.x, m_position.y, m_position.z);
+    GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::globalModelViewMatrix(), m_pos.x, m_pos.y, m_pos.z);
     
     AGGenericShader &shader = AGGenericShader::instance();
     shader.useProgram();
@@ -151,7 +151,7 @@ AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
         return NULL;
     
     GLvertex2f t = _t.xy();
-    GLvertex2f pos = m_position.xy();
+    GLvertex2f pos = m_pos.xy();
     
     for(int i = 0; i < m_points.size()-1; i++)
     {

@@ -28,9 +28,11 @@ class AGUINumberInput : public AGInteractiveObject
 {
 public:
     AGUINumberInput(const GLvertex3f &pos, const GLvertex2f &size) :
-    m_pos(pos), m_size(size), m_action(NULL), m_decimal(false),
+    m_size(size), m_action(NULL), m_decimal(false),
     m_lastTraceWasRecognized(false)
     {
+        setPosition(pos);
+        
         GeoGen::makeRect(m_geo, size.x, size.y);
         
         // inner background box
@@ -224,7 +226,6 @@ public:
         }
     }
     
-    virtual GLvertex3f position() { return m_pos; }
     virtual GLvertex2f size() { return m_size; }
     
     void undo()
@@ -253,7 +254,6 @@ protected:
     AGRenderInfoV m_boxInnerInfo;
     
     GLvertex2f m_size;
-    GLvertex3f m_pos;
     AGSqueezeAnimation m_squeeze;
     
     std::list< std::vector<GLvertex3f> > m_drawline;
@@ -284,9 +284,11 @@ public:
     {
     public:
         Element(AGUIArrayEditor * arrayEditor, const GLvertex3f &pos, const GLvertex2f &size) :
-        m_arrayEditor(arrayEditor), m_pos(pos), m_size(size), m_hasValue(false),
+        m_arrayEditor(arrayEditor), m_size(size), m_hasValue(false),
         m_pressed(false), m_numInput(NULL), m_editAction(NULL), m_valueRef(NULL)
         {
+            setPosition(pos);
+            
             float inset = 0.8;
             float yHeight = 0.2;
             m_geo[0] = GLvertex3f(-size.x/2.0f*inset, -size.y/2.0f*inset*(1-yHeight), 0);
@@ -406,7 +408,6 @@ public:
         AGRenderInfoV m_renderInfo;
         
         GLvertex2f m_size;
-        GLvertex3f m_pos;
         
         AGUIArrayEditor * const m_arrayEditor;
         
@@ -601,7 +602,7 @@ string AGControlArrayNode::Manifest::_name() const { return "Array"; };
 vector<AGPortInfo> AGControlArrayNode::Manifest::_inputPortInfo() const
 {
     return {
-        { PARAM_ITERATE, "iterate", true, true, .doc = "Advance array by one item and push that item." }
+        { PARAM_ITERATE, "iterate", .doc = "Advance array by one item and push that item." }
     };
 };
 
@@ -610,7 +611,7 @@ vector<AGPortInfo> AGControlArrayNode::Manifest::_editPortInfo() const { return 
 vector<AGPortInfo> AGControlArrayNode::Manifest::_outputPortInfo() const
 {
     return {
-        { OUTPUT_VALUE, "value", true, true, .doc = "Value of selected array item." },
+        { OUTPUT_VALUE, "value", .doc = "Value of selected array item." },
     };
 };
 

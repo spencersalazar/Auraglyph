@@ -52,7 +52,6 @@ private:
     float m_radius;
     GLuint m_geoSize;
     
-    GLvertex3f m_pos;
     clampf m_verticalScrollPos;
     lincurvef m_xScale;
     lincurvef m_yScale;
@@ -107,13 +106,14 @@ AGUIMetaNodeSelector *AGUIMetaNodeSelector::outputNodeSelector(const GLvertex3f 
 template<class NodeType, class ManagerType>
 AGUINodeSelector<NodeType, ManagerType>::AGUINodeSelector(const ManagerType &manager, const GLvertex3f &pos) :
 AGUIMetaNodeSelector(pos),
-m_pos(pos),
 m_node(new NodeType(AGNodeManifest::defaultManifest(), pos)),
 m_hit(-1),
 m_done(false),
 m_manager(manager)
 {
     m_node->init();
+    
+    setPosition(pos);
     
     m_geoSize = 4;
     
