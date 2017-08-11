@@ -1516,6 +1516,7 @@ public:
         PARAM_OUTPUT,
         PARAM_DELAY,
         PARAM_FEEDBACK,
+        PARAM_MIX,
     };
     
     class Manifest : public AGStandardNodeManifest<AGAudioFeedbackNode>
@@ -1531,6 +1532,7 @@ public:
                 { PARAM_INPUT, "input", true, false, .doc = "Input signal." },
                 { PARAM_DELAY, "delay", true, true, 0.5, 0, AGFloat_Max, .doc = "Delay length (seconds)." },
                 { PARAM_FEEDBACK, "feedback", true, true, 0.1, 0, 1, .doc = "Feedback gain." },
+                { PARAM_MIX, "mix", ._default = 0.5, .min = 0.0, .max = 1.0, .doc = "Wet/dry mix."},
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
             };
         };
@@ -1541,6 +1543,7 @@ public:
                 { AUDIO_PARAM_GAIN, "gain", true, true, 1, .doc = "Output gain." },
                 { PARAM_DELAY, "delay", true, true, 0.5, 0, AGFloat_Max, .doc = "Delay length (seconds)." },
                 { PARAM_FEEDBACK, "feedback", true, true, 0.1, 0, 1, .doc = "Feedback gain." },
+                { PARAM_MIX, "mix", ._default = 0.5, .min = 0.0, .max = 1.0, .doc = "Wet/dry mix."},
             };
         };
 
@@ -1596,13 +1599,15 @@ public:
         float *gainv = inputPortVector(AUDIO_PARAM_GAIN);
         float *delayLengthv = inputPortVector(PARAM_DELAY);
         float *feedbackGainv = inputPortVector(PARAM_FEEDBACK);
+        float *mixv = inputPortVector(PARAM_MIX);
         
         for(int i = 0; i < nFrames; i++)
         {
             _setDelay(delayLengthv[i]);
             
             float delaySamp = m_delay.tick(inputv[i] + m_delay.last()*feedbackGainv[i]);
-            m_outputBuffer[chanNum][i] = (inputv[i] + delaySamp)*gainv[i];
+            float outSamp = (delaySamp*mixv[i] + inputv[i]*(1-mixv[i])) * 0.5;
+            m_outputBuffer[chanNum][i] = outSamp * gainv[i];
             output[i] += m_outputBuffer[chanNum][i];
         }
     }
