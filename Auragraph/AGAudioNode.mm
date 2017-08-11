@@ -1606,7 +1606,7 @@ public:
             _setDelay(delayLengthv[i]);
             
             float delaySamp = m_delay.tick(inputv[i] + m_delay.last()*feedbackGainv[i]);
-            float outSamp = (delaySamp*mixv[i] + inputv[i]*(1-mixv[i])) * 0.5;
+            float outSamp = delaySamp*mixv[i] + inputv[i]*(1-mixv[i]);
             m_outputBuffer[chanNum][i] = outSamp * gainv[i];
             output[i] += m_outputBuffer[chanNum][i];
         }
