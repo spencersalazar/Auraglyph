@@ -26,8 +26,6 @@ void AGInteractiveObject::touchDown(const AGTouchInfo &t) { touchDown(t.position
 void AGInteractiveObject::touchMove(const AGTouchInfo &t) { touchMove(t.position); }
 void AGInteractiveObject::touchUp(const AGTouchInfo &t) { touchUp(t.position); }
 
-#include "AGUINodeEditor.h"
-
 AGInteractiveObject *AGInteractiveObject::hitTest(const GLvertex3f &t)
 {
     // first check children
