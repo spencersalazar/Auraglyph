@@ -123,6 +123,9 @@ public:
     virtual GLKMatrix4 localTransform();
     /** recursive transform matrix from global modelview -> this object (including parents) */
     GLKMatrix4 globalTransform();
+
+    GLvertex3f globalToLocalCoordinateSpace(const GLvertex3f &position);
+    GLvertex3f parentToLocalCoordinateSpace(const GLvertex3f &position);
     
     // draw functions
     void drawGeometry(GLvertex3f geo[], int size, int kind);
