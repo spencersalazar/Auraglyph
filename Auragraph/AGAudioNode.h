@@ -6,8 +6,7 @@
 //  Copyright (c) 2013 Spencer Salazar. All rights reserved.
 //
 
-#ifndef __Auragraph__AGAudioNode__
-#define __Auragraph__AGAudioNode__
+#pragma once
 
 #include "AGNode.h"
 
@@ -180,5 +179,3 @@ private:
     Buffer<float> m_inputBuffer[2];
 };
 
-
-#endif /* defined(__Auragraph__AGAudioNode__) */

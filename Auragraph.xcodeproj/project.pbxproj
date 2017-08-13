@@ -198,6 +198,27 @@
 		0910817F1A0B63DB0063028B /* AGStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGStyle.h; sourceTree = "<group>"; };
 		091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGUINodeEditor.mm; sourceTree = "<group>"; };
 		091C70CB1C48A9A600B513C2 /* AGUINodeEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGUINodeEditor.h; sourceTree = "<group>"; };
+		09230FBD1F3FEC5700DF06B5 /* AGAudioAddNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioAddNode.cpp; sourceTree = "<group>"; };
+		09230FBE1F3FEC5700DF06B5 /* AGAudioADSRNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioADSRNode.cpp; sourceTree = "<group>"; };
+		09230FBF1F3FEC5700DF06B5 /* AGAudioAllpassNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioAllpassNode.cpp; sourceTree = "<group>"; };
+		09230FC01F3FEC5700DF06B5 /* AGAudioBiquadNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioBiquadNode.cpp; sourceTree = "<group>"; };
+		09230FC21F3FEC5700DF06B5 /* AGAudioCompressorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioCompressorNode.cpp; sourceTree = "<group>"; };
+		09230FC31F3FEC5700DF06B5 /* AGAudioEnvelopeFollowerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioEnvelopeFollowerNode.cpp; sourceTree = "<group>"; };
+		09230FC41F3FEC5700DF06B5 /* AGAudioFeedbackNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioFeedbackNode.cpp; sourceTree = "<group>"; };
+		09230FC51F3FEC5700DF06B5 /* AGAudioFilterFQNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioFilterFQNode.cpp; sourceTree = "<group>"; };
+		09230FC61F3FEC5700DF06B5 /* AGAudioInputNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioInputNode.cpp; sourceTree = "<group>"; };
+		09230FC71F3FEC5700DF06B5 /* AGAudioMatrixMixerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioMatrixMixerNode.cpp; sourceTree = "<group>"; };
+		09230FC81F3FEC5700DF06B5 /* AGAudioMultiplyNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioMultiplyNode.cpp; sourceTree = "<group>"; };
+		09230FC91F3FEC5700DF06B5 /* AGAudioOutputNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioOutputNode.cpp; sourceTree = "<group>"; };
+		09230FCA1F3FEC5700DF06B5 /* AGAudioPannerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioPannerNode.cpp; sourceTree = "<group>"; };
+		09230FCB1F3FEC5700DF06B5 /* AGAudioSawtoothWaveNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioSawtoothWaveNode.cpp; sourceTree = "<group>"; };
+		09230FCC1F3FEC5700DF06B5 /* AGAudioSineWaveNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioSineWaveNode.cpp; sourceTree = "<group>"; };
+		09230FCD1F3FEC5700DF06B5 /* AGAudioSoundFileNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioSoundFileNode.cpp; sourceTree = "<group>"; };
+		09230FCE1F3FEC5700DF06B5 /* AGAudioSquareWaveNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioSquareWaveNode.cpp; sourceTree = "<group>"; };
+		09230FCF1F3FEC5700DF06B5 /* AGAudioStateVariableFilterNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioStateVariableFilterNode.cpp; sourceTree = "<group>"; };
+		09230FD01F3FEC5700DF06B5 /* AGAudioTriangleWaveNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioTriangleWaveNode.cpp; sourceTree = "<group>"; };
+		09230FD11F3FEC5700DF06B5 /* AGAudioWaveformNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioWaveformNode.cpp; sourceTree = "<group>"; };
+		09230FE71F3FF06100DF06B5 /* AGAudioNoiseNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioNoiseNode.cpp; sourceTree = "<group>"; };
 		0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGInputNode.mm; sourceTree = "<group>"; };
 		0927D7DF1ADCE4E000AD8AE5 /* AGInputNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGInputNode.h; sourceTree = "<group>"; };
 		093395681A019D43009E4802 /* Orbitron-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Orbitron-Regular.ttf"; sourceTree = "<group>"; };
@@ -538,6 +559,34 @@
 				09030CEF1EFEFEFB00D4A4F2 /* AGMenu.cpp */,
 			);
 			path = UI;
+			sourceTree = "<group>";
+		};
+		09230FB91F3FDE3700DF06B5 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				09230FBD1F3FEC5700DF06B5 /* AGAudioAddNode.cpp */,
+				09230FBE1F3FEC5700DF06B5 /* AGAudioADSRNode.cpp */,
+				09230FBF1F3FEC5700DF06B5 /* AGAudioAllpassNode.cpp */,
+				09230FC01F3FEC5700DF06B5 /* AGAudioBiquadNode.cpp */,
+				09230FC21F3FEC5700DF06B5 /* AGAudioCompressorNode.cpp */,
+				09230FC31F3FEC5700DF06B5 /* AGAudioEnvelopeFollowerNode.cpp */,
+				09230FC41F3FEC5700DF06B5 /* AGAudioFeedbackNode.cpp */,
+				09230FC51F3FEC5700DF06B5 /* AGAudioFilterFQNode.cpp */,
+				09230FC61F3FEC5700DF06B5 /* AGAudioInputNode.cpp */,
+				09230FC71F3FEC5700DF06B5 /* AGAudioMatrixMixerNode.cpp */,
+				09230FC81F3FEC5700DF06B5 /* AGAudioMultiplyNode.cpp */,
+				09230FE71F3FF06100DF06B5 /* AGAudioNoiseNode.cpp */,
+				09230FC91F3FEC5700DF06B5 /* AGAudioOutputNode.cpp */,
+				09230FCA1F3FEC5700DF06B5 /* AGAudioPannerNode.cpp */,
+				09230FCB1F3FEC5700DF06B5 /* AGAudioSawtoothWaveNode.cpp */,
+				09230FCC1F3FEC5700DF06B5 /* AGAudioSineWaveNode.cpp */,
+				09230FCD1F3FEC5700DF06B5 /* AGAudioSoundFileNode.cpp */,
+				09230FCE1F3FEC5700DF06B5 /* AGAudioSquareWaveNode.cpp */,
+				09230FCF1F3FEC5700DF06B5 /* AGAudioStateVariableFilterNode.cpp */,
+				09230FD01F3FEC5700DF06B5 /* AGAudioTriangleWaveNode.cpp */,
+				09230FD11F3FEC5700DF06B5 /* AGAudioWaveformNode.cpp */,
+			);
+			path = Audio;
 			sourceTree = "<group>";
 		};
 		0944E8AF1DCB31EA00EB8087 /* GoogleAnalytics */ = {
@@ -886,6 +935,7 @@
 		09B674411D6D9D6500F84E09 /* Nodes */ = {
 			isa = PBXGroup;
 			children = (
+				09230FB91F3FDE3700DF06B5 /* Audio */,
 				0933956D1A08799A009E4802 /* AGFormulaNode.h */,
 				0933956C1A08799A009E4802 /* AGFormulaNode.mm */,
 				093395701A088612009E4802 /* AGArrayNode.h */,

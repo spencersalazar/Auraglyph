@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Spencer Salazar. All rights reserved.
 //
 
+#pragma once
+
 #ifdef __OBJC__
 #import <Foundation/Foundation.h>
 #endif // __OBJC__
@@ -65,6 +67,9 @@ public:
     
     void addAudioRateProcessor(AGAudioRateProcessor *processor);
     void removeAudioRateProcessor(AGAudioRateProcessor *processor);
+    
+    void addCapturer(AGAudioCapturer *capturer);
+    void removeCapturer(AGAudioCapturer *capturer);
     
 private:
     AGAudioManager *m_audioManager = nullptr;

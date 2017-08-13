@@ -285,3 +285,12 @@ void AGAudioManager_::removeAudioRateProcessor(AGAudioRateProcessor *processor)
     [m_audioManager removeAudioRateProcessor:processor];
 }
 
+void AGAudioManager_::addCapturer(AGAudioCapturer *capturer)
+{
+    [m_audioManager addCapturer:capturer];
+}
+
+void AGAudioManager_::removeCapturer(AGAudioCapturer *capturer)
+{
+    [m_audioManager removeCapturer:capturer];
+}
