@@ -395,8 +395,8 @@
 		098C0E1317C4278C00171366 /* Screen.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Screen.vsh; path = Shaders/Screen.vsh; sourceTree = "<group>"; };
 		098F9B3819EE49BA00CE2F24 /* AGRenderObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGRenderObject.mm; sourceTree = "<group>"; };
 		098F9B3919EE49BA00CE2F24 /* AGRenderObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGRenderObject.h; sourceTree = "<group>"; };
-		0991BA781D839BB10080175C /* AGCompressorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = AGCompressorNode.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		0991BA791D839BB10080175C /* AGCompressorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AGCompressorNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		0991BA781D839BB10080175C /* AGCompressorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = AGCompressorNode.cpp; path = ../AGCompressorNode.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		0991BA791D839BB10080175C /* AGCompressorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = AGCompressorNode.h; path = ../AGCompressorNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		0991BA7C1D83A5140080175C /* spdsp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spdsp.cpp; sourceTree = "<group>"; };
 		0991BA7D1D83A5140080175C /* spdsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spdsp.h; sourceTree = "<group>"; };
 		0991BA7F1D8654B70080175C /* FileRead.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileRead.h; sourceTree = "<group>"; };
@@ -423,8 +423,8 @@
 		099AF12517D1A6DA000BAB7B /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
 		099AF12D17D1A892000BAB7B /* projects.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = projects.zip; sourceTree = "<group>"; };
 		09A8BB4019F9E39E00E15BF7 /* spMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spMath.h; sourceTree = "<group>"; };
-		09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = AGCompositeNode.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		09B674431D6D9E8700F84E09 /* AGCompositeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AGCompositeNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; name = AGCompositeNode.mm; path = ../AGCompositeNode.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		09B674431D6D9E8700F84E09 /* AGCompositeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = AGCompositeNode.h; path = ../AGCompositeNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		09B674461D6DA2B200F84E09 /* AGAudioCapturer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAudioCapturer.h; sourceTree = "<group>"; };
 		09B9624E1DD839A0001DCFB1 /* AGControlOrientationNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGControlOrientationNode.mm; sourceTree = "<group>"; };
 		09B9624F1DD839A0001DCFB1 /* AGControlOrientationNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGControlOrientationNode.h; sourceTree = "<group>"; };
@@ -564,6 +564,14 @@
 		09230FB91F3FDE3700DF06B5 /* Audio */ = {
 			isa = PBXGroup;
 			children = (
+				09B674431D6D9E8700F84E09 /* AGCompositeNode.h */,
+				09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */,
+				0991BA791D839BB10080175C /* AGCompressorNode.h */,
+				0991BA781D839BB10080175C /* AGCompressorNode.cpp */,
+				096F42041D9CF04600600717 /* AGWaveformAudioNode.h */,
+				096F42031D9CF04600600717 /* AGWaveformAudioNode.cpp */,
+				4921A39B1F17FC3E0071823D /* AGMatrixMixerNode.h */,
+				4921A39A1F17FC3E0071823D /* AGMatrixMixerNode.cpp */,
 				09230FBD1F3FEC5700DF06B5 /* AGAudioAddNode.cpp */,
 				09230FBE1F3FEC5700DF06B5 /* AGAudioADSRNode.cpp */,
 				09230FBF1F3FEC5700DF06B5 /* AGAudioAllpassNode.cpp */,
@@ -942,18 +950,10 @@
 				0933956F1A088612009E4802 /* AGArrayNode.mm */,
 				09BE8B9A1C952386002097F0 /* AGControlSequencerNode.h */,
 				09BE8B991C952386002097F0 /* AGControlSequencerNode.cpp */,
-				09B674431D6D9E8700F84E09 /* AGCompositeNode.h */,
-				09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */,
-				0991BA791D839BB10080175C /* AGCompressorNode.h */,
-				0991BA781D839BB10080175C /* AGCompressorNode.cpp */,
-				096F42041D9CF04600600717 /* AGWaveformAudioNode.h */,
-				096F42031D9CF04600600717 /* AGWaveformAudioNode.cpp */,
 				09B9624F1DD839A0001DCFB1 /* AGControlOrientationNode.h */,
 				09B9624E1DD839A0001DCFB1 /* AGControlOrientationNode.mm */,
 				097A05421E8D8DC40048401E /* AGControlGestureNode.h */,
 				097A05411E8D8DC40048401E /* AGControlGestureNode.mm */,
-				4921A39B1F17FC3E0071823D /* AGMatrixMixerNode.h */,
-				4921A39A1F17FC3E0071823D /* AGMatrixMixerNode.cpp */,
 				49942E561F30515A00914E75 /* MIDI */,
 			);
 			path = Nodes;
