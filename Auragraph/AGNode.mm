@@ -78,20 +78,22 @@ void AGNode::initalizeNode()
 
 
 AGNode::AGNode(const AGNodeManifest *mf, const GLvertex3f &pos) :
-m_pos(pos),
 m_manifest(mf),
 m_active(true),
 m_fadeOut(1, 0, 0.5, 2),
 m_uuid(makeUUID())
-{ }
+{
+    setPosition(pos);
+}
 
 AGNode::AGNode(const AGNodeManifest *mf, const AGDocument::Node &docNode) :
-m_pos(GLvertex3f(docNode.x, docNode.y, docNode.z)),
 m_manifest(mf),
 m_active(true),
 m_fadeOut(1, 0, 0.5, 2),
 m_uuid(docNode.uuid)
-{ }
+{
+    setPosition(GLvertex3f(docNode.x, docNode.y, docNode.z));
+}
 
 void AGNode::_initBase()
 {

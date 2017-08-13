@@ -144,6 +144,30 @@ AGRenderObject::~AGRenderObject()
         delete *i;
 }
 
+GLKMatrix4 AGRenderObject::localTransform()
+{
+    GLvertex3f pos = position();
+    return GLKMatrix4MakeTranslation(pos.x, pos.y, pos.y);
+}
+
+GLKMatrix4 AGRenderObject::globalTransform()
+{
+    GLKMatrix4 global = localTransform();
+    if(parent())
+        global = GLKMatrix4Multiply(global, parent()->globalTransform());
+    return global;
+}
+
+GLvertex3f AGRenderObject::globalToLocalCoordinateSpace(const GLvertex3f &position)
+{
+    return GLKMatrix4MultiplyVector4(GLKMatrix4Invert(globalTransform(), NULL), position.asGLKVector4());
+}
+
+GLvertex3f AGRenderObject::parentToLocalCoordinateSpace(const GLvertex3f &position)
+{
+    return GLKMatrix4MultiplyVector4(GLKMatrix4Invert(localTransform(), NULL), position.asGLKVector4());
+}
+
 void AGRenderObject::addChild(AGRenderObject *child)
 {
     m_children.push_front(child);

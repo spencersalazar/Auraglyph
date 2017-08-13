@@ -7,7 +7,6 @@
 //
 
 #include "AGAboutBox.h"
-#include "AGViewController.h"
 #include "AGStyle.h"
 #include "AGGenericShader.h"
 
@@ -19,9 +18,10 @@ static const float AGABOUTBOX_RADIUS = 0.066*AGStyle::oldGlobalScale;
 #pragma mark - AGAboutBox
 
 AGAboutBox::AGAboutBox(const GLvertex3f &pos) :
-m_pos(pos),
 m_done(false)
 {
+    setPosition(pos);
+    
     m_geoSize = 4;
     
     m_radius = AGABOUTBOX_RADIUS;
@@ -53,16 +53,20 @@ AGAboutBox::~AGAboutBox()
 {
 }
 
+GLKMatrix4 AGAboutBox::localTransform()
+{
+    GLKMatrix4 local = GLKMatrix4MakeTranslation(m_pos.x, m_pos.y, m_pos.z);
+    local = GLKMatrix4Multiply(local, m_squeeze.matrix());
+    return local;
+}
+
 void AGAboutBox::update(float t, float dt)
 {
-    AGInteractiveObject::update(t, dt);
     m_squeeze.update(t, dt);
+    AGInteractiveObject::update(t, dt);
     
-    m_modelView = AGNode::fixedModelViewMatrix();
+    m_modelView = GLKMatrix4Multiply(AGNode::fixedModelViewMatrix(), localTransform());
     m_projection = AGNode::projectionMatrix();
-    
-    m_modelView = GLKMatrix4Translate(m_modelView, m_pos.x, m_pos.y, m_pos.z);
-    m_modelView = GLKMatrix4Multiply(m_modelView, m_squeeze.matrix());
 }
 
 void AGAboutBox::render()

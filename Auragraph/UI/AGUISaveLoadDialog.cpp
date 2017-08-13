@@ -19,11 +19,9 @@
 class AGUIConcreteSaveDialog : public AGUISaveDialog
 {
 private:
-    GLvertex3f m_pos;
     GLvertex2f m_size;
     
-    lincurvef m_xScale;
-    lincurvef m_yScale;
+    AGSqueezeAnimation m_squeeze;
     
     AGUIButton *m_saveButton;
     AGUIButton *m_clearButton;
@@ -36,13 +34,12 @@ private:
     
 public:
     AGUIConcreteSaveDialog(const AGDocument &doc, const GLvertex3f &pos) :
-    m_doc(doc),
-    m_pos(pos)
+    m_doc(doc)
     {
+        setPosition(pos);
+        
         m_onSave = [](const std::string &file){};
         m_size = GLvertex2f(500, 500/AGStyle::aspect16_9);
-        m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
-        m_yScale = lincurvef(AGStyle::open_animTimeY, AGStyle::open_squeezeHeight, 1);
         
         float buttonWidth = 100;
         float buttonHeight = 25;
@@ -53,6 +50,7 @@ public:
                                                  0),
                                       GLvertex2f(buttonWidth, buttonHeight));
         m_saveButton->init();
+        m_saveButton->setRenderFixed(false);
         
         m_saveButton->setAction(^{
             AGDocumentManager &manager = AGDocumentManager::instance();
@@ -72,6 +70,8 @@ public:
                                                    0),
                                         GLvertex2f(buttonWidth, buttonHeight));
         m_cancelButton->init();
+        m_cancelButton->setRenderFixed(false);
+
         m_cancelButton->setAction(^{
             removeFromTopLevel();
         });
@@ -81,22 +81,21 @@ public:
     
     virtual ~AGUIConcreteSaveDialog() { }
     
+    virtual GLKMatrix4 localTransform() override
+    {
+        GLKMatrix4 local = GLKMatrix4MakeTranslation(m_pos.x, m_pos.y, m_pos.z);
+        local = m_squeeze.apply(local);
+        return local;
+    }
+    
     virtual void update(float t, float dt) override
     {
-        AGInteractiveObject::update(t, dt);
+        m_squeeze.update(t, dt);
         
         m_renderState.projection = projectionMatrix();
+        m_renderState.modelview = GLKMatrix4Multiply(fixedModelViewMatrix(), localTransform());
         
-        m_renderState.modelview = fixedModelViewMatrix();
-        m_renderState.modelview = GLKMatrix4Translate(m_renderState.modelview, m_pos.x, m_pos.y, m_pos.z);
-        
-        if(m_yScale <= AGStyle::open_squeezeHeight) m_xScale.update(dt);
-        if(m_xScale >= 0.99f) m_yScale.update(dt);
-        
-        m_renderState.modelview = GLKMatrix4Scale(m_renderState.modelview,
-                                                  m_yScale <= AGStyle::open_squeezeHeight ? (float)m_xScale : 1.0f,
-                                                  m_xScale >= 0.99f ? (float)m_yScale : AGStyle::open_squeezeHeight,
-                                                  1);
+        updateChildren(t, dt);
     }
     
     virtual void render() override
@@ -129,7 +128,7 @@ public:
     
     GLvrectf effectiveBounds() override
     {
-        return GLvrectf(m_pos-m_size, m_pos+m_size);
+        return GLvrectf(m_pos-m_size/2, m_pos+m_size/2);
     }
     
     bool renderFixed() override { return true; }
@@ -152,13 +151,12 @@ public:
     
     virtual void renderOut() override
     {
-        m_xScale = lincurvef(AGStyle::open_animTimeX/2, 1, AGStyle::open_squeezeHeight);
-        m_yScale = lincurvef(AGStyle::open_animTimeY/2, 1, AGStyle::open_squeezeHeight);
+        m_squeeze.close();
     }
     
     virtual bool finishedRenderingOut() override
     {
-        return m_xScale <= AGStyle::open_squeezeHeight;
+        return m_squeeze.finishedClosing();
     }
     
     virtual void onSave(const std::function<void (const std::string &file)> &_onSave) override
@@ -183,15 +181,13 @@ AGUISaveDialog *AGUISaveDialog::save(const AGDocument &doc, const GLvertex3f &po
 class AGUIConcreteLoadDialog : public AGUILoadDialog
 {
 private:
-    GLvertex3f m_pos;
     GLvertex2f m_size;
     
     float m_itemStart;
     float m_itemHeight;
     clampf m_verticalScrollPos;
-
-    lincurvef m_xScale;
-    lincurvef m_yScale;
+    
+    AGSqueezeAnimation m_squeeze;
     
     AGUIButton *m_cancelButton;
     
@@ -205,15 +201,14 @@ private:
     
 public:
     AGUIConcreteLoadDialog(const GLvertex3f &pos) :
-    m_pos(pos),
     m_documentList(AGDocumentManager::instance().list())
     {
+        setPosition(pos);
+        
         m_selection = -1;
         
         m_onLoad = [](const std::string &, AGDocument &){};
         m_size = GLvertex2f(500, 2*500/AGStyle::aspect16_9);
-        m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
-        m_yScale = lincurvef(AGStyle::open_animTimeY, AGStyle::open_squeezeHeight, 1);
         m_itemStart = m_size.y/3.0f;
         m_itemHeight = m_size.y/3.0f;
         
@@ -228,6 +223,7 @@ public:
                                                    -m_size.y/2+buttonMargin, 0),
                                         GLvertex2f(buttonWidth, buttonHeight));
         m_cancelButton->init();
+        m_cancelButton->setRenderFixed(false);
         m_cancelButton->setAction(^{
             removeFromTopLevel();
         });
@@ -236,22 +232,21 @@ public:
     
     virtual ~AGUIConcreteLoadDialog() { }
     
+    virtual GLKMatrix4 localTransform() override
+    {
+        GLKMatrix4 local = GLKMatrix4MakeTranslation(m_pos.x, m_pos.y, m_pos.z);
+        local = m_squeeze.apply(local);
+        return local;
+    }
+
     virtual void update(float t, float dt) override
     {
-        AGInteractiveObject::update(t, dt);
+        m_squeeze.update(t, dt);
         
         m_renderState.projection = projectionMatrix();
+        m_renderState.modelview = GLKMatrix4Multiply(fixedModelViewMatrix(), localTransform());
         
-        m_renderState.modelview = fixedModelViewMatrix();
-        m_renderState.modelview = GLKMatrix4Translate(m_renderState.modelview, m_pos.x, m_pos.y, m_pos.z);
-        
-        if(m_yScale <= AGStyle::open_squeezeHeight) m_xScale.update(dt);
-        if(m_xScale >= 0.99f) m_yScale.update(dt);
-        
-        m_renderState.modelview = GLKMatrix4Scale(m_renderState.modelview,
-                                                  m_yScale <= AGStyle::open_squeezeHeight ? (float)m_xScale : 1.0f,
-                                                  m_xScale >= 0.99f ? (float)m_yScale : AGStyle::open_squeezeHeight,
-                                                  1);
+        updateChildren(t, dt);
     }
     
     virtual void render() override
@@ -359,7 +354,7 @@ public:
     
     GLvrectf effectiveBounds() override
     {
-        return GLvrectf(m_pos-m_size, m_pos+m_size);
+        return GLvrectf(m_pos-m_size/2, m_pos+m_size/2);
     }
     
     bool renderFixed() override { return true; }
@@ -415,13 +410,12 @@ public:
     
     virtual void renderOut() override
     {
-        m_xScale = lincurvef(AGStyle::open_animTimeX/2, 1, AGStyle::open_squeezeHeight);
-        m_yScale = lincurvef(AGStyle::open_animTimeY/2, 1, AGStyle::open_squeezeHeight);
+        m_squeeze.close();
     }
     
     virtual bool finishedRenderingOut() override
     {
-        return m_xScale <= AGStyle::open_squeezeHeight;
+        return m_squeeze.finishedClosing();
     }
     
     virtual void onLoad(const std::function<void (const std::string &file, AGDocument &doc)> &_onLoad) override

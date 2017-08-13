@@ -16,8 +16,10 @@ const static float AGMenu_ItemInset = 5;
 const static float AGMenu_TextOffset = 5;
 
 AGMenu::AGMenu(const GLvertex3f &pos, const GLvertex2f &size)
-: m_pos(pos), m_size(size)
+: m_size(size)
 {
+    setPosition(pos);
+    
     //GeoGen::makeCircle(m_frameGeo, 48, size.x/2);
     m_frameGeo = {
         { -size.x/2, -size.y/2, 0 },

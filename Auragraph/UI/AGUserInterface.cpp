@@ -486,7 +486,7 @@ void AGUITrash::render()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     GLKMatrix4 proj = AGNode::projectionMatrix();
-    GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::fixedModelViewMatrix(), m_position.x, m_position.y, m_position.z);
+    GLKMatrix4 modelView = GLKMatrix4Translate(AGNode::fixedModelViewMatrix(), m_pos.x, m_pos.y, m_pos.z);
     modelView = GLKMatrix4Scale(modelView, m_scale, m_scale, m_scale);
     
     AGGenericShader &shader = AGTextureShader::instance();
@@ -540,7 +540,7 @@ void AGUITrash::touchUp(const GLvertex3f &t)
 AGUIObject *AGUITrash::hitTest(const GLvertex3f &t)
 {
     // point in circle
-    if((t-m_position).magnitudeSquared() < m_radius*m_radius)
+    if((t-m_pos).magnitudeSquared() < m_radius*m_radius)
         return this;
     return NULL;
 }
@@ -595,8 +595,9 @@ const vector<GLvertex3f> AGUITrace::points() const
 static const float AGUILabel_TextScale = 0.61f;
 
 AGUILabel::AGUILabel(const GLvertex3f &position, const string &text)
-: m_text(text), m_position(position)
+: m_text(text)
 {
+    setPosition(position);
     TexFont *texFont = AGStyle::standardFont64();
     
     m_textSize.x = texFont->width(m_text)*AGUILabel_TextScale;
@@ -634,20 +635,10 @@ void AGUILabel::render()
     GLcolor4f valueColor = AGStyle::foregroundColor().withAlpha(m_renderState.alpha);
     
     GLKMatrix4 valueMV = modelView;
-    valueMV = GLKMatrix4Translate(valueMV, m_position.x, m_position.y, m_position.z);
+    valueMV = GLKMatrix4Translate(valueMV, m_pos.x, m_pos.y, m_pos.z);
     valueMV = GLKMatrix4Translate(valueMV, -m_textSize.x/2, -m_textSize.y/2, 0);
     valueMV = GLKMatrix4Scale(valueMV, AGUILabel_TextScale, AGUILabel_TextScale, AGUILabel_TextScale);
     text->render(m_text, valueColor, valueMV, proj);
-}
-
-void AGUILabel::setPosition(const GLvertex3f &position)
-{
-    m_position = position;
-}
-
-GLvertex3f AGUILabel::position()
-{
-    return m_position;
 }
 
 GLvertex2f AGUILabel::size()

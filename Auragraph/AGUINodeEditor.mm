@@ -499,13 +499,23 @@ void AGUIStandardNodeEditor::render()
         GLKMatrix4 nameMV = GLKMatrix4Translate(modelview(), -m_radius*0.9, y + m_radius/rowCount*0.1, 0);
         nameMV = GLKMatrix4Scale(nameMV, 0.61, 0.61, 0.61);
         text->render(portInfo.name, nameColor, nameMV, projection());
+
+        // TODO: figure out a way to communicate changes in params within a node
+        // to the slider itself, and move this stuff out of the render function
+        AGParamValue v;
+        m_node->getEditPortValue(i, v);
+        AGControl::Type t = m_node->editPortInfo(i).type;
         
-        if(m_node->editPortInfo(i).type == AGControl::TYPE_STRING)
+        if(t == AGControl::TYPE_INT || t == AGControl::TYPE_FLOAT)
+        {
+            m_editSliders.at(i)->setValue(v);
+        }
+        else if(t == AGControl::TYPE_STRING)
         {
             GLKMatrix4 valueMV = GLKMatrix4Translate(modelview(), m_radius*0.1, y + m_radius/rowCount*0.1, 0);
             valueMV = GLKMatrix4Scale(valueMV, 0.61, 0.61, 0.61);
-            AGParamValue v;
-            m_node->getEditPortValue(i, v);
+            //AGParamValue v;
+            //m_node->getEditPortValue(i, v);
             text->render(v, valueColor, valueMV, projection());
         }
     }

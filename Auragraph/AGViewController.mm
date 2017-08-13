@@ -31,6 +31,7 @@
 #import "AGPreferences.h"
 #import "AGDashboard.h"
 #import "NSString+STLString.h"
+#import "AGPGMidiContext.h"
 
 #import <list>
 #import <map>
@@ -99,6 +100,8 @@ enum InterfaceMode
     map<AGNode *, string> _nodeUUID;
     map<AGConnection *, string> _conectionUUID;
     map<AGFreeDraw *, string> _freedrawUUID;
+    
+    AGPGMidiContext *midiManager;
     
     AGDrawMode _drawMode;
     InterfaceMode _interfaceMode;
@@ -180,6 +183,10 @@ static AGViewController * g_instance = nil;
     _camera = GLvertex3f(0, 0, 0);
     _cameraZ.rate = 0.4;
     _cameraZ.reset(0);
+    
+    // Set up our MIDI context
+    midiManager = new AGPGMidiContext;
+    midiManager->setup();
     
     self.audioManager = [AGAudioManager new];
     // update matrices so that worldCoordinateForScreenCoordinate works
@@ -964,7 +971,13 @@ static AGViewController * g_instance = nil;
             if(touchCapture->renderFixed())
                 touchCapture->touchDown(AGTouchInfo(fixedPos, p, (TouchID) touch, touch));
             else
-                touchCapture->touchDown(AGTouchInfo(pos, p, (TouchID) touch, touch));
+            {
+                GLvertex3f localPos = pos;
+                if(touchCapture->parent())
+                    // touchDown/Move/Up events treat the position as if it were in the parent coordinate space
+                    localPos = touchCapture->parent()->globalToLocalCoordinateSpace(localPos);
+                touchCapture->touchDown(AGTouchInfo(localPos, p, (TouchID) touch, touch));
+            }
         }
         
         // has
@@ -1004,14 +1017,21 @@ static AGViewController * g_instance = nil;
             AGInteractiveObject *touchCapture = _touchCaptures[touch];
             if(touchCapture != NULL)
             {
-                CGPoint p = [touch locationInView:self.view];
-                GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
-                GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:p];
+                CGPoint screenPos = [touch locationInView:self.view];
                 
                 if(touchCapture->renderFixed())
-                    touchCapture->touchMove(AGTouchInfo(fixedPos, p, (TouchID) touch, touch));
+                {
+                    GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:screenPos];
+                    touchCapture->touchMove(AGTouchInfo(fixedPos, screenPos, (TouchID) touch, touch));
+                }
                 else
-                    touchCapture->touchMove(AGTouchInfo(pos, p, (TouchID) touch, touch));
+                {
+                    GLvertex3f localPos = [self worldCoordinateForScreenCoordinate:screenPos];
+                    if(touchCapture->parent())
+                        // touchDown/Move/Up events treat the position as if it were in the parent coordinate space
+                        localPos = touchCapture->parent()->globalToLocalCoordinateSpace(localPos);
+                    touchCapture->touchMove(AGTouchInfo(localPos, screenPos, (TouchID) touch, touch));
+                }
             }
         }
         else if(_touchHandlers.count(touch))
@@ -1068,14 +1088,21 @@ static AGViewController * g_instance = nil;
             AGInteractiveObject *touchCapture = _touchCaptures[touch];
             if(touchCapture != NULL)
             {
-                CGPoint p = [touch locationInView:self.view];
-                GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
-                GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:p];
-                
+                CGPoint screenPos = [touch locationInView:self.view];
+
                 if(touchCapture->renderFixed())
-                    touchCapture->touchUp(AGTouchInfo(fixedPos, p, (TouchID) touch, touch));
+                {
+                    GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:screenPos];
+                    touchCapture->touchUp(AGTouchInfo(fixedPos, screenPos, (TouchID) touch, touch));
+                }
                 else
-                    touchCapture->touchUp(AGTouchInfo(pos, p, (TouchID) touch, touch));
+                {
+                    GLvertex3f localPos = [self worldCoordinateForScreenCoordinate:screenPos];
+                    if(touchCapture->parent())
+                        // touchDown/Move/Up events treat the position as if it were in the parent coordinate space
+                        localPos = touchCapture->parent()->globalToLocalCoordinateSpace(localPos);
+                    touchCapture->touchUp(AGTouchInfo(localPos, screenPos, (TouchID) touch, touch));
+                }
 
                 _touchCaptures.erase(touch);
             }

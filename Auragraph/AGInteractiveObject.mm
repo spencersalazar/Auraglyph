@@ -37,12 +37,9 @@ AGInteractiveObject *AGInteractiveObject::hitTest(const GLvertex3f &t)
     else
         modelView = globalModelViewMatrix();
     
-    // TODO: what is this doing?
-    // I think this is applying the matrix between the global modelview
-    // and the current modelview to the touch position.
-    // e.g. accounting for this's position/translation, rotation, scale, etc.
-    // update: account for fixed-position/camera items
-    GLvertex3f tt = GLKMatrix4MultiplyVector4(modelView, GLKMatrix4MultiplyVector4(GLKMatrix4Invert(modelview(), NULL), t.asGLKVector4()));
+    // convert touch to parent coordinate space
+    // all child objects are oriented in terms of this coordinate space
+    GLvertex3f tt = GLKMatrix4MultiplyVector4(GLKMatrix4Invert(localTransform(), NULL), t.asGLKVector4());
     
     for(AGRenderObject *renderObject : m_children)
     {
