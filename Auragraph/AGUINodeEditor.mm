@@ -58,7 +58,7 @@ void AGUINodeEditor::touchOutside()
 
 /*------------------------------------------------------------------------------
  - AGUIPicker -
- Pick 1 of a list of values.
+ Pick 1 of a list of string values.
  -----------------------------------------------------------------------------*/
 #pragma mark - AGUIPicker
 
@@ -66,8 +66,10 @@ class AGUIPicker : public AGInteractiveObject
 {
 public:
     AGUIPicker(const GLvertex3f &pos, const GLvertex2f &size) :
-    m_pos(pos), m_size(size)
-    { }
+    m_size(size)
+    {
+        setPosition(pos);
+    }
     
     ~AGUIPicker() { }
     
@@ -104,18 +106,70 @@ public:
                 textModelView = GLKMatrix4Scale(textModelView, TEXT_SCALE, TEXT_SCALE, TEXT_SCALE);
                 text->render(m_values[m_current], AGStyle::foregroundColor(), textModelView, projection());
             }
+            
+            // debug: draw bounds
+            AGStyle::foregroundColor().set();
+            drawLineLoop((GLvertex2f[]) {
+                { -m_size.x/2, -m_size.y/2 },
+                {  m_size.x/2, -m_size.y/2 },
+                {  m_size.x/2,  m_size.y/2 },
+                { -m_size.x/2,  m_size.y/2 },
+            }, 4);
         }
-        
-        
-        
-        // debug: draw bounds
-//        AGStyle::foregroundColor().set();
-//        drawLineLoop((GLvertex2f[]) {
-//            { -m_size.x/2, -m_size.y/2 },
-//            {  m_size.x/2, -m_size.y/2 },
-//            {  m_size.x/2,  m_size.y/2 },
-//            { -m_size.x/2,  m_size.y/2 },
-//        }, 4);
+        else
+        {
+            int numBefore = m_current;
+            int numAfter = (m_values.size()-1)-m_current;
+            
+            // draw frame background
+            AGStyle::backgroundColor().set();
+            drawTriangleFan((GLvertex2f[]) {
+                { -m_size.x/2, -numAfter*m_size.y-m_size.y/2 },
+                {  m_size.x/2, -numAfter*m_size.y-m_size.y/2 },
+                {  m_size.x/2, numBefore*m_size.y+m_size.y/2 },
+                { -m_size.x/2, numBefore*m_size.y+m_size.y/2 },
+            }, 4);
+            
+            // draw frame
+            AGStyle::foregroundColor().set();
+            drawLineLoop((GLvertex2f[]) {
+                { -m_size.x/2, -numAfter*m_size.y-m_size.y/2 },
+                {  m_size.x/2, -numAfter*m_size.y-m_size.y/2 },
+                {  m_size.x/2, numBefore*m_size.y+m_size.y/2 },
+                { -m_size.x/2, numBefore*m_size.y+m_size.y/2 },
+            }, 4);
+            
+            // draw text items
+            float y = numBefore*m_size.y;
+            for(int i = 0; i < m_values.size(); i++)
+            {
+                GLKMatrix4 textModelView = GLKMatrix4Translate(modelview(),
+                                                               -m_size.x/2+MARGIN_LEFT,
+                                                               y+(-text->descender()-text->ascender()/2)*TEXT_SCALE, 0);
+                textModelView = GLKMatrix4Scale(textModelView, TEXT_SCALE, TEXT_SCALE, TEXT_SCALE);
+                
+                if(i == m_selected)
+                {
+                    // draw highlight
+                    float inset = 3;
+                    AGStyle::foregroundColor().set();
+                    drawTriangleFan((GLvertex2f[]) {
+                        { -m_size.x/2+inset, y-m_size.y/2+inset },
+                        {  m_size.x/2-inset, y-m_size.y/2+inset },
+                        {  m_size.x/2-inset, y+m_size.y/2-inset },
+                        { -m_size.x/2+inset, y+m_size.y/2-inset },
+                    }, 4);
+                    
+                    text->render(m_values[i], AGStyle::backgroundColor(), textModelView, projection());
+                }
+                else
+                {
+                    text->render(m_values[i], AGStyle::foregroundColor(), textModelView, projection());
+                }
+                
+                y -= m_size.y;
+            }
+        }
     }
     
     GLvrectf effectiveBounds() override
@@ -125,17 +179,21 @@ public:
     
     void touchDown(const AGTouchInfo &t) override
     {
-        //m_open = true;
+        m_open = true;
+        m_selected = _itemAtPoint(t.position);
     }
     
     void touchMove(const AGTouchInfo &t) override
     {
-        
+        m_selected = _itemAtPoint(t.position);
     }
     
     void touchUp(const AGTouchInfo &t) override
     {
-        
+        m_open = false;
+        m_selected = _itemAtPoint(t.position);
+        if(m_selected >= 0)
+            m_valuePicked(m_selected);
     }
     
 private:
@@ -143,13 +201,30 @@ private:
     constexpr const static float MARGIN_LEFT = 5;
     constexpr const static float TEXT_SCALE = G_RATIO-1;
     
-    GLvertex3f m_pos;
+    int _itemAtPoint(const GLvertex3f &_pt)
+    {
+        GLvertex3f pt = _pt-m_pos;
+        
+        int numBefore = m_current;
+        
+        for(int i = 0; i < m_values.size(); i++)
+        {
+            float y = numBefore*m_size.y-i*m_size.y;
+            if(pt.x > -m_size.x/2 && pt.x < m_size.x/2 &&
+               pt.y > y-m_size.y/2 && pt.y < y+m_size.y/2)
+                return i;
+        }
+        
+        return -1;
+    }
+    
     GLvertex2f m_size;
     
     bool m_open = false;
     
     vector<string> m_values;
     int m_current = -1;
+    int m_selected = -1;
     
     std::function<void (int)> m_valuePicked = [](int){};
 };
@@ -262,6 +337,14 @@ m_lastTraceWasRecognized(true)
                     picker->setCurrentValue(i);
             }
             picker->setValues(values);
+            AGParamValue currentValue;
+            m_node->getEditPortValue(port, currentValue);
+            picker->setCurrentValue(currentValue);
+            
+            picker->onValuePicked([this, port, picker](int selected){
+                m_node->setEditPortValue(port, selected);
+                picker->setCurrentValue(selected);
+            });
             
             addChild(picker);
         }
@@ -302,7 +385,7 @@ m_lastTraceWasRecognized(true)
                 return m_node->validateEditPortValue(port, _new);
             });
             
-            m_editSliders.push_back(slider);
+            m_editSliders[port] = slider;
             this->addChild(slider);
         }
         else if(editPortType == AGControl::TYPE_BIT)
@@ -506,7 +589,8 @@ void AGUIStandardNodeEditor::render()
         m_node->getEditPortValue(i, v);
         AGControl::Type t = m_node->editPortInfo(i).type;
         
-        if(t == AGControl::TYPE_INT || t == AGControl::TYPE_FLOAT)
+        if((t == AGControl::TYPE_INT || t == AGControl::TYPE_FLOAT) &&
+           m_node->editPortInfo(i).editorMode != AGPortInfo::EDITOR_ENUM)
         {
             m_editSliders.at(i)->setValue(v);
         }

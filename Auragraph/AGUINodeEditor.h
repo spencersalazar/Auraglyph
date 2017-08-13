@@ -110,7 +110,7 @@ private:
     lincurvef m_xScale;
     lincurvef m_yScale;
     
-    std::vector<AGSlider *> m_editSliders;
+    std::map<int, AGSlider *> m_editSliders;
     std::vector<GLvertex3f> m_pinInfoGeo;
     AGUIIconButton *m_pinButton;
     
