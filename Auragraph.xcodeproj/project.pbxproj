@@ -15,6 +15,7 @@
 		091081801A0B63DB0063028B /* AGStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0910817E1A0B63DB0063028B /* AGStyle.mm */; };
 		091C70CC1C48A9A600B513C2 /* AGUINodeEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */; };
 		09230FB31F3D8C9500DF06B5 /* AGAboutBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 093395781A0A3785009E4802 /* AGAboutBox.cpp */; };
+		09230FED1F403E1700DF06B5 /* AGAudioSoundFileNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09230FCD1F3FEC5700DF06B5 /* AGAudioSoundFileNode.mm */; };
 		0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */; };
 		093395691A019D43009E4802 /* Orbitron-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 093395681A019D43009E4802 /* Orbitron-Regular.ttf */; };
 		0933956B1A019E4F009E4802 /* Orbitron-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */; };
@@ -69,7 +70,7 @@
 		098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740A217BA2EA70098511A /* AGAudioManager.mm */; };
 		098740A617BA317E0098511A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 098740A417BA317E0098511A /* AudioToolbox.framework */; };
 		098740AA17BB99DE0098511A /* TexFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740A817BB99DE0098511A /* TexFont.mm */; };
-		098740AD17BC377E0098511A /* AGAudioNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740AB17BC377E0098511A /* AGAudioNode.mm */; };
+		098740AD17BC377E0098511A /* AGAudioNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 098740AB17BC377E0098511A /* AGAudioNode.cpp */; };
 		098740B017BC527E0098511A /* ES2Render.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740AE17BC527E0098511A /* ES2Render.mm */; };
 		098740B317BC61410098511A /* AGUserInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 098740B117BC61410098511A /* AGUserInterface.cpp */; };
 		098740BD17BCD9820098511A /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 098740BC17BCD9810098511A /* CoreText.framework */; };
@@ -213,12 +214,13 @@
 		09230FCA1F3FEC5700DF06B5 /* AGAudioPannerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioPannerNode.cpp; sourceTree = "<group>"; };
 		09230FCB1F3FEC5700DF06B5 /* AGAudioSawtoothWaveNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioSawtoothWaveNode.cpp; sourceTree = "<group>"; };
 		09230FCC1F3FEC5700DF06B5 /* AGAudioSineWaveNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioSineWaveNode.cpp; sourceTree = "<group>"; };
-		09230FCD1F3FEC5700DF06B5 /* AGAudioSoundFileNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioSoundFileNode.cpp; sourceTree = "<group>"; };
+		09230FCD1F3FEC5700DF06B5 /* AGAudioSoundFileNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGAudioSoundFileNode.mm; sourceTree = "<group>"; };
 		09230FCE1F3FEC5700DF06B5 /* AGAudioSquareWaveNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioSquareWaveNode.cpp; sourceTree = "<group>"; };
 		09230FCF1F3FEC5700DF06B5 /* AGAudioStateVariableFilterNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioStateVariableFilterNode.cpp; sourceTree = "<group>"; };
 		09230FD01F3FEC5700DF06B5 /* AGAudioTriangleWaveNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioTriangleWaveNode.cpp; sourceTree = "<group>"; };
 		09230FD11F3FEC5700DF06B5 /* AGAudioWaveformNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioWaveformNode.cpp; sourceTree = "<group>"; };
 		09230FE71F3FF06100DF06B5 /* AGAudioNoiseNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioNoiseNode.cpp; sourceTree = "<group>"; };
+		09230FEB1F4019CB00DF06B5 /* AGAudioSoundFileNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGAudioSoundFileNode.h; sourceTree = "<group>"; };
 		0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGInputNode.mm; sourceTree = "<group>"; };
 		0927D7DF1ADCE4E000AD8AE5 /* AGInputNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGInputNode.h; sourceTree = "<group>"; };
 		093395681A019D43009E4802 /* Orbitron-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Orbitron-Regular.ttf"; sourceTree = "<group>"; };
@@ -377,7 +379,7 @@
 		098740A417BA317E0098511A /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		098740A817BB99DE0098511A /* TexFont.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TexFont.mm; sourceTree = "<group>"; };
 		098740A917BB99DE0098511A /* TexFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TexFont.h; sourceTree = "<group>"; };
-		098740AB17BC377E0098511A /* AGAudioNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = AGAudioNode.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		098740AB17BC377E0098511A /* AGAudioNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = AGAudioNode.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		098740AC17BC377E0098511A /* AGAudioNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AGAudioNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		098740AE17BC527E0098511A /* ES2Render.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ES2Render.mm; sourceTree = "<group>"; };
 		098740AF17BC527E0098511A /* ES2Render.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ES2Render.h; sourceTree = "<group>"; };
@@ -588,7 +590,8 @@
 				09230FCA1F3FEC5700DF06B5 /* AGAudioPannerNode.cpp */,
 				09230FCB1F3FEC5700DF06B5 /* AGAudioSawtoothWaveNode.cpp */,
 				09230FCC1F3FEC5700DF06B5 /* AGAudioSineWaveNode.cpp */,
-				09230FCD1F3FEC5700DF06B5 /* AGAudioSoundFileNode.cpp */,
+				09230FEB1F4019CB00DF06B5 /* AGAudioSoundFileNode.h */,
+				09230FCD1F3FEC5700DF06B5 /* AGAudioSoundFileNode.mm */,
 				09230FCE1F3FEC5700DF06B5 /* AGAudioSquareWaveNode.cpp */,
 				09230FCF1F3FEC5700DF06B5 /* AGAudioStateVariableFilterNode.cpp */,
 				09230FD01F3FEC5700DF06B5 /* AGAudioTriangleWaveNode.cpp */,
@@ -692,7 +695,7 @@
 				09FC924A1A153A83005D14A3 /* AGConnection.h */,
 				09FC92491A153A83005D14A3 /* AGConnection.mm */,
 				098740AC17BC377E0098511A /* AGAudioNode.h */,
-				098740AB17BC377E0098511A /* AGAudioNode.mm */,
+				098740AB17BC377E0098511A /* AGAudioNode.cpp */,
 				093395731A088849009E4802 /* AGControlNode.h */,
 				093395721A088849009E4802 /* AGControlNode.mm */,
 				0927D7DF1ADCE4E000AD8AE5 /* AGInputNode.h */,
@@ -1193,6 +1196,7 @@
 				09F2D53C1D7EA33400F537C7 /* DelayL.cpp in Sources */,
 				09FC92471A14F55D005D14A3 /* AGTimer.mm in Sources */,
 				093395741A088849009E4802 /* AGControlNode.mm in Sources */,
+				09230FED1F403E1700DF06B5 /* AGAudioSoundFileNode.mm in Sources */,
 				09F3C50818A5A8C300E499AF /* Stk.cpp in Sources */,
 				09817F3919F87CC7000E9FB3 /* GeoGenerator.cpp in Sources */,
 				0991BA841D8654C70080175C /* FileRead.cpp in Sources */,
@@ -1218,7 +1222,7 @@
 				494019CA1F21CC6A000F05E8 /* AGPGMidiContext.mm in Sources */,
 				098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */,
 				098740AA17BB99DE0098511A /* TexFont.mm in Sources */,
-				098740AD17BC377E0098511A /* AGAudioNode.mm in Sources */,
+				098740AD17BC377E0098511A /* AGAudioNode.cpp in Sources */,
 				098740B017BC527E0098511A /* ES2Render.mm in Sources */,
 				49C023011F229E2100963AD9 /* AGMidiConnectionListener.mm in Sources */,
 				09B9626E1DDE3F1E001DCFB1 /* AGDocumentManager.mm in Sources */,

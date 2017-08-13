@@ -338,10 +338,14 @@ float *AGAudioNode::inputPortVector(int paramId)
     return m_inputPortBuffer[m_param2InputPort.at(paramId)];
 }
 
+// header includes
 #include "AGCompositeNode.h"
 #include "AGCompressorNode.h"
 #include "AGWaveformAudioNode.h"
 #include "AGMatrixMixerNode.h"
+#include "Nodes/Audio/AGAudioSoundFileNode.h"
+
+// include cpp files directly
 #include "Nodes/Audio/AGAudioAddNode.cpp"
 #include "Nodes/Audio/AGAudioADSRNode.cpp"
 #include "Nodes/Audio/AGAudioAllpassNode.cpp"
@@ -358,7 +362,6 @@ float *AGAudioNode::inputPortVector(int paramId)
 #include "Nodes/Audio/AGAudioPannerNode.cpp"
 #include "Nodes/Audio/AGAudioSawtoothWaveNode.cpp"
 #include "Nodes/Audio/AGAudioSineWaveNode.cpp"
-#include "Nodes/Audio/AGAudioSoundFileNode.cpp"
 #include "Nodes/Audio/AGAudioSquareWaveNode.cpp"
 #include "Nodes/Audio/AGAudioStateVariableFilterNode.cpp"
 #include "Nodes/Audio/AGAudioTriangleWaveNode.cpp"
