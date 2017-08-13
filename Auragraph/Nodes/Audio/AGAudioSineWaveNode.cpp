@@ -8,7 +8,8 @@
 
 #include "AGAudioNode.h"
 
-//#define AGDEBUG_SINE_MUTE_BUTTON
+#define AGDEBUG_SINE_MUTE_BUTTON 0
+#define AGDEBUG_SINE_TYPE_ENUM 1
 
 //------------------------------------------------------------------------------
 // ### AGAudioSineWaveNode ###
@@ -25,9 +26,12 @@ public:
         PARAM_OUTPUT = AUDIO_PARAM_LAST+1,
         PARAM_FREQ,
         PARAM_PHASE,
-#ifdef AGDEBUG_SINE_MUTE_BUTTON
+#if AGDEBUG_SINE_MUTE_BUTTON
         PARAM_MUTE,
 #endif // AGDEBUG_SINE_MUTE_BUTTON
+#if AGDEBUG_SINE_TYPE_ENUM
+        PARAM_TYPE,
+#endif // AGDEBUG_SINE_TYPE_ENUM
     };
     
     class Manifest : public AGStandardNodeManifest<AGAudioSineWaveNode>
@@ -50,9 +54,20 @@ public:
         {
             return {
                 { PARAM_FREQ, "freq", 220, 0, 0, AGPortInfo::EXP, .doc = "Oscillator frequency" },
-#ifdef AGDEBUG_SINE_MUTE_BUTTON
+#if AGDEBUG_SINE_MUTE_BUTTON
                 { PARAM_MUTE, "mute", 0, 0, 1, .type = AGControl::TYPE_BIT, .editorMode = AGPortInfo::EDITOR_ACTION, .doc = "Mute." },
 #endif // AGDEBUG_SINE_MUTE_BUTTON
+#if AGDEBUG_SINE_TYPE_ENUM
+                { PARAM_TYPE, "type", 0, 0, 3, .type = AGControl::TYPE_INT,
+                    .editorMode = AGPortInfo::EDITOR_ENUM,
+                    .enumInfo = {
+                        { 0, "sine" },
+                        { 1, "saw" },
+                        { 2, "square" },
+                        { 3, "triangle" },
+                    },
+                    .doc = "Oscillator type." },
+#endif // AGDEBUG_SINE_TYPE_ENUM
                 { AUDIO_PARAM_GAIN, "gain", 1, 0, 0, AGPortInfo::EXP, .doc = "Output gain." }
             };
         };
