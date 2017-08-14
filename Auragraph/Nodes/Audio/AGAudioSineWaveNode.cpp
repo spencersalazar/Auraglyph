@@ -9,7 +9,7 @@
 #include "AGAudioNode.h"
 
 #define AGDEBUG_SINE_MUTE_BUTTON 0
-#define AGDEBUG_SINE_TYPE_ENUM 1
+#define AGDEBUG_SINE_TYPE_ENUM 0
 
 //------------------------------------------------------------------------------
 // ### AGAudioSineWaveNode ###
