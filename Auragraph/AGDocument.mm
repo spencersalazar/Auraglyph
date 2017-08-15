@@ -149,7 +149,8 @@ void AGDocument::loadFromPath(const string &path)
                         ParamValue pv;
                         
                         NSDictionary *value = dict[@"params"][param];
-                        if([value[@"type"] isEqualToString:@"int"]) { pv.type = ParamValue::INT; pv.i = [value[@"value"] intValue]; }
+                        if([value[@"type"] isEqualToString:@"bit"]) { pv.type = ParamValue::BIT; pv.i = [value[@"value"] intValue]?1:0; }
+                        else if([value[@"type"] isEqualToString:@"int"]) { pv.type = ParamValue::INT; pv.i = [value[@"value"] intValue]; }
                         else if([value[@"type"] isEqualToString:@"float"]) { pv.type = ParamValue::FLOAT; pv.f = [value[@"value"] floatValue]; }
                         else if([value[@"type"] isEqualToString:@"string"]) { pv.type = ParamValue::STRING; pv.s = [value[@"value"] UTF8String]; }
                         else if([value[@"type"] isEqualToString:@"array_float"])
@@ -282,11 +283,12 @@ void AGDocument::saveToPath(const std::string &path) const
             
             switch(param.second.type)
             {
+                case ParamValue::BIT: serialValue = @(param.second.i?1:0); serialType = @"bit"; break;
                 case ParamValue::INT: serialValue = @(param.second.i); serialType = @"int"; break;
                 case ParamValue::FLOAT: serialValue = @(param.second.f); serialType = @"float"; break;
                 case ParamValue::STRING: serialValue = [NSString stringWithSTLString:param.second.s]; serialType = @"string"; break;
                 case ParamValue::FLOAT_ARRAY:
-                     serialType = @"array_float";
+                    serialType = @"array_float";
                     serialValue = [NSMutableArray arrayWithCapacity:param.second.fa.size()];
                     for(const float &f : param.second.fa)
                     {
@@ -294,7 +296,6 @@ void AGDocument::saveToPath(const std::string &path) const
                     }
                     break;
                 case ParamValue::NONE:
-                case ParamValue::BIT:
                     assert(0);
                     break;
             }
