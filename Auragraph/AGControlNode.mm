@@ -911,6 +911,11 @@ private:
     bool isOpen = false;
 };
 
+
+#include "Nodes/Control/AGControlMapNode.cpp"
+#include "Nodes/Control/AGControlScaleNode.cpp"
+
+
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
 //------------------------------------------------------------------------------
@@ -942,6 +947,9 @@ const AGNodeManager &AGNodeManager::controlNodeManager()
         nodeTypes.push_back(new AGControlMidiCCIn::Manifest);
         nodeTypes.push_back(new AGControlComparisonEQNode::Manifest);
         nodeTypes.push_back(new AGControlGateNode::Manifest);
+        
+        nodeTypes.push_back(new AGControlMapNode::Manifest);
+        nodeTypes.push_back(new AGControlScaleNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();
