@@ -194,20 +194,32 @@ public:
                 // pick directly from scale
                 const vector<int> &scale = g_scales[scale_index];
                 
-                int note_index_low = floorf(valueIn*scale.size());
-                int note_index_high = ceilf(valueIn*scale.size());
-                float alpha = ceilf(valueIn)-valueIn;
+                if(quantize)
+                {
+                    int note_index = roundf(valueIn*scale.size());
+                    
+                    note = root +
+                        scale[note_index%scale.size()] +
+                        12*(note_index/scale.size());
+                }
+                else
+                {
+                    int note_index_low = floorf(valueIn*scale.size());
+                    int note_index_high = ceilf(valueIn*scale.size());
+                    float alpha = ceilf(valueIn)-valueIn;
+                    
+                    float note_low = root +
+                        scale[note_index_low%scale.size()] +
+                        12*(note_index_low/scale.size());
+                    float note_high = root +
+                        scale[note_index_high%scale.size()] +
+                        12*(note_index_high/scale.size());
+                    
+                    dbgprint("idx_lo: %i idx_hi: %i alpha: %f\n", note_index_low, note_index_high, alpha);
+                    
+                    note = note_low*alpha + note_high*(1-alpha);
+                }
                 
-                float note_low = root +
-                    scale[note_index_low%scale.size()] +
-                    12*(note_index_low/scale.size());
-                float note_high = root +
-                    scale[note_index_high%scale.size()] +
-                    12*(note_index_high/scale.size());
-                
-                dbgprint("idx_lo: %i idx_hi: %i alpha: %f\n", note_index_low, note_index_high, alpha);
-                
-                note = note_low*alpha + note_high*(1-alpha);
             }
             else
             {
@@ -215,27 +227,38 @@ public:
                 const vector<int> &scale = g_scales[scale_index];
                 const vector<int> &chord = g_chords[chord_index];
                 
-                int note_index_low = floorf(valueIn*chord.size());
-                int note_index_high = ceilf(valueIn*chord.size());
-                float alpha = ceilf(valueIn)-valueIn;
-                
-                dbgprint("idx_lo: %i idx_hi: %i alpha: %f\n", note_index_low, note_index_high, alpha);
-                
-                float note_low = root +
-                    scale[chord[note_index_low%chord.size()]] +
-                    12*(note_index_low/chord.size());
-                float note_high = root +
-                    scale[chord[note_index_high%chord.size()]] +
-                    12*(note_index_high/chord.size());
-                
-                note = note_low*alpha + note_high*(1-alpha);
+                if(quantize)
+                {
+                    int note_index = roundf(valueIn*scale.size());
+                    
+                    note = root +
+                        scale[chord[note_index%chord.size()]] +
+                        12*(note_index/chord.size());
+                }
+                else
+                {
+                    int note_index_low = floorf(valueIn*chord.size());
+                    int note_index_high = ceilf(valueIn*chord.size());
+                    float alpha = ceilf(valueIn)-valueIn;
+                    
+                    dbgprint("idx_lo: %i idx_hi: %i alpha: %f\n", note_index_low, note_index_high, alpha);
+                    
+                    float note_low = root +
+                        scale[chord[note_index_low%chord.size()]] +
+                        12*(note_index_low/chord.size());
+                    float note_high = root +
+                        scale[chord[note_index_high%chord.size()]] +
+                        12*(note_index_high/chord.size());
+                    
+                    note = note_low*alpha + note_high*(1-alpha);
+                }
             }
             
             dbgprint("Scale: in: %f out: %f root: %i scale: %i chord: %i octave: %i\n",
                      valueIn, note, root, scale_index, chord_index, octave);
             
             if(quantize)
-                pushControl(0, AGControl((int)roundf(note)));
+                pushControl(0, AGControl((int)note));
             else
                 pushControl(0, AGControl(note));
         }
