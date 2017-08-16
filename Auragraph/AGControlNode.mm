@@ -914,6 +914,7 @@ private:
 
 #include "Nodes/Control/AGControlMapNode.cpp"
 #include "Nodes/Control/AGControlScaleNode.cpp"
+#include "Nodes/Control/AGControlCounterNode.cpp"
 
 
 //------------------------------------------------------------------------------
@@ -950,6 +951,8 @@ const AGNodeManager &AGNodeManager::controlNodeManager()
         
         nodeTypes.push_back(new AGControlMapNode::Manifest);
         nodeTypes.push_back(new AGControlScaleNode::Manifest);
+        
+        nodeTypes.push_back(new AGControlCounterNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();

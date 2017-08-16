@@ -229,6 +229,7 @@
 		09230FF91F41868A00DF06B5 /* AGControlSequencerNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGControlSequencerNode.h; sourceTree = "<group>"; };
 		092310001F4187C200DF06B5 /* AGControlMapNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGControlMapNode.cpp; sourceTree = "<group>"; };
 		092310031F428C1200DF06B5 /* AGControlScaleNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGControlScaleNode.cpp; sourceTree = "<group>"; };
+		092310081F43DBFF00DF06B5 /* AGControlCounterNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGControlCounterNode.cpp; sourceTree = "<group>"; };
 		0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGInputNode.mm; sourceTree = "<group>"; };
 		0927D7DF1ADCE4E000AD8AE5 /* AGInputNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGInputNode.h; sourceTree = "<group>"; };
 		093395681A019D43009E4802 /* Orbitron-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Orbitron-Regular.ttf"; sourceTree = "<group>"; };
@@ -614,6 +615,7 @@
 				09230FF91F41868A00DF06B5 /* AGControlSequencerNode.h */,
 				092310001F4187C200DF06B5 /* AGControlMapNode.cpp */,
 				092310031F428C1200DF06B5 /* AGControlScaleNode.cpp */,
+				092310081F43DBFF00DF06B5 /* AGControlCounterNode.cpp */,
 			);
 			path = Control;
 			sourceTree = "<group>";
