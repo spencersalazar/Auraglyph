@@ -55,6 +55,7 @@ AGDocument::ParamValue::operator AGParamValue() const
 {
     switch(type)
     {
+        case BIT: return AGParamValue(i?1:0);
         case INT: return AGParamValue(i);
         case FLOAT: return AGParamValue(f);
         case STRING: return AGParamValue(s);
