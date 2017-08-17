@@ -358,7 +358,7 @@ public:
                 c = AGControl(control.getInt() + add);
         }
         
-        dbgprint("%s: push %f\n", this->title().c_str(), c.getFloat());
+        dbgprint_off("%s: push %f\n", this->title().c_str(), c.getFloat());
         
         pushControl(0, c);
     }
@@ -447,7 +447,7 @@ public:
                 c = AGControl(control.getInt() * mult);
         }
         
-        dbgprint("%s: push %f\n", this->title().c_str(), c.getFloat());
+        dbgprint_off("%s: push %f\n", this->title().c_str(), c.getFloat());
         
         pushControl(0, c);
     }

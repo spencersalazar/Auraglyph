@@ -219,8 +219,8 @@ public:
                 note = root+scale[chord[note_index%chord.size()]]+12*(note_index/chord.size());
             }
             
-            dbgprint("Scale: in: %i out: %i root: %i scale: %i chord: %i octave: %i\n",
-                     note_index, note, root, scale_index, chord_index, octave);
+            dbgprint_off("Scale: in: %i out: %i root: %i scale: %i chord: %i octave: %i\n",
+               note_index, note, root, scale_index, chord_index, octave);
 
             pushControl(0, AGControl(note));
         }
@@ -255,7 +255,7 @@ public:
                         scale[note_index_high%scale.size()] +
                         12*(note_index_high/scale.size());
                     
-                    dbgprint("idx_lo: %i idx_hi: %i alpha: %f\n", note_index_low, note_index_high, alpha);
+                    dbgprint_off("idx_lo: %i idx_hi: %i alpha: %f\n", note_index_low, note_index_high, alpha);
                     
                     note = note_low*alpha + note_high*(1-alpha);
                 }
@@ -281,7 +281,7 @@ public:
                     int note_index_high = ceilf(valueIn*chord.size());
                     float alpha = ceilf(valueIn)-valueIn;
                     
-                    dbgprint("idx_lo: %i idx_hi: %i alpha: %f\n", note_index_low, note_index_high, alpha);
+                    dbgprint_off("idx_lo: %i idx_hi: %i alpha: %f\n", note_index_low, note_index_high, alpha);
                     
                     float note_low = root +
                         scale[chord[note_index_low%chord.size()]] +
@@ -294,8 +294,8 @@ public:
                 }
             }
             
-            dbgprint("Scale: in: %f out: %f root: %i scale: %i chord: %i octave: %i\n",
-                     valueIn, note, root, scale_index, chord_index, octave);
+            dbgprint_off("Scale: in: %f out: %f root: %i scale: %i chord: %i octave: %i\n",
+               valueIn, note, root, scale_index, chord_index, octave);
             
             if(quantize)
                 pushControl(0, AGControl((int)note));
