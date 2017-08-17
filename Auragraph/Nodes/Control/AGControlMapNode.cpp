@@ -63,21 +63,26 @@ public:
         
         vector<GLvertex3f> _iconGeo() const override
         {
-            float radius = 38;
-            float w = radius*1.3, h = w*0.2, t = h*0.75, rot = -M_PI*0.7f;
+            float radius = 26;
+            float radiusYL = 13;
+            float radiusYR = 26;
+            float f = 0.45;
             
-            return {
-                // pen
-                rotateZ(GLvertex2f( w/2,      0), rot),
-                rotateZ(GLvertex2f( w/2-t,  h/2), rot),
-                rotateZ(GLvertex2f(-w/2,    h/2), rot),
-                rotateZ(GLvertex2f(-w/2,   -h/2), rot),
-                rotateZ(GLvertex2f( w/2-t, -h/2), rot),
-                rotateZ(GLvertex2f( w/2,      0), rot),
+            return vector<GLvertex3f>{
+                // left branch
+                { -radius, radiusYL, 0 }, { -radius*f, radiusYL, 0 },
+                { -radius*f, radiusYL, 0 }, { -radius*f, -radiusYL, 0 },
+                { -radius, -radiusYL, 0 }, { -radius*f, -radiusYL, 0 },
+                // connecting line
+                { -radius*f, 0, 0 }, { radius*f, 0, 0 },
+                // right branch
+                { radius, radiusYR, 0 }, { radius*f, radiusYR, 0 },
+                { radius*f, radiusYR, 0 }, { radius*f, -radiusYR, 0 },
+                { radius, -radiusYR, 0 }, { radius*f, -radiusYR, 0 },
             };
         }
         
-        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+        GLuint _iconGeoType() const override { return GL_LINES; };
     };
     
     using AGControlNode::AGControlNode;
