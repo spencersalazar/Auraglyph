@@ -40,17 +40,19 @@ public:
         {
             return {
                 { PARAM_INPUT, "input", 0, -AGFloat_Max, AGFloat_Max, AGPortInfo::LIN, .doc = "Input value to map." },
+                { PARAM_MIN_OUT, "min out", 0, -AGFloat_Max, AGFloat_Max, AGPortInfo::EXP, .doc = "Output range lower bound." },
+                { PARAM_MAX_OUT, "max out", 0, -AGFloat_Max, AGFloat_Max, AGPortInfo::EXP, .doc = "Output range upper bound." },
             };
         }
         
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_MIN_IN, "min in", 0, -AGFloat_Max, AGFloat_Max, AGPortInfo::EXP, .doc = "Minimum input value." },
-                { PARAM_MAX_IN, "max in", 0, -AGFloat_Max, AGFloat_Max, AGPortInfo::EXP, .doc = "Maximum input value." },
-                { PARAM_MIN_OUT, "min out", 0, -AGFloat_Max, AGFloat_Max, AGPortInfo::EXP, .doc = "Minimum output value." },
-                { PARAM_MAX_OUT, "max out", 0, -AGFloat_Max, AGFloat_Max, AGPortInfo::EXP, .doc = "Maximum output value." },
-                { PARAM_POWER, "power", 1, 0, AGFloat_Max, AGPortInfo::EXP, .doc = "Non-linear power scale factor." },
+                { PARAM_MIN_IN, "min in", 0, -AGFloat_Max, AGFloat_Max, AGPortInfo::EXP, .doc = "Input range lower bound." },
+                { PARAM_MAX_IN, "max in", 0, -AGFloat_Max, AGFloat_Max, AGPortInfo::EXP, .doc = "Input range upper bound." },
+                { PARAM_MIN_OUT, "min out", 0, -AGFloat_Max, AGFloat_Max, AGPortInfo::EXP, .doc = "Output range lower bound." },
+                { PARAM_MAX_OUT, "max out", 0, -AGFloat_Max, AGFloat_Max, AGPortInfo::EXP, .doc = "Output range upper bound." },
+                { PARAM_POWER, "power", 1, 0.001, AGFloat_Max, AGPortInfo::EXP, .doc = "Non-linear mapping power scale factor." },
                 { PARAM_QUANTIZE, "qntize", 0, 0, 1, AGPortInfo::LIN, .type = AGControl::TYPE_BIT, .doc = "Quantize output value to a whole integer." },
             };
         }

@@ -35,7 +35,9 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", 0, -AGFloat_Max, AGFloat_Max, AGPortInfo::LIN, .doc = "Non-zero input triggers count." },
+                { PARAM_INPUT, "count", 0, -AGFloat_Max, AGFloat_Max, AGPortInfo::LIN, .doc = "Non-zero input triggers count." },
+                { PARAM_UP, "up", 8, 0, AGInt_Max, AGPortInfo::LIN, .type = AGControl::TYPE_INT, .doc = "Number of times to count up." },
+                { PARAM_DOWN, "down", 0, 0, AGInt_Max, AGPortInfo::LIN, .type = AGControl::TYPE_INT, .doc = "Number of times to count down." },
             };
         }
         

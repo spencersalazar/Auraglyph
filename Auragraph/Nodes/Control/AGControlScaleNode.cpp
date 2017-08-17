@@ -70,7 +70,47 @@ public:
         vector<AGPortInfo> _inputPortInfo() const override
         {
             return {
-                { PARAM_INPUT, "input", 0, -AGFloat_Max, AGFloat_Max, AGPortInfo::LIN, .doc = "Input value to map." },
+                { PARAM_INPUT, "degree", 0, -AGFloat_Max, AGFloat_Max, AGPortInfo::LIN, .doc = "Scale or chord degree." },
+                { PARAM_ROOT, "root", 0, 0, 11, AGPortInfo::LIN, .type = AGControl::TYPE_INT,
+                    .editorMode = AGPortInfo::EDITOR_ENUM,
+                    .enumInfo = {
+                        { 0, "C" },
+                        { 1, "C#/Db" },
+                        { 2, "D" },
+                        { 3, "D#/Eb" },
+                        { 4, "E" },
+                        { 5, "F" },
+                        { 6, "F#/Gb" },
+                        { 7, "G" },
+                        { 8, "G#/Ab" },
+                        { 9, "A" },
+                        { 10, "A#/Bb" },
+                        { 11, "B" },
+                    },
+                    .doc = "Scale root."
+                },
+                { PARAM_SCALE, "scale", 0, 0, 2, AGPortInfo::LIN, .type = AGControl::TYPE_INT,
+                    .editorMode = AGPortInfo::EDITOR_ENUM,
+                    .enumInfo = {
+                        { SCALE_CHROMATIC, "chromatic" },
+                        { SCALE_MAJOR, "major" },
+                        { SCALE_MINOR, "minor" },
+                    },
+                    .doc = "Scale type."
+                },
+                { PARAM_CHORD, "chord", 0, 0, 5, AGPortInfo::LIN, .type = AGControl::TYPE_INT,
+                    .editorMode = AGPortInfo::EDITOR_ENUM,
+                    .enumInfo = {
+                        { CHORD_NONE, "none" },
+                        { CHORD_I, "I" },
+                        { CHORD_V, "V" },
+                        { CHORD_V7, "V7" },
+                        { CHORD_IV, "IV" },
+                        { CHORD_VI, "VI" },
+                    },
+                    .doc = "Scale chord."
+                },
+                { PARAM_OCTAVE, "octave", 0, -5, 5, AGPortInfo::LIN, .type = AGControl::TYPE_INT, .doc = "Scale octave." },
             };
         }
         
