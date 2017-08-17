@@ -182,7 +182,8 @@ void AGDocument::loadFromPath(const string &path)
                         if([conn[@"dstPort"] isKindOfClass:[NSString class]])
                         {
                             int dstPort = AGNodeManager::portNumberForPortName(n._class, n.type, [conn[@"dstPort"] stlString]);
-                            assert(dstPort != -1);
+                            if(dstPort == -1)
+                                continue;
                             c.dstPort = dstPort;
                         }
                         else
@@ -212,7 +213,8 @@ void AGDocument::loadFromPath(const string &path)
                         if([conn[@"dstPort"] isKindOfClass:[NSString class]])
                         {
                             int dstPort = AGNodeManager::portNumberForPortName(dstClass, dstType, [conn[@"dstPort"] stlString]);
-                            assert(dstPort != -1);
+                            if(dstPort == -1)
+                                continue;
                             c.dstPort = dstPort;
                         }
                         else
