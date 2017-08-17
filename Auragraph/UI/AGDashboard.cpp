@@ -13,6 +13,7 @@
 #include "AGStyle.h"
 #include "GeoGenerator.h"
 #include "AGAnalytics.h"
+#include "AGUndoManager.h"
 
 #include <math.h>
 
@@ -92,10 +93,12 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
     m_editMenu->addMenuItem("Undo", [this](){
         dbgprint("Undo\n");
         // TODO: analytics
+        AGUndoManager::instance().undoLast();
     });
     m_editMenu->addMenuItem("Redo", [this](){
         dbgprint("Redo\n");
         // TODO: analytics
+        AGUndoManager::instance().redoLast();
     });
     addChild(m_editMenu);
     

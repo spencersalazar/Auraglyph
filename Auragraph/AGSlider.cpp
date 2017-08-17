@@ -20,7 +20,7 @@
 
 AGSlider::AGSlider(const GLvertex3f &position, float value)
 : m_value(value),
-m_update([](float){}), m_start([](){}), m_stop([](){}),
+m_update([](float){}), m_start([](float){}), m_stop([](float, float){}),
 m_validator([](float _old, float _new) { return _new; })
 {
     setPosition(position);
@@ -99,7 +99,9 @@ void AGSlider::touchDown(const AGTouchInfo &t)
     m_ytravel = 0;
     m_active = true;
     
-    m_start();
+    m_startValue = m_value;
+    
+    m_start(m_value);
 }
 
 void AGSlider::touchMove(const AGTouchInfo &t)
@@ -151,7 +153,7 @@ void AGSlider::touchMove(const AGTouchInfo &t)
 void AGSlider::touchUp(const AGTouchInfo &t)
 {
     m_active = false;
-    m_stop();
+    m_stop(m_startValue, m_value);
 }
 
 AGInteractiveObject *AGSlider::hitTest(const GLvertex3f &t)
@@ -186,7 +188,7 @@ void AGSlider::onUpdate(const std::function<void (float)> &update)
     m_update = update;
 }
 
-void AGSlider::onStartStopUpdating(const std::function<void (void)> &start, const std::function<void (void)> &stop)
+void AGSlider::onStartStopUpdating(const std::function<void (float)> &start, const std::function<void (float, float)> &stop)
 {
     m_start = start;
     m_stop = stop;

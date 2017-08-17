@@ -62,8 +62,8 @@ public:
     void setAlignment(Alignment alignment) { m_alignment = alignment; }
     
     void onUpdate(const std::function<void (float)> &update);
-    void onStartStopUpdating(const std::function<void (void)> &start,
-                             const std::function<void (void)> &stop);
+    void onStartStopUpdating(const std::function<void (float start)> &start,
+                             const std::function<void (float start, float stop)> &stop);
     
     /* 
      Validator function takes two arguments (old and new value) and returns
@@ -78,6 +78,7 @@ private:
     GLvertex2f m_size;
     GLvertex2f m_textSize;
     
+    float m_startValue = 0;
     double m_value = 0;
     Scale m_scale = LINEAR;
     Type m_type = DISCRETE;
@@ -95,8 +96,8 @@ private:
     AGTouchInfo m_lastPosition;
     
     std::function<void (float)> m_update;
-    std::function<void (void)> m_start;
-    std::function<void (void)> m_stop;
+    std::function<void (float)> m_start;
+    std::function<void (float, float)> m_stop;
     std::function<float (float, float)> m_validator;
 };
 

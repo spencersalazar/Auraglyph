@@ -15,6 +15,7 @@
 #include "AGFileBrowser.h"
 #include "AGFileManager.h"
 #include "AGAnalytics.h"
+#include "AGUndoManager.h"
 
 #import "TexFont.h"
 
@@ -378,8 +379,26 @@ m_lastTraceWasRecognized(true)
             slider->onUpdate([this, port] (float value) {
                 m_node->setEditPortValue(port, value);
             });
-            slider->onStartStopUpdating([](){}, [this, port](){
+            slider->onStartStopUpdating([this, port](float){},
+            [this, port](float _old, float _new){
                 AGAnalytics::instance().eventEditNodeParamSlider(m_node->type(), m_node->editPortInfo(port).name);
+                AGNode *node = m_node;
+                AGBasicUndoAction *action = new AGBasicUndoAction(
+                    [node, port, _old]() {
+                        // undo
+                        // TODO: m_node might not be valid any more
+                        // TODO: need to access by UUID
+                        node->setEditPortValue(port, _old);
+                    },
+                    [node, port, _new]() {
+                        // redo
+                        // TODO: m_node might not be valid any more
+                        // TODO: need to access by UUID
+                        node->setEditPortValue(port, _new);
+                    }
+                );
+                
+                AGUndoManager::instance().pushUndoAction(action);
             });
             slider->setValidator([this, port] (float _old, float _new) {
                 return m_node->validateEditPortValue(port, _new);
