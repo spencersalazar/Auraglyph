@@ -32,6 +32,7 @@
 #import "AGDashboard.h"
 #import "NSString+STLString.h"
 #import "AGPGMidiContext.h"
+#import "AGGraphManager.h"
 
 #import <list>
 #import <map>
@@ -86,6 +87,7 @@ enum InterfaceMode
     AGTouchHandler *_touchHandlerQueue;
     
     std::list<AGNode *> _nodes;
+    std::map<std::string, AGNode *> _uuid2Node;
     std::list<AGFreeDraw *> _freedraws;
     std::list<AGInteractiveObject *> _dashboard;
     std::list<AGInteractiveObject *> _objects;
@@ -183,6 +185,8 @@ static AGViewController * g_instance = nil;
     _camera = GLvertex3f(0, 0, 0);
     _cameraZ.rate = 0.4;
     _cameraZ.reset(0);
+    
+    AGGraphManager::instance().setViewController(_proxy);
     
     // Set up our MIDI context
     midiManager = new AGPGMidiContext;
@@ -363,6 +367,7 @@ static AGViewController * g_instance = nil;
     
     _nodes.push_back(node);
     _objects.push_back(node);
+    _uuid2Node[node->uuid()] = node;
     
     AGInteractiveObject * ui = node->userInterface();
     if(ui)
@@ -393,12 +398,21 @@ static AGViewController * g_instance = nil;
         
         _nodes.remove(node);
         _objects.remove(node);
+        _uuid2Node.erase(node->uuid());
     }
 }
 
 - (const list<AGNode *> &)nodes
 {
     return _nodes;
+}
+
+- (AGNode *)nodeWithUUID:(const std::string &)uuid
+{
+    if(_uuid2Node.count(uuid))
+        return _uuid2Node[uuid];
+    else
+        return NULL;
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object
@@ -469,7 +483,10 @@ static AGViewController * g_instance = nil;
     _objects.remove(object);
     AGNode *node = dynamic_cast<AGNode *>(object);
     if(node)
+    {
         _nodes.remove(node);
+        _uuid2Node.erase(node->uuid());
+    }
     _dashboard.remove(object);
     
     AGFreeDraw *draw = dynamic_cast<AGFreeDraw *>(object);
@@ -1332,4 +1349,9 @@ GLvertex3f AGViewController_::fixedCoordinateForScreenCoordinate(CGPoint p)
 CGRect AGViewController_::bounds()
 {
     return m_viewController.view.bounds;
+}
+
+AGNode *AGViewController_::nodeWithUUID(const std::string &uuid)
+{
+    return [m_viewController nodeWithUUID:uuid];
 }

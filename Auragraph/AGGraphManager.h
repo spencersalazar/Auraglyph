@@ -8,14 +8,23 @@
 
 #pragma once
 
+#include <string>
+
+class AGNode;
+class AGViewController_;
+
 class AGGraphManager
 {
 public:
-    AGGraphManager &instance();
+    static AGGraphManager &instance();
     
     AGGraphManager();
     ~AGGraphManager();
     
-private:
+    AGNode *nodeWithUUID(const std::string &uuid);
     
+    void setViewController(AGViewController_ *viewController);
+    
+private:
+    AGViewController_ *m_viewController;
 };

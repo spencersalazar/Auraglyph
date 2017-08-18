@@ -41,6 +41,7 @@ enum AGDrawMode
 - (void)removeNode:(AGNode *)node;
 - (void)resignNode:(AGNode *)node;
 - (const list<AGNode *> &)nodes;
+- (AGNode *)nodeWithUUID:(const std::string &)uuid;
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object;
 - (void)addTopLevelObject:(AGInteractiveObject *)object over:(AGInteractiveObject *)over;
@@ -101,6 +102,8 @@ public:
     GLvertex3f fixedCoordinateForScreenCoordinate(CGPoint p);
     
     CGRect bounds();
+    
+    AGNode *nodeWithUUID(const std::string &uuid);
     
 private:
     AGViewController *m_viewController = nil;
