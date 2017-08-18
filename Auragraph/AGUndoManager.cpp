@@ -15,8 +15,10 @@
 //------------------------------------------------------------------------------
 #pragma mark - AGBasicUndoAction
 
-AGBasicUndoAction::AGBasicUndoAction(std::function<void ()> _undo, std::function<void ()> _redo)
-: m_undo(_undo), m_redo(_redo)
+AGBasicUndoAction::AGBasicUndoAction(const std::string &title,
+                                     std::function<void ()> _undo,
+                                     std::function<void ()> _redo)
+: AGUndoAction(title), m_undo(_undo), m_redo(_redo)
 { }
 
 void AGBasicUndoAction::undo()
@@ -91,5 +93,21 @@ bool AGUndoManager::hasUndo()
 bool AGUndoManager::hasRedo()
 {
     return m_redo.size() > 0;
+}
+
+std::string AGUndoManager::undoItemTitle()
+{
+    if(m_undo.size())
+        return m_undo.back()->title();
+    else
+        return "";
+}
+
+std::string AGUndoManager::redoItemTitle()
+{
+    if(m_redo.size())
+        return m_redo.back()->title();
+    else
+        return "";
 }
 

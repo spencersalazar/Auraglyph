@@ -10,6 +10,7 @@
 
 #include <functional>
 #include <list>
+#include <string>
 
 //------------------------------------------------------------------------------
 // ### AGUndoAction ###
@@ -19,11 +20,18 @@
 class AGUndoAction
 {
 public:
+    AGUndoAction(const std::string &title) : m_title(title) { }
     virtual ~AGUndoAction() { }
     
     virtual void undo() = 0;
     virtual void redo() = 0;
+    
+    const std::string &title() { return m_title; }
+    
+private:
+    std::string m_title;
 };
+
 
 //------------------------------------------------------------------------------
 // ### AGBasicUndoAction ###
@@ -33,7 +41,9 @@ public:
 class AGBasicUndoAction : public AGUndoAction
 {
 public:
-    AGBasicUndoAction(std::function<void ()> _undo, std::function<void ()> _redo);
+    AGBasicUndoAction(const std::string &title,
+                      std::function<void ()> _undo,
+                      std::function<void ()> _redo);
     
     virtual void undo() override;
     virtual void redo() override;
@@ -42,6 +52,21 @@ private:
     std::function<void ()> m_undo;
     std::function<void ()> m_redo;
 };
+
+
+//------------------------------------------------------------------------------
+// ### AGBasicUndoAction ###
+//------------------------------------------------------------------------------
+#pragma mark - AGBasicUndoAction
+
+class AGUndoManagerListener
+{
+public:
+    virtual ~AGUndoManagerListener() { }
+    
+    virtual void undoStateChanged() = 0;
+};
+
 
 //------------------------------------------------------------------------------
 // ### AGUndoManager ###
@@ -63,7 +88,14 @@ public:
     bool hasUndo();
     bool hasRedo();
     
+    std::string undoItemTitle();
+    std::string redoItemTitle();
+    
+    void addListener(AGUndoManagerListener *);
+    void removeListener(AGUndoManagerListener *);
+    
 private:
     std::list<AGUndoAction *> m_undo;
     std::list<AGUndoAction *> m_redo;
+    std::list<AGUndoManagerListener *> m_listeners;
 };
