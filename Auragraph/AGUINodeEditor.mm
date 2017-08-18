@@ -16,6 +16,7 @@
 #include "AGFileManager.h"
 #include "AGAnalytics.h"
 #include "AGUndoManager.h"
+#include "AGGraphManager.h"
 
 #import "TexFont.h"
 
@@ -382,19 +383,26 @@ m_lastTraceWasRecognized(true)
             slider->onStartStopUpdating([this, port](float){},
             [this, port](float _old, float _new){
                 AGAnalytics::instance().eventEditNodeParamSlider(m_node->type(), m_node->editPortInfo(port).name);
-                AGNode *node = m_node;
+                
+                // setup undo/redo
+                std::string uuid = m_node->uuid();
                 AGBasicUndoAction *action = new AGBasicUndoAction(
-                    [node, port, _old]() {
+                    "Parameter Change",
+                    [uuid, port, _old]() {
                         // undo
                         // TODO: m_node might not be valid any more
                         // TODO: need to access by UUID
-                        node->setEditPortValue(port, _old);
+                        AGNode *node = AGGraphManager::instance().nodeWithUUID(uuid);
+                        if(node != nullptr)
+                            node->setEditPortValue(port, _old);
                     },
-                    [node, port, _new]() {
+                    [uuid, port, _new]() {
                         // redo
                         // TODO: m_node might not be valid any more
                         // TODO: need to access by UUID
-                        node->setEditPortValue(port, _new);
+                        AGNode *node = AGGraphManager::instance().nodeWithUUID(uuid);
+                        if(node != nullptr)
+                            node->setEditPortValue(port, _new);
                     }
                 );
                 
