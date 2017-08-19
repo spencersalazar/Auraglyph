@@ -708,6 +708,12 @@ const AGNodeManager &AGNodeManager::nodeManagerForClass(AGDocument::Node::Class 
     }
 }
 
+AGNode *AGNodeManager::createNode(const AGDocument::Node &docNode)
+{
+    const AGNodeManager &nodeMgr = nodeManagerForClass(docNode._class);
+    return nodeMgr.createNodeType(docNode);
+}
+
 const string &AGNodeManager::portNameForPortNumber(AGDocument::Node::Class _class, const string &nodeType, int portNumber)
 {
     static const string emptyString = "";

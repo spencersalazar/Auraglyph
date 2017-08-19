@@ -23,6 +23,12 @@ AGGraphManager::AGGraphManager()
 AGGraphManager::~AGGraphManager()
 { }
 
+void AGGraphManager::addNodeToTopLevel(AGNode *node)
+{
+    assert(m_viewController != nullptr);
+    m_viewController->addNodeToTopLevel(node);
+}
+
 AGNode *AGGraphManager::nodeWithUUID(const std::string &uuid)
 {
     assert(m_viewController != nullptr);

@@ -316,6 +316,7 @@ public:
     static const AGNodeManager &inputNodeManager();
     static const AGNodeManager &outputNodeManager();
     static const AGNodeManager &nodeManagerForClass(AGDocument::Node::Class _class);
+    static AGNode *createNode(const AGDocument::Node &docNode);
     
     const std::vector<const AGNodeManifest *> &nodeTypes() const;
     void renderNodeTypeIcon(const AGNodeManifest *mf) const;

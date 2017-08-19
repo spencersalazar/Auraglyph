@@ -1351,6 +1351,11 @@ CGRect AGViewController_::bounds()
     return m_viewController.view.bounds;
 }
 
+void AGViewController_::addNodeToTopLevel(AGNode *node)
+{
+    [m_viewController addNode:node];
+}
+
 AGNode *AGViewController_::nodeWithUUID(const std::string &uuid)
 {
     return [m_viewController nodeWithUUID:uuid];

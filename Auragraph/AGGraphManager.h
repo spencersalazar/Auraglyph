@@ -21,6 +21,8 @@ public:
     AGGraphManager();
     ~AGGraphManager();
     
+    void addNodeToTopLevel(AGNode *node);
+    
     AGNode *nodeWithUUID(const std::string &uuid);
     
     void setViewController(AGViewController_ *viewController);
