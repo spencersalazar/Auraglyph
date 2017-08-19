@@ -26,6 +26,8 @@
 #import "AGNodeSelector.h"
 #import "AGUINodeEditor.h"
 #import "AGGenericShader.h"
+#include "AGUndoManager.h"
+#include "AGGraphManager.h"
 #import "AGAnalytics.h"
 
 #import "GeoGenerator.h"
@@ -138,6 +140,7 @@
     GLvertex3f centroid = _currentTraceSum/_currentTrace.getNumberOfPoints();
     GLvertex3f centroidMVP = [_viewController worldCoordinateForScreenCoordinate:CGPointMake(centroid.x, centroid.y)];
     
+#if AG_ENABLE_COMPOSITE
     float traceArea = area(_trace->points().data(), _trace->points().size());
     dbgprint("trace area: %f\n", traceArea);
     if(traceArea > 15000)
@@ -170,32 +173,12 @@
             return;
         }
     }
+#endif // AG_ENABLE_COMPOSITE
     
     AGHandwritingRecognizerFigure figure = [[AGHandwritingRecognizer instance] recognizeShape:_currentTrace];
     
     if(figure == AG_FIGURE_CIRCLE)
     {
-//        // first check average polar length
-//        float sumPolarLength = 0;
-//        // compute centroid
-//        for(GLvertex3f point : _trace->points())
-//        {
-//            float dx = point.x-centroidMVP.x, dy = point.y-centroidMVP.y;
-//            sumPolarLength += sqrtf(dx*dx+dy*dy);
-//        }
-//        
-//        float avgPolarLength = sumPolarLength/_currentTrace.getNumberOfPoints();
-//        dbgprint("avgPolarLength: %f\n", avgPolarLength);
-//        
-//        if(avgPolarLength > 180.0f)
-//        {
-//            // treat as composite
-//            AGAudioCompositeNode *compositeNode = static_cast<AGAudioCompositeNode *>(AGNodeManager::audioNodeManager().createNodeOfType("Composite", centroidMVP));
-//            [self coalesceComposite:compositeNode];
-//            [_viewController addNode:compositeNode];
-//        }
-//        else
-        
         AGAnalytics::instance().eventDrawNodeCircle();
         
         {
@@ -1137,6 +1120,24 @@ private:
             AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(newNode);
             outputNode->setOutputDestination([AGAudioManager instance].masterOut);
         }
+        
+        AGDocument::Node serializedNode = newNode->serialize();
+        std::string uuid = newNode->uuid();
+        AGBasicUndoAction *action = new AGBasicUndoAction(
+            "Create Node",
+            [uuid]() {
+                // remove/delete the node
+                AGNode *node = AGGraphManager::instance().nodeWithUUID(uuid);
+                node->removeFromTopLevel();
+            },
+            [serializedNode]() {
+                // re-create/re-add the node
+                AGNode *node = AGNodeManager::createNode(serializedNode);
+                AGGraphManager::instance().addNodeToTopLevel(node);
+            }
+        );
+        
+        AGUndoManager::instance().pushUndoAction(action);
     }
     
     if(!_nodeSelector->done())
