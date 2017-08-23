@@ -71,6 +71,8 @@ public:
     void addCapturer(AGAudioCapturer *capturer);
     void removeCapturer(AGAudioCapturer *capturer);
     
+    AGAudioOutputDestination *masterOut();
+    
 private:
     AGAudioManager *m_audioManager = nullptr;
 };

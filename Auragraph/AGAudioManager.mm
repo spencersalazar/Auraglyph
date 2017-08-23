@@ -294,3 +294,8 @@ void AGAudioManager_::removeCapturer(AGAudioCapturer *capturer)
 {
     [m_audioManager removeCapturer:capturer];
 }
+
+AGAudioOutputDestination *AGAudioManager_::masterOut()
+{
+    return m_audioManager.masterOut;
+}
