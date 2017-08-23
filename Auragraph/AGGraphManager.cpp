@@ -35,6 +35,24 @@ AGNode *AGGraphManager::nodeWithUUID(const std::string &uuid)
     return m_viewController->nodeWithUUID(uuid);
 }
 
+AGConnection *AGGraphManager::connectionWithUUID(const std::string &uuid)
+{
+    if(m_connections.count(uuid))
+        return m_connections[uuid];
+    else
+        return nullptr;
+}
+
+void AGGraphManager::addConnection(AGConnection *connection)
+{
+    m_connections[connection->uuid()] = connection;
+}
+
+void AGGraphManager::removeConnection(AGConnection *connection)
+{
+    m_connections.erase(connection->uuid());
+}
+
 void AGGraphManager::setViewController(AGViewController_ *viewController)
 {
     m_viewController = viewController;
