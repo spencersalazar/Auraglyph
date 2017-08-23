@@ -52,7 +52,7 @@ private:
     float m_radius;
     GLuint m_geoSize;
     
-    clampf m_verticalScrollPos;
+    momentum<float, clampf> m_verticalScrollPos;
     lincurvef m_xScale;
     lincurvef m_yScale;
     
@@ -126,9 +126,9 @@ m_manager(manager)
     m_geo[3] = GLvertex3f(m_radius, m_radius, 0);
     
     int nTypes = m_manager.nodeTypes().size();
-//    m_verticalScrollPos.clamp(0, ceilf(nTypes/2.0f-2)*m_radius);
-//    int nTypes = ManagerType::instance().nodeTypes().size();
-    m_verticalScrollPos.clampTo(0, max(ceilf(nTypes/2.0f-2)*m_radius,0.0f));
+    m_verticalScrollPos.raw().clampTo(0, max(ceilf(nTypes/2.0f-2)*m_radius,0.0f));
+    m_verticalScrollPos.setLoss(0.5);
+    m_verticalScrollPos.setDrag(0.1);
     
     m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
     m_yScale = lincurvef(AGStyle::open_animTimeY, AGStyle::open_squeezeHeight, 1);
@@ -145,6 +145,8 @@ AGUINodeSelector<NodeType, ManagerType>::~AGUINodeSelector()
 template<class NodeType, class ManagerType>
 void AGUINodeSelector<NodeType, ManagerType>::update(float t, float dt)
 {
+    m_verticalScrollPos.update(t, dt);
+    
     m_modelView = AGNode::globalModelViewMatrix();
     GLKMatrix4 projection = AGNode::projectionMatrix();
     
@@ -313,6 +315,7 @@ void AGUINodeSelector<NodeType, ManagerType>::touchDown(const GLvertex3f &t)
     }
     
     m_lastTouch = t;
+    m_verticalScrollPos.on();
 }
 
 template<class NodeType, class ManagerType>
@@ -342,6 +345,8 @@ void AGUINodeSelector<NodeType, ManagerType>::touchUp(const GLvertex3f &t)
     {
         m_done = true;
     }
+    
+    m_verticalScrollPos.off();
 }
 
 template<class NodeType, class ManagerType>

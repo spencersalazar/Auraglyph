@@ -102,6 +102,11 @@ public:
         m_gain = gain;
     }
     
+    void setSlew(float slew) { m_slew = slew; }
+    void setLoss(float loss) { m_loss = loss; }
+    void setDrag(float drag) { m_drag = drag; }
+    void setGain(float gain) { m_gain = gain; }
+    
     void update(float t, float dt)
     {
         m_t = t;
