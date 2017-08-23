@@ -178,6 +178,7 @@ AGUISaveDialog *AGUISaveDialog::save(const AGDocument &doc, const GLvertex3f &po
 //------------------------------------------------------------------------------
 #pragma mark - AGUIConcreteLoadDialog
 
+
 class AGUIConcreteLoadDialog : public AGUILoadDialog
 {
 private:
@@ -185,7 +186,8 @@ private:
     
     float m_itemStart;
     float m_itemHeight;
-    clampf m_verticalScrollPos;
+    //clampf m_verticalScrollPos;
+    momentum<float, clampf> m_verticalScrollPos;
     
     AGSqueezeAnimation m_squeeze;
     
@@ -212,7 +214,7 @@ public:
         m_itemStart = m_size.y/3.0f;
         m_itemHeight = m_size.y/3.0f;
         
-        m_verticalScrollPos.clampTo(0, max(0.0f, (m_documentList.size()-3.0f)*m_itemHeight));
+        m_verticalScrollPos.raw().clampTo(0, max(0.0f, (m_documentList.size()-3.0f)*m_itemHeight));
         
         float buttonWidth = 100;
         float buttonHeight = 25;
@@ -242,6 +244,7 @@ public:
     virtual void update(float t, float dt) override
     {
         m_squeeze.update(t, dt);
+        m_verticalScrollPos.update(t, dt);
         
         m_renderState.projection = projectionMatrix();
         m_renderState.modelview = GLKMatrix4Multiply(fixedModelViewMatrix(), localTransform());
@@ -378,6 +381,7 @@ public:
         
         m_touchStart = t.position;
         m_lastTouch = t.position;
+        m_verticalScrollPos.on();
     }
     
     virtual void touchMove(const AGTouchInfo &t) override
@@ -397,6 +401,7 @@ public:
         if((m_touchStart-t.position).magnitudeSquared() > AGStyle::maxTravel*AGStyle::maxTravel)
         {
             m_selection = -1;
+            //m_verticalScrollPos += (t.position.y - m_lastTouch.y);
         }
         
         if(m_selection >= 0)
@@ -406,6 +411,8 @@ public:
             m_onLoad(filename, doc);
             removeFromTopLevel();
         }
+        
+        m_verticalScrollPos.off();
     }
     
     virtual void renderOut() override
