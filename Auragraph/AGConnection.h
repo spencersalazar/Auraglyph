@@ -38,6 +38,7 @@ class AGConnection : public AGInteractiveObject
 public:
     
     static AGConnection *connect(AGNode *src, int srcPort, AGNode *dst, int dstPort);
+    static AGConnection *connect(const AGDocument::Connection &docConnection);
     
     AGConnection(AGNode * src, int srcPort, AGNode * dst, int dstPort);
     ~AGConnection();

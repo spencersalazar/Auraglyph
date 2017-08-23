@@ -17,6 +17,8 @@
 #include "sputil.h"
 #include "AGStyle.h"
 
+#include "AGGraphManager.h"
+
 bool AGConnection::s_init = false;
 GLuint AGConnection::s_flareTex = 0;
 
@@ -66,7 +68,22 @@ AGConnection *AGConnection::connect(AGNode *src, int srcPort, AGNode *dst, int d
 {
     AGConnection *conn = new AGConnection(src, srcPort, dst, dstPort);
     conn->init();
+    
     return conn;
+}
+
+AGConnection *AGConnection::connect(const AGDocument::Connection &docConnection)
+{
+    AGGraphManager &graphManager = AGGraphManager::instance();
+    AGNode *srcNode = graphManager.nodeWithUUID(docConnection.srcUuid);
+    AGNode *dstNode = graphManager.nodeWithUUID(docConnection.dstUuid);
+    if(srcNode != nullptr && dstNode != nullptr &&
+       docConnection.dstPort >= 0 && docConnection.dstPort < dstNode->numInputPorts() &&
+       docConnection.srcPort >= 0 && docConnection.srcPort < srcNode->numOutputPorts())
+        return AGConnection::connect(srcNode, docConnection.srcPort,
+                              dstNode, docConnection.dstPort);
+    else
+        return nullptr;
 }
 
 AGConnection::AGConnection(AGNode * src, int srcPort, AGNode * dst, int dstPort) :
