@@ -12,6 +12,12 @@
 #include <list>
 #include <string>
 
+#include "Geometry.h"
+
+class AGNode;
+class AGConnection;
+class AGFreeDraw;
+
 //------------------------------------------------------------------------------
 // ### AGUndoAction ###
 //------------------------------------------------------------------------------
@@ -20,6 +26,13 @@
 class AGUndoAction
 {
 public:
+    static AGUndoAction *editParamUndoAction(AGNode *node, int port, float oldValue, float newValue);
+    static AGUndoAction *createNodeUndoAction(AGNode *node);
+    static AGUndoAction *moveNodeUndoAction(AGNode *node, const GLvertex3f &oldPos, const GLvertex3f &newPos);
+    static AGUndoAction *deleteNodeUndoAction(AGNode *node);
+    static AGUndoAction *createConnectionUndoAction(AGConnection *connection);
+    static AGUndoAction *deleteConnectionUndoAction(AGConnection *connection);
+    
     AGUndoAction(const std::string &title) : m_title(title) { }
     virtual ~AGUndoAction() { }
     

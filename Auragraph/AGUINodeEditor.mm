@@ -14,11 +14,9 @@
 #include "AGSlider.h"
 #include "AGFileBrowser.h"
 #include "AGFileManager.h"
-#include "AGAnalytics.h"
 #include "AGUndoManager.h"
-#include "AGGraphManager.h"
-
-#import "TexFont.h"
+#include "AGAnalytics.h"
+#include "TexFont.h"
 
 static const float AGNODESELECTOR_RADIUS = 0.02*AGStyle::oldGlobalScale;
 
@@ -383,29 +381,8 @@ m_lastTraceWasRecognized(true)
             slider->onStartStopUpdating([this, port](float){},
             [this, port](float _old, float _new){
                 AGAnalytics::instance().eventEditNodeParamSlider(m_node->type(), m_node->editPortInfo(port).name);
-                
-                // setup undo/redo
-                std::string uuid = m_node->uuid();
-                AGBasicUndoAction *action = new AGBasicUndoAction(
-                    "Parameter Change",
-                    [uuid, port, _old]() {
-                        // undo
-                        // TODO: m_node might not be valid any more
-                        // TODO: need to access by UUID
-                        AGNode *node = AGGraphManager::instance().nodeWithUUID(uuid);
-                        if(node != nullptr)
-                            node->setEditPortValue(port, _old);
-                    },
-                    [uuid, port, _new]() {
-                        // redo
-                        // TODO: m_node might not be valid any more
-                        // TODO: need to access by UUID
-                        AGNode *node = AGGraphManager::instance().nodeWithUUID(uuid);
-                        if(node != nullptr)
-                            node->setEditPortValue(port, _new);
-                    }
-                );
-                
+                // handle undo/redo
+                AGUndoAction *action = AGUndoAction::editParamUndoAction(m_node, port, _old, _new);
                 AGUndoManager::instance().pushUndoAction(action);
             });
             slider->setValidator([this, port] (float _old, float _new) {
