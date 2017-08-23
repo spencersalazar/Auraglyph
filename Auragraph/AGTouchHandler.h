@@ -59,6 +59,7 @@
 
 @interface AGMoveNodeTouchHandler : AGTouchHandler
 {
+    GLvertex3f _initialPos;
     GLvertex3f _anchorOffset;
     AGNode * _moveNode;
     

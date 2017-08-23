@@ -508,6 +508,7 @@
     if(self = [super initWithViewController:viewController])
     {
         _moveNode = node;
+        _initialPos = node->position();
     }
     
     return self;
@@ -577,7 +578,16 @@
         if(trash.hitTest(fixedPos))
         {
             AGAnalytics::instance().eventDeleteNode(_moveNode->type());
+            
+            AGUndoAction *action = AGUndoAction::deleteNodeUndoAction(_moveNode);
+            AGUndoManager::instance().pushUndoAction(action);
+            
             _moveNode->removeFromTopLevel();
+        }
+        else
+        {
+            AGUndoAction *action = AGUndoAction::moveNodeUndoAction(_moveNode, _initialPos, _moveNode->position());
+            AGUndoManager::instance().pushUndoAction(action);
         }
     }
 }
@@ -1035,7 +1045,10 @@ private:
         if(port != -1)
         {
             AGAnalytics::instance().eventConnectNode(_originalHit->type(), _currentHit->type());
-            AGConnection::connect(_originalHit, srcPort, _currentHit, port);
+            AGConnection *connection = AGConnection::connect(_originalHit, srcPort, _currentHit, port);
+            
+            AGUndoAction *action = AGUndoAction::createConnectionUndoAction(connection);
+            AGUndoManager::instance().pushUndoAction(action);
         }
     }
     
@@ -1121,22 +1134,7 @@ private:
             outputNode->setOutputDestination([AGAudioManager instance].masterOut);
         }
         
-        AGDocument::Node serializedNode = newNode->serialize();
-        std::string uuid = newNode->uuid();
-        AGBasicUndoAction *action = new AGBasicUndoAction(
-            "Create Node",
-            [uuid]() {
-                // remove/delete the node
-                AGNode *node = AGGraphManager::instance().nodeWithUUID(uuid);
-                node->removeFromTopLevel();
-            },
-            [serializedNode]() {
-                // re-create/re-add the node
-                AGNode *node = AGNodeManager::createNode(serializedNode);
-                AGGraphManager::instance().addNodeToTopLevel(node);
-            }
-        );
-        
+        AGUndoAction *action = AGUndoAction::createNodeUndoAction(newNode);
         AGUndoManager::instance().pushUndoAction(action);
     }
     

@@ -40,7 +40,7 @@ public:
     static AGConnection *connect(AGNode *src, int srcPort, AGNode *dst, int dstPort);
     static AGConnection *connect(const AGDocument::Connection &docConnection);
     
-    AGConnection(AGNode * src, int srcPort, AGNode * dst, int dstPort);
+    AGConnection(AGNode * src, int srcPort, AGNode * dst, int dstPort, const string &uuid = "");
     ~AGConnection();
     
     virtual void update(float t, float dt);

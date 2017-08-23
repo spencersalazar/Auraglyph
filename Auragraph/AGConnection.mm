@@ -18,6 +18,7 @@
 #include "AGStyle.h"
 
 #include "AGGraphManager.h"
+#include "AGUndoManager.h"
 
 bool AGConnection::s_init = false;
 GLuint AGConnection::s_flareTex = 0;
@@ -80,17 +81,24 @@ AGConnection *AGConnection::connect(const AGDocument::Connection &docConnection)
     if(srcNode != nullptr && dstNode != nullptr &&
        docConnection.dstPort >= 0 && docConnection.dstPort < dstNode->numInputPorts() &&
        docConnection.srcPort >= 0 && docConnection.srcPort < srcNode->numOutputPorts())
-        return AGConnection::connect(srcNode, docConnection.srcPort,
-                              dstNode, docConnection.dstPort);
+    {
+        AGConnection *conn = new AGConnection(srcNode, docConnection.srcPort,
+                                              dstNode, docConnection.dstPort,
+                                              docConnection.uuid);
+        conn->init();
+
+        return conn;
+    }
     else
         return nullptr;
 }
 
-AGConnection::AGConnection(AGNode * src, int srcPort, AGNode * dst, int dstPort) :
+AGConnection::AGConnection(AGNode * src, int srcPort, AGNode * dst, int dstPort, const string &uuid) :
 m_src(src), m_srcPort(srcPort), m_dst(dst), m_dstPort(dstPort),
 m_rate((src->rate() == RATE_AUDIO && dst->rate() == RATE_AUDIO) ? RATE_AUDIO : RATE_CONTROL),
 m_geoSize(0), m_hit(false), m_stretch(false), m_active(true),
-m_stretchPoint(0.25, GLvertex3f()), m_controlVisScale(0.07, 0), m_uuid(makeUUID())
+m_stretchPoint(0.25, GLvertex3f()), m_controlVisScale(0.07, 0),
+m_uuid(uuid.length() > 0 ? uuid : makeUUID())
 {
     initalize();
     
@@ -116,8 +124,6 @@ m_stretchPoint(0.25, GLvertex3f()), m_controlVisScale(0.07, 0), m_uuid(makeUUID(
 
 AGConnection::~AGConnection()
 {
-    //    if(m_geo != NULL) { delete[] m_geo; m_geo = NULL; }
-    //    AGNode::disconnect(this);
 }
 
 void AGConnection::renderOut()
@@ -336,6 +342,9 @@ void AGConnection::touchUp(const GLvertex3f &t)
     
     if(m_break)
     {
+        AGUndoAction *action = AGUndoAction::deleteConnectionUndoAction(this);
+        AGUndoManager::instance().pushUndoAction(action);
+        
         removeFromTopLevel();
     }
     else
