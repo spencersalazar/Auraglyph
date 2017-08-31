@@ -13,7 +13,7 @@
 
 AGDocNodeList::AGDocNodeList()
 {
-    m_size = GLvertex2f(300, 400);
+    m_size = GLvertex2f(500, 3*500/AGStyle::aspect16_9);
     addTouchOutsideListener(this);
 }
 
@@ -40,51 +40,52 @@ void AGDocNodeList::update(float t, float dt)
 
 void AGDocNodeList::render()
 {
-    GLKMatrix4 modelview = m_renderState.modelview;
-    
     AGGenericShader &shader = AGGenericShader::instance();
-    shader.setModelViewMatrix(modelview);
+    shader.useProgram();
+    shader.setModelViewMatrix(m_renderState.modelview);
     shader.setProjectionMatrix(m_renderState.projection);
     
     // render background
     AGStyle::frameBackgroundColor().set();
     drawTriangleFan((GLvertex2f[]) {
-        { -m_size.x, -m_size.y },
-        {  m_size.x, -m_size.y },
-        {  m_size.x,  m_size.y },
-        { -m_size.x,  m_size.y },
+        { -m_size.x/2, -m_size.y/2 },
+        {  m_size.x/2, -m_size.y/2 },
+        {  m_size.x/2,  m_size.y/2 },
+        { -m_size.x/2,  m_size.y/2 },
     }, 4);
     
     // render frame
     AGStyle::foregroundColor().set();
     drawLineLoop((GLvertex2f[]) {
-        { -m_size.x, -m_size.y },
-        {  m_size.x, -m_size.y },
-        {  m_size.x,  m_size.y },
-        { -m_size.x,  m_size.y },
+        { -m_size.x/2, -m_size.y/2 },
+        {  m_size.x/2, -m_size.y/2 },
+        {  m_size.x/2,  m_size.y/2 },
+        { -m_size.x/2,  m_size.y/2 },
     }, 4);
 
+    float lineHeight = 75;
+    TexFont *text = AGStyle::standardFont64();
+    float textScale = G_RATIO-1;
+    float textYOffset = (text->ascender()/2+text->descender())*textScale;
+    
     const std::vector<const AGNodeManifest *> &audioNodeTypes = AGNodeManager::audioNodeManager().nodeTypes();
     int num = audioNodeTypes.size();
     for(int i = 0; i < num; i++)
     {
-//        const AGNodeManifest *node = audioNodeTypes[i];
-//        
-//        AGGenericShader &shader = AGGenericShader::instance();
-//        
-//        GLKMatrix4 modelview = m_renderState.modelview;
-////        modelview = GLKMatrix4Translate(modelview, <#float tx#>, <#float ty#>, <#float tz#>)
-//        
-//        shader.setModelViewMatrix(modelview);
-//        shader.setProjectionMatrix(m_renderState.projection);
-//        
-//        node->renderIcon();
-//        
-//        for(auto param : node->editPortInfo())
-//            ;
-//        
-//        for(auto port : node->inputPortInfo())
-//            ;
+        const AGNodeManifest *node = audioNodeTypes[i];
+        
+        float y = m_size.y/2-(i+1)*lineHeight+lineHeight/2;
+        GLKMatrix4 modelview = GLKMatrix4Translate(m_renderState.modelview, -0.75f*m_size.x/2, y, 0);
+        shader.useProgram();
+        shader.setModelViewMatrix(modelview);
+        shader.setProjectionMatrix(m_renderState.projection);
+        AGStyle::foregroundColor().set();
+        glDisableClientState(AGVertexAttribTexCoord0);
+        node->renderIcon();
+        
+        GLKMatrix4 textmv = GLKMatrix4Translate(m_renderState.modelview, -0.5f*m_size.x/2, y-textYOffset, 0);
+        textmv = GLKMatrix4Scale(textmv, textScale, textScale, textScale);
+        text->render(node->type(), AGStyle::foregroundColor(), textmv, m_renderState.projection);
     }
 }
 
