@@ -14,6 +14,7 @@
 #include "GeoGenerator.h"
 #include "AGAnalytics.h"
 #include "AGUndoManager.h"
+#include "AGDocNodeList.h"
 
 #include <math.h>
 
@@ -135,6 +136,12 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
         dbgprint("About\n");
         // TODO: analytics
         m_viewController->showAbout();
+    });
+    m_settingsMenu->addMenuItem("Node List", [this](){
+        // TODO: analytics
+        AGDocNodeList *nodeList = new AGDocNodeList();
+        nodeList->init();
+        m_viewController->addToTopLevel(nodeList);
     });
     addChild(m_settingsMenu);
     
