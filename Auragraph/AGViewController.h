@@ -104,6 +104,7 @@ public:
     CGRect bounds();
     
     void addNodeToTopLevel(AGNode *node);
+    void addToTopLevel(AGInteractiveObject *object);
     
     AGNode *nodeWithUUID(const std::string &uuid);
     

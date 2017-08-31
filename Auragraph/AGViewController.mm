@@ -1356,6 +1356,11 @@ void AGViewController_::addNodeToTopLevel(AGNode *node)
     [m_viewController addNode:node];
 }
 
+void AGViewController_::addToTopLevel(AGInteractiveObject *object)
+{
+    [m_viewController addTopLevelObject:object];
+}
+
 AGNode *AGViewController_::nodeWithUUID(const std::string &uuid)
 {
     return [m_viewController nodeWithUUID:uuid];
