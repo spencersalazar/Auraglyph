@@ -155,6 +155,8 @@ public:
     
     operator DestType () { return (DestType) m_x; }
     
+    DestType value() { return (DestType) m_x; }
+    
     ContainerType &raw() { return m_x; }
     
 private:
