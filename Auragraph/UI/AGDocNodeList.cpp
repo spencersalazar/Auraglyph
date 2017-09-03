@@ -81,6 +81,8 @@ void AGDocNodeList::render()
     float textScale = G_RATIO-1;
     float textYOffset = -(text->ascender()/2+text->descender())*textScale;
     
+    AGClipShader &clipShader = AGClipShader::instance();
+    
     const std::vector<const AGNodeManifest *> &audioNodeTypes = AGNodeManager::audioNodeManager().nodeTypes();
     int num = audioNodeTypes.size();
     for(int i = 0; i < num; i++)
@@ -88,11 +90,16 @@ void AGDocNodeList::render()
         const AGNodeManifest *node = audioNodeTypes[i];
         
         float y = m_size.y/2-(i+1)*lineHeight+lineHeight/2;
-        GLKMatrix4 modelview = GLKMatrix4Translate(m_renderState.modelview, -0.75f*m_size.x/2, y, 0);
-        modelview = m_scroller.apply(modelview);
-        shader.useProgram();
-        shader.setModelViewMatrix(modelview);
-        shader.setProjectionMatrix(m_renderState.projection);
+        GLKMatrix4 localMatrix = GLKMatrix4MakeTranslation(-0.75f*m_size.x/2, y, 0);
+        localMatrix = m_scroller.apply(localMatrix);
+        GLKMatrix4 modelview = GLKMatrix4Multiply(m_renderState.modelview, localMatrix);
+        
+        clipShader.useProgram();
+        clipShader.setModelViewMatrix(modelview);
+        clipShader.setProjectionMatrix(m_renderState.projection);
+        clipShader.setLocalMatrix(localMatrix);
+        clipShader.setClip(m_pos.xy()-m_size/2, m_size);
+        
         AGStyle::foregroundColor().set();
         glDisableClientState(AGVertexAttribTexCoord0);
         node->renderIcon();
