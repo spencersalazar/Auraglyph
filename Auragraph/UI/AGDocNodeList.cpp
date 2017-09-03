@@ -11,9 +11,20 @@
 #include "AGGenericShader.h"
 #include "AGStyle.h"
 
+
+#define AG_DOCNODELIST_LINEHEIGHT (75.0f)
+#define AG_DOCNODELIST_NUMITEMSVISIBLE (8)
+
+
 AGDocNodeList::AGDocNodeList()
 {
-    m_size = GLvertex2f(500, 3*500/AGStyle::aspect16_9);
+    float height = AG_DOCNODELIST_LINEHEIGHT*AG_DOCNODELIST_NUMITEMSVISIBLE;
+    m_size = GLvertex2f(500, height);
+    
+    const std::vector<const AGNodeManifest *> &audioNodeTypes = AGNodeManager::audioNodeManager().nodeTypes();
+    int numItems = audioNodeTypes.size();
+    m_scroller.setScrollRange(0, max(0.0f, (numItems-AG_DOCNODELIST_NUMITEMSVISIBLE)*AG_DOCNODELIST_LINEHEIGHT));
+    
     addTouchOutsideListener(this);
 }
 
@@ -32,6 +43,8 @@ GLKMatrix4 AGDocNodeList::localTransform()
 void AGDocNodeList::update(float t, float dt)
 {
     m_squeeze.update(t, dt);
+    m_scroller.update(t, dt);
+    
     AGInteractiveObject::update(t, dt);
     
     m_renderState.modelview = GLKMatrix4Multiply(AGRenderObject::fixedModelViewMatrix(), localTransform());
@@ -63,10 +76,10 @@ void AGDocNodeList::render()
         { -m_size.x/2,  m_size.y/2 },
     }, 4);
 
-    float lineHeight = 75;
+    float lineHeight = AG_DOCNODELIST_LINEHEIGHT;
     TexFont *text = AGStyle::standardFont64();
     float textScale = G_RATIO-1;
-    float textYOffset = (text->ascender()/2+text->descender())*textScale;
+    float textYOffset = -(text->ascender()/2+text->descender())*textScale;
     
     const std::vector<const AGNodeManifest *> &audioNodeTypes = AGNodeManager::audioNodeManager().nodeTypes();
     int num = audioNodeTypes.size();
@@ -76,6 +89,7 @@ void AGDocNodeList::render()
         
         float y = m_size.y/2-(i+1)*lineHeight+lineHeight/2;
         GLKMatrix4 modelview = GLKMatrix4Translate(m_renderState.modelview, -0.75f*m_size.x/2, y, 0);
+        modelview = m_scroller.apply(modelview);
         shader.useProgram();
         shader.setModelViewMatrix(modelview);
         shader.setProjectionMatrix(m_renderState.projection);
@@ -83,7 +97,8 @@ void AGDocNodeList::render()
         glDisableClientState(AGVertexAttribTexCoord0);
         node->renderIcon();
         
-        GLKMatrix4 textmv = GLKMatrix4Translate(m_renderState.modelview, -0.5f*m_size.x/2, y-textYOffset, 0);
+        GLKMatrix4 textmv = m_scroller.apply(m_renderState.modelview);
+        textmv = GLKMatrix4Translate(textmv, -0.5f*m_size.x/2, y+textYOffset, 0);
         textmv = GLKMatrix4Scale(textmv, textScale, textScale, textScale);
         text->render(node->type(), AGStyle::foregroundColor(), textmv, m_renderState.projection);
     }
@@ -106,17 +121,17 @@ bool AGDocNodeList::finishedRenderingOut()
 
 void AGDocNodeList::touchDown(const AGTouchInfo &t)
 {
-    
+    m_scroller.touchDown(t);
 }
 
 void AGDocNodeList::touchMove(const AGTouchInfo &t)
 {
-    
+    m_scroller.touchMove(t);
 }
 
 void AGDocNodeList::touchUp(const AGTouchInfo &t)
 {
-    
+    m_scroller.touchUp(t);
 }
 
 void AGDocNodeList::touchOutside()
