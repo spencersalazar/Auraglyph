@@ -81,6 +81,29 @@ static AGHandwritingRecognizer * g_instance = NULL;
              objectAtIndex:0] stringByAppendingPathComponent:@"projects"];
 }
 
++ (void)listRecursive:(NSString *)path indent:(NSString *)indent
+{
+    NSFileManager *manager = [NSFileManager defaultManager];
+    
+    NSError *error = NULL;
+    NSArray *files = [manager contentsOfDirectoryAtPath:path error:&error];
+    for(NSString *file in files)
+    {
+        NSString *fullPath = [path stringByAppendingPathComponent:file];
+        NSDictionary *attributes = [manager attributesOfItemAtPath:fullPath error:&error];
+        short permissions = [attributes[NSFilePosixPermissions] shortValue];
+        
+        BOOL canRead = [manager isReadableFileAtPath:fullPath];
+        BOOL canWrite = [manager isWritableFileAtPath:fullPath];
+        BOOL canExec = [manager isExecutableFileAtPath:fullPath];
+        
+        NSLog(@"%@%@ %o %s%s%s", indent, file, permissions, canRead?"r":"-", canWrite?"w":"-", canExec?"x":"-");
+        BOOL isDir = NO;
+        if([manager fileExistsAtPath:fullPath isDirectory:&isDir] && isDir)
+            [AGHandwritingRecognizer listRecursive:fullPath indent:[indent stringByAppendingString:@"- "]];
+    }
+}
+
 - (id)init
 {
     if(self = [super init])
@@ -99,11 +122,16 @@ static AGHandwritingRecognizer * g_instance = NULL;
         // set root path for projects
         _engine->setLipiRootPath([[[AGHandwritingRecognizer projectPath] stringByDeletingLastPathComponent] UTF8String]);
         
+        NSLog(@"project path: %@", [AGHandwritingRecognizer projectPath]);
+        // [AGHandwritingRecognizer listRecursive:[[AGHandwritingRecognizer projectPath] stringByDeletingLastPathComponent] indent:@""];
+        
+        
         // initialize
         iResult = _engine->initializeLipiEngine();
         if(iResult != SUCCESS)
         {
             cout << iResult <<": Error initializing LipiEngine." << endl;
+            NSLog(@"Error initializing LipiEngine (%i)", iResult);
             delete _util;
             _util = NULL;
             
@@ -126,6 +154,7 @@ static AGHandwritingRecognizer * g_instance = NULL;
         if(_shapeReco == NULL)
         {
             cout << endl << "Error creating Shape Recognizer" << endl;
+            NSLog(@"Error creating Shape Recognizer");
             delete _util;
             _util = NULL;
             
@@ -137,6 +166,7 @@ static AGHandwritingRecognizer * g_instance = NULL;
         if(iResult != SUCCESS)
         {
             cout << endl << iResult << ": Error loading model data for Shape Recognizer" << endl;
+            NSLog(@"Error loading model data for Shape Recognizer (%i)", iResult);
             _engine->deleteShapeRecognizer(_shapeReco);
             _shapeReco = NULL;
             delete _util;
@@ -155,6 +185,7 @@ static AGHandwritingRecognizer * g_instance = NULL;
         if(_numeralReco == NULL)
         {
             cout << endl << "Error creating Numeral Recognizer" << endl;
+            NSLog(@"Error creating Numeral Recognizer");
             delete _util;
             _util = NULL;
             
@@ -168,6 +199,7 @@ static AGHandwritingRecognizer * g_instance = NULL;
             cout << endl << iResult << ": Error loading model data for Numeral Recognizer" << endl;
             _engine->deleteShapeRecognizer(_numeralReco);
             _numeralReco = NULL;
+            NSLog(@"Error loading model data for Numeral Recognizer (%i)", iResult);
             delete _util;
             _util = NULL;
             
@@ -217,7 +249,7 @@ static AGHandwritingRecognizer * g_instance = NULL;
     NSString *projectDstPath = [AGHandwritingRecognizer projectPath];
     [fileManager copyItemAtPath:projectSrcPath toPath:projectDstPath error:&error];
     if(error != NULL)
-        NSLog(@"-[AGHandwritingRecognizer loadData]: error copying model data");
+        NSLog(@"-[AGHandwritingRecognizer loadData]: error copying model data: %@", error.localizedDescription);
 }
 
 
