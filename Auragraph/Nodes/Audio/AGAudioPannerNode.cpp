@@ -123,8 +123,8 @@ public:
         for(int i = 0; i < nFrames; i++)
         {
             float theta = panv[i] * M_PI_4;
-            float gain_l = sqrt(2)/2 * (sin(theta) + cos(theta));
-            float gain_r = sqrt(2)/2 * (sin(theta) - cos(theta));
+            float gain_l = sqrt(2)/2 * abs(sin(theta) + cos(theta));
+            float gain_r = sqrt(2)/2 * abs(sin(theta) - cos(theta));
             
             m_outputBuffer[0][i] = inputv[i] * gain_l;
             m_outputBuffer[1][i] = inputv[i] * gain_r;
