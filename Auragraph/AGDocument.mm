@@ -20,7 +20,9 @@ static NSString *filenameForTitle(string title)
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
-    return [[basePath stringByAppendingPathComponent:[NSString stringWithCString:title.c_str() encoding:NSUTF8StringEncoding]] stringByAppendingPathExtension:@"json"];
+    return [[basePath stringByAppendingPathComponent:[NSString stringWithCString:title.c_str()
+                                                                        encoding:NSUTF8StringEncoding]]
+            stringByAppendingPathExtension:@"json"];
 }
 
 
@@ -249,6 +251,29 @@ void AGDocument::loadFromPath(const string &path)
                 
                 m_freedraws[f.uuid] = f;
             }
+            else if([object isEqualToString:@"name"])
+            {
+                m_name.clear();
+                NSArray *lines = dict[@"lines"];
+                if(!lines)
+                    continue;
+                m_name.resize([lines count]);
+                
+                for(int i = 0; i < [lines count]; i++)
+                {
+                    NSArray *line = lines[i];
+                    m_name[i].reserve([line count]);
+                    for(int j = 0; j < [line count]; j += 2)
+                    {
+                        if(j+1 < [line count])
+                        {
+                            float x = [line[j] floatValue];
+                            float y = [line[j+1] floatValue];
+                            m_name[i].push_back(GLvertex2f(x,y));
+                        }
+                    }
+                }
+            }
             else
             {
                 NSLog(@"AGDocument::load: error: unhandled object '%@'", object);
@@ -354,7 +379,7 @@ void AGDocument::saveToPath(const std::string &path) const
                           @"dstPort": [NSString stringWithFormat:@"%i", conn.dstPort],
                           }
                 forKey:[NSString stringWithSTLString:uuid]];
-    };
+    }
     
     for(const pair<const string, Freedraw> &val : m_freedraws)
     {
@@ -370,7 +395,9 @@ void AGDocument::saveToPath(const std::string &path) const
                           @"points": points,
                           }
                 forKey:[NSString stringWithSTLString:uuid]];
-    };
+    }
+    
+    
     
     NSData *data = [NSJSONSerialization dataWithJSONObject:doc
                                                    options:NSJSONWritingPrettyPrinted

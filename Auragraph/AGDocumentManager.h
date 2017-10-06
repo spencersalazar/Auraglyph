@@ -9,13 +9,20 @@
 #ifndef AGDocumentManager_h
 #define AGDocumentManager_h
 
-#include "AGDocument.h"
-
 #include "Geometry.h"
 
 #include <string>
 #include <vector>
 #include <list>
+
+
+class AGDocument;
+
+struct AGDocumentListing
+{
+    std::string filename;
+    std::vector<std::vector<GLvertex2f>> name;
+};
 
 
 class AGDocumentManager
@@ -24,20 +31,14 @@ public:
     
     static AGDocumentManager &instance();
     
-    struct DocumentListing
-    {
-        std::string filename;
-        std::vector<std::vector<GLvertex2f>> name;
-    };
-    
     std::string save(const std::vector<std::vector<GLvertex2f>> &, const AGDocument &);
     void update(const std::string &, const AGDocument &);
     AGDocument load(const std::string &);
-    const std::vector<DocumentListing> &list();
+    const std::vector<AGDocumentListing> &list();
     
 private:
     
-    std::vector<DocumentListing> *m_list;
+    std::vector<AGDocumentListing> *m_list;
     
     void _loadList();
     void _saveList();

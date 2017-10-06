@@ -9,6 +9,7 @@
 #include "AGDocumentManager.h"
 #include "NSString+STLString.h"
 #include "sputil.h"
+#include "AGDocument.h"
 
 
 std::string documentLibraryPath()
@@ -62,7 +63,7 @@ AGDocument AGDocumentManager::load(const std::string &filename)
     return std::move(doc);
 }
 
-const std::vector<AGDocumentManager::DocumentListing> &AGDocumentManager::list()
+const std::vector<AGDocumentListing> &AGDocumentManager::list()
 {
     _loadList();
     return *m_list;
@@ -77,7 +78,7 @@ void AGDocumentManager::_loadList()
         if(![[NSFileManager defaultManager] fileExistsAtPath:libraryPath])
         {
             // library file doesn't exist - use default (empty) library
-            m_list = new std::vector<DocumentListing>;
+            m_list = new std::vector<AGDocumentListing>;
             return;
         }
         
@@ -112,7 +113,7 @@ void AGDocumentManager::_loadList()
             return;
         }
         
-        auto list = new std::vector<DocumentListing>;
+        auto list = new std::vector<AGDocumentListing>;
         
         for(NSDictionary *fileObj in listObj)
         {

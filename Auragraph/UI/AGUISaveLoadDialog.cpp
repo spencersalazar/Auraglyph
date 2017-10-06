@@ -197,7 +197,7 @@ private:
     GLvertex3f m_lastTouch;
     int m_selection;
     
-    const std::vector<AGDocumentManager::DocumentListing> &m_documentList;
+    const std::vector<AGDocumentListing> &m_documentList;
     
     std::function<void (const std::string &file, AGDocument &doc)> m_onLoad;
     

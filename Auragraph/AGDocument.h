@@ -9,6 +9,8 @@
 #ifndef __Auragraph__AGDocument__
 #define __Auragraph__AGDocument__
 
+#include "AGDocumentManager.h"
+
 #include <string>
 #include <map>
 #include <vector>
@@ -104,6 +106,9 @@ public:
     void updateFreedraw(const string &uuid, const Freedraw &update);
     void removeFreedraw(const string &uuid);
     
+    void setName(const vector<vector<GLvertex2f>> &name) { m_name = name; }
+    const vector<vector<GLvertex2f>> &name() const { return m_name; }
+    
 //    static Node makeNode(AGAudioNode *);
 //    static Node makeNode(AGControlNode *);
 //    static Connection makeConnection(AGConnection *);
@@ -113,6 +118,7 @@ public:
     
 private:
     string m_title;
+    vector<vector<GLvertex2f>> m_name;
     map<string, Node> m_nodes;
     map<string, Connection> m_connections;
     map<string, Freedraw> m_freedraws;
