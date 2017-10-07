@@ -276,6 +276,13 @@ static AGViewController * g_instance = nil;
     [jsonData writeToFile:nodeInfoPath atomically:YES];
     
 #endif // AG_EXPORT_NODES
+    
+    // force document list load
+    (void) AGDocumentManager::instance().list();
+    std::string filename = "jawharp.json";
+    AGDocument doc = AGDocumentManager::instance().load(_currentDocumentFilename);
+    _currentDocumentFilename = filename;
+    [self _loadDocument:doc];
 }
 
 - (void)initUI
