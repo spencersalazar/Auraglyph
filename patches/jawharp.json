@@ -1,448 +1,30 @@
 {
-  "13C1FD0E-35E5-4EA3-8A69-C210FE55DEEC" : {
-    "x" : 33.34034,
+  "B42B31C4-8886-4294-B176-2C44BEBD0624" : {
+    "x" : -181.2583,
     "outbound" : [
-
-    ],
-    "type" : "SquareWave",
-    "y" : -171.9882,
-    "object" : "node",
-    "z" : 0,
-    "class" : 0,
-    "params" : {
-      "gain" : {
-        "type" : "float",
-        "value" : 6.760541
-      },
-      "width" : {
-        "type" : "float",
-        "value" : 0.566
-      },
-      "freq" : {
-        "type" : "float",
-        "value" : 0.644603
-      }
-    },
-    "inbound" : [
-      {
-        "srcPort" : 0,
-        "dstPort" : "freq",
-        "uuid" : "55AF308A-4CF0-4B33-BA23-9F7791193805",
-        "src" : "52FA5071-80B4-489D-B2EB-A857FC9DD64C"
-      }
-    ]
-  },
-  "34364830-DB2C-4D7E-906C-50D5D0AB6533" : {
-    "x" : 923.1371,
-    "outbound" : [
-
-    ],
-    "type" : "random",
-    "y" : -739.6949,
-    "object" : "node",
-    "z" : 0,
-    "class" : 1,
-    "params" : {
-
-    },
-    "inbound" : [
-
-    ]
-  },
-  "02492763-956F-40E2-A3B7-0A460E0F213C" : {
-    "x" : 893.7789,
-    "outbound" : [
-
-    ],
-    "type" : "Output",
-    "y" : -25.44349,
-    "object" : "node",
-    "z" : 0,
-    "class" : 0,
-    "params" : {
-      "gain" : {
-        "type" : "float",
-        "value" : 1.0
-      }
-    },
-    "inbound" : [
-      {
-        "srcPort" : 0,
-        "dstPort" : "right",
-        "uuid" : "ED508E37-6ED5-4C5B-8918-4DCF84F7C811",
-        "src" : "CFB4015E-087A-44BC-BFFB-C4F1FB18E5A9"
-      },
-      {
-        "srcPort" : 0,
-        "dstPort" : "left",
-        "uuid" : "4C9C2870-C239-47D2-93F5-032713D1F642",
-        "src" : "FCC518D9-4958-4189-A797-FB0E01C381EE"
-      }
-    ]
-  },
-  "0C8F1774-421F-4965-826A-A51424EFA381" : {
-    "x" : 410.0017,
-    "outbound" : [
-      {
-        "srcPort" : 0,
-        "dstPort" : "input",
-        "uuid" : "BAB58B83-09B4-436D-8BBA-C9AE201A06EF",
-        "dst" : "FCC518D9-4958-4189-A797-FB0E01C381EE"
-      },
-      {
-        "srcPort" : 0,
-        "dstPort" : "gain",
-        "uuid" : "A804EAB1-C120-4FA4-B641-2E2C208322E7",
-        "dst" : "CFB4015E-087A-44BC-BFFB-C4F1FB18E5A9"
-      }
-    ],
-    "type" : "SineWave",
-    "y" : -16.0498,
-    "object" : "node",
-    "z" : 0,
-    "class" : 0,
-    "params" : {
-      "gain" : {
-        "type" : "float",
-        "value" : 21.67
-      },
-      "freq" : {
-        "type" : "float",
-        "value" : 868.8773
-      }
-    },
-    "inbound" : [
       {
         "srcPort" : 2,
         "dstPort" : "phase",
-        "uuid" : "441000AF-594B-4B75-B4B1-C2F051C47A35",
-        "src" : "B42B31C4-8886-4294-B176-2C44BEBD0624"
-      },
-      {
-        "srcPort" : 0,
-        "dstPort" : "freq",
-        "uuid" : "B0F90615-63B7-4F64-ABE4-5A809D01DA1B",
-        "src" : "CFB4015E-087A-44BC-BFFB-C4F1FB18E5A9"
-      }
-    ]
-  },
-  "D3EC933B-2911-489D-BD46-5CB9F2F38B30" : {
-    "x" : -327.3267,
-    "outbound" : [
-      {
-        "srcPort" : 2,
-        "dstPort" : "mult",
-        "uuid" : "81B4F7CE-59C9-4AD9-A5D8-A5D7655214CD",
-        "dst" : "52FA5071-80B4-489D-B2EB-A857FC9DD64C"
-      },
-      {
-        "srcPort" : 0,
-        "dstPort" : "input",
-        "uuid" : "A09EB4C5-505E-4E0D-8046-82CD4408316E",
-        "dst" : "345A61FD-3C00-4A4B-B812-7DA675B1F0F0"
-      },
-      {
-        "srcPort" : 0,
-        "dstPort" : "mult",
-        "uuid" : "13FC0D6E-939F-4264-AE38-1ED4EF8115CA",
-        "dst" : "52FA5071-80B4-489D-B2EB-A857FC9DD64C"
-      }
-    ],
-    "type" : "Orientation",
-    "y" : -620.5359,
-    "object" : "node",
-    "z" : 0,
-    "class" : 1,
-    "params" : {
-      "rate" : {
-        "type" : "float",
-        "value" : 60
-      }
-    },
-    "inbound" : [
-
-    ]
-  },
-  "CFB4015E-087A-44BC-BFFB-C4F1FB18E5A9" : {
-    "x" : 660.0273,
-    "outbound" : [
-      {
-        "srcPort" : 0,
-        "dstPort" : "freq",
-        "uuid" : "B0F90615-63B7-4F64-ABE4-5A809D01DA1B",
+        "uuid" : "A686F334-DEAB-49FB-B871-7D613C2280EA",
         "dst" : "0C8F1774-421F-4965-826A-A51424EFA381"
       },
       {
-        "srcPort" : 0,
-        "dstPort" : "right",
-        "uuid" : "ED508E37-6ED5-4C5B-8918-4DCF84F7C811",
-        "dst" : "02492763-956F-40E2-A3B7-0A460E0F213C"
+        "srcPort" : 1,
+        "dstPort" : "mult",
+        "uuid" : "36FFA5AC-8772-476A-A760-2613141F94EC",
+        "dst" : "917C45DE-900B-4C53-BDEC-EFBD8EE4D615"
       }
     ],
-    "type" : "SineWave",
-    "y" : -565.0722,
-    "object" : "node",
-    "z" : 0,
-    "class" : 0,
-    "params" : {
-      "gain" : {
-        "type" : "float",
-        "value" : 5.000011
-      },
-      "freq" : {
-        "type" : "float",
-        "value" : 0.4884751
-      }
-    },
-    "inbound" : [
-      {
-        "srcPort" : 0,
-        "dstPort" : "gain",
-        "uuid" : "A804EAB1-C120-4FA4-B641-2E2C208322E7",
-        "src" : "0C8F1774-421F-4965-826A-A51424EFA381"
-      },
-      {
-        "srcPort" : 0,
-        "dstPort" : "freq",
-        "uuid" : "78A554B9-BFB7-4EA6-9E68-4369507A81E7",
-        "src" : "345A61FD-3C00-4A4B-B812-7DA675B1F0F0"
-      },
-      {
-        "srcPort" : 0,
-        "dstPort" : "gain",
-        "uuid" : "0E124122-EE77-4B0A-829D-8F00353CE6D3",
-        "src" : "2A283ECD-3FA1-4DB8-B662-3FE20B45AA51"
-      }
-    ]
-  },
-  "106CBF86-ABB1-4110-A046-03A6E7E2DFDF" : {
-    "x" : 907.996,
-    "outbound" : [
-
-    ],
-    "type" : "SquareWave",
-    "y" : -721.5046,
-    "object" : "node",
-    "z" : 0,
-    "class" : 0,
-    "params" : {
-      "gain" : {
-        "type" : "float",
-        "value" : 336.0625
-      },
-      "width" : {
-        "type" : "float",
-        "value" : 0.1110004
-      },
-      "freq" : {
-        "type" : "float",
-        "value" : 0.1138487
-      }
-    },
-    "inbound" : [
-
-    ]
-  },
-  "48F704B7-C0D8-4001-9151-6E10E10CE12C" : {
-    "x" : 948.5527,
-    "outbound" : [
-
-    ],
-    "type" : "slew",
-    "y" : -731.13,
+    "type" : "Orientation",
+    "y" : 248.3982,
     "object" : "node",
     "z" : 0,
     "class" : 1,
     "params" : {
       "rate" : {
         "type" : "float",
-        "value" : 0.008769354
+        "value" : 100
       }
-    },
-    "inbound" : [
-
-    ]
-  },
-  "917C45DE-900B-4C53-BDEC-EFBD8EE4D615" : {
-    "x" : 150.1006,
-    "outbound" : [
-      {
-        "srcPort" : 0,
-        "dstPort" : "Q",
-        "uuid" : "6400705B-5BF5-4E98-8D4C-CB41CBE19CE3",
-        "dst" : "345A61FD-3C00-4A4B-B812-7DA675B1F0F0"
-      }
-    ],
-    "type" : "Multiply",
-    "y" : 248.2358,
-    "object" : "node",
-    "z" : 0,
-    "class" : 1,
-    "params" : {
-      "mult" : {
-        "type" : "float",
-        "value" : 88.6
-      }
-    },
-    "inbound" : [
-      {
-        "srcPort" : 1,
-        "dstPort" : "mult",
-        "uuid" : "9EC72AB5-6E9A-4F7B-B052-2F5F4D1A2227",
-        "src" : "B42B31C4-8886-4294-B176-2C44BEBD0624"
-      }
-    ]
-  },
-  "52FA5071-80B4-489D-B2EB-A857FC9DD64C" : {
-    "x" : -50.06876,
-    "outbound" : [
-      {
-        "srcPort" : 0,
-        "dstPort" : "input",
-        "uuid" : "4BC810CE-53EA-401E-A115-A95410CE19B8",
-        "dst" : "2A283ECD-3FA1-4DB8-B662-3FE20B45AA51"
-      },
-      {
-        "srcPort" : 0,
-        "dstPort" : "freq",
-        "uuid" : "55AF308A-4CF0-4B33-BA23-9F7791193805",
-        "dst" : "13C1FD0E-35E5-4EA3-8A69-C210FE55DEEC"
-      }
-    ],
-    "type" : "Multiply",
-    "y" : -616.0061,
-    "object" : "node",
-    "z" : 0,
-    "class" : 1,
-    "params" : {
-      "mult" : {
-        "type" : "float",
-        "value" : 93.77783
-      }
-    },
-    "inbound" : [
-      {
-        "srcPort" : 2,
-        "dstPort" : "mult",
-        "uuid" : "81B4F7CE-59C9-4AD9-A5D8-A5D7655214CD",
-        "src" : "D3EC933B-2911-489D-BD46-5CB9F2F38B30"
-      },
-      {
-        "srcPort" : 0,
-        "dstPort" : "mult",
-        "uuid" : "13FC0D6E-939F-4264-AE38-1ED4EF8115CA",
-        "src" : "D3EC933B-2911-489D-BD46-5CB9F2F38B30"
-      }
-    ]
-  },
-  "83C17D16-54AB-4F4D-975D-E4B1726BE07E" : {
-    "x" : -437.8784,
-    "outbound" : [
-
-    ],
-    "type" : "MIDI CC In",
-    "y" : -196.8742,
-    "object" : "node",
-    "z" : 0,
-    "class" : 1,
-    "params" : {
-      "Learn" : {
-        "type" : "float",
-        "value" : 0
-      },
-      "CC num" : {
-        "type" : "float",
-        "value" : -1
-      },
-      "Channel" : {
-        "type" : "float",
-        "value" : 0
-      }
-    },
-    "inbound" : [
-
-    ]
-  },
-  "345A61FD-3C00-4A4B-B812-7DA675B1F0F0" : {
-    "x" : 235.9198,
-    "outbound" : [
-      {
-        "srcPort" : 0,
-        "dstPort" : "freq",
-        "uuid" : "78A554B9-BFB7-4EA6-9E68-4369507A81E7",
-        "dst" : "CFB4015E-087A-44BC-BFFB-C4F1FB18E5A9"
-      }
-    ],
-    "type" : "BandPass",
-    "y" : -227.8839,
-    "object" : "node",
-    "z" : 0,
-    "class" : 0,
-    "params" : {
-      "Q" : {
-        "type" : "float",
-        "value" : 10.60002
-      },
-      "gain" : {
-        "type" : "float",
-        "value" : 1.660065
-      },
-      "freq" : {
-        "type" : "float",
-        "value" : 7.40009
-      }
-    },
-    "inbound" : [
-      {
-        "srcPort" : 0,
-        "dstPort" : "Q",
-        "uuid" : "6400705B-5BF5-4E98-8D4C-CB41CBE19CE3",
-        "src" : "917C45DE-900B-4C53-BDEC-EFBD8EE4D615"
-      },
-      {
-        "srcPort" : 0,
-        "dstPort" : "input",
-        "uuid" : "A09EB4C5-505E-4E0D-8046-82CD4408316E",
-        "src" : "D3EC933B-2911-489D-BD46-5CB9F2F38B30"
-      }
-    ]
-  },
-  "8C7C2578-1746-4F78-8744-05AE80F74B66" : {
-    "x" : 910.291,
-    "outbound" : [
-
-    ],
-    "type" : "TriWave",
-    "y" : -714.4528,
-    "object" : "node",
-    "z" : 0,
-    "class" : 0,
-    "params" : {
-      "gain" : {
-        "type" : "float",
-        "value" : 6.570031
-      },
-      "freq" : {
-        "type" : "float",
-        "value" : 0.7234926
-      }
-    },
-    "inbound" : [
-
-    ]
-  },
-  "9DE9CDE4-FE46-406A-A2BC-5A5AC79ADB47" : {
-    "x" : 915.0817,
-    "outbound" : [
-
-    ],
-    "type" : "random",
-    "y" : -739.2344,
-    "object" : "node",
-    "z" : 0,
-    "class" : 1,
-    "params" : {
-
     },
     "inbound" : [
 
@@ -454,7 +36,7 @@
       {
         "srcPort" : 0,
         "dstPort" : "left",
-        "uuid" : "4C9C2870-C239-47D2-93F5-032713D1F642",
+        "uuid" : "EFF1D7DD-DEA1-472B-975B-6D1E5B681A17",
         "dst" : "02492763-956F-40E2-A3B7-0A460E0F213C"
       }
     ],
@@ -485,7 +67,283 @@
       {
         "srcPort" : 0,
         "dstPort" : "input",
-        "uuid" : "BAB58B83-09B4-436D-8BBA-C9AE201A06EF",
+        "uuid" : "8C467F51-E2D1-4A10-AA4A-84AEE2C449C2",
+        "src" : "0C8F1774-421F-4965-826A-A51424EFA381"
+      }
+    ]
+  },
+  "52FA5071-80B4-489D-B2EB-A857FC9DD64C" : {
+    "x" : -50.06876,
+    "outbound" : [
+      {
+        "srcPort" : 0,
+        "dstPort" : "input",
+        "uuid" : "C679C004-7CFC-450F-B4F3-5098B50AD557",
+        "dst" : "2A283ECD-3FA1-4DB8-B662-3FE20B45AA51"
+      }
+    ],
+    "type" : "Multiply",
+    "y" : -616.0061,
+    "object" : "node",
+    "z" : 0,
+    "class" : 1,
+    "params" : {
+      "mult" : {
+        "type" : "float",
+        "value" : 93.77783
+      }
+    },
+    "inbound" : [
+      {
+        "srcPort" : 0,
+        "dstPort" : "mult",
+        "uuid" : "8BE0D75F-5E31-494D-8DF7-15FB4060FA5A",
+        "src" : "D3EC933B-2911-489D-BD46-5CB9F2F38B30"
+      },
+      {
+        "srcPort" : 2,
+        "dstPort" : "mult",
+        "uuid" : "BAF9C5F9-9ACB-4148-8ECA-B1BE230127BA",
+        "src" : "D3EC933B-2911-489D-BD46-5CB9F2F38B30"
+      }
+    ]
+  },
+  "345A61FD-3C00-4A4B-B812-7DA675B1F0F0" : {
+    "x" : 235.9198,
+    "outbound" : [
+      {
+        "srcPort" : 0,
+        "dstPort" : "freq",
+        "uuid" : "55AA965C-2CEE-436C-8814-F6036170EA3D",
+        "dst" : "CFB4015E-087A-44BC-BFFB-C4F1FB18E5A9"
+      }
+    ],
+    "type" : "BandPass",
+    "y" : -227.8839,
+    "object" : "node",
+    "z" : 0,
+    "class" : 0,
+    "params" : {
+      "Q" : {
+        "type" : "float",
+        "value" : 10.60002
+      },
+      "gain" : {
+        "type" : "float",
+        "value" : 1.660065
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 7.40009
+      }
+    },
+    "inbound" : [
+      {
+        "srcPort" : 0,
+        "dstPort" : "Q",
+        "uuid" : "D7BE3385-83A4-4574-AAAC-FB7D23F0E903",
+        "src" : "917C45DE-900B-4C53-BDEC-EFBD8EE4D615"
+      },
+      {
+        "srcPort" : 0,
+        "dstPort" : "input",
+        "uuid" : "717869E1-04D8-4FCC-B59C-35BD1F96ACB6",
+        "src" : "D3EC933B-2911-489D-BD46-5CB9F2F38B30"
+      }
+    ]
+  },
+  "0C8F1774-421F-4965-826A-A51424EFA381" : {
+    "x" : 410.0017,
+    "outbound" : [
+      {
+        "srcPort" : 0,
+        "dstPort" : "gain",
+        "uuid" : "0E9A2702-943A-477B-90E9-5D7CCB94D932",
+        "dst" : "CFB4015E-087A-44BC-BFFB-C4F1FB18E5A9"
+      },
+      {
+        "srcPort" : 0,
+        "dstPort" : "input",
+        "uuid" : "8C467F51-E2D1-4A10-AA4A-84AEE2C449C2",
+        "dst" : "FCC518D9-4958-4189-A797-FB0E01C381EE"
+      }
+    ],
+    "type" : "SineWave",
+    "y" : -16.0498,
+    "object" : "node",
+    "z" : 0,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 21.67
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 868.8773
+      }
+    },
+    "inbound" : [
+      {
+        "srcPort" : 2,
+        "dstPort" : "phase",
+        "uuid" : "A686F334-DEAB-49FB-B871-7D613C2280EA",
+        "src" : "B42B31C4-8886-4294-B176-2C44BEBD0624"
+      },
+      {
+        "srcPort" : 0,
+        "dstPort" : "freq",
+        "uuid" : "D673AF25-BFE9-4592-8301-11DFAE412334",
+        "src" : "CFB4015E-087A-44BC-BFFB-C4F1FB18E5A9"
+      }
+    ]
+  },
+  "02492763-956F-40E2-A3B7-0A460E0F213C" : {
+    "x" : 893.7789,
+    "outbound" : [
+
+    ],
+    "type" : "Output",
+    "y" : -25.44349,
+    "object" : "node",
+    "z" : 0,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 1
+      }
+    },
+    "inbound" : [
+      {
+        "srcPort" : 0,
+        "dstPort" : "left",
+        "uuid" : "EFF1D7DD-DEA1-472B-975B-6D1E5B681A17",
+        "src" : "FCC518D9-4958-4189-A797-FB0E01C381EE"
+      },
+      {
+        "srcPort" : 0,
+        "dstPort" : "right",
+        "uuid" : "DA48D1E5-57F2-44E1-84F9-B3D12332383F",
+        "src" : "CFB4015E-087A-44BC-BFFB-C4F1FB18E5A9"
+      }
+    ]
+  },
+  "917C45DE-900B-4C53-BDEC-EFBD8EE4D615" : {
+    "x" : 150.1006,
+    "outbound" : [
+      {
+        "srcPort" : 0,
+        "dstPort" : "Q",
+        "uuid" : "D7BE3385-83A4-4574-AAAC-FB7D23F0E903",
+        "dst" : "345A61FD-3C00-4A4B-B812-7DA675B1F0F0"
+      }
+    ],
+    "type" : "Multiply",
+    "y" : 248.2358,
+    "object" : "node",
+    "z" : 0,
+    "class" : 1,
+    "params" : {
+      "mult" : {
+        "type" : "float",
+        "value" : 88.6
+      }
+    },
+    "inbound" : [
+      {
+        "srcPort" : 1,
+        "dstPort" : "mult",
+        "uuid" : "36FFA5AC-8772-476A-A760-2613141F94EC",
+        "src" : "B42B31C4-8886-4294-B176-2C44BEBD0624"
+      }
+    ]
+  },
+  "D3EC933B-2911-489D-BD46-5CB9F2F38B30" : {
+    "x" : -327.3267,
+    "outbound" : [
+      {
+        "srcPort" : 0,
+        "dstPort" : "mult",
+        "uuid" : "8BE0D75F-5E31-494D-8DF7-15FB4060FA5A",
+        "dst" : "52FA5071-80B4-489D-B2EB-A857FC9DD64C"
+      },
+      {
+        "srcPort" : 2,
+        "dstPort" : "mult",
+        "uuid" : "BAF9C5F9-9ACB-4148-8ECA-B1BE230127BA",
+        "dst" : "52FA5071-80B4-489D-B2EB-A857FC9DD64C"
+      },
+      {
+        "srcPort" : 0,
+        "dstPort" : "input",
+        "uuid" : "717869E1-04D8-4FCC-B59C-35BD1F96ACB6",
+        "dst" : "345A61FD-3C00-4A4B-B812-7DA675B1F0F0"
+      }
+    ],
+    "type" : "Orientation",
+    "y" : -620.5359,
+    "object" : "node",
+    "z" : 0,
+    "class" : 1,
+    "params" : {
+      "rate" : {
+        "type" : "float",
+        "value" : 60
+      }
+    },
+    "inbound" : [
+
+    ]
+  },
+  "CFB4015E-087A-44BC-BFFB-C4F1FB18E5A9" : {
+    "x" : 660.0273,
+    "outbound" : [
+      {
+        "srcPort" : 0,
+        "dstPort" : "freq",
+        "uuid" : "D673AF25-BFE9-4592-8301-11DFAE412334",
+        "dst" : "0C8F1774-421F-4965-826A-A51424EFA381"
+      },
+      {
+        "srcPort" : 0,
+        "dstPort" : "right",
+        "uuid" : "DA48D1E5-57F2-44E1-84F9-B3D12332383F",
+        "dst" : "02492763-956F-40E2-A3B7-0A460E0F213C"
+      }
+    ],
+    "type" : "SineWave",
+    "y" : -565.0722,
+    "object" : "node",
+    "z" : 0,
+    "class" : 0,
+    "params" : {
+      "gain" : {
+        "type" : "float",
+        "value" : 5.000011
+      },
+      "freq" : {
+        "type" : "float",
+        "value" : 0.4884751
+      }
+    },
+    "inbound" : [
+      {
+        "srcPort" : 0,
+        "dstPort" : "gain",
+        "uuid" : "205A33B9-CD61-4463-B662-FF7EE3BCD05D",
+        "src" : "2A283ECD-3FA1-4DB8-B662-3FE20B45AA51"
+      },
+      {
+        "srcPort" : 0,
+        "dstPort" : "freq",
+        "uuid" : "55AA965C-2CEE-436C-8814-F6036170EA3D",
+        "src" : "345A61FD-3C00-4A4B-B812-7DA675B1F0F0"
+      },
+      {
+        "srcPort" : 0,
+        "dstPort" : "gain",
+        "uuid" : "0E9A2702-943A-477B-90E9-5D7CCB94D932",
         "src" : "0C8F1774-421F-4965-826A-A51424EFA381"
       }
     ]
@@ -496,7 +354,7 @@
       {
         "srcPort" : 0,
         "dstPort" : "gain",
-        "uuid" : "0E124122-EE77-4B0A-829D-8F00353CE6D3",
+        "uuid" : "205A33B9-CD61-4463-B662-FF7EE3BCD05D",
         "dst" : "CFB4015E-087A-44BC-BFFB-C4F1FB18E5A9"
       }
     ],
@@ -515,40 +373,9 @@
       {
         "srcPort" : 0,
         "dstPort" : "input",
-        "uuid" : "4BC810CE-53EA-401E-A115-A95410CE19B8",
+        "uuid" : "C679C004-7CFC-450F-B4F3-5098B50AD557",
         "src" : "52FA5071-80B4-489D-B2EB-A857FC9DD64C"
       }
-    ]
-  },
-  "B42B31C4-8886-4294-B176-2C44BEBD0624" : {
-    "x" : -181.2583,
-    "outbound" : [
-      {
-        "srcPort" : 2,
-        "dstPort" : "phase",
-        "uuid" : "441000AF-594B-4B75-B4B1-C2F051C47A35",
-        "dst" : "0C8F1774-421F-4965-826A-A51424EFA381"
-      },
-      {
-        "srcPort" : 1,
-        "dstPort" : "mult",
-        "uuid" : "9EC72AB5-6E9A-4F7B-B052-2F5F4D1A2227",
-        "dst" : "917C45DE-900B-4C53-BDEC-EFBD8EE4D615"
-      }
-    ],
-    "type" : "Orientation",
-    "y" : 248.3982,
-    "object" : "node",
-    "z" : 0,
-    "class" : 1,
-    "params" : {
-      "rate" : {
-        "type" : "float",
-        "value" : 100
-      }
-    },
-    "inbound" : [
-
     ]
   }
 }
