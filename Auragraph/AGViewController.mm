@@ -283,6 +283,9 @@ static AGViewController * g_instance = nil;
     AGDocument doc = AGDocumentManager::instance().load(_currentDocumentFilename);
     _currentDocumentFilename = filename;
     [self _loadDocument:doc];
+    
+    _camera = GLvertex3f(-373.860474, 155.207504, -7.190781);
+    _cameraZ.reset(-63.490803);
 }
 
 - (void)initUI
@@ -1080,7 +1083,6 @@ static AGViewController * g_instance = nil;
                 GLvertex3f pos_1 = [self worldCoordinateForScreenCoordinate:centroid_1];
                 
                 _camera = _camera + (pos.xy() - pos_1.xy());
-                dbgprint_off("camera: %f, %f, %f\n", _camera.x, _camera.y, _camera.z);
                 
                 float dist = GLvertex2f(p1).distanceTo(GLvertex2f(p2));
                 float dist_1 = GLvertex2f(p1_1).distanceTo(GLvertex2f(p2_1));
@@ -1096,6 +1098,8 @@ static AGViewController * g_instance = nil;
                     float zoom = (dist - dist_1);
                     _cameraZ += zoom;
                 }
+                
+                dbgprint("camera: %f, %f, %f\n", _camera.x, _camera.y, (float) _cameraZ);
             }
         }
     }
