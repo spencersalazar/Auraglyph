@@ -31,7 +31,7 @@ std::string bundleDirectory()
 }
 
 
-const std::string g_hardcodedFiles[] = { "jawharp.json" };
+const char *g_hardcodedFile = "jawharp.json";
 
 
 AGDocumentManager &AGDocumentManager::instance()
@@ -83,47 +83,35 @@ void AGDocumentManager::_loadList()
     {
         NSFileManager *fileManager = [NSFileManager defaultManager];
         
-        // load pre-packaged patches
+        // load pre-packaged patch
         auto list = new std::vector<DocumentListing>;
         
-        int numHardcoded = sizeof(g_hardcodedFiles)/sizeof(std::string);
-        for(int i = 0; i < numHardcoded; i++)
         {
-            NSLog(@"loading hardcoded file %s", g_hardcodedFiles[i].c_str());
+            NSLog(@"loading hardcoded file %s", g_hardcodedFile);
             
-            std::string srcFilepath = bundleDirectory() + "/" + g_hardcodedFiles[i];
-            std::string dstFilename = g_hardcodedFiles[i];
-            NSString *dstFilePath = [NSString stringWithSTLString:dstFilename];
+            std::string srcFilepath = bundleDirectory() + "/" + g_hardcodedFile;
+            std::string dstFilename = g_hardcodedFile;
+            NSString *dstFilePath = [NSString stringWithSTLString:(documentDirectory() + "/" + dstFilename)];
             
-            NSError *error;
+            NSError *error = nil;
+            [fileManager removeItemAtPath:dstFilePath error:&error];
             
-            if([fileManager fileExistsAtPath:dstFilePath])
-            {
-                [fileManager removeItemAtPath:dstFilePath error:&error];
-                if(error)
-                {
-                    NSLog(@"AGDocumentManager::_loadList: error: %@", error.localizedDescription);
-                    continue;
-                }
-            }
-            
+            error = nil;
             [fileManager copyItemAtPath:[NSString stringWithSTLString:srcFilepath]
                                  toPath:dstFilePath
                                   error:&error];
             if(error)
             {
                 NSLog(@"AGDocumentManager::_loadList: error: %@", error.localizedDescription);
-                continue;
             }
             
             std::vector<std::vector<GLvertex2f>> name;
             
             list->push_back({dstFilename, name});
         }
-        
-        if(numHardcoded)
-            m_list = list;
-        
+
+        m_list = list;
+    
         NSString *libraryPath = [NSString stringWithSTLString:documentLibraryPath()];
         
         if(![fileManager fileExistsAtPath:libraryPath])
