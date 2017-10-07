@@ -24,6 +24,15 @@ std::string documentDirectory()
     return [documentPath stlString];
 }
 
+std::string bundleDirectory()
+{
+    NSString *bundlePath = [[NSBundle mainBundle] resourcePath];
+    return [bundlePath stlString];
+}
+
+
+const std::string g_hardcodedFiles[] = { "jawharp.json" };
+
 
 AGDocumentManager &AGDocumentManager::instance()
 {
@@ -72,12 +81,54 @@ void AGDocumentManager::_loadList()
 {
     if(m_list == NULL)
     {
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        
+        // load pre-packaged patches
+        auto list = new std::vector<DocumentListing>;
+        
+        int numHardcoded = sizeof(g_hardcodedFiles)/sizeof(std::string);
+        for(int i = 0; i < numHardcoded; i++)
+        {
+            NSLog(@"loading hardcoded file %s", g_hardcodedFiles[i].c_str());
+            
+            std::string srcFilepath = bundleDirectory() + "/" + g_hardcodedFiles[i];
+            std::string dstFilename = g_hardcodedFiles[i];
+            NSString *dstFilePath = [NSString stringWithSTLString:dstFilename];
+            
+            NSError *error;
+            
+            if([fileManager fileExistsAtPath:dstFilePath])
+            {
+                [fileManager removeItemAtPath:dstFilePath error:&error];
+                if(error)
+                {
+                    NSLog(@"AGDocumentManager::_loadList: error: %@", error.localizedDescription);
+                    continue;
+                }
+            }
+            
+            [fileManager copyItemAtPath:[NSString stringWithSTLString:srcFilepath]
+                                 toPath:dstFilePath
+                                  error:&error];
+            if(error)
+            {
+                NSLog(@"AGDocumentManager::_loadList: error: %@", error.localizedDescription);
+                continue;
+            }
+            
+            std::vector<std::vector<GLvertex2f>> name;
+            
+            list->push_back({dstFilename, name});
+        }
+        
+        if(numHardcoded)
+            m_list = list;
+        
         NSString *libraryPath = [NSString stringWithSTLString:documentLibraryPath()];
         
-        if(![[NSFileManager defaultManager] fileExistsAtPath:libraryPath])
+        if(![fileManager fileExistsAtPath:libraryPath])
         {
             // library file doesn't exist - use default (empty) library
-            m_list = new std::vector<DocumentListing>;
             return;
         }
         
@@ -111,8 +162,6 @@ void AGDocumentManager::_loadList()
             NSLog(@"error: deserializing document list");
             return;
         }
-        
-        auto list = new std::vector<DocumentListing>;
         
         for(NSDictionary *fileObj in listObj)
         {

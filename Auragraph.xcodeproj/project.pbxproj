@@ -13,6 +13,7 @@
 		09030CEB1EFEF83D00D4A4F2 /* Signal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09030CE91EFEF83D00D4A4F2 /* Signal.cpp */; };
 		09030CF11EFEFEFB00D4A4F2 /* AGMenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09030CEF1EFEFEFB00D4A4F2 /* AGMenu.cpp */; };
 		091081801A0B63DB0063028B /* AGStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0910817E1A0B63DB0063028B /* AGStyle.mm */; };
+		091C0CC61F884F2800441B2E /* jawharp.json in Resources */ = {isa = PBXBuildFile; fileRef = 091C0CC51F884F2800441B2E /* jawharp.json */; };
 		091C70CC1C48A9A600B513C2 /* AGUINodeEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */; };
 		09230FB31F3D8C9500DF06B5 /* AGAboutBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 093395781A0A3785009E4802 /* AGAboutBox.cpp */; };
 		09230FFA1F41868A00DF06B5 /* AGArrayNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09230FF31F41868A00DF06B5 /* AGArrayNode.mm */; };
@@ -198,6 +199,7 @@
 		09077FD117C0BFFA00DFE42F /* AGDef.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGDef.h; sourceTree = "<group>"; };
 		0910817E1A0B63DB0063028B /* AGStyle.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGStyle.mm; sourceTree = "<group>"; };
 		0910817F1A0B63DB0063028B /* AGStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGStyle.h; sourceTree = "<group>"; };
+		091C0CC51F884F2800441B2E /* jawharp.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = jawharp.json; sourceTree = "<group>"; };
 		091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGUINodeEditor.mm; sourceTree = "<group>"; };
 		091C70CB1C48A9A600B513C2 /* AGUINodeEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGUINodeEditor.h; sourceTree = "<group>"; };
 		09230FBD1F3FEC5700DF06B5 /* AGAudioAddNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioAddNode.cpp; sourceTree = "<group>"; };
@@ -570,6 +572,15 @@
 			path = UI;
 			sourceTree = "<group>";
 		};
+		091C0CC31F884D9900441B2E /* patches */ = {
+			isa = PBXGroup;
+			children = (
+				091C0CC51F884F2800441B2E /* jawharp.json */,
+			);
+			name = patches;
+			path = ../patches;
+			sourceTree = "<group>";
+		};
 		09230FB91F3FDE3700DF06B5 /* Audio */ = {
 			isa = PBXGroup;
 			children = (
@@ -692,6 +703,7 @@
 		095D12CD17ACA36C0048A012 /* Auragraph */ = {
 			isa = PBXGroup;
 			children = (
+				091C0CC31F884D9900441B2E /* patches */,
 				095E853017B358FC0065EF8E /* shaperectst.h */,
 				09077FD117C0BFFA00DFE42F /* AGDef.h */,
 				095E852F17B358FC0065EF8E /* shaperectst.mm */,
@@ -1153,6 +1165,7 @@
 			files = (
 				09C7C3E618CF2B8E0099CE88 /* Waveform.vsh in Resources */,
 				09C7C3E718CF2B8E0099CE88 /* Waveform.fsh in Resources */,
+				091C0CC61F884F2800441B2E /* jawharp.json in Resources */,
 				0989132118A0870000AB98AD /* TexFont.fsh in Resources */,
 				0989132218A0870000AB98AD /* Screen.fsh in Resources */,
 				0989132318A0870000AB98AD /* Clip.fsh in Resources */,
