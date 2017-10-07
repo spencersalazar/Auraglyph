@@ -33,6 +33,7 @@
 #import "NSString+STLString.h"
 #import "AGPGMidiContext.h"
 #import "AGGraphManager.h"
+#import "AGUINodeEditor.h"
 
 #import <list>
 #import <map>
@@ -278,14 +279,57 @@ static AGViewController * g_instance = nil;
 #endif // AG_EXPORT_NODES
     
     // force document list load
-    (void) AGDocumentManager::instance().list();
-    std::string filename = "jawharp.json";
-    AGDocument doc = AGDocumentManager::instance().load(_currentDocumentFilename);
+    std::string filename = AGDocumentManager::instance().list()[0].filename;
+    AGDocument doc = AGDocumentManager::instance().load(filename);
     _currentDocumentFilename = filename;
     [self _loadDocument:doc];
     
-    _camera = GLvertex3f(-373.860474, 155.207504, -7.190781);
-    _cameraZ.reset(-63.490803);
+    AGNode *node;
+    
+    node = [self nodeWithUUID:"CFB4015E-087A-44BC-BFFB-C4F1FB18E5A9"];
+    if(node)
+    {
+        AGUINodeEditor *nodeEditor = node->createCustomEditor();
+        if(nodeEditor == NULL)
+        {
+            nodeEditor = new AGUIStandardNodeEditor(node);
+            nodeEditor->init();
+            nodeEditor->pin();
+        }
+        
+        [self addTopLevelObject:nodeEditor over:NULL];
+    }
+    
+    node = [self nodeWithUUID:"0C8F1774-421F-4965-826A-A51424EFA381"];
+    if(node)
+    {
+        AGUINodeEditor *nodeEditor = node->createCustomEditor();
+        if(nodeEditor == NULL)
+        {
+            nodeEditor = new AGUIStandardNodeEditor(node);
+            nodeEditor->init();
+            nodeEditor->pin();
+        }
+        
+        [self addTopLevelObject:nodeEditor over:NULL];
+    }
+    
+    node = [self nodeWithUUID:"FCC518D9-4958-4189-A797-FB0E01C381EE"];
+    if(node)
+    {
+        AGUINodeEditor *nodeEditor = node->createCustomEditor();
+        if(nodeEditor == NULL)
+        {
+            nodeEditor = new AGUIStandardNodeEditor(node);
+            nodeEditor->init();
+            nodeEditor->pin();
+        }
+        
+        [self addTopLevelObject:nodeEditor over:NULL];
+    }
+    
+    _camera = GLvertex3f(-463.459229, 109.457565, 0);
+    _cameraZ.reset(-51.217022);
 }
 
 - (void)initUI
