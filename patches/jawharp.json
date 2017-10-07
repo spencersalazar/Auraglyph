@@ -62,7 +62,7 @@
     "params" : {
       "gain" : {
         "type" : "float",
-        "value" : 0.009496467
+        "value" : 1.0
       }
     },
     "inbound" : [
