@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "095D12BF17ACA36C0048A012"
-               BuildableName = "AURAGLPH.app"
-               BlueprintName = "Auragraph"
+               BuildableName = "Auraglyph.app"
+               BlueprintName = "Auraglyph"
                ReferencedContainer = "container:Auragraph.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -33,8 +33,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "095D12BF17ACA36C0048A012"
-            BuildableName = "AURAGLPH.app"
-            BlueprintName = "Auragraph"
+            BuildableName = "Auraglyph.app"
+            BlueprintName = "Auraglyph"
             ReferencedContainer = "container:Auragraph.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -56,8 +56,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "095D12BF17ACA36C0048A012"
-            BuildableName = "AURAGLPH.app"
-            BlueprintName = "Auragraph"
+            BuildableName = "Auraglyph.app"
+            BlueprintName = "Auraglyph"
             ReferencedContainer = "container:Auragraph.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -75,8 +75,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "095D12BF17ACA36C0048A012"
-            BuildableName = "AURAGLPH.app"
-            BlueprintName = "Auragraph"
+            BuildableName = "Auraglyph.app"
+            BlueprintName = "Auraglyph"
             ReferencedContainer = "container:Auragraph.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

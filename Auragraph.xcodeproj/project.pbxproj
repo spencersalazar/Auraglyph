@@ -280,7 +280,7 @@
 		0944E8C51DCB325D00EB8087 /* AGAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAnalytics.h; sourceTree = "<group>"; };
 		095786171F031ED800286358 /* AGDashboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGDashboard.cpp; sourceTree = "<group>"; };
 		095786181F031ED800286358 /* AGDashboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGDashboard.h; sourceTree = "<group>"; };
-		095D12C017ACA36C0048A012 /* AURAGLPH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AURAGLPH.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		095D12C017ACA36C0048A012 /* AURAGLPH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = AURAGLPH.app; path = Auraglyph.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		095D12C317ACA36C0048A012 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		095D12C517ACA36C0048A012 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		095D12C717ACA36C0048A012 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -1071,9 +1071,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		095D12BF17ACA36C0048A012 /* Auragraph */ = {
+		095D12BF17ACA36C0048A012 /* Auraglyph */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 095D12EB17ACA36C0048A012 /* Build configuration list for PBXNativeTarget "Auragraph" */;
+			buildConfigurationList = 095D12EB17ACA36C0048A012 /* Build configuration list for PBXNativeTarget "Auraglyph" */;
 			buildPhases = (
 				095D12BC17ACA36C0048A012 /* Sources */,
 				095D12BD17ACA36C0048A012 /* Frameworks */,
@@ -1085,7 +1085,7 @@
 			dependencies = (
 				09EE673D1EFDB72F00B4ED62 /* PBXTargetDependency */,
 			);
-			name = Auragraph;
+			name = Auraglyph;
 			productName = Auragraph;
 			productReference = 095D12C017ACA36C0048A012 /* AURAGLPH.app */;
 			productType = "com.apple.product-type.application";
@@ -1124,7 +1124,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				095D12BF17ACA36C0048A012 /* Auragraph */,
+				095D12BF17ACA36C0048A012 /* Auraglyph */,
 			);
 		};
 /* End PBXProject section */
@@ -1391,7 +1391,7 @@
 					"$(PROJECT_DIR)/libs/GoogleAnalytics",
 				);
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_NAME = AURAGLPH;
+				PRODUCT_NAME = Auraglyph;
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = app;
@@ -1425,7 +1425,7 @@
 					"$(PROJECT_DIR)/libs/GoogleAnalytics",
 				);
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_NAME = AURAGLPH;
+				PRODUCT_NAME = Auraglyph;
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = app;
@@ -1444,7 +1444,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		095D12EB17ACA36C0048A012 /* Build configuration list for PBXNativeTarget "Auragraph" */ = {
+		095D12EB17ACA36C0048A012 /* Build configuration list for PBXNativeTarget "Auraglyph" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				095D12EC17ACA36C0048A012 /* Debug */,
