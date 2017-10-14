@@ -318,12 +318,12 @@ m_lastTraceWasRecognized(true)
         AGPortInfo::EditorMode editorMode = info.editorMode;
         float y = m_radiusY-rowHeight*(port+2);
 
+        AGParamValue v;
+        m_node->getEditPortValue(port, v);
+        
         if(editorMode == AGPortInfo::EDITOR_ENUM)
         {
             float y = m_radiusY-rowHeight*(port+2);
-            
-            AGParamValue v;
-            m_node->getEditPortValue(port, v);
             
             AGUIPicker *picker = new AGUIPicker(GLvertex3f(m_radius/2, y+rowHeight/4, 0),
                                                 GLvertex2f(m_radius*0.9, rowHeight*0.9));
@@ -353,9 +353,6 @@ m_lastTraceWasRecognized(true)
                 editPortType == AGControl::TYPE_FLOAT ||
                 editPortType == AGControl::TYPE_INT)
         {
-            AGParamValue v;
-            m_node->getEditPortValue(port, v);
-            
             AGSlider *slider = new AGSlider(GLvertex3f(m_radius/2, y+rowHeight/4, 0), v);
             slider->init();
             
@@ -412,10 +409,10 @@ m_lastTraceWasRecognized(true)
                 checkButton->setAction(^{
                     m_node->setEditPortValue(port, AGControl(checkButton->isPressed()));
                 });
-                
                 float x = m_radius/2;
                 checkButton->setPosition(GLvertex3f(x, y+checkButton->size().y*0.75f, 0));
-            
+                checkButton->setLatched(v.getBit());
+                
                 addChild(checkButton);
             }
         }
