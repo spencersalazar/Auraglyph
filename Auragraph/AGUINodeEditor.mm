@@ -743,7 +743,7 @@ AGInteractiveObject *AGUIStandardNodeEditor::hitTest(const GLvertex3f &t)
 int AGUIStandardNodeEditor::hitTestX(const GLvertex3f &t, bool *inBbox)
 {
     float rowCount = NODEEDITOR_ROWCOUNT;
-    
+
     *inBbox = false;
     
     GLvertex3f pos = m_node->position();
@@ -751,8 +751,8 @@ int AGUIStandardNodeEditor::hitTestX(const GLvertex3f &t, bool *inBbox)
     if(m_editingPort >= 0)
     {
         float y = m_radiusY - m_radius*2.0*(m_editingPort+2)/rowCount;
-        
-        float bb_center = y - m_radiusY + m_radius*2/rowCount;
+
+        float bb_center = y - m_radius + m_radius*2/rowCount;
         if(t.x > pos.x+m_geo[m_itemEditBoxOffset].x && t.x < pos.x+m_geo[m_itemEditBoxOffset+2].x &&
            t.y > pos.y+bb_center+m_geo[m_itemEditBoxOffset+2].y && t.y < pos.y+bb_center+m_geo[m_itemEditBoxOffset].y)
         {
