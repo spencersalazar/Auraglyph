@@ -465,7 +465,7 @@ static AGViewController * g_instance = nil;
     assert(object);
 //    assert(dynamic_cast<AGConnection *>(object) == NULL);
     
-    dbgprint("fadeOutAndDelete: %s 0x%08x\n", typeid(*object).name(), (unsigned int) object);
+    dbgprint("fadeOutAndDelete: %s 0x%08lx\n", typeid(*object).name(), (unsigned long) object);
     
     [self removeFromTouchCapture:object];
     
@@ -568,14 +568,14 @@ static AGViewController * g_instance = nil;
 
 - (void)addTouchOutsideHandler:(AGTouchHandler *)listener
 {
-    dbgprint("addTouchOutsideHandler: %s 0x%08x\n", [NSStringFromClass([listener class]) UTF8String], (unsigned int) listener);
+    dbgprint("addTouchOutsideHandler: %s 0x%08lx\n", [NSStringFromClass([listener class]) UTF8String], (unsigned long) listener);
     
     _touchOutsideHandlers.push_back(listener);
 }
 
 - (void)removeTouchOutsideHandler:(AGTouchHandler *)listener
 {
-    dbgprint("removeTouchOutsideHandler: %s 0x%08x\n", [NSStringFromClass([listener class]) UTF8String], (unsigned int) listener);
+    dbgprint("removeTouchOutsideHandler: %s 0x%08lx\n", [NSStringFromClass([listener class]) UTF8String], (unsigned long) listener);
 
     _touchOutsideHandlers.remove(listener);
 }
@@ -1131,7 +1131,7 @@ static AGViewController * g_instance = nil;
             AGTouchHandler *nextHandler = [touchHandler nextHandler];
             if(nextHandler)
             {
-                dbgprint("queuing touchHandler: %s 0x%08x\n", [NSStringFromClass([nextHandler class]) UTF8String], (unsigned int) nextHandler);
+                dbgprint("queuing touchHandler: %s 0x%08lx\n", [NSStringFromClass([nextHandler class]) UTF8String], (unsigned long) nextHandler);
                 _touchHandlerQueue = nextHandler;
             }
             _touchHandlers.erase(touch);
