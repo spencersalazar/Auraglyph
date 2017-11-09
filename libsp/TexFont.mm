@@ -75,7 +75,7 @@ m_tex(0)
     GLuint spriteTexture = 0;
 	CGContextRef spriteContext;
 	GLubyte *spriteData;
-	size_t texWidth, texHeight;
+	GLsizei texWidth, texHeight;
     
     CGDataProviderRef dataProvider = CGDataProviderCreateWithFilename(filepath.c_str());    
     CGFontRef font = CGFontCreateWithDataProvider(dataProvider);
@@ -91,8 +91,8 @@ m_tex(0)
     m_descender = CTFontGetDescent(ctFont);
     
     m_res = 1024;
-	texWidth = (int) m_res;
-	texHeight = (int) m_res;
+	texWidth = (GLsizei) m_res;
+	texHeight = (GLsizei) m_res;
     
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     

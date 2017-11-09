@@ -22,14 +22,14 @@ GLuint loadTexture(NSString *name)
 	CGImageRef spriteImage;
 	CGContextRef spriteContext;
 	GLubyte *spriteData;
-	size_t	width, height;
+	GLsizei	width, height;
 		
 	// Creates a Core Graphics image from an image file
 	spriteImage = [UIImage imageNamed:name].CGImage;
     
 	// Get the width and height of the image
-	width = CGImageGetWidth(spriteImage);
-	height = CGImageGetHeight(spriteImage);
+	width = (GLsizei) CGImageGetWidth(spriteImage);
+	height = (GLsizei) CGImageGetHeight(spriteImage);
     
 	// Texture dimensions must be a power of 2. If you write an application that allows users to supply an image,
 	// you'll want to add code that checks the dimensions and takes appropriate action if they are not a power of 2.

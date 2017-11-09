@@ -26,13 +26,6 @@ GLuint AGConnection::s_flareTex = 0;
 AGRenderInfoV *g_controlVis;
 //GLvertex3f *g_controlSignalMesh = NULL;
 
-// ripped from waveform shader
-// for control signal animation
-#define WINDOW_POW 2.5
-static float window(float x, float pos)
-{
-    return x*(1.0-pow(abs(2.0*pos-1.0), WINDOW_POW));
-}
 
 //------------------------------------------------------------------------------
 // ### AGConnection ###

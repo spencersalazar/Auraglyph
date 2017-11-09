@@ -119,7 +119,7 @@ public:
         else
         {
             int numBefore = m_current;
-            int numAfter = (m_values.size()-1)-m_current;
+            int numAfter = (int) ((m_values.size()-1)-m_current);
             
             // draw frame background
             AGStyle::backgroundColor().set();
@@ -717,7 +717,7 @@ void AGUIStandardNodeEditor::render()
             glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
             glDisableVertexAttribArray(AGVertexAttribNormal);
             
-            glDrawArrays(GL_LINE_STRIP, 0, geo.size());
+            glDrawArrays(GL_LINE_STRIP, 0, (GLsizei) geo.size());
         }
     }
 }

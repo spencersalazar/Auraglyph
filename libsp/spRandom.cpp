@@ -22,7 +22,7 @@ Random::Random()
 
 void Random::seed()
 {
-    srandom(time(NULL));
+    srandom((unsigned int) time(NULL));
 }
 
 float Random::unit()

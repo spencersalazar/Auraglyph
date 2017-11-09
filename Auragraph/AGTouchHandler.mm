@@ -1033,7 +1033,7 @@ private:
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    CGPoint p = [[touches anyObject] locationInView:_viewController.view];
+    // CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     // GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
     [_viewController fadeOutAndDelete:_proto];
