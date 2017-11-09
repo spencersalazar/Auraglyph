@@ -95,7 +95,7 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     AGTrainerViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"FigureCell" forIndexPath:indexPath];
-    [cell.title setTitle:[NSString stringWithFormat:@"%i", indexPath.row] forState:UIControlStateNormal];
+    [cell.title setTitle:[NSString stringWithFormat:@"%li", (long)indexPath.row] forState:UIControlStateNormal];
     [cell.title addTarget:self action:@selector(figureSelected:) forControlEvents:UIControlEventTouchUpInside];
     cell.title.tag = AG_FIGURE_0 + indexPath.row;
     

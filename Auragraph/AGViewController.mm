@@ -820,7 +820,7 @@ static AGViewController * g_instance = nil;
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    dbgprint_off("touchesBegan, count = %i\n", [touches count]);
+    dbgprint_off("touchesBegan, count = %lu\n", (unsigned long)[touches count]);
     
     // hit test each touch
     for(UITouch *touch in touches)
@@ -1024,7 +1024,7 @@ static AGViewController * g_instance = nil;
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    dbgprint_off("touchesMoved, count = %i\n", [touches count]);
+    dbgprint_off("touchesMoved, count = %lu\n", (unsigned long)[touches count]);
     
     BOOL didScroll = NO;
     for(UITouch *touch in touches)
@@ -1096,7 +1096,7 @@ static AGViewController * g_instance = nil;
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    dbgprint_off("touchEnded, count = %i\n", [touches count]);
+    dbgprint_off("touchEnded, count = %lu\n", (unsigned long)[touches count]);
     
     for(UITouch *touch in touches)
     {
