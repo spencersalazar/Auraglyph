@@ -624,7 +624,7 @@ AGDocument::Node AGNode::serialize()
         });
     }
     
-    return std::move(docNode);
+    return docNode;
 }
 
 //------------------------------------------------------------------------------

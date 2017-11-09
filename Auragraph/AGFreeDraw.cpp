@@ -147,6 +147,7 @@ AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
 {
     return NULL; // XXX we not longer use the hit-testing below
     
+#if 0
     if(!m_active)
         return NULL;
     
@@ -166,6 +167,7 @@ AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
     }
     
     return NULL;
+#endif // 0
 }
 
 AGDocument::Freedraw AGFreeDraw::serialize()

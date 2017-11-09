@@ -592,8 +592,8 @@ static AGViewController * g_instance = nil;
 
 - (void)updateMatrices
 {
-    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     GLKMatrix4 projectionMatrix;
+//    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
 //    if(UIInterfaceOrientationIsLandscape(self.interfaceOrientation))
 //        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
 //    else

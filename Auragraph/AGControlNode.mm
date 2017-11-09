@@ -848,7 +848,7 @@ public:
         {            
             float radius = 0.006*AGStyle::oldGlobalScale;
             float radius_x = radius;
-            float radius_y = radius_x;
+            //float radius_y = radius_x;
             float radius_circ = radius_x * 0.4;
             int circleSize = 16;
             int GEO_SIZE = circleSize*2;

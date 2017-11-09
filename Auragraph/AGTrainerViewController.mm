@@ -145,6 +145,8 @@
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
+    
     path = [UIBezierPath new];
 }
 
