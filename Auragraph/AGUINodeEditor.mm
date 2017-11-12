@@ -119,7 +119,7 @@ public:
         else
         {
             int numBefore = m_current;
-            int numAfter = (m_values.size()-1)-m_current;
+            int numAfter = (int) ((m_values.size()-1)-m_current);
             
             // draw frame background
             AGStyle::backgroundColor().set();
@@ -318,12 +318,12 @@ m_lastTraceWasRecognized(true)
         AGPortInfo::EditorMode editorMode = info.editorMode;
         float y = m_radiusY-rowHeight*(port+2);
 
+        AGParamValue v;
+        m_node->getEditPortValue(port, v);
+        
         if(editorMode == AGPortInfo::EDITOR_ENUM)
         {
             float y = m_radiusY-rowHeight*(port+2);
-            
-            AGParamValue v;
-            m_node->getEditPortValue(port, v);
             
             AGUIPicker *picker = new AGUIPicker(GLvertex3f(m_radius/2, y+rowHeight/4, 0),
                                                 GLvertex2f(m_radius*0.9, rowHeight*0.9));
@@ -353,9 +353,6 @@ m_lastTraceWasRecognized(true)
                 editPortType == AGControl::TYPE_FLOAT ||
                 editPortType == AGControl::TYPE_INT)
         {
-            AGParamValue v;
-            m_node->getEditPortValue(port, v);
-            
             AGSlider *slider = new AGSlider(GLvertex3f(m_radius/2, y+rowHeight/4, 0), v);
             slider->init();
             
@@ -412,10 +409,10 @@ m_lastTraceWasRecognized(true)
                 checkButton->setAction(^{
                     m_node->setEditPortValue(port, AGControl(checkButton->isPressed()));
                 });
-                
                 float x = m_radius/2;
                 checkButton->setPosition(GLvertex3f(x, y+checkButton->size().y*0.75f, 0));
-            
+                checkButton->setLatched(v.getBit());
+                
                 addChild(checkButton);
             }
         }
@@ -720,7 +717,7 @@ void AGUIStandardNodeEditor::render()
             glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
             glDisableVertexAttribArray(AGVertexAttribNormal);
             
-            glDrawArrays(GL_LINE_STRIP, 0, geo.size());
+            glDrawArrays(GL_LINE_STRIP, 0, (GLsizei) geo.size());
         }
     }
 }
@@ -743,7 +740,7 @@ AGInteractiveObject *AGUIStandardNodeEditor::hitTest(const GLvertex3f &t)
 int AGUIStandardNodeEditor::hitTestX(const GLvertex3f &t, bool *inBbox)
 {
     float rowCount = NODEEDITOR_ROWCOUNT;
-    
+
     *inBbox = false;
     
     GLvertex3f pos = m_node->position();
@@ -751,8 +748,8 @@ int AGUIStandardNodeEditor::hitTestX(const GLvertex3f &t, bool *inBbox)
     if(m_editingPort >= 0)
     {
         float y = m_radiusY - m_radius*2.0*(m_editingPort+2)/rowCount;
-        
-        float bb_center = y - m_radiusY + m_radius*2/rowCount;
+
+        float bb_center = y - m_radius + m_radius*2/rowCount;
         if(t.x > pos.x+m_geo[m_itemEditBoxOffset].x && t.x < pos.x+m_geo[m_itemEditBoxOffset+2].x &&
            t.y > pos.y+bb_center+m_geo[m_itemEditBoxOffset+2].y && t.y < pos.y+bb_center+m_geo[m_itemEditBoxOffset].y)
         {

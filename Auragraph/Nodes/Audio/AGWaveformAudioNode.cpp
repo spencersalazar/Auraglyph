@@ -385,5 +385,5 @@ AGDocument::Node AGAudioWaveformNode::serialize()
     
     docNode.saveParam("waveform", m_waveform);
     
-    return std::move(docNode);
+    return docNode;
 }

@@ -87,30 +87,37 @@ public:
     
     virtual void receiveControl(int port, const AGControl &control) override
     {
-        int up = param(PARAM_UP);
-        int down = param(PARAM_DOWN);
-        
-        if(control.getInt())
+        if(port == m_param2InputPort[PARAM_UP])
+            setParam(PARAM_UP, control);
+        else if(port == m_param2InputPort[PARAM_DOWN])
+            setParam(PARAM_DOWN, control);
+        else if(port == m_param2InputPort[PARAM_INPUT])
         {
-            pushControl(0, AGControl(m_value));
+            int up = param(PARAM_UP);
+            int down = param(PARAM_DOWN);
             
-            m_value += m_direction;
-            ++m_counter;
-            if(m_direction == 1 && m_counter >= up)
+            if(control.getInt())
             {
-                if(down)
-                    m_direction = -1;
-                else
-                    m_value = 0;
-                m_counter = 0;
-            }
-            else if(m_direction == -1 && m_counter >= down)
-            {
-                if(up)
-                    m_direction = 1;
+                pushControl(0, AGControl(m_value));
                 
-                m_value = 0;
-                m_counter = 0;
+                m_value += m_direction;
+                ++m_counter;
+                if(m_direction == 1 && m_counter >= up)
+                {
+                    if(down)
+                        m_direction = -1;
+                    else
+                        m_value = 0;
+                    m_counter = 0;
+                }
+                else if(m_direction == -1 && m_counter >= down)
+                {
+                    if(up)
+                        m_direction = 1;
+                    
+                    m_value = 0;
+                    m_counter = 0;
+                }
             }
         }
     }

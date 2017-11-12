@@ -298,7 +298,7 @@ void AGRenderObject::debug_renderBounds()
 #endif // DEBUG_BOUNDS
 }
 
-void AGRenderObject::drawGeometry(GLvertex3f geo[], int size, int kind)
+void AGRenderObject::drawGeometry(GLvertex3f geo[], unsigned long size, int kind)
 {
     AGGenericShader &shader = AGGenericShader::instance();
     
@@ -313,7 +313,7 @@ void AGRenderObject::drawGeometry(GLvertex3f geo[], int size, int kind)
     glDrawArrays(kind, 0, size);
 }
 
-void AGRenderObject::drawTriangleFan(GLvertex2f geo[], int size)
+void AGRenderObject::drawTriangleFan(GLvertex2f geo[], unsigned long size)
 {
     AGGenericShader &shader = AGGenericShader::instance();
     
@@ -328,7 +328,7 @@ void AGRenderObject::drawTriangleFan(GLvertex2f geo[], int size)
     glDrawArrays(GL_TRIANGLE_FAN, 0, size);
 }
 
-void AGRenderObject::drawTriangleFan(GLvertex3f geo[], int size)
+void AGRenderObject::drawTriangleFan(GLvertex3f geo[], unsigned long size)
 {
     AGGenericShader &shader = AGGenericShader::instance();
     
@@ -343,7 +343,7 @@ void AGRenderObject::drawTriangleFan(GLvertex3f geo[], int size)
     glDrawArrays(GL_TRIANGLE_FAN, 0, size);
 }
 
-void AGRenderObject::drawTriangleFan(GLvertex3f geo[], int size, const GLKMatrix4 &xform)
+void AGRenderObject::drawTriangleFan(GLvertex3f geo[], unsigned long size, const GLKMatrix4 &xform)
 {
     AGGenericShader &shader = AGGenericShader::instance();
     
@@ -359,7 +359,7 @@ void AGRenderObject::drawTriangleFan(GLvertex3f geo[], int size, const GLKMatrix
     glDrawArrays(GL_TRIANGLE_FAN, 0, size);
 }
 
-void AGRenderObject::drawTriangleFan(AGGenericShader &shader, GLvertex3f geo[], int size, const GLKMatrix4 &xform)
+void AGRenderObject::drawTriangleFan(AGGenericShader &shader, GLvertex3f geo[], unsigned long size, const GLKMatrix4 &xform)
 {
 //    shader.useProgram();
     
@@ -373,7 +373,7 @@ void AGRenderObject::drawTriangleFan(AGGenericShader &shader, GLvertex3f geo[], 
     glDrawArrays(GL_TRIANGLE_FAN, 0, size);
 }
 
-void AGRenderObject::drawLineLoop(GLvertex2f geo[], int size)
+void AGRenderObject::drawLineLoop(GLvertex2f geo[], unsigned long size)
 {
     AGGenericShader &shader = AGGenericShader::instance();
     
@@ -388,7 +388,7 @@ void AGRenderObject::drawLineLoop(GLvertex2f geo[], int size)
     glDrawArrays(GL_LINE_LOOP, 0, size);
 }
 
-void AGRenderObject::drawLineLoop(GLvertex3f geo[], int size)
+void AGRenderObject::drawLineLoop(GLvertex3f geo[], unsigned long size)
 {
     AGGenericShader &shader = AGGenericShader::instance();
     
@@ -403,7 +403,7 @@ void AGRenderObject::drawLineLoop(GLvertex3f geo[], int size)
     glDrawArrays(GL_LINE_LOOP, 0, size);
 }
 
-void AGRenderObject::drawLineLoop(GLvertex3f geo[], int size, const GLKMatrix4 &xform)
+void AGRenderObject::drawLineLoop(GLvertex3f geo[], unsigned long size, const GLKMatrix4 &xform)
 {
     AGGenericShader &shader = AGGenericShader::instance();
     
@@ -419,7 +419,7 @@ void AGRenderObject::drawLineLoop(GLvertex3f geo[], int size, const GLKMatrix4 &
     glDrawArrays(GL_LINE_LOOP, 0, size);
 }
 
-void AGRenderObject::drawLineStrip(GLvertex2f geo[], int size)
+void AGRenderObject::drawLineStrip(GLvertex2f geo[], unsigned long size)
 {
     AGGenericShader &shader = AGGenericShader::instance();
     
@@ -434,7 +434,7 @@ void AGRenderObject::drawLineStrip(GLvertex2f geo[], int size)
     glDrawArrays(GL_LINE_STRIP, 0, size);
 }
 
-void AGRenderObject::drawLineStrip(GLvertex2f geo[], int size, const GLKMatrix4 &xform)
+void AGRenderObject::drawLineStrip(GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform)
 {
     AGGenericShader &shader = AGGenericShader::instance();
     
@@ -450,7 +450,7 @@ void AGRenderObject::drawLineStrip(GLvertex2f geo[], int size, const GLKMatrix4 
     glDrawArrays(GL_LINE_STRIP, 0, size);
 }
 
-void AGRenderObject::drawLineStrip(AGGenericShader &shader, GLvertex2f geo[], int size, const GLKMatrix4 &xform)
+void AGRenderObject::drawLineStrip(AGGenericShader &shader, GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform)
 {
 //    shader.useProgram();
     
@@ -464,7 +464,7 @@ void AGRenderObject::drawLineStrip(AGGenericShader &shader, GLvertex2f geo[], in
     glDrawArrays(GL_LINE_STRIP, 0, size);
 }
 
-void AGRenderObject::drawLineStrip(GLvertex3f geo[], int size)
+void AGRenderObject::drawLineStrip(GLvertex3f geo[], unsigned long size)
 {
     AGGenericShader &shader = AGGenericShader::instance();
     
@@ -479,7 +479,7 @@ void AGRenderObject::drawLineStrip(GLvertex3f geo[], int size)
     glDrawArrays(GL_LINE_STRIP, 0, size);
 }
 
-void AGRenderObject::drawWaveform(float waveform[], int size, GLvertex2f from, GLvertex2f to, float gain, float yScale)
+void AGRenderObject::drawWaveform(float waveform[], unsigned long size, GLvertex2f from, GLvertex2f to, float gain, float yScale)
 {
     GLvertex2f vec = (to - from);
     

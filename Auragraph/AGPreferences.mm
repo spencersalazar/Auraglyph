@@ -38,7 +38,7 @@ std::string AGPreferences::lastOpenedDocument()
 {
     NSString *value = [[NSUserDefaults standardUserDefaults] stringForKey:AGPreferencesLastOpenedDocument];
     if(value != nil)
-        return std::move([value stlString]);
+        return [value stlString];
     else
-        return std::move(std::string(""));
+        return std::string("");
 }

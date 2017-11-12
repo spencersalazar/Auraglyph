@@ -813,7 +813,7 @@ AGDocument::Node AGControlSequencerNode::serialize()
         }
     }
     
-    return std::move(docNode);
+    return docNode;
 }
 
 

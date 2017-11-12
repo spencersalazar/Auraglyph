@@ -185,9 +185,9 @@ public:
     void activate(int type) { m_activation = type; }
     
     
-    virtual int numInputPorts() const { if(m_manifest) return m_manifest->inputPortInfo().size(); else return 0; }
-    virtual int numEditPorts() const { if(m_manifest) return m_manifest->editPortInfo().size(); else return 0; }
-    virtual int numOutputPorts() const { if(m_manifest) return m_manifest->outputPortInfo().size(); else return 0; }
+    virtual int numInputPorts() const { if(m_manifest) return (int) m_manifest->inputPortInfo().size(); else return 0; }
+    virtual int numEditPorts() const { if(m_manifest) return (int) m_manifest->editPortInfo().size(); else return 0; }
+    virtual int numOutputPorts() const { if(m_manifest) return (int) m_manifest->outputPortInfo().size(); else return 0; }
     virtual const AGPortInfo &inputPortInfo(int port) const { return m_manifest->inputPortInfo()[port]; }
     virtual const AGPortInfo &editPortInfo(int port) const { return m_manifest->editPortInfo()[port]; }
     virtual const AGPortInfo &outputPortInfo(int port) const { return m_manifest->outputPortInfo()[port]; }
@@ -395,7 +395,7 @@ public:
         glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(GLvertex3f), m_iconGeo.data());
         
         glLineWidth(2.0);
-        glDrawArrays(m_iconGeoType, 0, m_iconGeo.size());
+        glDrawArrays(m_iconGeoType, 0, (GLsizei) m_iconGeo.size());
     }
     
     virtual AGNode *createNode(const GLvertex3f &pos) const override

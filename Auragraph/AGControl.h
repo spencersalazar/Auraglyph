@@ -150,53 +150,49 @@ public:
         v = getFloat();
     }
     
-    operator AGFloat() const
-    {
-        return getFloat();
-    }
+    operator AGFloat() const { return getFloat(); }
     
-    operator double() const
-    {
-        return getFloat();
-    }
+    operator double() const { return getFloat(); }
     
     AGInt getInt() const
     {
         switch(type)
         {
-            case TYPE_NONE:
-            case TYPE_STRING:
-                return 0;
-                break;
-            case TYPE_BIT:
-                return vbit ? 1 : 0;
-                break;
-            case TYPE_INT:
-                return vint;
-                break;
-            case TYPE_FLOAT:
-                return (int) vfloat;
-                break;
+            case TYPE_NONE:   return 0;
+            case TYPE_STRING: return 0;
+            case TYPE_BIT:    return vbit ? 1 : 0;
+            case TYPE_INT:    return vint;
+            case TYPE_FLOAT:  return (int) vfloat;
         }
     }
     
-    void mapTo(AGInt &v) const
+    void mapTo(AGInt &v) const { v = getInt(); }
+    
+    operator AGInt() const { return getInt(); }
+    
+    AGBit getBit() const
     {
-        v = getInt();
+        switch(type)
+        {
+            case TYPE_NONE:   return 0;
+            case TYPE_STRING: return vstring.size() ? 1 : 0;
+            case TYPE_BIT:    return vbit;
+            case TYPE_INT:    return vint ? 1 : 0;
+            case TYPE_FLOAT:  return vfloat ? 1 : 0;
+        }
     }
     
-    operator AGInt() const
-    {
-        return getInt();
-    }
+    void mapTo(AGBit &v) const { v = getBit(); }
+    
+    // operator AGBit() const { return getBit(); }
     
     AGString getString() const
     {
         switch(type)
         {
-            case TYPE_NONE: return "";
+            case TYPE_NONE:   return "";
             case TYPE_STRING: return vstring;
-            case TYPE_BIT: return vbit ? "1" : "0";
+            case TYPE_BIT:    return vbit ? "1" : "0";
             case TYPE_INT:
             {
                 stringstream str;

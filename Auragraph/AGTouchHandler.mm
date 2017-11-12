@@ -989,7 +989,7 @@ private:
     
     AGNode *hitNode;
     int port;
-    AGNode::HitTestResult hit = [_viewController hitTest:pos node:&hitNode port:&port];
+    [_viewController hitTest:pos node:&hitNode port:&port];
     
     if(hitNode != _currentHit && hitNode != _originalHit)
     {
@@ -1033,8 +1033,8 @@ private:
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    CGPoint p = [[touches anyObject] locationInView:_viewController.view];
-    GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
+    // CGPoint p = [[touches anyObject] locationInView:_viewController.view];
+    // GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
     
     [_viewController fadeOutAndDelete:_proto];
     _proto = NULL;

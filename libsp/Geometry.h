@@ -265,7 +265,7 @@ struct GLvrectf
 } __attribute__((packed));
 
 
-static bool pointOnLine(const GLvertex2f &point, const GLvertex2f &line0, const GLvertex2f &line1, float thres)
+static inline bool pointOnLine(const GLvertex2f &point, const GLvertex2f &line0, const GLvertex2f &line1, float thres)
 {
     GLvertex2f normal = GLvertex2f(line1.y - line0.y, line0.x - line1.x).normalize();
     GLvertex2f bound1 = line1 - line0;
@@ -357,7 +357,7 @@ isLeft( GLvertex3f P0, GLvertex3f P1, GLvertex3f P2 )
 //               V[] = vertex points of a polygon V[n+1] with V[n]=V[0]
 //      Return:  0 = outside, 1 = inside
 // This code is patterned after [Franklin, 2000]
-static int
+static inline int
 cn_PnPoly( GLvertex3f P, const GLvertex3f* V, int n )
 {
     int    cn = 0;    // the  crossing number counter
