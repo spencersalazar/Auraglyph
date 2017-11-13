@@ -18,8 +18,6 @@
 #include "LTKOSUtilFactory.h"
 #include "LTKOSUtil.h"
 
-#import "SSZipArchive.h"
-
 
 extern "C" LTKLipiEngineInterface* createLTKLipiEngine();
 
