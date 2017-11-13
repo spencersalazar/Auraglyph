@@ -12,6 +12,7 @@
 		09030CE71EFEF81300D4A4F2 /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09030CE51EFEF81300D4A4F2 /* Thread.cpp */; };
 		09030CEB1EFEF83D00D4A4F2 /* Signal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09030CE91EFEF83D00D4A4F2 /* Signal.cpp */; };
 		09030CF11EFEFEFB00D4A4F2 /* AGMenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09030CEF1EFEFEFB00D4A4F2 /* AGMenu.cpp */; };
+		09052A7A1FB94F1100952E73 /* AGAudioStereoLimiter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09052A781FB94F1100952E73 /* AGAudioStereoLimiter.cpp */; };
 		091081801A0B63DB0063028B /* AGStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0910817E1A0B63DB0063028B /* AGStyle.mm */; };
 		091C70CC1C48A9A600B513C2 /* AGUINodeEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */; };
 		09230FB31F3D8C9500DF06B5 /* AGAboutBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 093395781A0A3785009E4802 /* AGAboutBox.cpp */; };
@@ -190,6 +191,8 @@
 		09030CEA1EFEF83D00D4A4F2 /* Signal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Signal.h; sourceTree = "<group>"; };
 		09030CEF1EFEFEFB00D4A4F2 /* AGMenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGMenu.cpp; sourceTree = "<group>"; };
 		09030CF01EFEFEFB00D4A4F2 /* AGMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGMenu.h; sourceTree = "<group>"; };
+		09052A781FB94F1100952E73 /* AGAudioStereoLimiter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioStereoLimiter.cpp; sourceTree = "<group>"; };
+		09052A791FB94F1100952E73 /* AGAudioStereoLimiter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGAudioStereoLimiter.h; sourceTree = "<group>"; };
 		09077FD117C0BFFA00DFE42F /* AGDef.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGDef.h; sourceTree = "<group>"; };
 		0910817E1A0B63DB0063028B /* AGStyle.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGStyle.mm; sourceTree = "<group>"; };
 		0910817F1A0B63DB0063028B /* AGStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGStyle.h; sourceTree = "<group>"; };
@@ -750,6 +753,8 @@
 				0934B6791E223B47009259E2 /* AGFileManager.mm */,
 				09EE657E1EFB59BE00B4ED62 /* AGAudioRecorder.h */,
 				09EE657D1EFB59BE00B4ED62 /* AGAudioRecorder.mm */,
+				09052A791FB94F1100952E73 /* AGAudioStereoLimiter.h */,
+				09052A781FB94F1100952E73 /* AGAudioStereoLimiter.cpp */,
 				09B962861DE2ED38001DCFB1 /* AGPreferences.h */,
 				09B962851DE2ED38001DCFB1 /* AGPreferences.mm */,
 				0944E8C51DCB325D00EB8087 /* AGAnalytics.h */,
@@ -1154,6 +1159,7 @@
 				0933956E1A08799A009E4802 /* AGFormulaNode.mm in Sources */,
 				0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */,
 				09030CF11EFEFEFB00D4A4F2 /* AGMenu.cpp in Sources */,
+				09052A7A1FB94F1100952E73 /* AGAudioStereoLimiter.cpp in Sources */,
 				095786191F031ED800286358 /* AGDashboard.cpp in Sources */,
 				09F29DAF1CCA086200502C01 /* AGSlider.cpp in Sources */,
 				095D12D817ACA36C0048A012 /* AGAppDelegate.mm in Sources */,

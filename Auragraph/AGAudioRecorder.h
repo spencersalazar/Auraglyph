@@ -9,7 +9,10 @@
 #pragma mark once
 
 #include <string>
+#include <memory>
+
 #include <CoreAudio/CoreAudioTypes.h>
+
 #include "SampleCircularBuffer.h"
 
 #ifdef __OBJC__
@@ -20,6 +23,8 @@ typedef void EZRecorder;
 
 class Thread;
 class Signal;
+
+class AGAudioStereoLimiter;
 
 class AGAudioRecorder
 {
@@ -38,9 +43,12 @@ private:
     EZRecorder *m_recorder = NULL;
     SampleCircularBuffer *m_buffer = NULL;
     
+    float m_gain = 0.8912509381337456; // drop everything down by -1 dB by default
     float *m_recorderBuffer = NULL;
     
     Thread *m_thread = NULL;
     bool m_go = false;
     Signal *m_signal = NULL;
+    
+    std::unique_ptr<AGAudioStereoLimiter> m_limiter;
 };

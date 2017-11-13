@@ -8,6 +8,7 @@
 
 #include "AGAudioRecorder.h"
 #include "AGFileManager.h"
+#include "AGAudioStereoLimiter.h"
 
 #import <EZAudioiOS/EZRecorder.h>
 #import <EZAudioiOS/EZAudioUtilities.h>
@@ -51,6 +52,8 @@ void AGAudioRecorder::startRecording(const std::string &filename, int numChannel
 {
     mChannels = numChannels;
     
+    m_limiter = std::unique_ptr<AGAudioStereoLimiter>(new AGAudioStereoLimiter(srate));
+    
     NSURL *url = [NSURL fileURLWithPath:[NSString stringWithSTLString:filename]];
     
     AudioStreamBasicDescription description;
@@ -81,6 +84,14 @@ void AGAudioRecorder::startRecording(const std::string &filename, int numChannel
             int nFrames = num/mChannels;
             
             assert(nFrames*mChannels == num); // no half-frames plz
+            
+            for(int i = 0; i < nFrames; i++)
+            {
+                m_recorderBuffer[i*2] *= m_gain;
+                m_recorderBuffer[i*2+1] *= m_gain;
+            }
+            
+            m_limiter->render(m_recorderBuffer, m_recorderBuffer, nFrames);
             
             AudioBufferList bufferList;
             bufferList.mNumberBuffers = 1;

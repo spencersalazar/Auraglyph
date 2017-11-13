@@ -14,7 +14,9 @@
 #include "AGAudioNode.h"
 #include "AGAudioCapturer.h"
 #include "AGAudioOutputDestination.h"
+
 #include <list>
+#include <algorithm>
 
 using namespace std;
 
@@ -59,11 +61,23 @@ public:
     }
     
     void process (float input, float& output) {
-        if ( fabs( input ) > levelEstimate )
-            levelEstimate += b0_a * ( pow(input, p) - levelEstimate );
+        input = pow(fabs(input), p);
+        if ( input > levelEstimate )
+            levelEstimate += b0_a*(input-levelEstimate );
         else
-            levelEstimate += b0_r * ( pow(input, p) - levelEstimate );
-        output = levelEstimate;
+            levelEstimate += b0_r*(input-levelEstimate);
+        output = pow(levelEstimate, _1_p);
+    }
+    
+    void processStereo (float inputLeft, float inputRight, float& output) {
+        inputLeft = pow(fabs(inputLeft), p);
+        inputRight = pow(fabs(inputRight), p);
+        float input = std::max(inputLeft, inputRight);
+        if ( input > levelEstimate )
+            levelEstimate += b0_a*(input-levelEstimate );
+        else
+            levelEstimate += b0_r*(input-levelEstimate);
+        output = pow(levelEstimate, _1_p);
     }
 };
 
