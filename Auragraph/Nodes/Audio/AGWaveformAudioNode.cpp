@@ -26,7 +26,7 @@ private:
     GLvertex2f m_waveformPos;
     GLvertex2f m_waveformSize;
     
-    int m_lastModifiedPos;
+    unsigned long m_lastModifiedPos;
     
 public:
     AGWaveformEditor(AGAudioWaveformNode *node) :
@@ -243,7 +243,7 @@ public:
             // interpolate from last point
             if(pos != m_lastModifiedPos)
             {
-                int from, to;
+                unsigned long from, to;
                 if(pos > m_lastModifiedPos)
                 {
                     from = m_lastModifiedPos;
@@ -259,7 +259,7 @@ public:
                 float fromVal = m_node->m_waveform[from];
                 float toVal = m_node->m_waveform[to];
                 float size = to-from;
-                dbgprint("from/to %i %i\n", from, to);
+                dbgprint("from/to %lu %lu\n", from, to);
                 for(int i = 1; i < size; i++)
                 {
                     dbgprint("from/to scale %f %f\n", (1.0f-i/size), (i/size));

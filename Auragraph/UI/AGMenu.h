@@ -22,7 +22,7 @@ public:
     
     bool renderFixed() override { return true; }
     
-    void setIcon(GLvertex3f *geo, int num, GLint kind);
+    void setIcon(GLvertex3f *geo, unsigned long num, GLint kind);
     void addMenuItem(const std::string &title, const std::function<void ()> &action);
     
     GLvertex2f size() override { return m_size; }

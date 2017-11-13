@@ -576,7 +576,7 @@ AGUITrace::AGUITrace()
 void AGUITrace::addPoint(const GLvertex3f &v)
 {
     m_traceGeo.push_back(v);
-    m_renderInfo.numVertex = m_traceGeo.size();
+    m_renderInfo.numVertex = (int) m_traceGeo.size();
     m_renderInfo.geo = m_traceGeo.data();
 }
 

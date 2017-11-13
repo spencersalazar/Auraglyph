@@ -363,7 +363,7 @@
         glDisableVertexAttribArray(AGVertexAttribTexCoord1);
         glDisable(GL_TEXTURE_2D);
         
-        glDrawArrays(GL_LINE_STRIP, 0, _linePoints.size());
+        glDrawArrays(GL_LINE_STRIP, 0, (int) _linePoints.size());
     }
 }
 

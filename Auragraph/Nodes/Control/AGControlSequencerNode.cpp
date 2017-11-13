@@ -635,7 +635,7 @@ AGUINodeEditor *AGControlSequencerNode::createCustomEditor()
 
 int AGControlSequencerNode::numOutputPorts() const
 {
-    return m_sequence.size();
+    return (int) m_sequence.size();
 }
 
 void AGControlSequencerNode::process(sampletime _t)
@@ -695,7 +695,7 @@ int AGControlSequencerNode::currentStep()
 
 int AGControlSequencerNode::numSequences()
 {
-    return m_sequence.size();
+    return (int) m_sequence.size();
 }
 
 void AGControlSequencerNode::setNumSequences(int num)
