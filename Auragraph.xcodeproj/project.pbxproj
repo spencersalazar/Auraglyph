@@ -709,8 +709,8 @@
 				09FC92491A153A83005D14A3 /* AGConnection.mm */,
 				098740AC17BC377E0098511A /* AGAudioNode.h */,
 				098740AB17BC377E0098511A /* AGAudioNode.mm */,
-				093395731A088849009E4802 /* AGControlNode.h */,
 				093395721A088849009E4802 /* AGControlNode.mm */,
+				093395731A088849009E4802 /* AGControlNode.h */,
 				0927D7DF1ADCE4E000AD8AE5 /* AGInputNode.h */,
 				0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */,
 				09F6E8791D6A3758006DBC9E /* AGOutputNode.h */,
@@ -1058,7 +1058,7 @@
 				ORGANIZATIONNAME = "Spencer Salazar";
 				TargetAttributes = {
 					095D12BF17ACA36C0048A012 = {
-						DevelopmentTeam = 9GU9FHJ3JC;
+						DevelopmentTeam = ZSDER9UVPL;
 					};
 				};
 			};
@@ -1357,7 +1357,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 9GU9FHJ3JC;
+				DEVELOPMENT_TEAM = ZSDER9UVPL;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Auragraph/Auragraph-Prefix.pch";
@@ -1373,7 +1373,7 @@
 					"$(PROJECT_DIR)/libs/GoogleAnalytics",
 				);
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_BUNDLE_IDENTIFIER = "edu.stanford.ccrma.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.andrewpiepenbrink.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = Auraglyph;
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -1391,7 +1391,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 9GU9FHJ3JC;
+				DEVELOPMENT_TEAM = ZSDER9UVPL;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Auragraph/Auragraph-Prefix.pch";
@@ -1407,7 +1407,7 @@
 					"$(PROJECT_DIR)/libs/GoogleAnalytics",
 				);
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_BUNDLE_IDENTIFIER = "edu.stanford.ccrma.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.andrewpiepenbrink.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = Auraglyph;
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = NO;
