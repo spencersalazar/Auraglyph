@@ -108,6 +108,8 @@
 		09C7C3E718CF2B8E0099CE88 /* Waveform.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 09C7C3E218CF27AC0099CE88 /* Waveform.fsh */; };
 		09D8C3FF1A0A4DF2008D788A /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 09D8C3FE1A0A4DF2008D788A /* OFL.txt */; };
 		09D9C9D01C98F13A005514A4 /* spRandom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09D9C9CE1C98F13A005514A4 /* spRandom.cpp */; };
+		09DC3D4E1FBD363F008B960F /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09DC3D4D1FBD363F008B960F /* StoreKit.framework */; };
+		09DC3D501FBD3647008B960F /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09DC3D4F1FBD3647008B960F /* GameKit.framework */; };
 		09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7A18A3484F00B21D97 /* Mutex.cpp */; };
 		09E5EC7F18A36A9D00B21D97 /* SPFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */; };
 		09E5EC8218A46F7300B21D97 /* AGControl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC8018A46F7300B21D97 /* AGControl.mm */; };
@@ -437,6 +439,9 @@
 		09D9C9CF1C98F13A005514A4 /* spRandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spRandom.h; sourceTree = "<group>"; };
 		09D9D2E817ECF65D00938871 /* Clip.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Clip.fsh; path = Shaders/Clip.fsh; sourceTree = "<group>"; };
 		09D9D2E917ECF65D00938871 /* Clip.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Clip.vsh; path = Shaders/Clip.vsh; sourceTree = "<group>"; };
+		09DC3D4C1FBD363A008B960F /* Auraglyph.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Auraglyph.entitlements; sourceTree = "<group>"; };
+		09DC3D4D1FBD363F008B960F /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		09DC3D4F1FBD3647008B960F /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		09E5EC7A18A3484F00B21D97 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mutex.cpp; sourceTree = "<group>"; };
 		09E5EC7B18A3484F00B21D97 /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = "<group>"; };
 		09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SPFilter.cpp; sourceTree = "<group>"; };
@@ -524,6 +529,8 @@
 				095E851F17B354BE0065EF8E /* libcommon.a in Frameworks */,
 				09F29D7B1CC73D8000502C01 /* libshaperecommon.a in Frameworks */,
 				09EE673A1EFDB72F00B4ED62 /* EZAudioiOS.framework in Frameworks */,
+				09DC3D501FBD3647008B960F /* GameKit.framework in Frameworks */,
+				09DC3D4E1FBD363F008B960F /* StoreKit.framework in Frameworks */,
 				0944E8BB1DCB31EA00EB8087 /* libGoogleAnalyticsServices.a in Frameworks */,
 				095E852217B354BE0065EF8E /* liblipiengine.a in Frameworks */,
 				095E852517B354BE0065EF8E /* libnn.a in Frameworks */,
@@ -632,6 +639,7 @@
 		095D12B717ACA36C0048A012 = {
 			isa = PBXGroup;
 			children = (
+				09DC3D4C1FBD363A008B960F /* Auraglyph.entitlements */,
 				09E5EC8318A5A84C00B21D97 /* stk */,
 				095D12EE17ACA9CA0048A012 /* libsp */,
 				095D12CD17ACA36C0048A012 /* Auragraph */,
@@ -651,6 +659,8 @@
 		095D12C217ACA36C0048A012 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				09DC3D4F1FBD3647008B960F /* GameKit.framework */,
+				09DC3D4D1FBD363F008B960F /* StoreKit.framework */,
 				498438661F1EF43600FB2914 /* CoreMIDI.framework */,
 				498438591F1EF40B00FB2914 /* PGMidi */,
 				09EE67311EFDB6F800B4ED62 /* EZAudio.xcodeproj */,
@@ -1058,7 +1068,18 @@
 				ORGANIZATIONNAME = "Spencer Salazar";
 				TargetAttributes = {
 					095D12BF17ACA36C0048A012 = {
-						DevelopmentTeam = ZSDER9UVPL;
+						DevelopmentTeam = 9GU9FHJ3JC;
+						SystemCapabilities = {
+							com.apple.GameCenter = {
+								enabled = 1;
+							};
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
+							com.apple.InterAppAudio = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -1354,10 +1375,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LIBRARY = "libc++";
+				CODE_SIGN_ENTITLEMENTS = Auraglyph.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = ZSDER9UVPL;
+				DEVELOPMENT_TEAM = 9GU9FHJ3JC;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Auragraph/Auragraph-Prefix.pch";
@@ -1373,7 +1395,7 @@
 					"$(PROJECT_DIR)/libs/GoogleAnalytics",
 				);
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_BUNDLE_IDENTIFIER = "edu.stanford.ccrma.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_BUNDLE_IDENTIFIER = io.auraglyph.auraglyph;
 				PRODUCT_NAME = Auraglyph;
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -1387,11 +1409,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LIBRARY = "libc++";
+				CODE_SIGN_ENTITLEMENTS = Auraglyph.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = ZSDER9UVPL;
+				DEVELOPMENT_TEAM = 9GU9FHJ3JC;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Auragraph/Auragraph-Prefix.pch";
@@ -1407,7 +1430,7 @@
 					"$(PROJECT_DIR)/libs/GoogleAnalytics",
 				);
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_BUNDLE_IDENTIFIER = "edu.stanford.ccrma.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_BUNDLE_IDENTIFIER = io.auraglyph.auraglyph;
 				PRODUCT_NAME = Auraglyph;
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = NO;
