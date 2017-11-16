@@ -32,6 +32,8 @@
 	<string>Auraglyph uses the microphone to provide audio input to your sonic creations. </string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

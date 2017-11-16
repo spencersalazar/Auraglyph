@@ -110,6 +110,8 @@
 		09D9C9D01C98F13A005514A4 /* spRandom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09D9C9CE1C98F13A005514A4 /* spRandom.cpp */; };
 		09DC3D4E1FBD363F008B960F /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09DC3D4D1FBD363F008B960F /* StoreKit.framework */; };
 		09DC3D501FBD3647008B960F /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09DC3D4F1FBD3647008B960F /* GameKit.framework */; };
+		09DC3D521FBD3729008B960F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */; };
+		09DC3D541FBD393C008B960F /* LaunchPortrait.png in Resources */ = {isa = PBXBuildFile; fileRef = 09DC3D531FBD393C008B960F /* LaunchPortrait.png */; };
 		09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7A18A3484F00B21D97 /* Mutex.cpp */; };
 		09E5EC7F18A36A9D00B21D97 /* SPFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */; };
 		09E5EC8218A46F7300B21D97 /* AGControl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC8018A46F7300B21D97 /* AGControl.mm */; };
@@ -442,6 +444,8 @@
 		09DC3D4C1FBD363A008B960F /* Auraglyph.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Auraglyph.entitlements; sourceTree = "<group>"; };
 		09DC3D4D1FBD363F008B960F /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		09DC3D4F1FBD3647008B960F /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
+		09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		09DC3D531FBD393C008B960F /* LaunchPortrait.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LaunchPortrait.png; sourceTree = "<group>"; };
 		09E5EC7A18A3484F00B21D97 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mutex.cpp; sourceTree = "<group>"; };
 		09E5EC7B18A3484F00B21D97 /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = "<group>"; };
 		09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SPFilter.cpp; sourceTree = "<group>"; };
@@ -639,7 +643,6 @@
 		095D12B717ACA36C0048A012 = {
 			isa = PBXGroup;
 			children = (
-				09DC3D4C1FBD363A008B960F /* Auraglyph.entitlements */,
 				09E5EC8318A5A84C00B21D97 /* stk */,
 				095D12EE17ACA9CA0048A012 /* libsp */,
 				095D12CD17ACA36C0048A012 /* Auragraph */,
@@ -769,6 +772,7 @@
 				099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */,
 				099AF11517D13365000BAB7B /* AGTrainerViewCell.xib */,
 				099AF11717D157C5000BAB7B /* AGTrainerHeaderView.xib */,
+				09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */,
 				0989130F189F6D3A00AB98AD /* Images */,
 				095D12CE17ACA36C0048A012 /* Supporting Files */,
 			);
@@ -778,6 +782,8 @@
 		095D12CE17ACA36C0048A012 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				09DC3D4C1FBD363A008B960F /* Auraglyph.entitlements */,
+				09DC3D531FBD393C008B960F /* LaunchPortrait.png */,
 				0900A3811B04A10800C249D9 /* Images.xcassets */,
 				09D8C3FE1A0A4DF2008D788A /* OFL.txt */,
 				0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */,
@@ -1142,6 +1148,7 @@
 				0933956B1A019E4F009E4802 /* Orbitron-Medium.ttf in Resources */,
 				0989131D18A086E800AB98AD /* Screen.vsh in Resources */,
 				0989131E18A086E800AB98AD /* Clip.vsh in Resources */,
+				09DC3D541FBD393C008B960F /* LaunchPortrait.png in Resources */,
 				0989131F18A086E800AB98AD /* Shader.vsh in Resources */,
 				0989132018A086E800AB98AD /* Texture.vsh in Resources */,
 				095D12D217ACA36C0048A012 /* InfoPlist.strings in Resources */,
@@ -1154,6 +1161,7 @@
 				0944E8AB1DC40EDB00EB8087 /* projects in Resources */,
 				09891313189F6D3A00AB98AD /* trash.png in Resources */,
 				099AF10F17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png in Resources */,
+				09DC3D521FBD3729008B960F /* LaunchScreen.storyboard in Resources */,
 				099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */,
 				099AF11617D13365000BAB7B /* AGTrainerViewCell.xib in Resources */,
 				099AF11817D157C5000BAB7B /* AGTrainerHeaderView.xib in Resources */,
@@ -1373,9 +1381,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LIBRARY = "libc++";
-				CODE_SIGN_ENTITLEMENTS = Auraglyph.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Auragraph/Auraglyph.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEAD_CODE_STRIPPING = NO;
@@ -1407,9 +1414,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LIBRARY = "libc++";
-				CODE_SIGN_ENTITLEMENTS = Auraglyph.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Auragraph/Auraglyph.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
