@@ -9,7 +9,7 @@
 //  See https://github.com/danomatika/ofxMidi for documentation
 
 #include "AGPGMidiSourceDelegate.h"
-#include "AGControlMidiInput.h"
+#include "AGMidiInput.h"
 
 #include <mach/mach_time.h>
 
@@ -187,7 +187,7 @@ uint64_t AbsoluteToNanos(uint64_t time) {
 }
 
 // -----------------------------------------------------------------------------
-- (void) setInputPtr:(AGControlMidiInput *)p {
+- (void) setInputPtr:(AGMidiInput *)p {
     inputPtr = p;
 }
 

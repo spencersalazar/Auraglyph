@@ -13,12 +13,12 @@
 #import "PGMidi.h"
 #include <vector>
 
-class AGControlMidiInput;
+class AGMidiInput;
 
 /// interface to pgmidi input
 @interface AGPGMidiSourceDelegate : NSObject <PGMidiSourceDelegate> {
     
-    AGControlMidiInput *inputPtr; ///< object to send receieved midi messages to
+    AGMidiInput *inputPtr; ///< object to send receieved midi messages to
     
     bool bIgnoreSysex, bIgnoreTiming, bIgnoreSense;	///< ignore midi types?
     
@@ -34,7 +34,7 @@ class AGControlMidiInput;
 - (void) midiSource:(PGMidiSource *)input midiReceived:(const MIDIPacketList *)packetList;
 
 /// set the pointer to the AGPGMidiInput object to send messages to
-- (void) setInputPtr:(AGControlMidiInput *)p;
+- (void) setInputPtr:(AGMidiInput *)p;
 
 @property bool bIgnoreSysex;
 @property bool bIgnoreTiming;

@@ -17,10 +17,6 @@
 #include "AGControlOrientationNode.h"
 #include "AGControlGestureNode.h"
 
-// XXX new for MIDI input
-#include "AGControlMidiNoteIn.h"
-#include "AGControlMidiCCIn.h"
-
 //------------------------------------------------------------------------------
 // ### AGControlNode ###
 //------------------------------------------------------------------------------
@@ -915,6 +911,9 @@ private:
 #include "Nodes/Control/AGControlMapNode.cpp"
 #include "Nodes/Control/AGControlScaleNode.cpp"
 #include "Nodes/Control/AGControlCounterNode.cpp"
+// XXX new for MIDI input
+#include "Nodes/Control/MIDI/AGControlMidiNoteIn.cpp"
+#include "Nodes/Control/MIDI/AGControlMidiCCIn.cpp"
 
 
 //------------------------------------------------------------------------------

@@ -1,53 +1,49 @@
 //
-//  AGControlMidiCCIn.cpp
+//  AGMidiInput.mm
 //  Auragraph
 //
-//  Created by Andrew Piepenbrink on 7/20/17.
+//  Created by Andrew Piepenbrink on 8/26/17.
 //  Copyright © 2017 Spencer Salazar. All rights reserved.
 //
-//  Parts of this code are based on ofxMidi by Dan Wilcox.
-//  See https://github.com/danomatika/ofxMidi for documentation
 
 #include "AGStyle.h"
-#include "AGControlMidiCCIn.h"
+#include "AGMidiInput.h"
 #include "AGPGMidiSourceDelegate.h"
+#include "AGPGMidiContext.h"
 
 #include <iostream>
 
 //------------------------------------------------------------------------------
-// ### AGControlMidiCCIn ###
+// ### AGMidiInput ###
 //------------------------------------------------------------------------------
-#pragma mark - AGControlMidiCCIn
+#pragma mark - AGMidiInput
 
 // PIMPL wrapper from http://stackoverflow.com/questions/7132755/wrapping-objective-c-in-objective-c-c
-struct AGControlMidiCCIn::InputDelegate {
+struct AGMidiInput::InputDelegate {
     AGPGMidiSourceDelegate *d; ///< Obj-C input delegate
 };
 
 // Definition needed here since portList is static
-vector<string> AGControlMidiCCIn::portList;
+vector<string> AGMidiInput::portList;
 
-void AGControlMidiCCIn::initFinal()
+void AGMidiInput::initObjC()
 {
     // setup Obj-C interface to PGMidi
     inputDelegate = new InputDelegate;
     inputDelegate->d = [[AGPGMidiSourceDelegate alloc] init];
-    [inputDelegate->d setInputPtr:(AGControlMidiInput *) this];
+    [inputDelegate->d setInputPtr:(AGMidiInput *) this];
     
     // Go for it!
     attachToAllExistingSources();
-    
-    ccNum = param(PARAM_CCNUM);
-    bLearn = false;
 }
 
-AGControlMidiCCIn::~AGControlMidiCCIn()
+AGMidiInput::~AGMidiInput()
 {
     detachFromAllExistingSources();
-    delete inputDelegate;
+    delete inputDelegate;    
 }
 
-void AGControlMidiCCIn::attachToAllExistingSources()
+void AGMidiInput::attachToAllExistingSources()
 {
     PGMidi *midi = AGPGMidiContext::getMidi();
     for (PGMidiSource *source in midi.sources)
@@ -56,71 +52,16 @@ void AGControlMidiCCIn::attachToAllExistingSources()
     }
 }
 
-void AGControlMidiCCIn::detachFromAllExistingSources()
+void AGMidiInput::detachFromAllExistingSources()
 {
     PGMidi *midi = AGPGMidiContext::getMidi();
     for (PGMidiSource *source in midi.sources)
     {
         [source removeDelegate:inputDelegate->d];
     }
-    
 }
 
-void AGControlMidiCCIn::editPortValueChanged(int paramId)
-{
-    if(paramId == PARAM_CCLEARN)
-    {
-        int flag = param(PARAM_CCLEARN);
-        bLearn = static_cast<bool>(flag);
-    }
-    else if(paramId == PARAM_CCNUM)
-    {
-        ccNum = param(PARAM_CCNUM);
-    }
-}
-
-void AGControlMidiCCIn::messageReceived(double deltatime, vector<unsigned char> *message)
-{
-    // Examine our first byte to determine the type of message
-    uint8_t chr = message->at(0);
-        
-    int nodeChan = param(PARAM_CHANNEL);
-    
-    if(nodeChan == 0)
-    {
-        chr &= 0xF0; // All channels, just clear the lower nibble
-    }
-    else {
-        int msgChan = (chr & 0x0F) + 1; // Extract channel information, nudge to 1-indexed
-        
-        if(msgChan != nodeChan)
-        {
-            return; // If channel doesn't match, return
-        }
-        else {
-            chr &= 0xF0; // Clear lower nibble, continue parsing message below
-        }
-    }
-    
-    if(chr == 0x80) { }// Note off
-    else if(chr == 0x90) { }// Note on
-    else if(chr == 0xA0) { } // Mmmm... polyphonic aftertouch
-    else if(chr == 0xB0) // CC
-    {
-        if(bLearn)
-        {
-            ccNum = message->at(1);
-            setEditPortValue(1, AGParamValue(ccNum));
-        }
-        
-        if(message->at(1) == ccNum)
-        {
-            pushControl(0, AGControl(message->at(2)));; // CC value
-        }
-    }
-}
-
-void AGControlMidiCCIn::listPorts()
+void AGMidiInput::listPorts()
 {
     PGMidi *midi = AGPGMidiContext::getMidi();
     int count = [midi.sources count];
@@ -131,7 +72,7 @@ void AGControlMidiCCIn::listPorts()
     }
 }
 
-vector<string>& AGControlMidiCCIn::getPortList()
+vector<string>& AGMidiInput::getPortList()
 {
     PGMidi *midi = AGPGMidiContext::getMidi();
     portList.clear();
@@ -141,12 +82,12 @@ vector<string>& AGControlMidiCCIn::getPortList()
     return portList;
 }
 
-int AGControlMidiCCIn::getNumPorts()
+int AGMidiInput::getNumPorts()
 {
     return [AGPGMidiContext::getMidi().sources count];
 }
 
-string AGControlMidiCCIn::getPortName(unsigned int portNumber)
+string AGMidiInput::getPortName(unsigned int portNumber)
 {
     
     PGMidi *midi = AGPGMidiContext::getMidi();
@@ -163,7 +104,7 @@ string AGControlMidiCCIn::getPortName(unsigned int portNumber)
     return "";
 }
 
-bool AGControlMidiCCIn::openPort(unsigned int portNumber)
+bool AGMidiInput::openPort(unsigned int portNumber)
 {
     
     PGMidi *midi = AGPGMidiContext::getMidi();
@@ -186,7 +127,7 @@ bool AGControlMidiCCIn::openPort(unsigned int portNumber)
     return true;
 }
 
-bool AGControlMidiCCIn::openPort(string deviceName)
+bool AGMidiInput::openPort(string deviceName)
 {
     
     PGMidi *midi = AGPGMidiContext::getMidi();
@@ -202,7 +143,7 @@ bool AGControlMidiCCIn::openPort(string deviceName)
     }
     
     // bail if not found
-    if(port == -1) {
+    if(port == -2) {
         cout << "port \"" << deviceName << "\" is not available" << endl;
         return false;
     }
@@ -210,14 +151,14 @@ bool AGControlMidiCCIn::openPort(string deviceName)
     return openPort(port);
 }
 
-bool AGControlMidiCCIn::openVirtualPort(string portName)
+bool AGMidiInput::openVirtualPort(string portName)
 {
     cout << "couldn't open virtual port \"" << portName << endl;
     cout << "virtual ports are currently not supported on iOS" << endl;
     return false;
 }
 
-void AGControlMidiCCIn::closePort()
+void AGMidiInput::closePort()
 {
     
     if(bOpen) {
@@ -238,25 +179,24 @@ void AGControlMidiCCIn::closePort()
     bVirtual = false;
 }
 
-void AGControlMidiCCIn::ignoreTypes(bool midiSysex, bool midiTiming, bool midiSense)
+void AGMidiInput::ignoreTypes(bool midiSysex, bool midiTiming, bool midiSense)
 {
     inputDelegate->d.bIgnoreSysex = midiSysex;
     inputDelegate->d.bIgnoreTiming = midiTiming;
     inputDelegate->d.bIgnoreSense = midiSense;
 }
 
-void AGControlMidiCCIn::setConnectionListener(AGMidiConnectionListener * listener)
+void AGMidiInput::setConnectionListener(AGMidiConnectionListener * listener)
 {
     AGPGMidiContext::setConnectionListener(listener);
 }
 
-void AGControlMidiCCIn::clearConnectionListener()
+void AGMidiInput::clearConnectionListener()
 {
     AGPGMidiContext::clearConnectionListener();
 }
 
-void AGControlMidiCCIn::enableNetworking()
+void AGMidiInput::enableNetworking()
 {
     AGPGMidiContext::enableNetwork();
 }
-

@@ -1,30 +1,22 @@
 //
-//  AGControlMidiCCIn.h
+//  AGControlMidiCCIn.cpp
 //  Auragraph
 //
 //  Created by Andrew Piepenbrink on 7/20/17.
 //  Copyright © 2017 Spencer Salazar. All rights reserved.
 //
-//  Parts of this code are based on ofxMidi by Dan Wilcox.
-//  See https://github.com/danomatika/ofxMidi for documentation
 
-#ifndef AGControlMidiCCIn_h
-#define AGControlMidiCCIn_h
-
+#include "AGMidiInput.h"
 #include "AGControlNode.h"
 #include "AGTimer.h"
 #include "AGStyle.h"
-
-#include "AGControlMidiInput.h"
-#include "AGMidiConnectionListener.h"
-#include "AGPGMidiContext.h"
 
 //------------------------------------------------------------------------------
 // ### AGControlMidiCCIn ###
 //------------------------------------------------------------------------------
 #pragma mark - AGControlMidiCCIn
 
-class AGControlMidiCCIn : public AGControlNode, public AGControlMidiInput
+class AGControlMidiCCIn : public AGControlNode, public AGMidiInput
 {
 public:
     
@@ -120,59 +112,72 @@ public:
     
     using AGControlNode::AGControlNode;
     
-    void initFinal() override;
-    
-    ~AGControlMidiCCIn();
-    
-    void attachToAllExistingSources();
-    void detachFromAllExistingSources();
-    
-    void editPortValueChanged(int paramId) override;
+    virtual void initFinal() override
+    {
+        initObjC();
+        
+        ccNum = param(PARAM_CCNUM);
+        bLearn = false;
+    }
     
     virtual int numOutputPorts() const override { return 1; }
     
+    void editPortValueChanged(int paramId) override
+    {
+        if(paramId == PARAM_CCLEARN)
+        {
+            int flag = param(PARAM_CCLEARN);
+            bLearn = static_cast<bool>(flag);
+        }
+        else if(paramId == PARAM_CCNUM)
+        {
+            ccNum = param(PARAM_CCNUM);
+        }
+    }
+    
     // MIDI message handler
-    void messageReceived(double deltatime, vector<unsigned char> *message) override;    
-    
-    // XXX Should the below functions/members even be public? That seemed to make sense
-    // in ofx because other classes were calling these methods to hook things
-    // together, but our architecture is different.
-    
-    static void listPorts();
-    static vector<string>& getPortList();
-    static int getNumPorts();
-    static string getPortName(unsigned int portNumber);
-    
-    bool openPort(unsigned int portNumber);
-    bool openPort(string deviceName);
-    bool openVirtualPort(string portName); ///< currently noop on iOS
-    void closePort();
-    
-    void ignoreTypes(bool midiSysex=true, bool midiTiming=true, bool midiSense=true);
-    
-    static void setConnectionListener(AGMidiConnectionListener * listener);
-    static void clearConnectionListener();
-    static void enableNetworking();
+    void messageReceived(double deltatime, vector<unsigned char> *message) override
+    {
+        // Examine our first byte to determine the type of message
+        uint8_t chr = message->at(0);
+        
+        int nodeChan = param(PARAM_CHANNEL);
+        
+        if(nodeChan == 0)
+        {
+            chr &= 0xF0; // All channels, just clear the lower nibble
+        }
+        else {
+            int msgChan = (chr & 0x0F) + 1; // Extract channel information, nudge to 1-indexed
+            
+            if(msgChan != nodeChan)
+            {
+                return; // If channel doesn't match, return
+            }
+            else {
+                chr &= 0xF0; // Clear lower nibble, continue parsing message below
+            }
+        }
+        
+        if(chr == 0x80) { }// Note off
+        else if(chr == 0x90) { }// Note on
+        else if(chr == 0xA0) { } // Mmmm... polyphonic aftertouch
+        else if(chr == 0xB0) // CC
+        {
+            if(bLearn)
+            {
+                ccNum = message->at(1);
+                setEditPortValue(1, AGParamValue(ccNum));
+            }
+            
+            if(message->at(1) == ccNum)
+            {
+                pushControl(0, AGControl(message->at(2)));; // CC value
+            }
+        }
+    }
     
 private:
-    struct InputDelegate; // forward declaration for Obj-C wrapper
-    InputDelegate *inputDelegate; ///< Obj-C midi input interface
-    
     bool bLearn;
     int ccNum;
-    
-    int portNum;     //< current port num, -2 if not connected, -1 if we're listening to all
-    string portName; //< current port name, "" if not connected
-    
-    // I'm not sure if this should be static, it was in ofx... ah wait, it has to be because
-    // it's getting called by a static member function. So again, I ask, do those functions
-    // themselves need to be static? Leave it for now, wait until we have functional nodes
-    // so we can see if port browsing causes contention among node instances. Sheesh...
-    static vector<string> portList; //< list of port names
-    
-    bool bOpen;    //< is the port currently open?
-    bool bVerbose; //< print incoming bytes?
-    bool bVirtual; //< are we connected to a virtual port?
 };
-
-#endif /* AGControlMidiCCIn_h */

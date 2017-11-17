@@ -1,38 +1,30 @@
 //
-//  AGControlMidiNoteIn.h
+//  AGControlMidiNoteIn.cpp
 //  Auragraph
 //
 //  Created by Andrew Piepenbrink on 7/20/17.
 //  Copyright © 2017 Spencer Salazar. All rights reserved.
 //
-//  Parts of this code are based on ofxMidi by Dan Wilcox.
-//  See https://github.com/danomatika/ofxMidi for documentation
 
-#ifndef AGControlMidiNoteIn_h
-#define AGControlMidiNoteIn_h
-
+#include "AGMidiInput.h"
 #include "AGControlNode.h"
 #include "AGTimer.h"
 #include "AGStyle.h"
-
-#include "AGControlMidiInput.h"
-#include "AGMidiConnectionListener.h"
-#include "AGPGMidiContext.h"
 
 //------------------------------------------------------------------------------
 // ### AGControlMidiNoteIn ###
 //------------------------------------------------------------------------------
 #pragma mark - AGControlMidiNoteIn
 
-class AGControlMidiNoteIn : public AGControlNode, public AGControlMidiInput
+class AGControlMidiNoteIn : public AGControlNode, public AGMidiInput
 {
 public:
     
     enum Param
     {
-        PARAM_NOTEOUT_CHANNEL,
-        PARAM_NOTEOUT_PITCH,
-        PARAM_NOTEOUT_VELOCITY,
+        PARAM_NOTEIN_CHANNEL,
+        PARAM_NOTEIN_PITCH,
+        PARAM_NOTEIN_VELOCITY,
     };
     
     class Manifest : public AGStandardNodeManifest<AGControlMidiNoteIn>
@@ -47,7 +39,7 @@ public:
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_NOTEOUT_CHANNEL, "Channel", ._default = 0, .min = 0, .max = 16,
+                { PARAM_NOTEIN_CHANNEL, "Channel", ._default = 0, .min = 0, .max = 16,
                     .type = AGControl::TYPE_INT, .mode = AGPortInfo::LIN,
                     .doc = "Channel." },
             };
@@ -56,8 +48,8 @@ public:
         vector<AGPortInfo> _outputPortInfo() const override
         {
             return {
-                { PARAM_NOTEOUT_PITCH, "Noteout: pitch", true, false, .doc = "Pitch of a note." },
-                { PARAM_NOTEOUT_VELOCITY, "Noteout: velocity", true, false, .doc = "Velocity of a note." },
+                { PARAM_NOTEIN_PITCH, "Notein: pitch", true, false, .doc = "Pitch of a note." },
+                { PARAM_NOTEIN_VELOCITY, "Notein: velocity", true, false, .doc = "Velocity of a note." },
             };
         };
         
@@ -100,56 +92,71 @@ public:
 
     using AGControlNode::AGControlNode;
     
-    void initFinal() override;
-    
-    ~AGControlMidiNoteIn();
-    
-    void attachToAllExistingSources();
-    void detachFromAllExistingSources();
-    
-    void editPortValueChanged(int paramId) override;
-    
+    void initFinal() override
+    {
+        initObjC();
+    }
+
     virtual int numOutputPorts() const override { return 2; }
     
+    void editPortValueChanged(int paramId) override
+    {
+        // XXX when we implement channel filtering we will need to address this
+    }
+    
     // MIDI message handler
-    void messageReceived(double deltatime, vector<unsigned char> *message) override;
-    
-    // XXX Should the below functions/members even be public? That seemed to make sense
-    // in ofx because other classes were calling these methods to hook things
-    // together, but our architecture is different.
-    
-    static void listPorts();
-    static vector<string>& getPortList();
-    static int getNumPorts();
-    static string getPortName(unsigned int portNumber);
-    
-    bool openPort(unsigned int portNumber);
-    bool openPort(string deviceName);
-    bool openVirtualPort(string portName); ///< currently noop on iOS
-    void closePort();
-    
-    void ignoreTypes(bool midiSysex=true, bool midiTiming=true, bool midiSense=true);
-    
-    static void setConnectionListener(AGMidiConnectionListener * listener);
-    static void clearConnectionListener();
-    static void enableNetworking();
-    
-private:
-    struct InputDelegate; // forward declaration for Obj-C wrapper
-    InputDelegate *inputDelegate; ///< Obj-C midi input interface
-    
-    int portNum;     //< current port num, -2 if not connected, -1 if we're listening to all
-    string portName; //< current port name, "" if not connected
-    
-    // I'm not sure if this should be static, it was in ofx... ah wait, it has to be because
-    // it's getting called by a static member function. So again, I ask, do those functions
-    // themselves need to be static? Leave it for now, wait until we have functional nodes
-    // so we can see if port browsing causes contention among node instances. Sheesh...
-    static vector<string> portList; //< list of port names
+    void messageReceived(double deltatime, vector<unsigned char> *message) override
+    {
+        // Examine our first byte to determine the type of message
+        uint8_t chr = message->at(0);
         
-    bool bOpen;    //< is the port currently open?
-    bool bVerbose; //< print incoming bytes?
-    bool bVirtual; //< are we connected to a virtual port?
+        int nodeChan = param(PARAM_NOTEIN_CHANNEL);
+        
+        if(nodeChan == 0)
+        {
+            chr &= 0xF0; // All channels, just clear the lower nibble
+        }
+        else {
+            int msgChan = (chr & 0x0F) + 1; // Extract channel information, nudge to 1-indexed
+            
+            if(msgChan != nodeChan)
+            {
+                return; // If channel doesn't match, return
+            }
+            else {
+                chr &= 0xF0; // Clear lower nibble, continue parsing message below
+            }
+        }
+        
+        static bool noteStatus = false; // Kludgy flag for legato tracking
+        static uint8_t curNote = 0x00; //
+        
+        if(chr == 0x80) // Note off
+        {
+            if(message->at(1) == curNote)
+            {
+                noteStatus = false;
+                
+                pushControl(0, AGControl(message->at(1))); // Note pitch; do we even need to send this?
+                
+                // If for some reason we want to handle nonzero velocities for note off
+                //pushControl(1, AGControl(message->at(2)));
+                
+                pushControl(1, AGControl(0)); // Assume zero, ignoring the velocity byte
+            }
+        }
+        else if(chr == 0x90) // Note on
+        {
+            noteStatus = true;
+            curNote = message->at(1);
+            
+            pushControl(0, AGControl(message->at(1))); // Note pitch
+            
+            // XXX surrounding this with an if(noteStatus && !shouldPlayLegato) would
+            // allow us to implement, well, legato...
+            pushControl(1, AGControl(message->at(2))); // Note velocity (handles zero velocity as noteoff)
+        }
+        else if(chr == 0xA0) { } // Mmmm... polyphonic aftertouch
+        else if(chr == 0xB0) { } // CC
+    }
 };
-
-#endif /* AGControlMidiNoteIn_h */
