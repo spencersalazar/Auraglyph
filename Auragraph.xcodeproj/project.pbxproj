@@ -1058,7 +1058,7 @@
 				ORGANIZATIONNAME = "Spencer Salazar";
 				TargetAttributes = {
 					095D12BF17ACA36C0048A012 = {
-						DevelopmentTeam = ZSDER9UVPL;
+						DevelopmentTeam = 9GU9FHJ3JC;
 					};
 				};
 			};
@@ -1357,7 +1357,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = ZSDER9UVPL;
+				DEVELOPMENT_TEAM = 9GU9FHJ3JC;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Auragraph/Auragraph-Prefix.pch";
@@ -1391,7 +1391,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = ZSDER9UVPL;
+				DEVELOPMENT_TEAM = 9GU9FHJ3JC;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Auragraph/Auragraph-Prefix.pch";
