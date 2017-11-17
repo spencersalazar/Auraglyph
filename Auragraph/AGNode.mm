@@ -48,9 +48,9 @@ void AGNode::connect(AGConnection * connection)
 
 void AGNode::disconnect(AGConnection * connection)
 {
-    dbgprint("disconnect: (0x%08lx) 0x%08lx:%i -> 0x%08lx:%i\n",
-             (unsigned long) connection, (unsigned long) connection->src(), connection->srcPort(),
-             (unsigned long) connection->dst(), connection->dstPort());
+    dbgprint("disconnect: (0x%08x) 0x%08x:%i -> 0x%08x:%i\n",
+             (unsigned int) connection, (unsigned int) connection->src(), connection->srcPort(),
+             (unsigned int) connection->dst(), connection->dstPort());
     
     connection->src()->lock();
     connection->src()->removeOutbound(connection);
@@ -624,7 +624,7 @@ AGDocument::Node AGNode::serialize()
         });
     }
     
-    return docNode;
+    return std::move(docNode);
 }
 
 //------------------------------------------------------------------------------

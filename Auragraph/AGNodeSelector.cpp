@@ -125,7 +125,7 @@ m_manager(manager)
     m_geo[2] = GLvertex3f(m_radius, -m_radius, 0);
     m_geo[3] = GLvertex3f(m_radius, m_radius, 0);
     
-    unsigned long nTypes = m_manager.nodeTypes().size();
+    int nTypes = m_manager.nodeTypes().size();
     m_verticalScrollPos.raw().clampTo(0, max(ceilf(nTypes/2.0f-2)*m_radius,0.0f));
     m_verticalScrollPos.setLoss(0.5);
     m_verticalScrollPos.setDrag(0.1);
@@ -204,7 +204,7 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
     glDrawArrays(GL_LINE_LOOP, 0, m_geoSize);
     
     /* draw scroll bar */
-    unsigned long nTypes = m_manager.nodeTypes().size();
+    int nTypes = m_manager.nodeTypes().size();
     if(nTypes > 4)
     {
         float scroll_bar_margin = 0.95;

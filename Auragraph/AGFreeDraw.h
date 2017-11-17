@@ -20,7 +20,7 @@
 class AGFreeDraw : public AGUIObject
 {
 public:
-    AGFreeDraw(GLvertex3f *points, unsigned long nPoints);
+    AGFreeDraw(GLvertex3f *points, int nPoints);
     AGFreeDraw(const AGDocument::Freedraw &docFreedraw);
     ~AGFreeDraw();
     

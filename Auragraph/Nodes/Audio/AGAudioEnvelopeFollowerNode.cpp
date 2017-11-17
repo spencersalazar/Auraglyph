@@ -93,7 +93,7 @@ public:
             }
             
             // Add vertices for envelope trace
-            for (int i = (int) samples.size() - 1; i >= 0; i--)
+            for (int i = samples.size() - 1; i >= 0; i--)
             {
                 float env_input = abs(samples[i]);
                 

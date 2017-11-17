@@ -11,7 +11,7 @@
 
 #include "Geometry.h"
 
-static inline GLcolor4f hsv2rgb(GLcolor4f hsv)
+static GLcolor4f hsv2rgb(GLcolor4f hsv)
 {
     GLcolor4f rgb;
     

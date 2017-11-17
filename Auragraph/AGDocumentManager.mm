@@ -59,7 +59,7 @@ AGDocument AGDocumentManager::load(const std::string &filename)
     std::string filepath = documentDirectory() + "/" + filename;
     AGDocument doc;
     doc.loadFromPath(filepath);
-    return doc;
+    return std::move(doc);
 }
 
 const std::vector<AGDocumentManager::DocumentListing> &AGDocumentManager::list()

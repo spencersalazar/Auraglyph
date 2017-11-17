@@ -75,7 +75,7 @@ m_tex(0)
     GLuint spriteTexture = 0;
 	CGContextRef spriteContext;
 	GLubyte *spriteData;
-	GLsizei texWidth, texHeight;
+	size_t texWidth, texHeight;
     
     CGDataProviderRef dataProvider = CGDataProviderCreateWithFilename(filepath.c_str());    
     CGFontRef font = CGFontCreateWithDataProvider(dataProvider);
@@ -91,8 +91,8 @@ m_tex(0)
     m_descender = CTFontGetDescent(ctFont);
     
     m_res = 1024;
-	texWidth = (GLsizei) m_res;
-	texHeight = (GLsizei) m_res;
+	texWidth = (int) m_res;
+	texHeight = (int) m_res;
     
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     
@@ -295,7 +295,7 @@ float TexFont::width(const std::string &text)
 {
     float widthRatio = 0;
     float _inverseStdWidth = 1.0f/m_width;
-    int len = (int) text.length();
+    int len = text.length();
     for(int i = 0; i < len; i++)
     {
         GlyphInfo info = m_info[text[i]];

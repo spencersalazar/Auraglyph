@@ -23,7 +23,7 @@
 //------------------------------------------------------------------------------
 #pragma mark - AGFreeDraw
 
-AGFreeDraw::AGFreeDraw(GLvertex3f *points, unsigned long nPoints) :
+AGFreeDraw::AGFreeDraw(GLvertex3f *points, int nPoints) :
 m_active(true),
 m_uuid(makeUUID())
 {
@@ -43,7 +43,7 @@ m_active(true),
 //m_alpha(1, 0, 0.5, 2),
 m_uuid(docFreedraw.uuid)
 {
-    int nPoints = (int) docFreedraw.points.size()/3;
+    int nPoints = docFreedraw.points.size()/3;
     
     m_alpha = powcurvef(0, 1, 0.5, 2);
     m_alpha.forceTo(1);
@@ -111,9 +111,9 @@ void AGFreeDraw::render()
     }
     
     if(m_points.size() == 1)
-        glDrawArrays(GL_POINTS, 0, (int) m_points.size());
+        glDrawArrays(GL_POINTS, 0, m_points.size());
     else
-        glDrawArrays(GL_LINE_STRIP, 0, (int) m_points.size());
+        glDrawArrays(GL_LINE_STRIP, 0, m_points.size());
     
     // debug
     //    if(m_touchPoint0 >= 0)
@@ -147,7 +147,6 @@ AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
 {
     return NULL; // XXX we not longer use the hit-testing below
     
-#if 0
     if(!m_active)
         return NULL;
     
@@ -167,7 +166,6 @@ AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
     }
     
     return NULL;
-#endif // 0
 }
 
 AGDocument::Freedraw AGFreeDraw::serialize()

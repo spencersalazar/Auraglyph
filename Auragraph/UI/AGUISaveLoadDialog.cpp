@@ -275,7 +275,7 @@ public:
         GLcolor4f whiteA = AGStyle::foregroundColor().withAlpha(0.75);
         float yPos = m_itemStart + m_verticalScrollPos;
         int i = 0;
-        int len = (int) m_documentList.size();
+        int len = m_documentList.size();
         
         glLineWidth(4.0f);
         
@@ -327,7 +327,7 @@ public:
         }
         
         /* draw scroll bar */
-        int nRows = (int) m_documentList.size();
+        int nRows = m_documentList.size();
         if(nRows > 3)
         {
             float scroll_bar_margin = 0.95;

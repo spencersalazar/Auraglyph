@@ -36,7 +36,7 @@ AGMenu::~AGMenu()
 {
 }
 
-void AGMenu::setIcon(GLvertex3f *geo, unsigned long num, GLint kind)
+void AGMenu::setIcon(GLvertex3f *geo, int num, GLint kind)
 {
     m_iconGeo = std::vector<GLvertex3f>(geo, geo+num);
     m_iconGeoKind = kind;

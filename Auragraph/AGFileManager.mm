@@ -47,5 +47,5 @@ vector<string> AGFileManager::listDirectory(const string &directory)
         pathList.push_back([path UTF8String]);
     }
     
-    return pathList;
+    return std::move(pathList);
 }

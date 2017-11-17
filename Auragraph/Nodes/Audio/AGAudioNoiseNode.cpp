@@ -79,7 +79,7 @@ public:
     
     void initFinal() override
     {
-        srandom((unsigned int) time(NULL));
+        srandom(time(NULL));
     }
     
     virtual void renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans) override

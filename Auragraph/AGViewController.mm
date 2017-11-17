@@ -465,7 +465,7 @@ static AGViewController * g_instance = nil;
     assert(object);
 //    assert(dynamic_cast<AGConnection *>(object) == NULL);
     
-    dbgprint("fadeOutAndDelete: %s 0x%08lx\n", typeid(*object).name(), (unsigned long) object);
+    dbgprint("fadeOutAndDelete: %s 0x%08x\n", typeid(*object).name(), (unsigned int) object);
     
     [self removeFromTouchCapture:object];
     
@@ -568,14 +568,14 @@ static AGViewController * g_instance = nil;
 
 - (void)addTouchOutsideHandler:(AGTouchHandler *)listener
 {
-    dbgprint("addTouchOutsideHandler: %s 0x%08lx\n", [NSStringFromClass([listener class]) UTF8String], (unsigned long) listener);
+    dbgprint("addTouchOutsideHandler: %s 0x%08x\n", [NSStringFromClass([listener class]) UTF8String], (unsigned int) listener);
     
     _touchOutsideHandlers.push_back(listener);
 }
 
 - (void)removeTouchOutsideHandler:(AGTouchHandler *)listener
 {
-    dbgprint("removeTouchOutsideHandler: %s 0x%08lx\n", [NSStringFromClass([listener class]) UTF8String], (unsigned long) listener);
+    dbgprint("removeTouchOutsideHandler: %s 0x%08x\n", [NSStringFromClass([listener class]) UTF8String], (unsigned int) listener);
 
     _touchOutsideHandlers.remove(listener);
 }
@@ -592,8 +592,8 @@ static AGViewController * g_instance = nil;
 
 - (void)updateMatrices
 {
+    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     GLKMatrix4 projectionMatrix;
-//    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
 //    if(UIInterfaceOrientationIsLandscape(self.interfaceOrientation))
 //        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
 //    else
@@ -820,7 +820,7 @@ static AGViewController * g_instance = nil;
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    dbgprint_off("touchesBegan, count = %lu\n", (unsigned long)[touches count]);
+    dbgprint_off("touchesBegan, count = %i\n", [touches count]);
     
     // hit test each touch
     for(UITouch *touch in touches)
@@ -1024,7 +1024,7 @@ static AGViewController * g_instance = nil;
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    dbgprint_off("touchesMoved, count = %lu\n", (unsigned long)[touches count]);
+    dbgprint_off("touchesMoved, count = %i\n", [touches count]);
     
     BOOL didScroll = NO;
     for(UITouch *touch in touches)
@@ -1096,7 +1096,7 @@ static AGViewController * g_instance = nil;
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    dbgprint_off("touchEnded, count = %lu\n", (unsigned long)[touches count]);
+    dbgprint_off("touchEnded, count = %i\n", [touches count]);
     
     for(UITouch *touch in touches)
     {
@@ -1131,7 +1131,7 @@ static AGViewController * g_instance = nil;
             AGTouchHandler *nextHandler = [touchHandler nextHandler];
             if(nextHandler)
             {
-                dbgprint("queuing touchHandler: %s 0x%08lx\n", [NSStringFromClass([nextHandler class]) UTF8String], (unsigned long) nextHandler);
+                dbgprint("queuing touchHandler: %s 0x%08x\n", [NSStringFromClass([nextHandler class]) UTF8String], (unsigned int) nextHandler);
                 _touchHandlerQueue = nextHandler;
             }
             _touchHandlers.erase(touch);

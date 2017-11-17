@@ -635,7 +635,7 @@ AGUINodeEditor *AGControlSequencerNode::createCustomEditor()
 
 int AGControlSequencerNode::numOutputPorts() const
 {
-    return (int) m_sequence.size();
+    return m_sequence.size();
 }
 
 void AGControlSequencerNode::process(sampletime _t)
@@ -695,7 +695,7 @@ int AGControlSequencerNode::currentStep()
 
 int AGControlSequencerNode::numSequences()
 {
-    return (int) m_sequence.size();
+    return m_sequence.size();
 }
 
 void AGControlSequencerNode::setNumSequences(int num)
@@ -813,7 +813,7 @@ AGDocument::Node AGControlSequencerNode::serialize()
         }
     }
     
-    return docNode;
+    return std::move(docNode);
 }
 
 

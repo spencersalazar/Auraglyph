@@ -99,6 +99,11 @@
 		099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */; };
 		099AF11617D13365000BAB7B /* AGTrainerViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11517D13365000BAB7B /* AGTrainerViewCell.xib */; };
 		099AF11817D157C5000BAB7B /* AGTrainerHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11717D157C5000BAB7B /* AGTrainerHeaderView.xib */; };
+		099AF12617D1A6DA000BAB7B /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 099AF11C17D1A6DA000BAB7B /* ioapi.c */; };
+		099AF12717D1A6DA000BAB7B /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 099AF11E17D1A6DA000BAB7B /* mztools.c */; };
+		099AF12817D1A6DA000BAB7B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 099AF12017D1A6DA000BAB7B /* unzip.c */; };
+		099AF12917D1A6DA000BAB7B /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 099AF12217D1A6DA000BAB7B /* zip.c */; };
+		099AF12A17D1A6DA000BAB7B /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 099AF12517D1A6DA000BAB7B /* SSZipArchive.m */; };
 		09B674441D6D9E8700F84E09 /* AGCompositeNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */; };
 		09B962521DD872C0001DCFB1 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09B962511DD872C0001DCFB1 /* CoreMotion.framework */; };
 		09B962551DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09B962531DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp */; };
@@ -275,7 +280,7 @@
 		0944E8C51DCB325D00EB8087 /* AGAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAnalytics.h; sourceTree = "<group>"; };
 		095786171F031ED800286358 /* AGDashboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGDashboard.cpp; sourceTree = "<group>"; };
 		095786181F031ED800286358 /* AGDashboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGDashboard.h; sourceTree = "<group>"; };
-		095D12C017ACA36C0048A012 /* Auraglyph.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Auraglyph.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		095D12C017ACA36C0048A012 /* AURAGLPH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AURAGLPH.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		095D12C317ACA36C0048A012 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		095D12C517ACA36C0048A012 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		095D12C717ACA36C0048A012 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -418,6 +423,17 @@
 		099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AGTrainerViewController.xib; sourceTree = "<group>"; };
 		099AF11517D13365000BAB7B /* AGTrainerViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AGTrainerViewCell.xib; sourceTree = "<group>"; };
 		099AF11717D157C5000BAB7B /* AGTrainerHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AGTrainerHeaderView.xib; sourceTree = "<group>"; };
+		099AF11B17D1A6DA000BAB7B /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		099AF11C17D1A6DA000BAB7B /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		099AF11D17D1A6DA000BAB7B /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
+		099AF11E17D1A6DA000BAB7B /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
+		099AF11F17D1A6DA000BAB7B /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
+		099AF12017D1A6DA000BAB7B /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		099AF12117D1A6DA000BAB7B /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		099AF12217D1A6DA000BAB7B /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		099AF12317D1A6DA000BAB7B /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		099AF12417D1A6DA000BAB7B /* SSZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSZipArchive.h; sourceTree = "<group>"; };
+		099AF12517D1A6DA000BAB7B /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
 		099AF12D17D1A892000BAB7B /* projects.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = projects.zip; sourceTree = "<group>"; };
 		09A8BB4019F9E39E00E15BF7 /* spMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spMath.h; sourceTree = "<group>"; };
 		09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = AGCompositeNode.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -643,7 +659,7 @@
 		095D12C117ACA36C0048A012 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				095D12C017ACA36C0048A012 /* Auraglyph.app */,
+				095D12C017ACA36C0048A012 /* AURAGLPH.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -660,6 +676,7 @@
 				0944E8BE1DCB321F00EB8087 /* SystemConfiguration.framework */,
 				0944E8BC1DCB321B00EB8087 /* CoreData.framework */,
 				0944E8AF1DCB31EA00EB8087 /* GoogleAnalytics */,
+				099AF11917D1A6DA000BAB7B /* zip */,
 				098740BC17BCD9810098511A /* CoreText.framework */,
 				098740A417BA317E0098511A /* AudioToolbox.framework */,
 				095E84EA17B354BE0065EF8E /* LipiTk */,
@@ -930,6 +947,32 @@
 			path = Images;
 			sourceTree = "<group>";
 		};
+		099AF11917D1A6DA000BAB7B /* zip */ = {
+			isa = PBXGroup;
+			children = (
+				099AF11A17D1A6DA000BAB7B /* minizip */,
+				099AF12417D1A6DA000BAB7B /* SSZipArchive.h */,
+				099AF12517D1A6DA000BAB7B /* SSZipArchive.m */,
+			);
+			path = zip;
+			sourceTree = "<group>";
+		};
+		099AF11A17D1A6DA000BAB7B /* minizip */ = {
+			isa = PBXGroup;
+			children = (
+				099AF11B17D1A6DA000BAB7B /* crypt.h */,
+				099AF11C17D1A6DA000BAB7B /* ioapi.c */,
+				099AF11D17D1A6DA000BAB7B /* ioapi.h */,
+				099AF11E17D1A6DA000BAB7B /* mztools.c */,
+				099AF11F17D1A6DA000BAB7B /* mztools.h */,
+				099AF12017D1A6DA000BAB7B /* unzip.c */,
+				099AF12117D1A6DA000BAB7B /* unzip.h */,
+				099AF12217D1A6DA000BAB7B /* zip.c */,
+				099AF12317D1A6DA000BAB7B /* zip.h */,
+			);
+			path = minizip;
+			sourceTree = "<group>";
+		};
 		09B674411D6D9D6500F84E09 /* Nodes */ = {
 			isa = PBXGroup;
 			children = (
@@ -1028,9 +1071,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		095D12BF17ACA36C0048A012 /* Auraglyph */ = {
+		095D12BF17ACA36C0048A012 /* Auragraph */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 095D12EB17ACA36C0048A012 /* Build configuration list for PBXNativeTarget "Auraglyph" */;
+			buildConfigurationList = 095D12EB17ACA36C0048A012 /* Build configuration list for PBXNativeTarget "Auragraph" */;
 			buildPhases = (
 				095D12BC17ACA36C0048A012 /* Sources */,
 				095D12BD17ACA36C0048A012 /* Frameworks */,
@@ -1042,9 +1085,9 @@
 			dependencies = (
 				09EE673D1EFDB72F00B4ED62 /* PBXTargetDependency */,
 			);
-			name = Auraglyph;
+			name = Auragraph;
 			productName = Auragraph;
-			productReference = 095D12C017ACA36C0048A012 /* Auraglyph.app */;
+			productReference = 095D12C017ACA36C0048A012 /* AURAGLPH.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -1054,7 +1097,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = AG;
-				LastUpgradeCheck = 0910;
+				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "Spencer Salazar";
 				TargetAttributes = {
 					095D12BF17ACA36C0048A012 = {
@@ -1081,7 +1124,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				095D12BF17ACA36C0048A012 /* Auraglyph */,
+				095D12BF17ACA36C0048A012 /* Auragraph */,
 			);
 		};
 /* End PBXProject section */
@@ -1219,9 +1262,14 @@
 				09F2D53A1D7EA33400F537C7 /* Delay.cpp in Sources */,
 				494019CD1F21CCF3000F05E8 /* AGPGMidiDelegate.mm in Sources */,
 				09EE65821EFB64C700B4ED62 /* SampleCircularBuffer.cpp in Sources */,
+				099AF12617D1A6DA000BAB7B /* ioapi.c in Sources */,
+				099AF12717D1A6DA000BAB7B /* mztools.c in Sources */,
 				0944E8C61DCB325D00EB8087 /* AGAnalytics.mm in Sources */,
+				099AF12817D1A6DA000BAB7B /* unzip.c in Sources */,
+				099AF12917D1A6DA000BAB7B /* zip.c in Sources */,
 				09230FB31F3D8C9500DF06B5 /* AGAboutBox.cpp in Sources */,
 				0991BA851D8654C70080175C /* FileWvIn.cpp in Sources */,
+				099AF12A17D1A6DA000BAB7B /* SSZipArchive.m in Sources */,
 				09030CEB1EFEF83D00D4A4F2 /* Signal.cpp in Sources */,
 				0934B67B1E223B47009259E2 /* AGFileManager.mm in Sources */,
 				498438621F1EF40B00FB2914 /* PGMidi.mm in Sources */,
@@ -1266,41 +1314,25 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 2;
@@ -1314,33 +1346,18 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 2;
@@ -1351,6 +1368,7 @@
 		095D12EC17ACA36C0048A012 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = armv7;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1373,8 +1391,7 @@
 					"$(PROJECT_DIR)/libs/GoogleAnalytics",
 				);
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_BUNDLE_IDENTIFIER = "edu.stanford.ccrma.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = Auraglyph;
+				PRODUCT_NAME = AURAGLPH;
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = app;
@@ -1384,6 +1401,7 @@
 		095D12ED17ACA36C0048A012 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = armv7;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1407,8 +1425,7 @@
 					"$(PROJECT_DIR)/libs/GoogleAnalytics",
 				);
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_BUNDLE_IDENTIFIER = "edu.stanford.ccrma.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = Auraglyph;
+				PRODUCT_NAME = AURAGLPH;
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = app;
@@ -1427,7 +1444,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		095D12EB17ACA36C0048A012 /* Build configuration list for PBXNativeTarget "Auraglyph" */ = {
+		095D12EB17ACA36C0048A012 /* Build configuration list for PBXNativeTarget "Auragraph" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				095D12EC17ACA36C0048A012 /* Debug */,
