@@ -295,7 +295,7 @@ float TexFont::width(const std::string &text)
 {
     float widthRatio = 0;
     float _inverseStdWidth = 1.0f/m_width;
-    int len = text.length();
+    int len = (int) text.length();
     for(int i = 0; i < len; i++)
     {
         GlyphInfo info = m_info[text[i]];

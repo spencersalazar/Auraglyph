@@ -146,7 +146,7 @@ public:
                 glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
                 glDisableVertexAttribArray(AGVertexAttribNormal);
                 
-                glDrawArrays(GL_LINE_STRIP, 0, geo.size());
+                glDrawArrays(GL_LINE_STRIP, 0, (int) geo.size());
             }
         }
         
@@ -467,7 +467,7 @@ public:
                 m_node->m_items.push_back(e->value());
                 e->setValueRef(&(m_node->m_items.back()));
                 
-                int len = m_node->m_items.size();
+                unsigned long len = m_node->m_items.size();
                 m_ghostElement = new Element(this, GLvertex3f(-m_width/3.0f + m_width/3.0*len, 0.0f, 0.0f), GLvertex2f(m_width/3.0f, m_height));
                 m_ghostElement->init();
                 m_ghostElement->setValueRef(NULL);

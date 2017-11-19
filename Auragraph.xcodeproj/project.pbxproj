@@ -49,9 +49,6 @@
 		095D12D217ACA36C0048A012 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 095D12D017ACA36C0048A012 /* InfoPlist.strings */; };
 		095D12D417ACA36C0048A012 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 095D12D317ACA36C0048A012 /* main.m */; };
 		095D12D817ACA36C0048A012 /* AGAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095D12D717ACA36C0048A012 /* AGAppDelegate.mm */; };
-		095D12DA17ACA36C0048A012 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 095D12D917ACA36C0048A012 /* Default.png */; };
-		095D12DC17ACA36C0048A012 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 095D12DB17ACA36C0048A012 /* Default@2x.png */; };
-		095D12DE17ACA36C0048A012 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 095D12DD17ACA36C0048A012 /* Default-568h@2x.png */; };
 		095D12E517ACA36C0048A012 /* AGViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095D12E417ACA36C0048A012 /* AGViewController.mm */; };
 		095D12E817ACA36C0048A012 /* AGViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 095D12E617ACA36C0048A012 /* AGViewController.xib */; };
 		095D12FB17ACAA100048A012 /* Geometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 095D12F617ACAA100048A012 /* Geometry.cpp */; };
@@ -67,6 +64,8 @@
 		095E853117B358FC0065EF8E /* shaperectst.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E852F17B358FC0065EF8E /* shaperectst.mm */; };
 		095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */; };
 		096F42051D9CF04600600717 /* AGWaveformAudioNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096F42031D9CF04600600717 /* AGWaveformAudioNode.cpp */; };
+		0973FB9C1FC10815004CC25A /* agoutput-nobg.png in Resources */ = {isa = PBXBuildFile; fileRef = 0973FB991FC10815004CC25A /* agoutput-nobg.png */; };
+		0973FB9D1FC10815004CC25A /* auraglyph-title.png in Resources */ = {isa = PBXBuildFile; fileRef = 0973FB9B1FC10815004CC25A /* auraglyph-title.png */; };
 		09817F3919F87CC7000E9FB3 /* GeoGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09817F3819F87CC7000E9FB3 /* GeoGenerator.cpp */; };
 		0985E5361D8C952800B536C8 /* AGInteractiveObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0985E5341D8C952800B536C8 /* AGInteractiveObject.mm */; };
 		0987409C17B98D7C0098511A /* AGNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0987409A17B98D7C0098511A /* AGNode.mm */; };
@@ -100,11 +99,6 @@
 		099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */; };
 		099AF11617D13365000BAB7B /* AGTrainerViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11517D13365000BAB7B /* AGTrainerViewCell.xib */; };
 		099AF11817D157C5000BAB7B /* AGTrainerHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11717D157C5000BAB7B /* AGTrainerHeaderView.xib */; };
-		099AF12617D1A6DA000BAB7B /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 099AF11C17D1A6DA000BAB7B /* ioapi.c */; };
-		099AF12717D1A6DA000BAB7B /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 099AF11E17D1A6DA000BAB7B /* mztools.c */; };
-		099AF12817D1A6DA000BAB7B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 099AF12017D1A6DA000BAB7B /* unzip.c */; };
-		099AF12917D1A6DA000BAB7B /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 099AF12217D1A6DA000BAB7B /* zip.c */; };
-		099AF12A17D1A6DA000BAB7B /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 099AF12517D1A6DA000BAB7B /* SSZipArchive.m */; };
 		09B674441D6D9E8700F84E09 /* AGCompositeNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */; };
 		09B962521DD872C0001DCFB1 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09B962511DD872C0001DCFB1 /* CoreMotion.framework */; };
 		09B962551DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09B962531DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp */; };
@@ -114,6 +108,10 @@
 		09C7C3E718CF2B8E0099CE88 /* Waveform.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 09C7C3E218CF27AC0099CE88 /* Waveform.fsh */; };
 		09D8C3FF1A0A4DF2008D788A /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 09D8C3FE1A0A4DF2008D788A /* OFL.txt */; };
 		09D9C9D01C98F13A005514A4 /* spRandom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09D9C9CE1C98F13A005514A4 /* spRandom.cpp */; };
+		09DC3D4E1FBD363F008B960F /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09DC3D4D1FBD363F008B960F /* StoreKit.framework */; };
+		09DC3D501FBD3647008B960F /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09DC3D4F1FBD3647008B960F /* GameKit.framework */; };
+		09DC3D521FBD3729008B960F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */; };
+		09DC3D541FBD393C008B960F /* LaunchPortrait.png in Resources */ = {isa = PBXBuildFile; fileRef = 09DC3D531FBD393C008B960F /* LaunchPortrait.png */; };
 		09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7A18A3484F00B21D97 /* Mutex.cpp */; };
 		09E5EC7F18A36A9D00B21D97 /* SPFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */; };
 		09E5EC8218A46F7300B21D97 /* AGControl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC8018A46F7300B21D97 /* AGControl.mm */; };
@@ -295,9 +293,6 @@
 		095D12D517ACA36C0048A012 /* Auragraph-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Auragraph-Prefix.pch"; sourceTree = "<group>"; };
 		095D12D617ACA36C0048A012 /* AGAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGAppDelegate.h; sourceTree = "<group>"; };
 		095D12D717ACA36C0048A012 /* AGAppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AGAppDelegate.mm; sourceTree = "<group>"; };
-		095D12D917ACA36C0048A012 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
-		095D12DB17ACA36C0048A012 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
-		095D12DD17ACA36C0048A012 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		095D12DF17ACA36C0048A012 /* Shader.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; name = Shader.fsh; path = Shaders/Shader.fsh; sourceTree = "<group>"; };
 		095D12E117ACA36C0048A012 /* Shader.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; name = Shader.vsh; path = Shaders/Shader.vsh; sourceTree = "<group>"; };
 		095D12E317ACA36C0048A012 /* AGViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGViewController.h; sourceTree = "<group>"; };
@@ -379,6 +374,8 @@
 		095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGHandwritingRecognizer.mm; sourceTree = "<group>"; };
 		096F42031D9CF04600600717 /* AGWaveformAudioNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = AGWaveformAudioNode.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		096F42041D9CF04600600717 /* AGWaveformAudioNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AGWaveformAudioNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		0973FB991FC10815004CC25A /* agoutput-nobg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "agoutput-nobg.png"; sourceTree = "<group>"; };
+		0973FB9B1FC10815004CC25A /* auraglyph-title.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "auraglyph-title.png"; sourceTree = "<group>"; };
 		09817F3719F78B3F000E9FB3 /* GeoGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeoGenerator.h; sourceTree = "<group>"; };
 		09817F3819F87CC7000E9FB3 /* GeoGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeoGenerator.cpp; sourceTree = "<group>"; };
 		0985E5341D8C952800B536C8 /* AGInteractiveObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGInteractiveObject.mm; sourceTree = "<group>"; };
@@ -426,17 +423,6 @@
 		099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AGTrainerViewController.xib; sourceTree = "<group>"; };
 		099AF11517D13365000BAB7B /* AGTrainerViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AGTrainerViewCell.xib; sourceTree = "<group>"; };
 		099AF11717D157C5000BAB7B /* AGTrainerHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AGTrainerHeaderView.xib; sourceTree = "<group>"; };
-		099AF11B17D1A6DA000BAB7B /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
-		099AF11C17D1A6DA000BAB7B /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
-		099AF11D17D1A6DA000BAB7B /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
-		099AF11E17D1A6DA000BAB7B /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
-		099AF11F17D1A6DA000BAB7B /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
-		099AF12017D1A6DA000BAB7B /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
-		099AF12117D1A6DA000BAB7B /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
-		099AF12217D1A6DA000BAB7B /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
-		099AF12317D1A6DA000BAB7B /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
-		099AF12417D1A6DA000BAB7B /* SSZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSZipArchive.h; sourceTree = "<group>"; };
-		099AF12517D1A6DA000BAB7B /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
 		099AF12D17D1A892000BAB7B /* projects.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = projects.zip; sourceTree = "<group>"; };
 		09A8BB4019F9E39E00E15BF7 /* spMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spMath.h; sourceTree = "<group>"; };
 		09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = AGCompositeNode.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -456,6 +442,11 @@
 		09D9C9CF1C98F13A005514A4 /* spRandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spRandom.h; sourceTree = "<group>"; };
 		09D9D2E817ECF65D00938871 /* Clip.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Clip.fsh; path = Shaders/Clip.fsh; sourceTree = "<group>"; };
 		09D9D2E917ECF65D00938871 /* Clip.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Clip.vsh; path = Shaders/Clip.vsh; sourceTree = "<group>"; };
+		09DC3D4C1FBD363A008B960F /* Auraglyph.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Auraglyph.entitlements; sourceTree = "<group>"; };
+		09DC3D4D1FBD363F008B960F /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		09DC3D4F1FBD3647008B960F /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
+		09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		09DC3D531FBD393C008B960F /* LaunchPortrait.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LaunchPortrait.png; sourceTree = "<group>"; };
 		09E5EC7A18A3484F00B21D97 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mutex.cpp; sourceTree = "<group>"; };
 		09E5EC7B18A3484F00B21D97 /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = "<group>"; };
 		09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SPFilter.cpp; sourceTree = "<group>"; };
@@ -543,6 +534,8 @@
 				095E851F17B354BE0065EF8E /* libcommon.a in Frameworks */,
 				09F29D7B1CC73D8000502C01 /* libshaperecommon.a in Frameworks */,
 				09EE673A1EFDB72F00B4ED62 /* EZAudioiOS.framework in Frameworks */,
+				09DC3D501FBD3647008B960F /* GameKit.framework in Frameworks */,
+				09DC3D4E1FBD363F008B960F /* StoreKit.framework in Frameworks */,
 				0944E8BB1DCB31EA00EB8087 /* libGoogleAnalyticsServices.a in Frameworks */,
 				095E852217B354BE0065EF8E /* liblipiengine.a in Frameworks */,
 				095E852517B354BE0065EF8E /* libnn.a in Frameworks */,
@@ -672,6 +665,8 @@
 		095D12C217ACA36C0048A012 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				09DC3D4F1FBD3647008B960F /* GameKit.framework */,
+				09DC3D4D1FBD363F008B960F /* StoreKit.framework */,
 				498438661F1EF43600FB2914 /* CoreMIDI.framework */,
 				498438591F1EF40B00FB2914 /* PGMidi */,
 				09EE67311EFDB6F800B4ED62 /* EZAudio.xcodeproj */,
@@ -681,7 +676,6 @@
 				0944E8BE1DCB321F00EB8087 /* SystemConfiguration.framework */,
 				0944E8BC1DCB321B00EB8087 /* CoreData.framework */,
 				0944E8AF1DCB31EA00EB8087 /* GoogleAnalytics */,
-				099AF11917D1A6DA000BAB7B /* zip */,
 				098740BC17BCD9810098511A /* CoreText.framework */,
 				098740A417BA317E0098511A /* AudioToolbox.framework */,
 				095E84EA17B354BE0065EF8E /* LipiTk */,
@@ -731,8 +725,8 @@
 				09FC92491A153A83005D14A3 /* AGConnection.mm */,
 				098740AC17BC377E0098511A /* AGAudioNode.h */,
 				098740AB17BC377E0098511A /* AGAudioNode.mm */,
-				093395731A088849009E4802 /* AGControlNode.h */,
 				093395721A088849009E4802 /* AGControlNode.mm */,
+				093395731A088849009E4802 /* AGControlNode.h */,
 				0927D7DF1ADCE4E000AD8AE5 /* AGInputNode.h */,
 				0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */,
 				09F6E8791D6A3758006DBC9E /* AGOutputNode.h */,
@@ -781,6 +775,7 @@
 				099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */,
 				099AF11517D13365000BAB7B /* AGTrainerViewCell.xib */,
 				099AF11717D157C5000BAB7B /* AGTrainerHeaderView.xib */,
+				09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */,
 				0989130F189F6D3A00AB98AD /* Images */,
 				095D12CE17ACA36C0048A012 /* Supporting Files */,
 			);
@@ -790,6 +785,8 @@
 		095D12CE17ACA36C0048A012 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				09DC3D4C1FBD363A008B960F /* Auraglyph.entitlements */,
+				09DC3D531FBD393C008B960F /* LaunchPortrait.png */,
 				0900A3811B04A10800C249D9 /* Images.xcassets */,
 				09D8C3FE1A0A4DF2008D788A /* OFL.txt */,
 				0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */,
@@ -799,9 +796,6 @@
 				095D12D017ACA36C0048A012 /* InfoPlist.strings */,
 				095D12D317ACA36C0048A012 /* main.m */,
 				095D12D517ACA36C0048A012 /* Auragraph-Prefix.pch */,
-				095D12D917ACA36C0048A012 /* Default.png */,
-				095D12DB17ACA36C0048A012 /* Default@2x.png */,
-				095D12DD17ACA36C0048A012 /* Default-568h@2x.png */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -946,36 +940,12 @@
 		0989130F189F6D3A00AB98AD /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				0973FB991FC10815004CC25A /* agoutput-nobg.png */,
+				0973FB9B1FC10815004CC25A /* auraglyph-title.png */,
 				09FC924C1A153C0A005D14A3 /* flare.png */,
 				09891311189F6D3A00AB98AD /* trash.png */,
 			);
 			path = Images;
-			sourceTree = "<group>";
-		};
-		099AF11917D1A6DA000BAB7B /* zip */ = {
-			isa = PBXGroup;
-			children = (
-				099AF11A17D1A6DA000BAB7B /* minizip */,
-				099AF12417D1A6DA000BAB7B /* SSZipArchive.h */,
-				099AF12517D1A6DA000BAB7B /* SSZipArchive.m */,
-			);
-			path = zip;
-			sourceTree = "<group>";
-		};
-		099AF11A17D1A6DA000BAB7B /* minizip */ = {
-			isa = PBXGroup;
-			children = (
-				099AF11B17D1A6DA000BAB7B /* crypt.h */,
-				099AF11C17D1A6DA000BAB7B /* ioapi.c */,
-				099AF11D17D1A6DA000BAB7B /* ioapi.h */,
-				099AF11E17D1A6DA000BAB7B /* mztools.c */,
-				099AF11F17D1A6DA000BAB7B /* mztools.h */,
-				099AF12017D1A6DA000BAB7B /* unzip.c */,
-				099AF12117D1A6DA000BAB7B /* unzip.h */,
-				099AF12217D1A6DA000BAB7B /* zip.c */,
-				099AF12317D1A6DA000BAB7B /* zip.h */,
-			);
-			path = minizip;
 			sourceTree = "<group>";
 		};
 		09B674411D6D9D6500F84E09 /* Nodes */ = {
@@ -1107,6 +1077,17 @@
 				TargetAttributes = {
 					095D12BF17ACA36C0048A012 = {
 						DevelopmentTeam = 9GU9FHJ3JC;
+						SystemCapabilities = {
+							com.apple.GameCenter = {
+								enabled = 1;
+							};
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
+							com.apple.InterAppAudio = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -1158,6 +1139,7 @@
 			files = (
 				09C7C3E618CF2B8E0099CE88 /* Waveform.vsh in Resources */,
 				09C7C3E718CF2B8E0099CE88 /* Waveform.fsh in Resources */,
+				0973FB9D1FC10815004CC25A /* auraglyph-title.png in Resources */,
 				0989132118A0870000AB98AD /* TexFont.fsh in Resources */,
 				0989132218A0870000AB98AD /* Screen.fsh in Resources */,
 				0989132318A0870000AB98AD /* Clip.fsh in Resources */,
@@ -1169,20 +1151,20 @@
 				0933956B1A019E4F009E4802 /* Orbitron-Medium.ttf in Resources */,
 				0989131D18A086E800AB98AD /* Screen.vsh in Resources */,
 				0989131E18A086E800AB98AD /* Clip.vsh in Resources */,
+				09DC3D541FBD393C008B960F /* LaunchPortrait.png in Resources */,
 				0989131F18A086E800AB98AD /* Shader.vsh in Resources */,
 				0989132018A086E800AB98AD /* Texture.vsh in Resources */,
 				095D12D217ACA36C0048A012 /* InfoPlist.strings in Resources */,
-				095D12DA17ACA36C0048A012 /* Default.png in Resources */,
 				09D8C3FF1A0A4DF2008D788A /* OFL.txt in Resources */,
 				093395691A019D43009E4802 /* Orbitron-Regular.ttf in Resources */,
-				095D12DC17ACA36C0048A012 /* Default@2x.png in Resources */,
-				095D12DE17ACA36C0048A012 /* Default-568h@2x.png in Resources */,
 				095D12E817ACA36C0048A012 /* AGViewController.xib in Resources */,
 				0944E8AB1DC40EDB00EB8087 /* projects in Resources */,
 				09891313189F6D3A00AB98AD /* trash.png in Resources */,
 				099AF10F17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png in Resources */,
+				09DC3D521FBD3729008B960F /* LaunchScreen.storyboard in Resources */,
 				099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */,
 				099AF11617D13365000BAB7B /* AGTrainerViewCell.xib in Resources */,
+				0973FB9C1FC10815004CC25A /* agoutput-nobg.png in Resources */,
 				099AF11817D157C5000BAB7B /* AGTrainerHeaderView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1268,14 +1250,9 @@
 				09F2D53A1D7EA33400F537C7 /* Delay.cpp in Sources */,
 				494019CD1F21CCF3000F05E8 /* AGPGMidiDelegate.mm in Sources */,
 				09EE65821EFB64C700B4ED62 /* SampleCircularBuffer.cpp in Sources */,
-				099AF12617D1A6DA000BAB7B /* ioapi.c in Sources */,
-				099AF12717D1A6DA000BAB7B /* mztools.c in Sources */,
 				0944E8C61DCB325D00EB8087 /* AGAnalytics.mm in Sources */,
-				099AF12817D1A6DA000BAB7B /* unzip.c in Sources */,
-				099AF12917D1A6DA000BAB7B /* zip.c in Sources */,
 				09230FB31F3D8C9500DF06B5 /* AGAboutBox.cpp in Sources */,
 				0991BA851D8654C70080175C /* FileWvIn.cpp in Sources */,
-				099AF12A17D1A6DA000BAB7B /* SSZipArchive.m in Sources */,
 				09030CEB1EFEF83D00D4A4F2 /* Signal.cpp in Sources */,
 				0934B67B1E223B47009259E2 /* AGFileManager.mm in Sources */,
 				498438621F1EF40B00FB2914 /* PGMidi.mm in Sources */,
@@ -1406,8 +1383,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LIBRARY = "libc++";
+				CODE_SIGN_ENTITLEMENTS = Auragraph/Auraglyph.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEAD_CODE_STRIPPING = NO;
@@ -1427,7 +1404,7 @@
 					"$(PROJECT_DIR)/libs/GoogleAnalytics",
 				);
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_BUNDLE_IDENTIFIER = "edu.stanford.ccrma.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_BUNDLE_IDENTIFIER = io.auraglyph.auraglyph;
 				PRODUCT_NAME = Auraglyph;
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -1439,8 +1416,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LIBRARY = "libc++";
+				CODE_SIGN_ENTITLEMENTS = Auragraph/Auraglyph.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
@@ -1461,7 +1438,7 @@
 					"$(PROJECT_DIR)/libs/GoogleAnalytics",
 				);
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_BUNDLE_IDENTIFIER = "edu.stanford.ccrma.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_BUNDLE_IDENTIFIER = io.auraglyph.auraglyph;
 				PRODUCT_NAME = Auraglyph;
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = NO;

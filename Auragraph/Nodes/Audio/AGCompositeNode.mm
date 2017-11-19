@@ -32,7 +32,7 @@ void AGAudioCompositeNode::removeSubnode(AGNode *subnode)
 
 int AGAudioCompositeNode::numOutputPorts() const
 {
-    return m_outputs.size();
+    return (int) m_outputs.size();
 }
 
 void AGAudioCompositeNode::renderAudio(sampletime t, float *input, float *output, int nFrames, int chanNum, int nChans)

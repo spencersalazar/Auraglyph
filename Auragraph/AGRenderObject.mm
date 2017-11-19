@@ -310,7 +310,7 @@ void AGRenderObject::drawGeometry(GLvertex3f geo[], unsigned long size, int kind
     glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
     glEnableVertexAttribArray(AGVertexAttribPosition);
     
-    glDrawArrays(kind, 0, size);
+    glDrawArrays(kind, 0, (int) size);
 }
 
 void AGRenderObject::drawTriangleFan(GLvertex2f geo[], unsigned long size)
@@ -325,7 +325,7 @@ void AGRenderObject::drawTriangleFan(GLvertex2f geo[], unsigned long size)
     glVertexAttribPointer(AGVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);
     glEnableVertexAttribArray(AGVertexAttribPosition);
     
-    glDrawArrays(GL_TRIANGLE_FAN, 0, size);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, (int) size);
 }
 
 void AGRenderObject::drawTriangleFan(GLvertex3f geo[], unsigned long size)
@@ -340,7 +340,7 @@ void AGRenderObject::drawTriangleFan(GLvertex3f geo[], unsigned long size)
     glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
     glEnableVertexAttribArray(AGVertexAttribPosition);
     
-    glDrawArrays(GL_TRIANGLE_FAN, 0, size);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, (int) size);
 }
 
 void AGRenderObject::drawTriangleFan(GLvertex3f geo[], unsigned long size, const GLKMatrix4 &xform)
@@ -356,7 +356,7 @@ void AGRenderObject::drawTriangleFan(GLvertex3f geo[], unsigned long size, const
     glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
     glEnableVertexAttribArray(AGVertexAttribPosition);
     
-    glDrawArrays(GL_TRIANGLE_FAN, 0, size);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, (int) size);
 }
 
 void AGRenderObject::drawTriangleFan(AGGenericShader &shader, GLvertex3f geo[], unsigned long size, const GLKMatrix4 &xform)
@@ -370,7 +370,7 @@ void AGRenderObject::drawTriangleFan(AGGenericShader &shader, GLvertex3f geo[], 
     glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
     glEnableVertexAttribArray(AGVertexAttribPosition);
     
-    glDrawArrays(GL_TRIANGLE_FAN, 0, size);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, (int) size);
 }
 
 void AGRenderObject::drawLineLoop(GLvertex2f geo[], unsigned long size)
@@ -385,7 +385,7 @@ void AGRenderObject::drawLineLoop(GLvertex2f geo[], unsigned long size)
     glVertexAttribPointer(AGVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);
     glEnableVertexAttribArray(AGVertexAttribPosition);
     
-    glDrawArrays(GL_LINE_LOOP, 0, size);
+    glDrawArrays(GL_LINE_LOOP, 0, (int) size);
 }
 
 void AGRenderObject::drawLineLoop(GLvertex3f geo[], unsigned long size)
@@ -400,7 +400,7 @@ void AGRenderObject::drawLineLoop(GLvertex3f geo[], unsigned long size)
     glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
     glEnableVertexAttribArray(AGVertexAttribPosition);
     
-    glDrawArrays(GL_LINE_LOOP, 0, size);
+    glDrawArrays(GL_LINE_LOOP, 0, (int) size);
 }
 
 void AGRenderObject::drawLineLoop(GLvertex3f geo[], unsigned long size, const GLKMatrix4 &xform)
@@ -416,7 +416,7 @@ void AGRenderObject::drawLineLoop(GLvertex3f geo[], unsigned long size, const GL
     glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
     glEnableVertexAttribArray(AGVertexAttribPosition);
     
-    glDrawArrays(GL_LINE_LOOP, 0, size);
+    glDrawArrays(GL_LINE_LOOP, 0, (int) size);
 }
 
 void AGRenderObject::drawLineStrip(GLvertex2f geo[], unsigned long size)
@@ -431,7 +431,7 @@ void AGRenderObject::drawLineStrip(GLvertex2f geo[], unsigned long size)
     glVertexAttribPointer(AGVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);
     glEnableVertexAttribArray(AGVertexAttribPosition);
     
-    glDrawArrays(GL_LINE_STRIP, 0, size);
+    glDrawArrays(GL_LINE_STRIP, 0, (int) size);
 }
 
 void AGRenderObject::drawLineStrip(GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform)
@@ -447,7 +447,7 @@ void AGRenderObject::drawLineStrip(GLvertex2f geo[], unsigned long size, const G
     glVertexAttribPointer(AGVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);
     glEnableVertexAttribArray(AGVertexAttribPosition);
     
-    glDrawArrays(GL_LINE_STRIP, 0, size);
+    glDrawArrays(GL_LINE_STRIP, 0, (int) size);
 }
 
 void AGRenderObject::drawLineStrip(AGGenericShader &shader, GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform)
@@ -461,7 +461,7 @@ void AGRenderObject::drawLineStrip(AGGenericShader &shader, GLvertex2f geo[], un
     glVertexAttribPointer(AGVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);
     glEnableVertexAttribArray(AGVertexAttribPosition);
     
-    glDrawArrays(GL_LINE_STRIP, 0, size);
+    glDrawArrays(GL_LINE_STRIP, 0, (int) size);
 }
 
 void AGRenderObject::drawLineStrip(GLvertex3f geo[], unsigned long size)
@@ -476,7 +476,7 @@ void AGRenderObject::drawLineStrip(GLvertex3f geo[], unsigned long size)
     glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
     glEnableVertexAttribArray(AGVertexAttribPosition);
     
-    glDrawArrays(GL_LINE_STRIP, 0, size);
+    glDrawArrays(GL_LINE_STRIP, 0, (int) size);
 }
 
 void AGRenderObject::drawWaveform(float waveform[], unsigned long size, GLvertex2f from, GLvertex2f to, float gain, float yScale)
@@ -524,7 +524,7 @@ void AGRenderObject::drawWaveform(float waveform[], unsigned long size, GLvertex
     
     glLineWidth(2.0);
     
-    glDrawArrays(GL_LINE_STRIP, 0, size);
+    glDrawArrays(GL_LINE_STRIP, 0, (int) size);
     
     glEnableVertexAttribArray(AGVertexAttribPosition);
 }
