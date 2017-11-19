@@ -48,9 +48,6 @@
 		095D12D217ACA36C0048A012 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 095D12D017ACA36C0048A012 /* InfoPlist.strings */; };
 		095D12D417ACA36C0048A012 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 095D12D317ACA36C0048A012 /* main.m */; };
 		095D12D817ACA36C0048A012 /* AGAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095D12D717ACA36C0048A012 /* AGAppDelegate.mm */; };
-		095D12DA17ACA36C0048A012 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 095D12D917ACA36C0048A012 /* Default.png */; };
-		095D12DC17ACA36C0048A012 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 095D12DB17ACA36C0048A012 /* Default@2x.png */; };
-		095D12DE17ACA36C0048A012 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 095D12DD17ACA36C0048A012 /* Default-568h@2x.png */; };
 		095D12E517ACA36C0048A012 /* AGViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095D12E417ACA36C0048A012 /* AGViewController.mm */; };
 		095D12E817ACA36C0048A012 /* AGViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 095D12E617ACA36C0048A012 /* AGViewController.xib */; };
 		095D12FB17ACAA100048A012 /* Geometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 095D12F617ACAA100048A012 /* Geometry.cpp */; };
@@ -293,9 +290,6 @@
 		095D12D517ACA36C0048A012 /* Auragraph-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Auragraph-Prefix.pch"; sourceTree = "<group>"; };
 		095D12D617ACA36C0048A012 /* AGAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGAppDelegate.h; sourceTree = "<group>"; };
 		095D12D717ACA36C0048A012 /* AGAppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AGAppDelegate.mm; sourceTree = "<group>"; };
-		095D12D917ACA36C0048A012 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
-		095D12DB17ACA36C0048A012 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
-		095D12DD17ACA36C0048A012 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		095D12DF17ACA36C0048A012 /* Shader.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; name = Shader.fsh; path = Shaders/Shader.fsh; sourceTree = "<group>"; };
 		095D12E117ACA36C0048A012 /* Shader.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; name = Shader.vsh; path = Shaders/Shader.vsh; sourceTree = "<group>"; };
 		095D12E317ACA36C0048A012 /* AGViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGViewController.h; sourceTree = "<group>"; };
@@ -797,9 +791,6 @@
 				095D12D017ACA36C0048A012 /* InfoPlist.strings */,
 				095D12D317ACA36C0048A012 /* main.m */,
 				095D12D517ACA36C0048A012 /* Auragraph-Prefix.pch */,
-				095D12D917ACA36C0048A012 /* Default.png */,
-				095D12DB17ACA36C0048A012 /* Default@2x.png */,
-				095D12DD17ACA36C0048A012 /* Default-568h@2x.png */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -1159,11 +1150,8 @@
 				0989131F18A086E800AB98AD /* Shader.vsh in Resources */,
 				0989132018A086E800AB98AD /* Texture.vsh in Resources */,
 				095D12D217ACA36C0048A012 /* InfoPlist.strings in Resources */,
-				095D12DA17ACA36C0048A012 /* Default.png in Resources */,
 				09D8C3FF1A0A4DF2008D788A /* OFL.txt in Resources */,
 				093395691A019D43009E4802 /* Orbitron-Regular.ttf in Resources */,
-				095D12DC17ACA36C0048A012 /* Default@2x.png in Resources */,
-				095D12DE17ACA36C0048A012 /* Default-568h@2x.png in Resources */,
 				095D12E817ACA36C0048A012 /* AGViewController.xib in Resources */,
 				0944E8AB1DC40EDB00EB8087 /* projects in Resources */,
 				09891313189F6D3A00AB98AD /* trash.png in Resources */,
