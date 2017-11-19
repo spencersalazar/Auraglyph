@@ -20,26 +20,41 @@
                     <view key="view" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Ze5-6b-2t3">
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <userGuides>
+                            <userLayoutGuide location="512" affinity="minY"/>
+                        </userGuides>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" insetsLayoutMarginsFromSafeArea="NO" image="LaunchPortrait.png" translatesAutoresizingMaskIntoConstraints="NO" id="pqf-em-Qv8">
-                                <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="agoutput-nobg.png" translatesAutoresizingMaskIntoConstraints="NO" id="zfl-at-jB9">
+                                <rect key="frame" x="334" y="462" width="100" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="rNK-XE-uHW"/>
+                                    <constraint firstAttribute="height" constant="100" id="zBx-wz-IZp"/>
+                                </constraints>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="auraglyph-title.png" translatesAutoresizingMaskIntoConstraints="NO" id="IiI-oe-D0Q">
+                                <rect key="frame" x="222" y="600" width="325" height="54"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="325" id="Tue-kM-6eA"/>
+                                    <constraint firstAttribute="height" constant="54" id="zoT-2u-SMp"/>
+                                </constraints>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.047058823529411764" green="0.062745098039215685" blue="0.12549019607843137" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="pqf-em-Qv8" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="1wd-W2-fhI"/>
-                            <constraint firstAttribute="trailing" secondItem="pqf-em-Qv8" secondAttribute="trailing" id="297-5Q-6Eh"/>
-                            <constraint firstItem="0bO-Jh-vdk" firstAttribute="top" secondItem="pqf-em-Qv8" secondAttribute="bottom" id="XIq-Ed-zDh"/>
-                            <constraint firstItem="pqf-em-Qv8" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="YAz-9j-K3x"/>
+                            <constraint firstItem="IiI-oe-D0Q" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="3fh-3y-IsN"/>
+                            <constraint firstItem="zfl-at-jB9" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="D0Y-aQ-WKE"/>
+                            <constraint firstItem="IiI-oe-D0Q" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="115" id="DVQ-n2-PCc"/>
+                            <constraint firstItem="zfl-at-jB9" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="jSK-nr-vpm"/>
                         </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="52" y="374.66266866566718"/>
+            <point key="canvasLocation" x="51.5625" y="374.4140625"/>
         </scene>
     </scenes>
     <resources>
-        <image name="LaunchPortrait.png" width="1536" height="2048"/>
+        <image name="agoutput-nobg.png" width="1558" height="1558"/>
+        <image name="auraglyph-title.png" width="1574" height="220"/>
     </resources>
 </document>

@@ -66,6 +66,8 @@
 		095E853117B358FC0065EF8E /* shaperectst.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E852F17B358FC0065EF8E /* shaperectst.mm */; };
 		095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */; };
 		096F42051D9CF04600600717 /* AGWaveformAudioNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096F42031D9CF04600600717 /* AGWaveformAudioNode.cpp */; };
+		0973FB9C1FC10815004CC25A /* agoutput-nobg.png in Resources */ = {isa = PBXBuildFile; fileRef = 0973FB991FC10815004CC25A /* agoutput-nobg.png */; };
+		0973FB9D1FC10815004CC25A /* auraglyph-title.png in Resources */ = {isa = PBXBuildFile; fileRef = 0973FB9B1FC10815004CC25A /* auraglyph-title.png */; };
 		09817F3919F87CC7000E9FB3 /* GeoGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09817F3819F87CC7000E9FB3 /* GeoGenerator.cpp */; };
 		0985E5361D8C952800B536C8 /* AGInteractiveObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0985E5341D8C952800B536C8 /* AGInteractiveObject.mm */; };
 		0987409C17B98D7C0098511A /* AGNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0987409A17B98D7C0098511A /* AGNode.mm */; };
@@ -375,6 +377,8 @@
 		095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGHandwritingRecognizer.mm; sourceTree = "<group>"; };
 		096F42031D9CF04600600717 /* AGWaveformAudioNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = AGWaveformAudioNode.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		096F42041D9CF04600600717 /* AGWaveformAudioNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AGWaveformAudioNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		0973FB991FC10815004CC25A /* agoutput-nobg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "agoutput-nobg.png"; sourceTree = "<group>"; };
+		0973FB9B1FC10815004CC25A /* auraglyph-title.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "auraglyph-title.png"; sourceTree = "<group>"; };
 		09817F3719F78B3F000E9FB3 /* GeoGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeoGenerator.h; sourceTree = "<group>"; };
 		09817F3819F87CC7000E9FB3 /* GeoGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeoGenerator.cpp; sourceTree = "<group>"; };
 		0985E5341D8C952800B536C8 /* AGInteractiveObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGInteractiveObject.mm; sourceTree = "<group>"; };
@@ -940,6 +944,8 @@
 		0989130F189F6D3A00AB98AD /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				0973FB991FC10815004CC25A /* agoutput-nobg.png */,
+				0973FB9B1FC10815004CC25A /* auraglyph-title.png */,
 				09FC924C1A153C0A005D14A3 /* flare.png */,
 				09891311189F6D3A00AB98AD /* trash.png */,
 			);
@@ -1137,6 +1143,7 @@
 			files = (
 				09C7C3E618CF2B8E0099CE88 /* Waveform.vsh in Resources */,
 				09C7C3E718CF2B8E0099CE88 /* Waveform.fsh in Resources */,
+				0973FB9D1FC10815004CC25A /* auraglyph-title.png in Resources */,
 				0989132118A0870000AB98AD /* TexFont.fsh in Resources */,
 				0989132218A0870000AB98AD /* Screen.fsh in Resources */,
 				0989132318A0870000AB98AD /* Clip.fsh in Resources */,
@@ -1164,6 +1171,7 @@
 				09DC3D521FBD3729008B960F /* LaunchScreen.storyboard in Resources */,
 				099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */,
 				099AF11617D13365000BAB7B /* AGTrainerViewCell.xib in Resources */,
+				0973FB9C1FC10815004CC25A /* agoutput-nobg.png in Resources */,
 				099AF11817D157C5000BAB7B /* AGTrainerHeaderView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
