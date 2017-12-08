@@ -786,7 +786,8 @@ int AGUIStandardNodeEditor::hitTestX(const GLvertex3f &t, bool *inBbox)
             if(t.y > y_min && t.y < y_max &&
                (editPortType == AGControl::TYPE_NONE ||
                 editPortType == AGControl::TYPE_FLOAT ||
-                editPortType == AGControl::TYPE_INT))
+                editPortType == AGControl::TYPE_INT ||
+                editPortType == AGControl::TYPE_STRING))
             {
                 return i;
             }
