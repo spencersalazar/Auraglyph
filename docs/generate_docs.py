@@ -3,7 +3,10 @@
 import json
 import sys
 
-def generate_page(nodes, title):
+##------------------------------------------------------------------------------
+## generate_page
+##------------------------------------------------------------------------------
+def generate_page(nodes, nodetype):
     html = r'''<html>
 <head>
     <link rel="stylesheet" type="text/css" href="auraglyph-doc.css" />
@@ -27,15 +30,16 @@ def generate_page(nodes, title):
 </body>
 </html>
     '''
+    title = '{nodetype} Nodes'.format(nodetype=nodetype.title())
     node_html = ''
     for node in nodes:
-        node_html += generate_node(node)
+        node_html += generate_node(node, nodetype)
     return html.format(title=title, nodes=node_html)
 
 ##------------------------------------------------------------------------------
-## generate_node_symbol
+## generate_node
 ##------------------------------------------------------------------------------
-def generate_node(node):
+def generate_node(node, nodetype):
     html = r'''
             <a name="{node_name}" />
             <div class="node">
@@ -47,18 +51,19 @@ def generate_node(node):
             </div>
             <hr />
 '''
-    node_header = generate_node_header(node)
+    node_header = generate_node_header(node, nodetype)
     node_inputs = generate_node_members(node['ports'], 'input')
     node_params = generate_node_members(node['params'], 'param')
+    node_outputs = generate_node_members(node['outputs'], 'output')
     # node_outputs = generate_node_outputs(node)
     return html.format(node_name=node["name"], node_header=node_header, 
                        node_inputs=node_inputs, node_params=node_params, 
-                       node_outputs='')
+                       node_outputs=node_outputs)
 
 ##------------------------------------------------------------------------------
-## generate_node_symbol
+## generate_node_header
 ##------------------------------------------------------------------------------
-def generate_node_header(node):
+def generate_node_header(node, nodetype):
     html = r'''
 <div class="node_header">
     <div class="node_symbol" width="5em" height="5em">
@@ -68,7 +73,7 @@ def generate_node_header(node):
     <p class="node_desc"><p>{node_desc}</p>
 </div>
 '''
-    node_symbol = generate_node_symbol(node["icon"])
+    node_symbol = generate_node_symbol(node["icon"], nodetype)
     node_name = node["name"]
     node_desc = node["desc"]
     return html.format(node_symbol=node_symbol, 
@@ -78,14 +83,18 @@ def generate_node_header(node):
 ##------------------------------------------------------------------------------
 ## generate_node_symbol
 ##------------------------------------------------------------------------------
-def generate_node_symbol(icon):
+def generate_node_symbol(icon, nodetype):
     html = r'''
 <svg width="5em" height="5em" transform="">
-    <circle cx="200" cy="200" r="250" fill="#000038" stroke="none" transform="scale(0.125)"/>
-    <circle cx="200" cy="200" r="184" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale(0.125)"/>
+{icon_base}
 {icon_geo}
 </svg>
 '''
+    if node_type == 'audio':
+        icon_base = generate_audio_node_base()
+    elif node_type == 'control':
+        icon_base = generate_control_node_base()
+    
     if icon["type"] == "line_strip":
         icon_geo = generate_line_strip(icon["geo"])
     elif icon["type"] == "lines":
@@ -94,7 +103,25 @@ def generate_node_symbol(icon):
         icon_geo = generate_line_loop(icon["geo"])
     else:
         icon_geo = ""
-    return html.format(icon_geo=icon_geo)
+    return html.format(icon_base=icon_base, icon_geo=icon_geo)
+
+##------------------------------------------------------------------------------
+## generate_control_node_base
+##------------------------------------------------------------------------------
+def generate_control_node_base():
+    html = r'''    <rect x="-50" y="-50" width="500" height="500" fill="#000038" stroke="none" transform="scale(0.125)"/>
+    <rect x="16" y="16" width="368" height="368" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale(0.125)"/>
+'''
+    return html
+
+##------------------------------------------------------------------------------
+## generate_audio_node_base
+##------------------------------------------------------------------------------
+def generate_audio_node_base():
+    html = r'''    <circle cx="200" cy="200" r="250" fill="#000038" stroke="none" transform="scale(0.125)"/>
+    <circle cx="200" cy="200" r="184" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale(0.125)"/>
+'''
+    return html
 
 ##------------------------------------------------------------------------------
 ## filter_point
@@ -122,6 +149,9 @@ transform="scale(0.125)" />
         lines += svg.format(points=points)
     return lines
 
+##------------------------------------------------------------------------------
+## generate_line_strip
+##------------------------------------------------------------------------------
 def generate_line_strip(geo):
     svg = r'''    <polyline points="{points}" \
 stroke="#F9BB02" fill="none" stroke-width="10" \
@@ -132,6 +162,9 @@ transform="scale(0.125)" />'''
         points += "{x},{y} ".format(x=point["x"], y=point["y"])
     return svg.format(points=points)
 
+##------------------------------------------------------------------------------
+## generate_line_strip
+##------------------------------------------------------------------------------
 def generate_line_loop(geo):
     svg = r'''    <polyline points="{points}" \
 stroke="#F9BB02" fill="none" stroke-width="10" \
@@ -146,6 +179,9 @@ transform="scale(0.125)" />'''
         points += "{x},{y} ".format(x=point["x"], y=point["y"])
     return svg.format(points=points)
 
+##------------------------------------------------------------------------------
+## generate_node_members
+##------------------------------------------------------------------------------
 def generate_node_members(members, type):
     html = r'''            <h3 class="node_section_header">{member_type}s</h3>
             <div class="members {member_type}s">
@@ -157,6 +193,9 @@ def generate_node_members(members, type):
         node_members += generate_node_member(member, type)
     return html.format(node_members=node_members, member_type=type)
 
+##------------------------------------------------------------------------------
+## generate_node_member
+##------------------------------------------------------------------------------
 def generate_node_member(member, type):
     html = r'''
                 <div class="member input">
@@ -168,6 +207,9 @@ def generate_node_member(member, type):
                        member_type=type)
 
 nodes = json.load(sys.stdin)
+node_type = sys.argv[1]
 
-sys.stdout.write(generate_page(nodes['audio'], 'Audio Nodes'))
+html = generate_page(nodes[node_type.lower()], node_type)
+
+sys.stdout.write(html)
 
