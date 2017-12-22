@@ -32,6 +32,9 @@ def generate_page(nodes, title):
         node_html += generate_node(node)
     return html.format(title=title, nodes=node_html)
 
+##------------------------------------------------------------------------------
+## generate_node_symbol
+##------------------------------------------------------------------------------
 def generate_node(node):
     html = r'''
             <a name="{node_name}" />
@@ -52,6 +55,9 @@ def generate_node(node):
                        node_inputs=node_inputs, node_params=node_params, 
                        node_outputs='')
 
+##------------------------------------------------------------------------------
+## generate_node_symbol
+##------------------------------------------------------------------------------
 def generate_node_header(node):
     html = r'''
 <div class="node_header">
@@ -69,6 +75,9 @@ def generate_node_header(node):
                        node_name=node_name, 
                        node_desc=node_desc)
 
+##------------------------------------------------------------------------------
+## generate_node_symbol
+##------------------------------------------------------------------------------
 def generate_node_symbol(icon):
     html = r'''
 <svg width="5em" height="5em" transform="">
@@ -87,12 +96,18 @@ def generate_node_symbol(icon):
         icon_geo = ""
     return html.format(icon_geo=icon_geo)
 
+##------------------------------------------------------------------------------
+## filter_point
+##------------------------------------------------------------------------------
 def filter_point(point):
     ICON_SCALE=(4,-4)
     ICON_OFFSET=(200,200)
     return dict(x=ICON_OFFSET[0]+ICON_SCALE[0]*float(point["x"]), 
                 y=ICON_OFFSET[1]+ICON_SCALE[1]*float(point["y"]))
 
+##------------------------------------------------------------------------------
+## generate_lines
+##------------------------------------------------------------------------------
 def generate_lines(geo):
     svg = r'''    <polyline points="{points}" \
 stroke="#F9BB02" fill="none" stroke-width="10" \
