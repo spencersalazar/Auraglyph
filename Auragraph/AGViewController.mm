@@ -231,6 +231,7 @@ static AGViewController * g_instance = nil;
         {
             NSMutableArray *params = [NSMutableArray new];
             NSMutableArray *ports = [NSMutableArray new];
+            NSMutableArray *outputs = [NSMutableArray new];
             NSMutableDictionary *icon = [NSMutableDictionary new];
             
             for(auto param : node->editPortInfo())
@@ -242,8 +243,8 @@ static AGViewController * g_instance = nil;
                                     @"desc": [NSString stringWithSTLString:port.doc] }];
             
             for(auto port : node->outputPortInfo())
-                [ports addObject:@{ @"name": [NSString stringWithSTLString:port.name],
-                                    @"desc": [NSString stringWithSTLString:port.doc] }];
+                [outputs addObject:@{ @"name": [NSString stringWithSTLString:port.name],
+                                      @"desc": [NSString stringWithSTLString:port.doc] }];
 
             NSMutableArray *iconGeo = [NSMutableArray new];
             for(auto pt : node->iconGeo())
@@ -263,7 +264,8 @@ static AGViewController * g_instance = nil;
                                @"desc": [NSString stringWithSTLString:node->description()],
                                @"icon": icon,
                                @"params": params,
-                               @"ports": ports
+                               @"ports": ports,
+                               @"outputs": outputs
                                }];
         }
     };
