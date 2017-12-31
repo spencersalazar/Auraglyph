@@ -136,8 +136,8 @@ bool AGFileBrowser::finishedRenderingOut()
 
 void AGFileBrowser::touchDown(const AGTouchInfo &t)
 {
-    GLvertex3f relPos = t.position-(parent()?parent()->position():GLvertex3f())-m_pos;
-//    float yPos = m_size.y/2*0.9+m_verticalScrollPos;
+    GLvertex3f relPos = t.position-m_pos;
+    // float yPos = m_size.y/2*0.9+m_verticalScrollPos;
     
     for(int i = 0; i < m_paths.size(); i++)
     {
