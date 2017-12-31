@@ -101,7 +101,11 @@ public:
             NSString *documentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
             NSString *subpath = [NSString stringWithUTF8String:param(PARAM_FILE).getString().c_str()];
             NSString *fullPath = [documentPath stringByAppendingPathComponent:subpath];
-            m_file.openFile([fullPath UTF8String]);
+            try {
+                m_file.openFile([fullPath UTF8String]);
+            } catch (const stk::StkError& error) {
+                fprintf(stderr, "AGAudioSoundFileNode: unable to open file %s\n", param(PARAM_FILE).getString().c_str());
+            }
             m_file.setRate(m_rate);
             // set to end of file
             m_file.addTime(m_file.getSize());
