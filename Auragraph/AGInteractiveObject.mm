@@ -41,9 +41,10 @@ AGInteractiveObject *AGInteractiveObject::hitTest(const GLvertex3f &t)
     // all child objects are oriented in terms of this coordinate space
     GLvertex3f tt = GLKMatrix4MultiplyVector4(GLKMatrix4Invert(localTransform(), NULL), t.asGLKVector4());
     
-    for(AGRenderObject *renderObject : m_children)
+    // search in reverse order of rendering
+    for(auto i = m_children.rbegin(); i != m_children.rend(); i++)
     {
-        AGInteractiveObject *object = dynamic_cast<AGInteractiveObject *>(renderObject);
+        AGInteractiveObject *object = dynamic_cast<AGInteractiveObject *>(*i);
         if(object)
         {
             hit = object->hitTest(tt);
