@@ -28,6 +28,8 @@ private:
     
     unsigned long m_lastModifiedPos;
     
+    AGUIButton *m_pinButton;
+    
 public:
     AGWaveformEditor(AGAudioWaveformNode *node) :
     m_node(node), m_doneEditing(false)
@@ -47,7 +49,7 @@ public:
         
         float hmargin = 10;
         float labelWidth = 40;
-        float sliderWidth = 80;
+        float sliderWidth = 100;
         float sliderHeight = 32;
         float pos = -m_width/2;
         
@@ -79,31 +81,31 @@ public:
         addChild(freqSlider);
         
         // dur label
-        pos += sliderWidth/2 + hmargin*2 + labelWidth/2;
-        
-        AGUILabel *durLabel = new AGUILabel(GLvertex3f(pos, m_height/2-sliderHeight/2, 0), "dur");
-        durLabel->init();
-        durLabel->setSize(GLvertex2f(labelWidth, sliderHeight));
-        addChild(durLabel);
-        
-        pos += labelWidth/2 + hmargin + sliderWidth/2;
+//        pos += sliderWidth/2 + hmargin*2 + labelWidth/2;
+//
+//        AGUILabel *durLabel = new AGUILabel(GLvertex3f(pos, m_height/2-sliderHeight/2, 0), "dur");
+//        durLabel->init();
+//        durLabel->setSize(GLvertex2f(labelWidth, sliderHeight));
+//        addChild(durLabel);
+//
+//        pos += labelWidth/2 + hmargin + sliderWidth/2;
         
         // dur slider
-        AGSlider *durSlider = new AGSlider(GLvertex3f(pos, m_height/2-sliderHeight/2, 0));
-        durSlider->init();
-        
-        durSlider->setSize(GLvertex2f(sliderWidth, sliderHeight));
-        durSlider->setType(AGSlider::CONTINUOUS);
-        durSlider->setScale(AGSlider::EXPONENTIAL);
-        durSlider->setAlignment(AGSlider::ALIGN_LEFT);
-        durSlider->setValue(m_node->param(AGAudioWaveformNode::PARAM_DURATION));
-        durSlider->onUpdate([this] (float value) {
-            m_node->setParam(AGAudioWaveformNode::PARAM_DURATION, value);
-        });
-        durSlider->setValidator([this] (float _old, float _new) -> float {
-            return m_node->validateParam(AGAudioWaveformNode::PARAM_DURATION, _new);
-        });
-        addChild(durSlider);
+//        AGSlider *durSlider = new AGSlider(GLvertex3f(pos, m_height/2-sliderHeight/2, 0));
+//        durSlider->init();
+//
+//        durSlider->setSize(GLvertex2f(sliderWidth, sliderHeight));
+//        durSlider->setType(AGSlider::CONTINUOUS);
+//        durSlider->setScale(AGSlider::EXPONENTIAL);
+//        durSlider->setAlignment(AGSlider::ALIGN_LEFT);
+//        durSlider->setValue(m_node->param(AGAudioWaveformNode::PARAM_DURATION));
+//        durSlider->onUpdate([this] (float value) {
+//            m_node->setParam(AGAudioWaveformNode::PARAM_DURATION, value);
+//        });
+//        durSlider->setValidator([this] (float _old, float _new) -> float {
+//            return m_node->validateParam(AGAudioWaveformNode::PARAM_DURATION, _new);
+//        });
+//        addChild(durSlider);
         
         // gain label
         pos += sliderWidth/2 + hmargin*2 + labelWidth/2;
@@ -131,17 +133,30 @@ public:
             return m_node->validateParam(AGAudioWaveformNode::AUDIO_PARAM_GAIN, _new);
         });
         addChild(gainSlider);
+        
+        m_pinButton = AGUIButton::makePinButton(this);
+        GLvertex2f pinSize = m_pinButton->size();
+        GLvertex2f pinPos = { m_width/2-10-pinSize.x/2, m_height/2-10-pinSize.y/2 };
+        m_pinButton->setPosition(pinPos);
+        addChild(m_pinButton);
     }
     
     virtual void update(float t, float dt) override
     {
-        AGRenderObject::update(t, dt);
+        // AGRenderObject::update(t, dt);
+        
+        m_renderState.alpha = m_alpha;
+        m_renderState.modelview = globalModelViewMatrix();
+        m_renderState.projection = projectionMatrix();
+        m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
         
         m_renderState.modelview = GLKMatrix4Translate(m_renderState.modelview,
                                                       position().x, position().y, 0);
         
         m_squeeze.update(t, dt);
         m_renderState.modelview = m_squeeze.apply(m_renderState.modelview);
+        
+        updateChildren(t, dt);
     }
     
     virtual void render() override
@@ -192,6 +207,7 @@ public:
 //        }, 2);
         
         AGRenderObject::render();
+        //renderChildren();
     }
     
     virtual void touchDown(const AGTouchInfo &t) override
