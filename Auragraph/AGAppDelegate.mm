@@ -9,14 +9,13 @@
 #import "AGAppDelegate.h"
 
 #import "AGViewController.h"
+#import "ChuckPadSocial.h"
 
 #include "AGAnalytics.h"
 
 extern "C" int shaperecst(int argc, const char** argv);
 
-
 @implementation AGAppDelegate
-
 
 - (void)testHWR
 {
@@ -27,12 +26,12 @@ extern "C" int shaperecst(int argc, const char** argv);
     shaperecst(3, argv);
 }
 
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     application.statusBarHidden = YES;
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    
     // Override point for customization after application launch.
     self.viewController = [[AGViewController alloc] initWithNibName:@"AGViewController" bundle:nil];
     self.window.rootViewController = self.viewController;
@@ -40,7 +39,9 @@ extern "C" int shaperecst(int argc, const char** argv);
     
     AGAnalytics::instance().eventAppLaunch();
     
-//    [self testHWR];
+    [ChuckPadSocial bootstrapForPatchType:Auraglyph];
+
+    // [self testHWR];
     
     return YES;
 }
