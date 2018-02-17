@@ -206,8 +206,8 @@ public:
 //            m_waveformPos + GLvertex2f{ phaseOffset*m_waveformSize.x, -m_waveformSize.y*0.5f },
 //        }, 2);
         
-        AGRenderObject::render();
-        //renderChildren();
+        //AGRenderObject::render();
+        renderChildren();
     }
     
     virtual void touchDown(const AGTouchInfo &t) override
@@ -225,7 +225,7 @@ public:
             dbgprint("posInWaveform %f %f\n", posInWaveform.x, posInWaveform.y);
             dbgprint("norm %f %f\n", normX, normY);
             
-            int pos = (int) roundf(normX*m_node->m_waveform.size());
+            int pos = (int) roundf(normX*(m_node->m_waveform.size()-1));
             m_node->m_waveform[pos] = normY;
             
             m_lastModifiedPos = pos;
@@ -253,7 +253,7 @@ public:
             dbgprint_off("posInWaveform %f %f\n", posInWaveform.x, posInWaveform.y);
             dbgprint_off("norm %f %f\n", normX, normY);
 
-            int pos = (int) roundf(normX*m_node->m_waveform.size());
+            int pos = (int) roundf(normX*(m_node->m_waveform.size()-1));
             m_node->m_waveform[pos] = normY;
             
             // interpolate from last point
