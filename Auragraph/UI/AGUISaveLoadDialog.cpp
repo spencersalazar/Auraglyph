@@ -55,6 +55,7 @@ public:
         m_saveButton->setAction(^{
             AGDocumentManager &manager = AGDocumentManager::instance();
             
+            m_doc.setName(m_name);
             string filename = manager.save(m_name, m_doc);
             
             m_onSave(filename);

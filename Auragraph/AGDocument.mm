@@ -115,6 +115,16 @@ void AGDocument::create()
     
 }
 
+void AGDocument::setName(const std::vector<std::vector<GLvertex2f>>& name)
+{
+    m_name = name;
+}
+
+const std::vector<std::vector<GLvertex2f>>& AGDocument::name()
+{
+    return m_name;
+}
+
 void AGDocument::load(const string &title)
 {
     m_title = title;
@@ -249,6 +259,28 @@ void AGDocument::loadFromPath(const string &path)
                 
                 m_freedraws[f.uuid] = f;
             }
+            else if([object isEqualToString:@"name"])
+            {
+                if(dict[@"figures"])
+                {
+                    m_name.clear();
+                    NSArray* figures = dict[@"figures"];
+                    NSUInteger numFigures = figures.count;
+                    m_name.resize(numFigures);
+                    for(int i = 0; i < numFigures; i++)
+                    {
+                        NSArray *figure = figures[i];
+                        m_name.push_back(vector<GLvertex2f>());
+                        NSUInteger numPts = figure.count;
+                        for(NSUInteger j = 0; j < numPts && j+1 < numPts; j += 2)
+                        {
+                            float x = [figure[i] floatValue];
+                            float y = [figure[i+1] floatValue];
+                            m_name[i].push_back(GLvertex2f(x, y));
+                        }
+                    }
+                }
+            }
             else
             {
                 NSLog(@"AGDocument::load: error: unhandled object '%@'", object);
@@ -331,7 +363,7 @@ void AGDocument::saveToPath(const std::string &path) const
                                    @"dstPort": [NSString stringWithSTLString:dstPort],
                                    }];
         }
-    
+        
         [doc setObject:@{ @"object": @"node",
                           @"class": @((int) node._class),
                           @"type": [NSString stringWithSTLString:node.type],
@@ -371,6 +403,21 @@ void AGDocument::saveToPath(const std::string &path) const
                           }
                 forKey:[NSString stringWithSTLString:uuid]];
     };
+    
+    NSMutableArray *name = [NSMutableArray arrayWithCapacity:m_name.size()];
+    for(int i = 0; i < m_name.size(); i++)
+    {
+        NSMutableArray *figure = [NSMutableArray arrayWithCapacity:m_name[i].size()*2];
+        for(int j = 0; j < m_name[i].size(); j++)
+        {
+            [figure addObject:@(m_name[i][j].x)];
+            [figure addObject:@(m_name[i][j].y)];
+        }
+        [name addObject:figure];
+    }
+    
+    [doc setObject:@{ @"object": @"name", @"figures": name }
+            forKey:@"name"];
     
     NSData *data = [NSJSONSerialization dataWithJSONObject:doc
                                                    options:NSJSONWritingPrettyPrinted

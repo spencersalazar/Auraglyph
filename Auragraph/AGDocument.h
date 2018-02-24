@@ -14,6 +14,8 @@
 #include <vector>
 #include <list>
 
+#include "Geometry.h"
+
 using namespace std;
 
 class AGControl;
@@ -104,6 +106,9 @@ public:
     void updateFreedraw(const string &uuid, const Freedraw &update);
     void removeFreedraw(const string &uuid);
     
+    void setName(const std::vector<std::vector<GLvertex2f>>& name);
+    const std::vector<std::vector<GLvertex2f>>& name();
+    
 //    static Node makeNode(AGAudioNode *);
 //    static Node makeNode(AGControlNode *);
 //    static Connection makeConnection(AGConnection *);
@@ -113,6 +118,7 @@ public:
     
 private:
     string m_title;
+    std::vector<std::vector<GLvertex2f>> m_name;
     map<string, Node> m_nodes;
     map<string, Connection> m_connections;
     map<string, Freedraw> m_freedraws;
