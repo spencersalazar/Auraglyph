@@ -7,7 +7,7 @@
 //
 
 #include "AGFileManager.h"
-
+#include "NSString+STLString.h"
 
 AGFileManager &AGFileManager::instance()
 {
@@ -21,6 +21,7 @@ AGFileManager::AGFileManager()
     
     m_soundfileDirectory = [documentPath UTF8String];
     m_userDataDirectory = [documentPath UTF8String];
+    m_documentDirectory = [documentPath UTF8String];
 }
 
 AGFileManager::~AGFileManager()
@@ -34,6 +35,27 @@ const string &AGFileManager::soundfileDirectory()
 const string &AGFileManager::userDataDirectory()
 {
     return m_userDataDirectory;
+}
+
+const string &AGFileManager::documentDirectory()
+{
+    return m_documentDirectory;
+}
+
+bool AGFileManager::fileHasExtension(const string &filepathOrName, const string &extension)
+{
+    if(filepathOrName.length() == 0 || extension.length() == 0)
+        return false;
+    const auto pos = filepathOrName.rfind(extension);
+    bool hasExtensionAtEnd = (pos == filepathOrName.length()-extension.length());
+    bool hasDotBeforeExtension = (pos > 0 && filepathOrName[pos-1] == '.');
+    return hasExtensionAtEnd && hasDotBeforeExtension;
+}
+
+bool AGFileManager::filenameExists(const string &filename)
+{
+    std::string filepath = documentDirectory() + "/" + filename;
+    return [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithSTLString:filepath]];
 }
 
 vector<string> AGFileManager::listDirectory(const string &directory)

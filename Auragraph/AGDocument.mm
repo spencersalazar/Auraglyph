@@ -272,10 +272,11 @@ void AGDocument::loadFromPath(const string &path)
                         NSArray *figure = figures[i];
                         m_name.push_back(vector<GLvertex2f>());
                         NSUInteger numPts = figure.count;
+                        m_name[i].reserve(numPts/2);
                         for(NSUInteger j = 0; j < numPts && j+1 < numPts; j += 2)
                         {
-                            float x = [figure[i] floatValue];
-                            float y = [figure[i+1] floatValue];
+                            float x = [figure[j] floatValue];
+                            float y = [figure[j+1] floatValue];
                             m_name[i].push_back(GLvertex2f(x, y));
                         }
                     }

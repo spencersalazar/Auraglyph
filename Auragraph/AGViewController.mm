@@ -33,6 +33,7 @@
 #import "NSString+STLString.h"
 #import "AGPGMidiContext.h"
 #import "AGGraphManager.h"
+#import "AGFileManager.h"
 
 #import <list>
 #import <map>
@@ -203,7 +204,7 @@ static AGViewController * g_instance = nil;
     
     /* load default program */
     std::string _lastOpened = AGPreferences::instance().lastOpenedDocument();
-    if(_lastOpened.size() != 0)
+    if(_lastOpened.size() != 0 && AGFileManager::instance().filenameExists(_lastOpened))
     {
         _currentDocumentFilename = _lastOpened;
         AGDocument doc = AGDocumentManager::instance().load(_lastOpened);

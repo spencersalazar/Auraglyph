@@ -9,6 +9,8 @@
 #include "AGDocumentManager.h"
 #include "NSString+STLString.h"
 #include "sputil.h"
+#include "AGFileManager.h"
+#include <set>
 
 
 std::string documentLibraryPath()
@@ -72,9 +74,12 @@ void AGDocumentManager::_loadList()
 {
     if(m_list == NULL)
     {
-        NSString *libraryPath = [NSString stringWithSTLString:documentLibraryPath()];
+        /* load cached file list */
         
-        if(![[NSFileManager defaultManager] fileExistsAtPath:libraryPath])
+        NSString *libraryPath = [NSString stringWithSTLString:documentLibraryPath()];
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        
+        if(![fileManager fileExistsAtPath:libraryPath])
         {
             // library file doesn't exist - use default (empty) library
             m_list = new std::vector<DocumentListing>;
@@ -113,14 +118,29 @@ void AGDocumentManager::_loadList()
         }
         
         auto list = new std::vector<DocumentListing>;
+        std::set<std::string> filenameSet;
+        bool didUpdateList = false;
         
         for(NSDictionary *fileObj in listObj)
         {
             if(fileObj[@"filename"] == nil) continue;
             if(fileObj[@"name"] == nil) continue;
             
+            std::string filename = [(NSString *) fileObj[@"filename"] stlString];
+            
+            // verify existence on disk
+            std::string filepath = documentDirectory() + "/" + filename;
+            BOOL isDirectory = NO;
+            if(![fileManager fileExistsAtPath:[NSString stringWithSTLString:filepath]
+                                  isDirectory:&isDirectory]
+               || isDirectory)
+            {
+                // file no longer exists; skip it
+                didUpdateList = true;
+                continue;
+            }
+            
             bool isValid = true;
-            std::string filename = [(NSString *)fileObj[@"filename"] stlString];
             std::vector<std::vector<GLvertex2f>> name;
             for(NSArray *figureObj in fileObj[@"name"])
             {
@@ -146,10 +166,38 @@ void AGDocumentManager::_loadList()
             
             if(!isValid) continue;
             
+            filenameSet.insert(filename);
             list->push_back({ filename, name });
         }
         
+        /* scan for new items on the list */
+        NSString *documentDir = [NSString stringWithSTLString:documentDirectory()];
+        NSArray *files = [fileManager contentsOfDirectoryAtPath:documentDir error:&error];
+        for(NSString *file in files)
+        {
+            std::string filename = [file stlString];
+            if(!AGFileManager::instance().fileHasExtension(filename, "json"))
+                continue;
+            if(filename == "nodes.json")
+                continue;
+            
+            if(!filenameSet.count(filename))
+            {
+                didUpdateList = true;
+                // load it
+                AGDocument doc = load(filename);
+                // pull out name
+                auto name = doc.name();
+                // add to list
+                list->push_back({ filename, name });
+            }
+        }
+
         m_list = list;
+        
+        /* save updated list */
+        if(didUpdateList)
+            _saveList();
     }
 }
 
