@@ -112,6 +112,7 @@ enum InterfaceMode
     AGDashboard *_uiDashboard;
     
     std::string _currentDocumentFilename;
+    std::vector<std::vector<GLvertex2f>> _currentDocName;
     
     AGViewController_ *_proxy;
 }
@@ -1169,7 +1170,7 @@ static AGViewController * g_instance = nil;
 {
     __block AGDocument doc;
     
-    itmap(_nodes, ^(AGNode *&node){
+    itmap(_nodes, ^(AGNode *&node) {
         AGDocument::Node docNode = node->serialize();
         doc.addNode(docNode);
     });
@@ -1188,8 +1189,9 @@ static AGViewController * g_instance = nil;
     {
         AGUISaveDialog *saveDialog = AGUISaveDialog::save(doc);
         
-        saveDialog->onSave([self](const std::string &filename){
+        saveDialog->onSave([self](const std::string &filename, const vector<vector<GLvertex2f>> &name) {
             _currentDocumentFilename = filename;
+            _currentDocName = name;
             AGPreferences::instance().setLastOpenedDocument(_currentDocumentFilename);
         });
         
@@ -1197,6 +1199,7 @@ static AGViewController * g_instance = nil;
     }
     else
     {
+        doc.setName(_currentDocName);
         AGDocumentManager::instance().update(_currentDocumentFilename, doc);
     }
 }
@@ -1207,6 +1210,7 @@ static AGViewController * g_instance = nil;
     
     loadDialog->onLoad([self](const std::string &filename, AGDocument &doc){
         _currentDocumentFilename = filename;
+        _currentDocName = doc.name();
         [self _loadDocument:doc];
     });
     
@@ -1226,6 +1230,7 @@ static AGViewController * g_instance = nil;
     [self _clearDocument];
     
     _currentDocumentFilename = "";
+    _currentDocName = std::vector<std::vector<GLvertex2f>>();
     
     // just create output node by itself
     AGNode *node = AGNodeManager::audioNodeManager().createNodeOfType("Output", GLvertex3f(0, 0, 0));

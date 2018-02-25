@@ -266,7 +266,7 @@ void AGDocument::loadFromPath(const string &path)
                     m_name.clear();
                     NSArray* figures = dict[@"figures"];
                     NSUInteger numFigures = figures.count;
-                    m_name.resize(numFigures);
+                    m_name.reserve(numFigures);
                     for(int i = 0; i < numFigures; i++)
                     {
                         NSArray *figure = figures[i];

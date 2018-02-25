@@ -30,7 +30,7 @@ private:
     AGDocument m_doc;
     vector<vector<GLvertex2f>> m_name;
     
-    std::function<void (const std::string &file)> m_onSave;
+    std::function<void (const std::string &, const vector<vector<GLvertex2f>> &)> m_onSave;
     
 public:
     AGUIConcreteSaveDialog(const AGDocument &doc, const GLvertex3f &pos) :
@@ -38,7 +38,7 @@ public:
     {
         setPosition(pos);
         
-        m_onSave = [](const std::string &file){};
+        m_onSave = [](const std::string &, const vector<vector<GLvertex2f>>&){};
         m_size = GLvertex2f(500, 500/AGStyle::aspect16_9);
         
         float buttonWidth = 100;
@@ -58,7 +58,7 @@ public:
             m_doc.setName(m_name);
             string filename = manager.save(m_name, m_doc);
             
-            m_onSave(filename);
+            m_onSave(filename, m_name);
             
             removeFromTopLevel();
         });
@@ -160,7 +160,7 @@ public:
         return m_squeeze.finishedClosing();
     }
     
-    virtual void onSave(const std::function<void (const std::string &file)> &_onSave) override
+    virtual void onSave(const std::function<void (const std::string &file, const vector<vector<GLvertex2f>> &name)> &_onSave) override
     {
         m_onSave = _onSave;
     }

@@ -23,7 +23,7 @@ public:
     
     virtual ~AGUISaveDialog() { }
     
-    virtual void onSave(const std::function<void (const std::string &file)> &) = 0;
+    virtual void onSave(const std::function<void (const std::string &file, const vector<vector<GLvertex2f>> &name)> &) = 0;
 };
 
 //------------------------------------------------------------------------------

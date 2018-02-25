@@ -66,13 +66,13 @@ AGDocument AGDocumentManager::load(const std::string &filename)
 
 const std::vector<AGDocumentManager::DocumentListing> &AGDocumentManager::list()
 {
-    _loadList();
+    _loadList(true);
     return *m_list;
 }
 
-void AGDocumentManager::_loadList()
+void AGDocumentManager::_loadList(bool force)
 {
-    if(m_list == NULL)
+    if(m_list == NULL || force)
     {
         /* load cached file list */
         
