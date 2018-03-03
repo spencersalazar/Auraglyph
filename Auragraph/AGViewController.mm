@@ -1210,7 +1210,6 @@ static AGViewController * g_instance = nil;
     
     loadDialog->onLoad([self](const std::string &filename, AGDocument &doc){
         _currentDocumentFilename = filename;
-        _currentDocName = doc.name();
         [self _loadDocument:doc];
     });
     
@@ -1243,6 +1242,7 @@ static AGViewController * g_instance = nil;
 {
     [self _clearDocument];
     
+    _currentDocName = doc.name();
     AGPreferences::instance().setLastOpenedDocument(_currentDocumentFilename);
     
     __block map<string, AGNode *> uuid2node;
@@ -1283,7 +1283,6 @@ static AGViewController * g_instance = nil;
         freedraw->init();
 //        [self addTopLevelObject:freedraw];
         [self addFreeDraw:freedraw];
-
     });
 }
 
