@@ -61,6 +61,21 @@ AGDocument AGDocumentManager::load(const std::string &filename)
     std::string filepath = documentDirectory() + "/" + filename;
     AGDocument doc;
     doc.loadFromPath(filepath);
+    
+    // set name, if needed
+    if(doc.name().size() == 0)
+    {
+        // find this doc in listing
+        for(auto listing : *m_list)
+        {
+            if(listing.filename == filename)
+            {
+                doc.setName(listing.name);
+                break;
+            }
+        }
+    }
+    
     return doc;
 }
 
