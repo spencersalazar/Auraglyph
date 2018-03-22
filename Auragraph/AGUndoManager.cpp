@@ -14,6 +14,10 @@
 #include "AGAudioManager.h"
 #include "AGAudioNode.h"
 
+#include "nlohmann/json.hpp"
+
+using json = nlohmann::json;
+
 #define AG_MAX_UNDO 100
 
 //------------------------------------------------------------------------------
@@ -37,6 +41,15 @@ AGUndoAction *AGUndoAction::editParamUndoAction(AGNode *node, int port, float ol
             AGNode *node = AGGraphManager::instance().nodeWithUUID(uuid);
             if(node != nullptr)
                 node->setEditPortValue(port, newValue);
+        },
+        [uuid, port, oldValue, newValue]() -> std::string {
+            return (json) {
+                { "type", "editParam" },
+                { "uuid", uuid },
+                { "port", port },
+                { "oldValue", oldValue },
+                { "newValue", newValue },
+            }.dump();
         }
     );
     
@@ -64,6 +77,14 @@ AGUndoAction *AGUndoAction::createNodeUndoAction(AGNode *node)
                 AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
                 outputNode->setOutputDestination(AGAudioManager_::instance().masterOut());
             }
+        },
+        [uuid, serializedNode, isOutput]() -> std::string {
+            return (json) {
+                { "type", "createNode" },
+                { "uuid", uuid },
+                //{ "serializedNode", serializedNode }, // TODO
+                { "isOutput", isOutput },
+            }.dump();
         }
     );
     
@@ -84,6 +105,14 @@ AGUndoAction *AGUndoAction::moveNodeUndoAction(AGNode *node, const GLvertex3f &o
             // move the node back
             AGNode *node = AGGraphManager::instance().nodeWithUUID(uuid);
             node->setPosition(newPos);
+        },
+        [uuid, oldPos, newPos]() -> std::string {
+            return (json) {
+                { "type", "moveNode" },
+                { "uuid", uuid },
+                { "oldPos", { oldPos.x, oldPos.y, oldPos.z } },
+                { "newPos", { newPos.x, newPos.y, newPos.z } },
+            }.dump();
         }
     );
     
@@ -107,7 +136,6 @@ AGUndoAction *AGUndoAction::deleteNodeUndoAction(AGNode *node)
                 outputNode->setOutputDestination(AGAudioManager_::instance().masterOut());
             }
             
-            // todo: recreate connections
             for(auto connection : serializedNode.outbound)
                 AGConnection::connect(connection);
             for(auto connection : serializedNode.inbound)
@@ -117,6 +145,14 @@ AGUndoAction *AGUndoAction::deleteNodeUndoAction(AGNode *node)
             // remove/delete the node
             AGNode *node = AGGraphManager::instance().nodeWithUUID(uuid);
             node->removeFromTopLevel();
+        },
+        [uuid, serializedNode, isOutput]() -> std::string {
+            return (json) {
+                { "type", "deleteNode" },
+                { "uuid", uuid },
+                // { "serializedNode", serializedNode }, // TODO
+                { "isOutput", isOutput },
+            }.dump();
         }
     );
     
@@ -137,6 +173,13 @@ AGUndoAction *AGUndoAction::createConnectionUndoAction(AGConnection *connection)
         [serializedConnection]() {
             // recreate the connection
             AGConnection::connect(serializedConnection);
+        },
+        [uuid, serializedConnection]() -> std::string {
+            return (json) {
+                { "type", "createConnection" },
+                { "uuid", uuid },
+                // { "serializedConnection", serializedConnection }, // TODO
+            }.dump();
         }
     );
     
@@ -157,6 +200,13 @@ AGUndoAction *AGUndoAction::deleteConnectionUndoAction(AGConnection *connection)
             // delete the connection
             AGConnection *connection = AGGraphManager::instance().connectionWithUUID(uuid);
             connection->removeFromTopLevel();
+        },
+        [serializedConnection, uuid]() -> std::string {
+            return (json) {
+                { "type", "deleteConnection" },
+                { "uuid", uuid },
+                // { "serializedConnection", serializedConnection }, // TODO
+            }.dump();
         }
     );
     
@@ -171,8 +221,9 @@ AGUndoAction *AGUndoAction::deleteConnectionUndoAction(AGConnection *connection)
 
 AGBasicUndoAction::AGBasicUndoAction(const std::string &title,
                                      std::function<void ()> _undo,
-                                     std::function<void ()> _redo)
-: AGUndoAction(title), m_undo(_undo), m_redo(_redo)
+                                     std::function<void ()> _redo,
+                                     std::function<std::string ()> _serialize)
+: AGUndoAction(title), m_undo(_undo), m_redo(_redo), m_serialize(_serialize)
 { }
 
 void AGBasicUndoAction::undo()
@@ -183,6 +234,11 @@ void AGBasicUndoAction::undo()
 void AGBasicUndoAction::redo()
 {
     m_redo();
+}
+
+std::string AGBasicUndoAction::serialize()
+{
+    return m_serialize();
 }
 
 //------------------------------------------------------------------------------

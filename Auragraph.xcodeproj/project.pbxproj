@@ -119,6 +119,7 @@
 		09EE65821EFB64C700B4ED62 /* SampleCircularBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09EE65801EFB64C700B4ED62 /* SampleCircularBuffer.cpp */; };
 		09EE673A1EFDB72F00B4ED62 /* EZAudioiOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09EE67371EFDB6F800B4ED62 /* EZAudioiOS.framework */; };
 		09EE673B1EFDB72F00B4ED62 /* EZAudioiOS.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 09EE67371EFDB6F800B4ED62 /* EZAudioiOS.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		09EE79AA204B1611006ECBD4 /* AGLocalNetworkManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09EE79A8204B1611006ECBD4 /* AGLocalNetworkManager.mm */; };
 		09F29D7A1CC73D7A00502C01 /* libfeatureextractorcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851017B354BE0065EF8E /* libfeatureextractorcommon.a */; };
 		09F29D7B1CC73D8000502C01 /* libshaperecommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851917B354BE0065EF8E /* libshaperecommon.a */; };
 		09F29DAF1CCA086200502C01 /* AGSlider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F29DAD1CCA086200502C01 /* AGSlider.cpp */; };
@@ -456,6 +457,8 @@
 		09EE65801EFB64C700B4ED62 /* SampleCircularBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SampleCircularBuffer.cpp; sourceTree = "<group>"; };
 		09EE65811EFB64C700B4ED62 /* SampleCircularBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleCircularBuffer.h; sourceTree = "<group>"; };
 		09EE67311EFDB6F800B4ED62 /* EZAudio.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EZAudio.xcodeproj; path = libs/EZAudio/EZAudio.xcodeproj; sourceTree = "<group>"; };
+		09EE79A8204B1611006ECBD4 /* AGLocalNetworkManager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AGLocalNetworkManager.mm; sourceTree = "<group>"; };
+		09EE79A9204B1611006ECBD4 /* AGLocalNetworkManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGLocalNetworkManager.h; sourceTree = "<group>"; };
 		09F29DAD1CCA086200502C01 /* AGSlider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGSlider.cpp; sourceTree = "<group>"; };
 		09F29DAE1CCA086200502C01 /* AGSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGSlider.h; sourceTree = "<group>"; };
 		09F2D5371D7EA33400F537C7 /* Delay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Delay.cpp; sourceTree = "<group>"; };
@@ -737,6 +740,7 @@
 				0934B6761E22135E009259E2 /* AGFileBrowser.cpp */,
 				09E5EC8118A46F7300B21D97 /* AGControl.h */,
 				09E5EC8018A46F7300B21D97 /* AGControl.mm */,
+				09EE79A6204B15F5006ECBD4 /* Network */,
 				0901C1BB17BE2F970032904B /* AGGenericShader.h */,
 				0901C1BA17BE2F970032904B /* AGGenericShader.mm */,
 				095D12E117ACA36C0048A012 /* Shader.vsh */,
@@ -1002,6 +1006,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		09EE79A6204B15F5006ECBD4 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				09EE79A9204B1611006ECBD4 /* AGLocalNetworkManager.h */,
+				09EE79A8204B1611006ECBD4 /* AGLocalNetworkManager.mm */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 		498438591F1EF40B00FB2914 /* PGMidi */ = {
 			isa = PBXGroup;
 			children = (
@@ -1242,6 +1255,7 @@
 				49C8AB5D1F05E6F1005671BE /* AGFreeDraw.cpp in Sources */,
 				099AF11317D12DD9000BAB7B /* AGTrainerViewController.mm in Sources */,
 				09F2D53A1D7EA33400F537C7 /* Delay.cpp in Sources */,
+				09EE79AA204B1611006ECBD4 /* AGLocalNetworkManager.mm in Sources */,
 				494019CD1F21CCF3000F05E8 /* AGPGMidiDelegate.mm in Sources */,
 				09EE65821EFB64C700B4ED62 /* SampleCircularBuffer.cpp in Sources */,
 				0944E8C61DCB325D00EB8087 /* AGAnalytics.mm in Sources */,
@@ -1386,7 +1400,10 @@
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Auragraph/Auragraph-Prefix.pch";
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/LipiTk/include\"";
+				HEADER_SEARCH_PATHS = (
+					"\"$(PROJECT_DIR)/LipiTk/include\"",
+					"\"$(PROJECT_DIR)/libs\"",
+				);
 				INFOPLIST_FILE = "Auragraph/Auragraph-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				KEEP_PRIVATE_EXTERNS = YES;
@@ -1420,7 +1437,10 @@
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Auragraph/Auragraph-Prefix.pch";
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/LipiTk/include\"";
+				HEADER_SEARCH_PATHS = (
+					"\"$(PROJECT_DIR)/LipiTk/include\"",
+					"\"$(PROJECT_DIR)/libs\"",
+				);
 				INFOPLIST_FILE = "Auragraph/Auragraph-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				KEEP_PRIVATE_EXTERNS = YES;

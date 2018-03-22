@@ -41,6 +41,9 @@ public:
     
     const std::string &title() { return m_title; }
     
+    virtual std::string serialize() = 0;
+    static AGUndoAction *deserialize(const std::string &serialization);
+    
 private:
     std::string m_title;
 };
@@ -56,21 +59,24 @@ class AGBasicUndoAction : public AGUndoAction
 public:
     AGBasicUndoAction(const std::string &title,
                       std::function<void ()> _undo,
-                      std::function<void ()> _redo);
+                      std::function<void ()> _redo,
+                      std::function<std::string ()> _serialize);
     
     virtual void undo() override;
     virtual void redo() override;
+    virtual std::string serialize() override;
 
 private:
     std::function<void ()> m_undo;
     std::function<void ()> m_redo;
+    std::function<std::string ()> m_serialize;
 };
 
 
 //------------------------------------------------------------------------------
-// ### AGBasicUndoAction ###
+// ### AGUndoManagerListener ###
 //------------------------------------------------------------------------------
-#pragma mark - AGBasicUndoAction
+#pragma mark - AGUndoManagerListener
 
 class AGUndoManagerListener
 {

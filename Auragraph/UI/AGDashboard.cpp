@@ -102,8 +102,31 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
     });
     addChild(m_editMenu);
     
-    m_settingsMenu = new AGMenu(m_viewController->fixedCoordinateForScreenCoordinate(CGPointMake(10+fileMenuWidth*1.2*2+fileMenuWidth/2,
+    m_networkMenu = new AGMenu(m_viewController->fixedCoordinateForScreenCoordinate(CGPointMake(10+fileMenuWidth*1.2*2+fileMenuWidth/2,
                                                                                                 10+fileMenuHeight/2)),
+                               GLvertex2f(fileMenuWidth, fileMenuHeight));
+    m_networkMenu->init();
+    vector<GLvertex3f> networkIcon;
+    int numPts = 32;
+    for(int i = 0; i < numPts; i++)
+    {
+        float rot = (2*M_PI)/numPts;
+        float pos = rot*i;
+        networkIcon.push_back({ iconRadius*cosf(pos), iconRadius*sinf(pos), 0 });
+    }
+    m_networkMenu->setIcon(networkIcon.data(), networkIcon.size(), GL_LINE_STRIP);
+    m_networkMenu->addMenuItem("Host", [this](){
+        dbgprint("Host\n");
+        // TODO: analytics
+    });
+    m_networkMenu->addMenuItem("Join", [this](){
+        dbgprint("Join\n");
+        // TODO: analytics
+    });
+    addChild(m_networkMenu);
+    
+    m_settingsMenu = new AGMenu(m_viewController->fixedCoordinateForScreenCoordinate(CGPointMake(10+fileMenuWidth*1.2*3+fileMenuWidth/2,
+                                                                                                 10+fileMenuHeight/2)),
                                GLvertex2f(fileMenuWidth, fileMenuHeight));
     m_settingsMenu->init();
     vector<GLvertex3f> gearIcon;
@@ -264,9 +287,12 @@ void AGDashboard::onInterfaceOrientationChange()
     CGPoint editMenuPos = CGPointMake(10+m_fileMenu->size().x*1.2+m_fileMenu->size().x/2, 10+m_fileMenu->size().y/2);
     m_editMenu->setPosition(m_viewController->fixedCoordinateForScreenCoordinate(editMenuPos));
     
-    CGPoint settingsMenuPos = CGPointMake(10+m_fileMenu->size().x*2*1.2+m_fileMenu->size().x/2, 10+m_fileMenu->size().y/2);
-    m_settingsMenu->setPosition(m_viewController->fixedCoordinateForScreenCoordinate(settingsMenuPos));
+    CGPoint networkMenuPos = CGPointMake(10+m_fileMenu->size().x*2*1.2+m_fileMenu->size().x/2, 10+m_fileMenu->size().y/2);
+    m_networkMenu->setPosition(m_viewController->fixedCoordinateForScreenCoordinate(networkMenuPos));
     
+    CGPoint settingsMenuPos = CGPointMake(10+m_fileMenu->size().x*3*1.2+m_fileMenu->size().x/2, 10+m_fileMenu->size().y/2);
+    m_settingsMenu->setPosition(m_viewController->fixedCoordinateForScreenCoordinate(settingsMenuPos));
+
     CGPoint recordPos = CGPointMake(m_viewController->bounds().size.width-m_recordButton->size().x-20, 20+m_recordButton->size().y/2);
     m_recordButton->setPosition(m_viewController->fixedCoordinateForScreenCoordinate(recordPos));
     
