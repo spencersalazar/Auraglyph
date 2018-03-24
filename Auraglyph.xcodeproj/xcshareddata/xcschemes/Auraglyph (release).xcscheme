@@ -17,7 +17,7 @@
                BlueprintIdentifier = "095D12BF17ACA36C0048A012"
                BuildableName = "Auraglyph.app"
                BlueprintName = "Auraglyph"
-               ReferencedContainer = "container:Auragraph.xcodeproj">
+               ReferencedContainer = "container:Auraglyph.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -36,14 +36,14 @@
             BlueprintIdentifier = "095D12BF17ACA36C0048A012"
             BuildableName = "Auraglyph.app"
             BlueprintName = "Auraglyph"
-            ReferencedContainer = "container:Auragraph.xcodeproj">
+            ReferencedContainer = "container:Auraglyph.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       language = ""
@@ -60,7 +60,7 @@
             BlueprintIdentifier = "095D12BF17ACA36C0048A012"
             BuildableName = "Auraglyph.app"
             BlueprintName = "Auraglyph"
-            ReferencedContainer = "container:Auragraph.xcodeproj">
+            ReferencedContainer = "container:Auraglyph.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -79,7 +79,7 @@
             BlueprintIdentifier = "095D12BF17ACA36C0048A012"
             BuildableName = "Auraglyph.app"
             BlueprintName = "Auraglyph"
-            ReferencedContainer = "container:Auragraph.xcodeproj">
+            ReferencedContainer = "container:Auraglyph.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
