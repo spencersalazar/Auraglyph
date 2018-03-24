@@ -15,9 +15,9 @@
 
 
 #ifdef AG_USER_TEST_1
-#define GA_TRACKING_ID @"***REMOVED***"
+#define GA_TRACKING_ID @""
 #else
-#define GA_TRACKING_ID @"***REMOVED***"
+#define GA_TRACKING_ID @""
 #endif // AG_USER_TEST_1
 
 
