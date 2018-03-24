@@ -93,7 +93,6 @@
 		0991BA7E1D83A5140080175C /* spdsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0991BA7C1D83A5140080175C /* spdsp.cpp */; };
 		0991BA841D8654C70080175C /* FileRead.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0991BA821D8654C70080175C /* FileRead.cpp */; };
 		0991BA851D8654C70080175C /* FileWvIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0991BA831D8654C70080175C /* FileWvIn.cpp */; };
-		099AF10F17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png in Resources */ = {isa = PBXBuildFile; fileRef = 099AF10E17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png */; };
 		099AF11317D12DD9000BAB7B /* AGTrainerViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 099AF11117D12DD9000BAB7B /* AGTrainerViewController.mm */; };
 		099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */; };
 		099AF11617D13365000BAB7B /* AGTrainerViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11517D13365000BAB7B /* AGTrainerViewCell.xib */; };
@@ -414,7 +413,6 @@
 		0991BA811D8654B70080175C /* WvIn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WvIn.h; sourceTree = "<group>"; };
 		0991BA821D8654C70080175C /* FileRead.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileRead.cpp; sourceTree = "<group>"; };
 		0991BA831D8654C70080175C /* FileWvIn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileWvIn.cpp; sourceTree = "<group>"; };
-		099AF10E17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AURAGRPH-AppIcon144.png"; path = "../AURAGRPH-AppIcon144.png"; sourceTree = "<group>"; };
 		099AF11017D12DD9000BAB7B /* AGTrainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGTrainerViewController.h; sourceTree = "<group>"; };
 		099AF11117D12DD9000BAB7B /* AGTrainerViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGTrainerViewController.mm; sourceTree = "<group>"; };
 		099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AGTrainerViewController.xib; sourceTree = "<group>"; };
@@ -786,7 +784,6 @@
 				09D8C3FE1A0A4DF2008D788A /* OFL.txt */,
 				0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */,
 				093395681A019D43009E4802 /* Orbitron-Regular.ttf */,
-				099AF10E17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png */,
 				095D12CF17ACA36C0048A012 /* Auragraph-Info.plist */,
 				095D12D017ACA36C0048A012 /* InfoPlist.strings */,
 				095D12D317ACA36C0048A012 /* main.m */,
@@ -842,7 +839,8 @@
 				09030CEA1EFEF83D00D4A4F2 /* Signal.h */,
 				09030CE91EFEF83D00D4A4F2 /* Signal.cpp */,
 			);
-			path = libsp;
+			name = libsp;
+			path = libs/libsp;
 			sourceTree = "<group>";
 		};
 		095E84EA17B354BE0065EF8E /* LipiTk */ = {
@@ -853,7 +851,8 @@
 				095E84EB17B354BE0065EF8E /* include */,
 				095E850C17B354BE0065EF8E /* lib */,
 			);
-			path = LipiTk;
+			name = LipiTk;
+			path = libs/LipiTk;
 			sourceTree = "<group>";
 		};
 		095E84EB17B354BE0065EF8E /* include */ = {
@@ -959,7 +958,8 @@
 				09E5EC8518A5A86900B21D97 /* include */,
 				09E5EC8418A5A86400B21D97 /* src */,
 			);
-			path = stk;
+			name = stk;
+			path = libs/stk;
 			sourceTree = "<group>";
 		};
 		09E5EC8418A5A86400B21D97 /* src */ = {
@@ -1155,7 +1155,6 @@
 				095D12E817ACA36C0048A012 /* AGViewController.xib in Resources */,
 				0944E8AB1DC40EDB00EB8087 /* projects in Resources */,
 				09891313189F6D3A00AB98AD /* trash.png in Resources */,
-				099AF10F17CF9EE5000BAB7B /* AURAGRPH-AppIcon144.png in Resources */,
 				09DC3D521FBD3729008B960F /* LaunchScreen.storyboard in Resources */,
 				099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */,
 				099AF11617D13365000BAB7B /* AGTrainerViewCell.xib in Resources */,
@@ -1386,15 +1385,14 @@
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Auragraph/Auragraph-Prefix.pch";
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/LipiTk/include\"";
+				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/libs/LipiTk/include\"";
 				INFOPLIST_FILE = "Auragraph/Auragraph-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				KEEP_PRIVATE_EXTERNS = YES;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/LipiTk/lib\"",
-					"$(PROJECT_DIR)/LipiTk/lib",
+					"$(PROJECT_DIR)/libs/LipiTk/lib",
 					"$(PROJECT_DIR)/libs/GoogleAnalytics",
 				);
 				OTHER_LDFLAGS = "-all_load";
@@ -1420,15 +1418,14 @@
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Auragraph/Auragraph-Prefix.pch";
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/LipiTk/include\"";
+				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/libs/LipiTk/include\"";
 				INFOPLIST_FILE = "Auragraph/Auragraph-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				KEEP_PRIVATE_EXTERNS = YES;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/LipiTk/lib\"",
-					"$(PROJECT_DIR)/LipiTk/lib",
+					"$(PROJECT_DIR)/libs/LipiTk/lib",
 					"$(PROJECT_DIR)/libs/GoogleAnalytics",
 				);
 				OTHER_LDFLAGS = "-all_load";
