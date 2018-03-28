@@ -34,6 +34,7 @@
 #import "AGPGMidiContext.h"
 #import "AGGraphManager.h"
 #import "AGFileManager.h"
+#import "AGTutorial.h"
 
 #import <list>
 #import <map>
@@ -98,8 +99,6 @@ enum InterfaceMode
     list<AGInteractiveObject *> _touchOutsideListeners;
     list<AGTouchHandler *> _touchOutsideHandlers;
     
-//    AGDocument _defaultDocument;
-//    AGDocument *_currentDocument;
     map<AGNode *, string> _nodeUUID;
     map<AGConnection *, string> _conectionUUID;
     map<AGFreeDraw *, string> _freedrawUUID;
@@ -115,6 +114,7 @@ enum InterfaceMode
     std::vector<std::vector<GLvertex2f>> _currentDocName;
     
     AGViewController_ *_proxy;
+    AGTutorial *_currentTutorial;
 }
 
 @property (strong, nonatomic) EAGLContext *context;
@@ -284,6 +284,8 @@ static AGViewController * g_instance = nil;
     [jsonData writeToFile:nodeInfoPath atomically:YES];
     
 #endif // AG_EXPORT_NODES
+    
+    _currentTutorial = AGTutorial::createInitialTutorial();
 }
 
 - (void)initUI
@@ -726,6 +728,13 @@ static AGViewController * g_instance = nil;
     for(auto kv : _touchHandlers)
         [_touchHandlers[kv.first] update:_t dt:dt];
     [_touchHandlerQueue update:_t dt:dt];
+    
+    if(_currentTutorial)
+    {
+        _currentTutorial->update(_t, dt);
+        if(_currentTutorial->isComplete())
+            SAFE_DELETE(_currentTutorial);
+    }
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
@@ -771,6 +780,9 @@ static AGViewController * g_instance = nil;
     for(auto kv : _touchHandlers)
         [_touchHandlers[kv.first] render];
     [_touchHandlerQueue render];
+    
+    if(_currentTutorial)
+        _currentTutorial->render();
 }
 
 - (void)renderUser
