@@ -27,7 +27,6 @@
 #import "AGUINodeEditor.h"
 #import "AGGenericShader.h"
 #include "AGUndoManager.h"
-#include "AGGraphManager.h"
 #import "AGAnalytics.h"
 
 #import "GeoGenerator.h"

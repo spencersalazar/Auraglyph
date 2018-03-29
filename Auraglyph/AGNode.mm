@@ -12,6 +12,7 @@
 #import "AGGenericShader.h"
 #import "AGAudioNode.h"
 #import "AGControlNode.h"
+#include "AGGraph.h"
 #include "sputil.h"
 #include "AGStyle.h"
 #include "AGControl.h"
@@ -43,7 +44,7 @@ void AGNode::connect(AGConnection * connection)
     connection->dst()->addInbound(connection);
     connection->dst()->unlock();
     
-    AGGraphManager::instance().addConnection(connection);
+    AGGraphManager::instance().graph()->addConnection(connection);
 }
 
 void AGNode::disconnect(AGConnection * connection)
@@ -60,7 +61,7 @@ void AGNode::disconnect(AGConnection * connection)
     connection->dst()->removeInbound(connection);
     connection->dst()->unlock();
     
-    AGGraphManager::instance().removeConnection(connection);
+    AGGraphManager::instance().graph()->removeConnection(connection);
 }
 
 void AGNode::initalizeNode()

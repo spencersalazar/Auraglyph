@@ -38,3 +38,18 @@ void AGGraph::removeNode(AGNode *node)
     _nodes.remove(node);
     _uuid2Node.erase(node->uuid());
 }
+
+AGConnection *AGGraph::connectionWithUUID(const std::string &uuid) const
+{
+    return _connections.at(uuid);
+}
+
+void AGGraph::addConnection(AGConnection *connection)
+{
+    _connections[connection->uuid()] = connection;
+}
+
+void AGGraph::removeConnection(AGConnection *connection)
+{
+    _connections.erase(connection->uuid());
+}

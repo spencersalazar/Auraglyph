@@ -19,6 +19,7 @@
 class AGConnection;
 class AGFreeDraw;
 class AGInteractiveObject;
+class AGGraph;
 #ifdef __OBJC__
 @class AGTouchHandler;
 #endif // __OBJC__
@@ -40,8 +41,7 @@ enum AGDrawMode
 - (void)addNode:(AGNode *)node;
 - (void)removeNode:(AGNode *)node;
 - (void)resignNode:(AGNode *)node;
-- (const list<AGNode *> &)nodes;
-- (AGNode *)nodeWithUUID:(const std::string &)uuid;
+- (AGGraph *)graph;
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object;
 - (void)addTopLevelObject:(AGInteractiveObject *)object over:(AGInteractiveObject *)over;
@@ -104,9 +104,7 @@ public:
     CGRect bounds();
     
     void addNodeToTopLevel(AGNode *node);
-    
-    const std::list<AGNode *> &nodes();
-    AGNode *nodeWithUUID(const std::string &uuid);
+    AGGraph *graph();
     
 private:
     AGViewController *m_viewController = nil;

@@ -410,14 +410,9 @@ static AGViewController * g_instance = nil;
     }
 }
 
-- (const list<AGNode *> &)nodes
+- (AGGraph *)graph
 {
-    return _graph->nodes();
-}
-
-- (AGNode *)nodeWithUUID:(const std::string &)uuid
-{
-    return _graph->nodeWithUUID(uuid);
+    return _graph;
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object
@@ -1362,12 +1357,8 @@ void AGViewController_::addNodeToTopLevel(AGNode *node)
     [m_viewController addNode:node];
 }
 
-const std::list<AGNode *> &AGViewController_::nodes()
+AGGraph *AGViewController_::graph()
 {
-    return [m_viewController nodes];
+    return [m_viewController graph];
 }
 
-AGNode *AGViewController_::nodeWithUUID(const std::string &uuid)
-{
-    return [m_viewController nodeWithUUID:uuid];
-}

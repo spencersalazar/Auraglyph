@@ -11,6 +11,7 @@
 #include "AGNode.h"
 #include "AGConnection.h"
 #include "AGGraphManager.h"
+#include "AGGraph.h"
 #include "AGAudioManager.h"
 #include "AGAudioNode.h"
 
@@ -28,13 +29,13 @@ AGUndoAction *AGUndoAction::editParamUndoAction(AGNode *node, int port, float ol
         "Parameter Change",
         [uuid, port, oldValue]() {
             // undo
-            AGNode *node = AGGraphManager::instance().nodeWithUUID(uuid);
+            AGNode *node = AGGraphManager::instance().graph()->nodeWithUUID(uuid);
             if(node != nullptr)
                 node->setEditPortValue(port, oldValue);
         },
         [uuid, port, newValue]() {
             // redo
-            AGNode *node = AGGraphManager::instance().nodeWithUUID(uuid);
+            AGNode *node = AGGraphManager::instance().graph()->nodeWithUUID(uuid);
             if(node != nullptr)
                 node->setEditPortValue(port, newValue);
         }
@@ -52,7 +53,7 @@ AGUndoAction *AGUndoAction::createNodeUndoAction(AGNode *node)
         "Create Node",
         [uuid]() {
             // remove/delete the node
-            AGNode *node = AGGraphManager::instance().nodeWithUUID(uuid);
+            AGNode *node = AGGraphManager::instance().graph()->nodeWithUUID(uuid);
             node->removeFromTopLevel();
         },
         [serializedNode, isOutput]() {
@@ -77,12 +78,12 @@ AGUndoAction *AGUndoAction::moveNodeUndoAction(AGNode *node, const GLvertex3f &o
         "Move Node",
         [uuid, oldPos]() {
             // move the node back
-            AGNode *node = AGGraphManager::instance().nodeWithUUID(uuid);
+            AGNode *node = AGGraphManager::instance().graph()->nodeWithUUID(uuid);
             node->setPosition(oldPos);
         },
         [uuid, newPos]() {
             // move the node back
-            AGNode *node = AGGraphManager::instance().nodeWithUUID(uuid);
+            AGNode *node = AGGraphManager::instance().graph()->nodeWithUUID(uuid);
             node->setPosition(newPos);
         }
     );
@@ -115,7 +116,7 @@ AGUndoAction *AGUndoAction::deleteNodeUndoAction(AGNode *node)
         },
         [uuid]() {
             // remove/delete the node
-            AGNode *node = AGGraphManager::instance().nodeWithUUID(uuid);
+            AGNode *node = AGGraphManager::instance().graph()->nodeWithUUID(uuid);
             node->removeFromTopLevel();
         }
     );
@@ -131,7 +132,7 @@ AGUndoAction *AGUndoAction::createConnectionUndoAction(AGConnection *connection)
         "Create Connection",
         [uuid]() {
             // delete the connection
-            AGConnection *connection = AGGraphManager::instance().connectionWithUUID(uuid);
+            AGConnection *connection = AGGraphManager::instance().graph()->connectionWithUUID(uuid);
             connection->removeFromTopLevel();
         },
         [serializedConnection]() {
@@ -155,7 +156,7 @@ AGUndoAction *AGUndoAction::deleteConnectionUndoAction(AGConnection *connection)
         },
         [uuid]() {
             // delete the connection
-            AGConnection *connection = AGGraphManager::instance().connectionWithUUID(uuid);
+            AGConnection *connection = AGGraphManager::instance().graph()->connectionWithUUID(uuid);
             connection->removeFromTopLevel();
         }
     );

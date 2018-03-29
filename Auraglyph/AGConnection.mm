@@ -8,6 +8,7 @@
 
 #include "AGConnection.h"
 #include "AGAudioNode.h"
+#include "AGGraph.h"
 #include "AGViewController.h"
 #include "AGGenericShader.h"
 
@@ -69,8 +70,8 @@ AGConnection *AGConnection::connect(AGNode *src, int srcPort, AGNode *dst, int d
 AGConnection *AGConnection::connect(const AGDocument::Connection &docConnection)
 {
     AGGraphManager &graphManager = AGGraphManager::instance();
-    AGNode *srcNode = graphManager.nodeWithUUID(docConnection.srcUuid);
-    AGNode *dstNode = graphManager.nodeWithUUID(docConnection.dstUuid);
+    AGNode *srcNode = graphManager.graph()->nodeWithUUID(docConnection.srcUuid);
+    AGNode *dstNode = graphManager.graph()->nodeWithUUID(docConnection.dstUuid);
     if(srcNode != nullptr && dstNode != nullptr &&
        docConnection.dstPort >= 0 && docConnection.dstPort < dstNode->numInputPorts() &&
        docConnection.srcPort >= 0 && docConnection.srcPort < srcNode->numOutputPorts())

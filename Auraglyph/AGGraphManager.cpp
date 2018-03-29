@@ -29,28 +29,9 @@ void AGGraphManager::addNodeToTopLevel(AGNode *node)
     m_viewController->addNodeToTopLevel(node);
 }
 
-AGNode *AGGraphManager::nodeWithUUID(const std::string &uuid)
+AGGraph *AGGraphManager::graph()
 {
-    assert(m_viewController != nullptr);
-    return m_viewController->nodeWithUUID(uuid);
-}
-
-AGConnection *AGGraphManager::connectionWithUUID(const std::string &uuid)
-{
-    if(m_connections.count(uuid))
-        return m_connections[uuid];
-    else
-        return nullptr;
-}
-
-void AGGraphManager::addConnection(AGConnection *connection)
-{
-    m_connections[connection->uuid()] = connection;
-}
-
-void AGGraphManager::removeConnection(AGConnection *connection)
-{
-    m_connections.erase(connection->uuid());
+    return m_viewController->graph();
 }
 
 void AGGraphManager::setViewController(AGViewController_ *viewController)

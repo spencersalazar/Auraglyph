@@ -22,7 +22,6 @@ class AGGraph
 public:
     
     const std::list<AGNode *> &nodes() const;
-    const std::list<AGConnection *> &connections() const;
 
     bool hasNode(AGNode *node) const;
     AGNode *nodeWithUUID(const std::string &uuid) const;
@@ -36,6 +35,8 @@ public:
 private:
     std::list<AGNode *> _nodes;
     std::map<std::string, AGNode *> _uuid2Node;
+    
+    std::map<std::string, AGConnection *> _connections;
     
     std::map<AGNode *, std::string> _nodeUUID;
     std::map<AGConnection *, std::string> _conectionUUID;

@@ -13,6 +13,7 @@
 
 class AGNode;
 class AGConnection;
+class AGGraph;
 class AGViewController_;
 
 class AGGraphManager
@@ -25,16 +26,10 @@ public:
     
     void addNodeToTopLevel(AGNode *node);
     
-    AGNode *nodeWithUUID(const std::string &uuid);
-    AGConnection *connectionWithUUID(const std::string &uuid);
-    
-    void addConnection(AGConnection *connection);
-    void removeConnection(AGConnection *connection);
+    AGGraph *graph();
     
     void setViewController(AGViewController_ *viewController);
     
 private:
     AGViewController_ *m_viewController;
-    
-    std::map<std::string, AGConnection *> m_connections;
 };
