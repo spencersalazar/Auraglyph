@@ -105,6 +105,7 @@ public:
     
     void addNodeToTopLevel(AGNode *node);
     
+    const std::list<AGNode *> &nodes();
     AGNode *nodeWithUUID(const std::string &uuid);
     
 private:

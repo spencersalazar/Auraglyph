@@ -34,6 +34,7 @@
 #import "AGPGMidiContext.h"
 #import "AGGraphManager.h"
 #import "AGFileManager.h"
+#import "AGGraph.h"
 
 #import <list>
 #import <map>
@@ -87,8 +88,10 @@ enum InterfaceMode
     map<UITouch *, AGInteractiveObject *> _touchCaptures;
     AGTouchHandler *_touchHandlerQueue;
     
-    std::list<AGNode *> _nodes;
-    std::map<std::string, AGNode *> _uuid2Node;
+    AGGraph *_graph;
+    
+//    std::list<AGNode *> _nodes;
+//    std::map<std::string, AGNode *> _uuid2Node;
     std::list<AGFreeDraw *> _freedraws;
     std::list<AGInteractiveObject *> _dashboard;
     std::list<AGInteractiveObject *> _objects;
@@ -98,10 +101,8 @@ enum InterfaceMode
     list<AGInteractiveObject *> _touchOutsideListeners;
     list<AGTouchHandler *> _touchOutsideHandlers;
     
-//    AGDocument _defaultDocument;
-//    AGDocument *_currentDocument;
-    map<AGNode *, string> _nodeUUID;
-    map<AGConnection *, string> _conectionUUID;
+//    map<AGNode *, string> _nodeUUID;
+//    map<AGConnection *, string> _conectionUUID;
     map<AGFreeDraw *, string> _freedrawUUID;
     
     AGPGMidiContext *midiManager;
@@ -202,6 +203,8 @@ static AGViewController * g_instance = nil;
     (void) [AGHandwritingRecognizer instance];
     
     [self initUI];
+    
+    _graph = new AGGraph;
     
     /* load default program */
     std::string _lastOpened = AGPreferences::instance().lastOpenedDocument();
@@ -322,6 +325,7 @@ static AGViewController * g_instance = nil;
     }
     
     SAFE_DELETE(_proxy);
+    SAFE_DELETE(_graph);
 }
 
 - (void)didReceiveMemoryWarning
@@ -373,9 +377,8 @@ static AGViewController * g_instance = nil;
 {
     assert([NSThread isMainThread]);
     
-    _nodes.push_back(node);
+    _graph->addNode(node);
     _objects.push_back(node);
-    _uuid2Node[node->uuid()] = node;
     
     AGInteractiveObject * ui = node->userInterface();
     if(ui)
@@ -394,9 +397,7 @@ static AGViewController * g_instance = nil;
     // remove without fading out or destroying
     
     // only process for removal if it is part of the node list in the first place
-    bool hasNode = (std::find(_nodes.begin(), _nodes.end(), node) != _nodes.end());
-    
-    if(hasNode)
+    if(_graph->hasNode(node))
     {
         [self removeFromTouchCapture:node];
         
@@ -404,23 +405,19 @@ static AGViewController * g_instance = nil;
         if(ui)
             _interfaceObjects.remove(ui);
         
-        _nodes.remove(node);
+        _graph->removeNode(node);
         _objects.remove(node);
-        _uuid2Node.erase(node->uuid());
     }
 }
 
 - (const list<AGNode *> &)nodes
 {
-    return _nodes;
+    return _graph->nodes();
 }
 
 - (AGNode *)nodeWithUUID:(const std::string &)uuid
 {
-    if(_uuid2Node.count(uuid))
-        return _uuid2Node[uuid];
-    else
-        return NULL;
+    return _graph->nodeWithUUID(uuid);
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object
@@ -491,10 +488,7 @@ static AGViewController * g_instance = nil;
     _objects.remove(object);
     AGNode *node = dynamic_cast<AGNode *>(object);
     if(node)
-    {
-        _nodes.remove(node);
-        _uuid2Node.erase(node->uuid());
-    }
+        _graph->removeNode(node);
     _dashboard.remove(object);
     
     AGFreeDraw *draw = dynamic_cast<AGFreeDraw *>(object);
@@ -807,7 +801,7 @@ static AGViewController * g_instance = nil;
 {
     AGNode::HitTestResult hit;
     
-    for(AGNode *node : _nodes)
+    for(AGNode *node : _graph->nodes())
     {
         hit = node->hit(pos, port);
         if(hit != AGNode::HIT_NONE)
@@ -921,7 +915,7 @@ static AGViewController * g_instance = nil;
         // search node connections
         if(touchCapture == NULL && handler == nil)
         {
-            for(AGNode *node : _nodes)
+            for(AGNode *node : _graph->nodes())
             {
                 for(AGConnection *connection : node->outbound())
                 {
@@ -1170,10 +1164,11 @@ static AGViewController * g_instance = nil;
 {
     __block AGDocument doc;
     
-    itmap(_nodes, ^(AGNode *&node) {
+    for(AGNode *node : _graph->nodes())
+    {
         AGDocument::Node docNode = node->serialize();
         doc.addNode(docNode);
-    });
+    }
     
     itmap(_objects, ^(AGInteractiveObject *&obj){
         AGFreeDraw *freedraw;
@@ -1365,6 +1360,11 @@ CGRect AGViewController_::bounds()
 void AGViewController_::addNodeToTopLevel(AGNode *node)
 {
     [m_viewController addNode:node];
+}
+
+const std::list<AGNode *> &AGViewController_::nodes()
+{
+    return [m_viewController nodes];
 }
 
 AGNode *AGViewController_::nodeWithUUID(const std::string &uuid)
