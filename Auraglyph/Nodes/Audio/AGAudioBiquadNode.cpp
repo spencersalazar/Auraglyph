@@ -150,8 +150,8 @@ public:
             // Transposed Direct-Form II
             float xn = inputv[i];
             float yn = b0 * xn + sn_1;
+            sn_1 = -a1 * yn + b1 * xn + sn_2;
             sn_2 = -a2 * yn + b2 * xn;
-            sn_1 = -a1 * yn + b1 * xn;
             
             if (isbad(yn) || isbad(sn_1) || isbad(sn_2))
                 yn = sn_1 = sn_2 = 0;
