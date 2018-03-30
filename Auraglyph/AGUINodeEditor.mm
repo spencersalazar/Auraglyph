@@ -931,7 +931,7 @@ void AGUIStandardNodeEditor::touchUp(const GLvertex3f &t, const CGPoint &screen)
             else if(m_currentTrace.getNumberOfPoints() > 0 && !m_startedInDiscard && !m_startedInAccept)
             {
                 // attempt recognition
-                AGHandwritingRecognizerFigure figure = [[AGHandwritingRecognizer instance] recognizeNumeral:m_currentTrace];
+                AGHandwritingRecognizerFigure figure = AGHandwritingRecognizer::instance()->recognizeNumeral(m_currentTrace);
                 int digit = -1;
                 
                 switch(figure)

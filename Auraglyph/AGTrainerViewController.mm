@@ -71,8 +71,8 @@
 
 - (IBAction)accept
 {
-    [[AGHandwritingRecognizer instance] addSample:[self.trainerView currentTraceGroup]
-                                       forNumeral:_selectedFigure];
+    AGHandwritingRecognizer::instance()->addSampleForNumeral([self.trainerView currentTraceGroup],
+                                                             _selectedFigure);
 }
 
 - (IBAction)discard

@@ -196,7 +196,7 @@ public:
         if(m_currentTrace.getNumberOfPoints() > 0)
         {
             // attempt recognition
-            AGHandwritingRecognizerFigure figure = [[AGHandwritingRecognizer instance] recognizeNumeral:m_currentTrace];
+            AGHandwritingRecognizerFigure figure = AGHandwritingRecognizer::instance()->recognizeNumeral(m_currentTrace);
             
             switch(figure)
             {

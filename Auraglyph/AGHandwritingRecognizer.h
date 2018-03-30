@@ -11,7 +11,7 @@
 #include "LTKTypes.h"
 #include "LTKTrace.h"
 #include "LTKTraceGroup.h"
-
+#include "Geometry.h"
 
 enum AGHandwritingRecognizerFigure
 {
@@ -37,17 +37,32 @@ enum AGHandwritingRecognizerFigure
     AG_FIGURE_TRIANGLE_DOWN,
 };
 
-// TODO: refactor as C++
+class LTKOSUtil;
+class LTKLipiEngineInterface;
+class LTKShapeRecognizer;
 
-@interface AGHandwritingRecognizer : NSObject
+class AGHandwritingRecognizer
+{
+public:
+    static AGHandwritingRecognizer *instance();
+    
+    AGHandwritingRecognizer();
+    ~AGHandwritingRecognizer();
 
-@property (nonatomic, weak) UIView *view;
+    void setWindowFrame(GLvrectf frame);
+    
+    AGHandwritingRecognizerFigure recognizeNumeral(const LTKTrace &trace);
+    void addSampleForNumeral(const LTKTraceGroup &tg, AGHandwritingRecognizerFigure num);
 
-+ (id)instance;
-
-- (AGHandwritingRecognizerFigure)recognizeNumeral:(const LTKTrace &)trace;
-- (void)addSample:(const LTKTraceGroup &)tg forNumeral:(AGHandwritingRecognizerFigure)num;
-
-- (AGHandwritingRecognizerFigure)recognizeShape:(const LTKTrace &)trace;
-
-@end
+    AGHandwritingRecognizerFigure recognizeShape(const LTKTrace &trace);
+    
+private:
+    LTKOSUtil* _util;
+    LTKLipiEngineInterface *_engine;
+    LTKShapeRecognizer * _numeralReco;
+    LTKShapeRecognizer * _shapeReco;
+    
+    GLvrectf m_windowFrame;
+    
+    void _loadData();
+};

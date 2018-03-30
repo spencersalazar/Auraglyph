@@ -47,39 +47,22 @@ static AGHandwritingRecognizerFigure g_figureForShape[] =
 };
 
 
-@interface AGHandwritingRecognizer ()
-{
-    LTKOSUtil* _util;
-    LTKLipiEngineInterface *_engine;
-    LTKShapeRecognizer * _numeralReco;
-    LTKShapeRecognizer * _shapeReco;
-}
-
-- (void)loadData;
-
-@end
-
-
 static AGHandwritingRecognizer * g_instance = NULL;
 
-@implementation AGHandwritingRecognizer
-
-@synthesize view;
-
-+ (id)instance
+AGHandwritingRecognizer *AGHandwritingRecognizer::instance()
 {
     if(g_instance == NULL)
-        g_instance = [AGHandwritingRecognizer new];
+        g_instance = new AGHandwritingRecognizer;
     return g_instance;
 }
 
-+ (NSString *)projectPath
+NSString *projectPath()
 {
     return [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)
              objectAtIndex:0] stringByAppendingPathComponent:@"projects"];
 }
 
-+ (void)listRecursive:(NSString *)path indent:(NSString *)indent
+void listRecursive(NSString *path, NSString *indent)
 {
     NSFileManager *manager = [NSFileManager defaultManager];
     
@@ -98,119 +81,114 @@ static AGHandwritingRecognizer * g_instance = NULL;
         NSLog(@"%@%@ %o %s%s%s", indent, file, permissions, canRead?"r":"-", canWrite?"w":"-", canExec?"x":"-");
         BOOL isDir = NO;
         if([manager fileExistsAtPath:fullPath isDirectory:&isDir] && isDir)
-            [AGHandwritingRecognizer listRecursive:fullPath indent:[indent stringByAppendingString:@"- "]];
+            listRecursive(fullPath, [indent stringByAppendingString:@"- "]);
     }
 }
 
-- (id)init
+AGHandwritingRecognizer::AGHandwritingRecognizer()
 {
-    if(self = [super init])
+    if(![[NSFileManager defaultManager] fileExistsAtPath:projectPath()])
+        this->_loadData();
+    
+    int iResult;
+    
+    // get util object
+    _util = LTKOSUtilFactory::getInstance();
+    
+    // create engine
+    _engine = createLTKLipiEngine();
+    
+    // set root path for projects
+    _engine->setLipiRootPath([[projectPath() stringByDeletingLastPathComponent] UTF8String]);
+    
+    NSLog(@"project path: %@", projectPath());
+    // [AGHandwritingRecognizer listRecursive:[[AGHandwritingRecognizer projectPath] stringByDeletingLastPathComponent] indent:@""];
+    
+    
+    // initialize
+    iResult = _engine->initializeLipiEngine();
+    if(iResult != SUCCESS)
     {
-        if(![[NSFileManager defaultManager] fileExistsAtPath:[AGHandwritingRecognizer projectPath]])
-            [self loadData];
+        cout << iResult <<": Error initializing LipiEngine." << endl;
+        NSLog(@"Error initializing LipiEngine (%i)", iResult);
+        delete _util;
+        _util = NULL;
         
-        int iResult;
-        
-        // get util object
-        _util = LTKOSUtilFactory::getInstance();
-        
-        // create engine
-        _engine = createLTKLipiEngine();
-        
-        // set root path for projects
-        _engine->setLipiRootPath([[[AGHandwritingRecognizer projectPath] stringByDeletingLastPathComponent] UTF8String]);
-        
-        NSLog(@"project path: %@", [AGHandwritingRecognizer projectPath]);
-        // [AGHandwritingRecognizer listRecursive:[[AGHandwritingRecognizer projectPath] stringByDeletingLastPathComponent] indent:@""];
-        
-        
-        // initialize
-        iResult = _engine->initializeLipiEngine();
-        if(iResult != SUCCESS)
-        {
-            cout << iResult <<": Error initializing LipiEngine." << endl;
-            NSLog(@"Error initializing LipiEngine (%i)", iResult);
-            delete _util;
-            _util = NULL;
-            
-            return nil;
-        }
-        
-        // configure capture device settings
-        LTKCaptureDevice captureDevice;
-        // hopefully none of these values are important
-        captureDevice.setSamplingRate(60); // guesstimate
-        captureDevice.setXDPI(132); // basic ipad DPI
-        captureDevice.setYDPI(132); // basic ipad DPI
-        captureDevice.setLatency(0.01); // ballpark guess, is probably higher
-        captureDevice.setUniformSampling(false);
-        
-        /* create shape recognizer */
-        _shapeReco = NULL;
-        string recoName = "SHAPEREC_SHAPES";
-        _engine->createShapeRecognizer(recoName, &_shapeReco);
-        if(_shapeReco == NULL)
-        {
-            cout << endl << "Error creating Shape Recognizer" << endl;
-            NSLog(@"Error creating Shape Recognizer");
-            delete _util;
-            _util = NULL;
-            
-            return nil;
-        }
-        
-        // load model data from disk
-        iResult = _shapeReco->loadModelData();
-        if(iResult != SUCCESS)
-        {
-            cout << endl << iResult << ": Error loading model data for Shape Recognizer" << endl;
-            NSLog(@"Error loading model data for Shape Recognizer (%i)", iResult);
-            _engine->deleteShapeRecognizer(_shapeReco);
-            _shapeReco = NULL;
-            delete _util;
-            _util = NULL;
-            
-            return nil;
-        }
-        
-        _shapeReco->setDeviceContext(captureDevice);
-        
-        
-        /* create numeral recognizer */
-        _numeralReco = NULL;
-        recoName = "SHAPEREC_NUMERALS";
-        _engine->createShapeRecognizer(recoName, &_numeralReco);
-        if(_numeralReco == NULL)
-        {
-            cout << endl << "Error creating Numeral Recognizer" << endl;
-            NSLog(@"Error creating Numeral Recognizer");
-            delete _util;
-            _util = NULL;
-            
-            return nil;
-        }
-        
-        // load model data from disk
-        iResult = _numeralReco->loadModelData();
-        if(iResult != SUCCESS)
-        {
-            cout << endl << iResult << ": Error loading model data for Numeral Recognizer" << endl;
-            _engine->deleteShapeRecognizer(_numeralReco);
-            _numeralReco = NULL;
-            NSLog(@"Error loading model data for Numeral Recognizer (%i)", iResult);
-            delete _util;
-            _util = NULL;
-            
-            return nil;
-        }
-        
-        _numeralReco->setDeviceContext(captureDevice);
+        return;
     }
     
-    return self;
+    // configure capture device settings
+    LTKCaptureDevice captureDevice;
+    // hopefully none of these values are important
+    captureDevice.setSamplingRate(60); // guesstimate
+    captureDevice.setXDPI(132); // basic ipad DPI
+    captureDevice.setYDPI(132); // basic ipad DPI
+    captureDevice.setLatency(0.01); // ballpark guess, is probably higher
+    captureDevice.setUniformSampling(false);
+    
+    /* create shape recognizer */
+    _shapeReco = NULL;
+    string recoName = "SHAPEREC_SHAPES";
+    _engine->createShapeRecognizer(recoName, &_shapeReco);
+    if(_shapeReco == NULL)
+    {
+        cout << endl << "Error creating Shape Recognizer" << endl;
+        NSLog(@"Error creating Shape Recognizer");
+        delete _util;
+        _util = NULL;
+        
+        return;
+    }
+    
+    // load model data from disk
+    iResult = _shapeReco->loadModelData();
+    if(iResult != SUCCESS)
+    {
+        cout << endl << iResult << ": Error loading model data for Shape Recognizer" << endl;
+        NSLog(@"Error loading model data for Shape Recognizer (%i)", iResult);
+        _engine->deleteShapeRecognizer(_shapeReco);
+        _shapeReco = NULL;
+        delete _util;
+        _util = NULL;
+        
+        return;
+    }
+    
+    _shapeReco->setDeviceContext(captureDevice);
+    
+    
+    /* create numeral recognizer */
+    _numeralReco = NULL;
+    recoName = "SHAPEREC_NUMERALS";
+    _engine->createShapeRecognizer(recoName, &_numeralReco);
+    if(_numeralReco == NULL)
+    {
+        cout << endl << "Error creating Numeral Recognizer" << endl;
+        NSLog(@"Error creating Numeral Recognizer");
+        delete _util;
+        _util = NULL;
+        
+        return;
+    }
+    
+    // load model data from disk
+    iResult = _numeralReco->loadModelData();
+    if(iResult != SUCCESS)
+    {
+        cout << endl << iResult << ": Error loading model data for Numeral Recognizer" << endl;
+        _engine->deleteShapeRecognizer(_numeralReco);
+        _numeralReco = NULL;
+        NSLog(@"Error loading model data for Numeral Recognizer (%i)", iResult);
+        delete _util;
+        _util = NULL;
+        
+        return ;
+    }
+    
+    _numeralReco->setDeviceContext(captureDevice);
 }
 
-- (void)dealloc
+AGHandwritingRecognizer::~AGHandwritingRecognizer()
 {
     if(_util != NULL)
     {
@@ -228,30 +206,33 @@ static AGHandwritingRecognizer * g_instance = NULL;
         
         _engine = NULL;
     }
-    
 }
 
+void AGHandwritingRecognizer::setWindowFrame(GLvrectf frame)
+{
+    m_windowFrame = frame;
+}
 
-- (void)loadData
+void AGHandwritingRecognizer::_loadData()
 {
     NSLog(@"copying LipiTk model data");
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
-    [fileManager removeItemAtPath:[AGHandwritingRecognizer projectPath] error:NULL];
+    [fileManager removeItemAtPath:projectPath() error:NULL];
     
 //    [SSZipArchive unzipFileAtPath:[[NSBundle mainBundle] pathForResource:@"projects.zip" ofType:@""]
 //                    toDestination:[[AGHandwritingRecognizer projectPath] stringByDeletingLastPathComponent]];
     NSError *error = NULL;
     NSString *projectSrcPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"projects"];
-    NSString *projectDstPath = [AGHandwritingRecognizer projectPath];
+    NSString *projectDstPath = projectPath();
     [fileManager copyItemAtPath:projectSrcPath toPath:projectDstPath error:&error];
     if(error != NULL)
         NSLog(@"-[AGHandwritingRecognizer loadData]: error copying model data: %@", error.localizedDescription);
 }
 
 
-- (AGHandwritingRecognizerFigure)recognizeNumeral:(const LTKTrace &)trace
+AGHandwritingRecognizerFigure AGHandwritingRecognizer::recognizeNumeral(const LTKTrace &trace)
 {
 	LTKScreenContext screenContext;
 	vector<int> shapeSubset;
@@ -260,10 +241,10 @@ static AGHandwritingRecognizer * g_instance = NULL;
 	vector<LTKShapeRecoResult> results;
 	LTKTraceGroup traceGroup;
     
-    screenContext.setBboxLeft(self.view.bounds.origin.x);
-    screenContext.setBboxRight(self.view.bounds.origin.x+view.bounds.size.width);
-    screenContext.setBboxTop(self.view.bounds.origin.y);
-    screenContext.setBboxBottom(self.view.bounds.origin.y+view.bounds.size.height);
+    screenContext.setBboxLeft(m_windowFrame.bl.x);
+    screenContext.setBboxRight(m_windowFrame.br.x);
+    screenContext.setBboxTop(m_windowFrame.ul.y);
+    screenContext.setBboxBottom(m_windowFrame.bl.y);
     
     traceGroup.addTrace(trace);
     
@@ -305,7 +286,7 @@ static AGHandwritingRecognizer * g_instance = NULL;
     return AG_FIGURE_NONE;
 }
 
-- (void)addSample:(const LTKTraceGroup &)tg forNumeral:(AGHandwritingRecognizerFigure)num
+void AGHandwritingRecognizer::addSampleForNumeral(const LTKTraceGroup &tg, AGHandwritingRecognizerFigure num)
 {
     int shapeID = 0;
     while(g_figureForNumeralShape[shapeID] != num && g_figureForNumeralShape[shapeID] != AG_FIGURE_NONE)
@@ -316,7 +297,7 @@ static AGHandwritingRecognizer * g_instance = NULL;
 }
 
 
-- (AGHandwritingRecognizerFigure)recognizeShape:(const LTKTrace &)trace
+AGHandwritingRecognizerFigure AGHandwritingRecognizer::recognizeShape(const LTKTrace &trace)
 {
 	LTKScreenContext screenContext;
 	vector<int> shapeSubset;
@@ -325,11 +306,11 @@ static AGHandwritingRecognizer * g_instance = NULL;
 	vector<LTKShapeRecoResult> results;
 	LTKTraceGroup traceGroup;
     
-    screenContext.setBboxLeft(self.view.bounds.origin.x);
-    screenContext.setBboxRight(self.view.bounds.origin.x+view.bounds.size.width);
-    screenContext.setBboxTop(self.view.bounds.origin.y);
-    screenContext.setBboxBottom(self.view.bounds.origin.y+view.bounds.size.height);
-    
+    screenContext.setBboxLeft(m_windowFrame.bl.x);
+    screenContext.setBboxRight(m_windowFrame.br.x);
+    screenContext.setBboxTop(m_windowFrame.ul.y);
+    screenContext.setBboxBottom(m_windowFrame.bl.y);
+
     traceGroup.addTrace(trace);
     
 	int iResult = _shapeReco->recognize(traceGroup, screenContext,
@@ -349,5 +330,3 @@ static AGHandwritingRecognizer * g_instance = NULL;
     return AG_FIGURE_NONE;
 }
 
-
-@end
