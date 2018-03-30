@@ -46,6 +46,55 @@ static AGHandwritingRecognizerFigure g_figureForShape[] =
     AG_FIGURE_NONE,
 };
 
+LTKTrace normalizeRotation(const LTKTrace &trace)
+{
+    if(trace.getNumberOfPoints() == 0)
+        return trace;
+    
+    // find bounding box
+    float minX = FLT_MAX, maxX = -FLT_MAX, minY = FLT_MAX, maxY = -FLT_MAX;
+    for(int i = 0; i < trace.getNumberOfPoints(); i++)
+    {
+        floatVector pt;
+        trace.getPointAt(i, pt);
+        float x = pt[0], y = pt[1];
+        if(x < minX) minX = x;
+        if(x > maxX) maxX = x;
+        if(y < minY) minY = y;
+        if(y > maxY) maxY = y;
+    }
+    
+    // find centroid of bounding box
+    float centerX = (maxX-minX)/2, centerY = (maxY-minY)/2;
+    
+    // find angle of initial point from pi/2 (twelve o clock)
+    floatVector initPt;
+    trace.getPointAt(0, initPt);
+    float initX = initPt[0], initY = initPt[1];
+    float angle = atan2(initX-centerX, initY-centerY)-(M_PI/2.0);
+    
+    // rotation matrix to normalize to pi/2
+    float rot = -angle;
+    float rotMat[2][2] = {
+        { cosf(rot), -sinf(rot) },
+        { sinf(rot), cosf(rot) },
+    };
+    
+    // apply rotation matrix
+    LTKTrace rotated;
+    for(int i = 0; i < trace.getNumberOfPoints(); i++)
+    {
+        floatVector pt;
+        trace.getPointAt(i, pt);
+        float x = pt[0], y = pt[1];
+        float x_ = x*rotMat[0][0] + y*rotMat[0][1];
+        float y_ = x*rotMat[1][0] + y*rotMat[1][1];
+        pt[0] = x_; pt[1] = y_;
+        rotated.addPoint(pt);
+    }
+    
+    return rotated;
+}
 
 static AGHandwritingRecognizer * g_instance = NULL;
 
@@ -297,7 +346,7 @@ void AGHandwritingRecognizer::addSampleForNumeral(const LTKTraceGroup &tg, AGHan
 }
 
 
-AGHandwritingRecognizerFigure AGHandwritingRecognizer::recognizeShape(const LTKTrace &trace)
+AGHandwritingRecognizerFigure AGHandwritingRecognizer::recognizeShape(const LTKTrace &_trace)
 {
 	LTKScreenContext screenContext;
 	vector<int> shapeSubset;
@@ -311,8 +360,9 @@ AGHandwritingRecognizerFigure AGHandwritingRecognizer::recognizeShape(const LTKT
     screenContext.setBboxTop(m_windowFrame.ul.y);
     screenContext.setBboxBottom(m_windowFrame.bl.y);
 
+    LTKTrace trace = normalizeRotation(_trace);
     traceGroup.addTrace(trace);
-    
+
 	int iResult = _shapeReco->recognize(traceGroup, screenContext,
                                         shapeSubset, confThreshold,
                                         numChoices, results);
