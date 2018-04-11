@@ -32,8 +32,8 @@ public:
     class Manifest : public AGStandardNodeManifest<AGAudioStateVariableFilterNode>
     {
     public:
-        string _type() const override { return "StateVariableFilter"; };
-        string _name() const override { return "StateVariableFilter"; };
+        string _type() const override { return "SVF"; };
+        string _name() const override { return "SVF"; };
         string _description() const override { return "State variable filter"; };
         
         vector<AGPortInfo> _inputPortInfo() const override

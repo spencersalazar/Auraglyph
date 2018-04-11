@@ -29,8 +29,8 @@ public:
     class Manifest : public AGStandardNodeManifest<AGAudioEnvelopeFollowerNode>
     {
     public:
-        string _type() const override { return "EnvelopeFollower"; };
-        string _name() const override { return "EnvelopeFollower"; };
+        string _type() const override { return "EnvFollow"; };
+        string _name() const override { return "EnvFollow"; };
         string _description() const override { return "Envelope follower with separate attack and release times"; };
         
         vector<AGPortInfo> _inputPortInfo() const override
