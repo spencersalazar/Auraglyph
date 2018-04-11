@@ -128,7 +128,7 @@ h1 a { color: black; text-decoration: none; }
 
 .toc_node
 {
-    font-size: 12px;
+    font-size: 14px;
     margin-top: 0.5em;
     margin-bottom: 0.25em;
 }
@@ -159,9 +159,27 @@ h1 a { color: black; text-decoration: none; }
     margin-right: 4em;
 }
 
+.node_header {
+    margin-top: 1em;
+}
+
+.node_symbol {
+    float: left;
+    transform-origin: 0px 0px 0px;
+}
+
+.node_symbol svg {
+    overflow: visible;
+}
+
+.node_header_info {
+    padding-bottom: 1px;
+}
+
 .node_section_header
 {
-    clear: left;
+/*    clear: left;*/
+/*    overflow: hidden;*/
 }
 
 .node_desc
@@ -262,16 +280,3 @@ h1 a { color: black; text-decoration: none; }
 
 
 .clear { clear: both; }
-
-.node_header {
-    margin-top: 1em;
-}
-
-.node_symbol {
-    float: left;
-    transform-origin: 0px 0px 0px;
-}
-
-.node_symbol svg {
-    overflow: visible;
-}

@@ -22,6 +22,7 @@ def generate_page(nodes, nodetype):
     <div id="body">
 {menu}
         <div class="toc"><a id="toc"/>
+{toc}
         </div>
 
         <div class="nodes">
@@ -30,34 +31,46 @@ def generate_page(nodes, nodetype):
     </div>
 </body>
 </html>
-    '''
+'''
     title = 'Nodes'
     node_html = ''
     menu = generate_menu(['audio', 'control'], nodetype)
+    toc = generate_toc(nodes)
     for node in nodes:
         node_html += generate_node(node, nodetype)
-    return html.format(title=title, nodes=node_html, menu=menu)
+    return html.format(title=title, nodes=node_html, toc=toc, menu=menu)
 
 ##------------------------------------------------------------------------------
-## generate_node
+## generate_menu
 ##------------------------------------------------------------------------------
-def generate_menu(nodes, selected):
+def generate_menu(node_types, selected):
     html = r'''
         <div id="top_menu">
             <div class="container">
                 {items}
             </div>
         </div>
-    '''
+'''
     item_html = r'''<div class="item"><a href="{url}">{name}</a></div>'''
     selected_html = r'''<div class="item selected">{name}</div>'''
     items = ''
-    for node in nodes:
-        if node == selected:
-            items += selected_html.format(name=node)
+    for node_type in node_types:
+        if node_type == selected:
+            items += selected_html.format(name=node_type)
         else:
-            items += item_html.format(name=node, url=node+'.html')
+            items += item_html.format(name=node_type, url=node_type+'.html')
     return html.format(items=items)
+
+##------------------------------------------------------------------------------
+## generate_toc
+##------------------------------------------------------------------------------
+def generate_toc(nodes):
+    toc_item = r'''            <p class="toc_node"><a href="#{node}" class="typename">{node}</a></p>
+'''
+    toc = ''
+    for node in nodes:
+        toc += toc_item.format(node=node["name"])
+    return toc
 
 ##------------------------------------------------------------------------------
 ## generate_node
@@ -88,13 +101,15 @@ def generate_node(node, nodetype):
 ##------------------------------------------------------------------------------
 def generate_node_header(node, nodetype):
     html = r'''
-<div class="node_header">
-    <div class="node_symbol" width="5em" height="5em">
+                <div class="node_header">
+                    <div class="node_symbol" width="5em" height="5em">
 {node_symbol}
-    </div>
-    <h2 class="node_title" name="{node_name}">{node_name}</h2>
-    <p class="node_desc"><p>{node_desc}</p>
-</div>
+                    </div>
+                    <div class="node_header_info">
+                        <h2 class="node_title" name="{node_name}">{node_name}</h2>
+                        <p class="node_desc">{node_desc}</p>
+                    </div>
+                </div>
 '''
     node_symbol = generate_node_symbol(node["icon"], nodetype)
     node_name = node["name"]
