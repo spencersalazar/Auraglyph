@@ -29,7 +29,6 @@
 		093395771A08BFAC009E4802 /* AGNodeSelector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 093395751A08BFAC009E4802 /* AGNodeSelector.cpp */; };
 		0934B6781E22135E009259E2 /* AGFileBrowser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0934B6761E22135E009259E2 /* AGFileBrowser.cpp */; };
 		0934B67B1E223B47009259E2 /* AGFileManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0934B6791E223B47009259E2 /* AGFileManager.mm */; };
-		0939D3592068D4C500EB3C1B /* AGTutorial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0939D3562068D4C500EB3C1B /* AGTutorial.cpp */; };
 		0939D361206D693200EB3C1B /* AGGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0939D360206D693200EB3C1B /* AGGraph.cpp */; };
 		09412E061A205A070065598D /* AGDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09412E041A205A070065598D /* AGDocument.mm */; };
 		09412E091A210B630065598D /* sputil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09412E071A210B630065598D /* sputil.cpp */; };
@@ -252,8 +251,6 @@
 		0934B6791E223B47009259E2 /* AGFileManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGFileManager.mm; sourceTree = "<group>"; };
 		0934B67A1E223B47009259E2 /* AGFileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGFileManager.h; sourceTree = "<group>"; };
 		0934B67C1E2366BF009259E2 /* gfx.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gfx.h; sourceTree = "<group>"; };
-		0939D3562068D4C500EB3C1B /* AGTutorial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGTutorial.cpp; sourceTree = "<group>"; };
-		0939D3572068D4C500EB3C1B /* AGTutorial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGTutorial.h; sourceTree = "<group>"; };
 		0939D35E206D693200EB3C1B /* AGGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGGraph.h; sourceTree = "<group>"; };
 		0939D360206D693200EB3C1B /* AGGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGGraph.cpp; sourceTree = "<group>"; };
 		093D631E18CECF0A0012C4B7 /* Animation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Animation.h; sourceTree = "<group>"; };
