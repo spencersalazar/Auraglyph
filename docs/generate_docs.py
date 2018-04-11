@@ -7,7 +7,8 @@ import sys
 ## generate_page
 ##------------------------------------------------------------------------------
 def generate_page(nodes, nodetype):
-    html = r'''<html>
+    html = r'''<!DOCTYPE html>
+<html>
 <head>
     <link rel="stylesheet" type="text/css" href="auraglyph-doc.css" />
 </head>
@@ -15,11 +16,11 @@ def generate_page(nodes, nodetype):
     
     <a name="top"/>
     <div id="title">
-        <div class="titleL"><h1><a href="index.html">Auraglyph Reference</a></h1></div>
-        <div class="titleR"><h1>{title}</h1></div>
+        <div class="titleL"><h1><a href="index.html">Auraglyph Node Reference</a></h1></div>
     </div>
     
     <div id="body">
+{menu}
         <div class="toc"><a id="toc"/>
         </div>
 
@@ -30,11 +31,33 @@ def generate_page(nodes, nodetype):
 </body>
 </html>
     '''
-    title = '{nodetype} Nodes'.format(nodetype=nodetype.title())
+    title = 'Nodes'
     node_html = ''
+    menu = generate_menu(['audio', 'control'], nodetype)
     for node in nodes:
         node_html += generate_node(node, nodetype)
-    return html.format(title=title, nodes=node_html)
+    return html.format(title=title, nodes=node_html, menu=menu)
+
+##------------------------------------------------------------------------------
+## generate_node
+##------------------------------------------------------------------------------
+def generate_menu(nodes, selected):
+    html = r'''
+        <div id="top_menu">
+            <div class="container">
+                {items}
+            </div>
+        </div>
+    '''
+    item_html = r'''<div class="item"><a href="{url}">{name}</a></div>'''
+    selected_html = r'''<div class="item selected">{name}</div>'''
+    items = ''
+    for node in nodes:
+        if node == selected:
+            items += selected_html.format(name=node)
+        else:
+            items += item_html.format(name=node, url=node+'.html')
+    return html.format(items=items)
 
 ##------------------------------------------------------------------------------
 ## generate_node
@@ -136,8 +159,8 @@ def filter_point(point):
 ## generate_lines
 ##------------------------------------------------------------------------------
 def generate_lines(geo):
-    svg = r'''    <polyline points="{points}" \
-stroke="#F9BB02" fill="none" stroke-width="10" \
+    svg = r'''    <polyline points="{points}" 
+stroke="#F9BB02" fill="none" stroke-width="10" 
 transform="scale(0.125)" />
 '''
     lines = ''
@@ -153,8 +176,8 @@ transform="scale(0.125)" />
 ## generate_line_strip
 ##------------------------------------------------------------------------------
 def generate_line_strip(geo):
-    svg = r'''    <polyline points="{points}" \
-stroke="#F9BB02" fill="none" stroke-width="10" \
+    svg = r'''    <polyline points="{points}" 
+stroke="#F9BB02" fill="none" stroke-width="10" 
 transform="scale(0.125)" />'''
     points = ''
     for point in geo:
@@ -166,8 +189,8 @@ transform="scale(0.125)" />'''
 ## generate_line_strip
 ##------------------------------------------------------------------------------
 def generate_line_loop(geo):
-    svg = r'''    <polyline points="{points}" \
-stroke="#F9BB02" fill="none" stroke-width="10" \
+    svg = r'''    <polyline points="{points}" 
+stroke="#F9BB02" fill="none" stroke-width="10" 
 transform="scale(0.125)" />'''
     points = ''
     for point in geo:

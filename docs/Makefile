@@ -2,7 +2,10 @@
 NODES=nodes.json
 GENERATOR=./generate_docs.py
 
-docs: audio.html control.html
+docs: index.html audio.html control.html
+
+index.html: audio.html
+	cp audio.html index.html
 
 audio.html: $(NODES) $(GENERATOR)
 	$(GENERATOR) audio < $(NODES) > audio.html

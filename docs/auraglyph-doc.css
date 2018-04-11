@@ -6,6 +6,40 @@ body
 	font-size: 14px;
 }
 
+/* top menu */
+
+#top_menu {
+    text-align: center;
+    margin: 1em;
+}
+
+#top_menu .container {
+    font: bold 28px Orbitron, sans-serif;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+#top_menu .item {
+    margin: 0;
+    display: inline-block;
+    padding: 10px;
+    padding-bottom: 5px;
+}
+
+#top_menu .item:not(:first-child) {
+    border-left: 2px solid black;
+}
+
+#top_menu .item a {
+    color: black;
+}
+
+#top_menu .selected {
+    background: #eee;
+}
+
+/* */
+
 .index_group
 {
     clear: both;
