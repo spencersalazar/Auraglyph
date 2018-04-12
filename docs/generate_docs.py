@@ -2,6 +2,7 @@
 
 import json
 import sys
+import os
 
 ##------------------------------------------------------------------------------
 ## generate_page
@@ -10,6 +11,7 @@ def generate_page(nodes, nodetype):
     html = r'''<!DOCTYPE html>
 <html>
 <head>
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="auraglyph-doc.css" />
 </head>
 <body>
@@ -49,17 +51,23 @@ def generate_menu(node_types, selected):
             <div class="container">
                 {items}
             </div>
+            <p class="description">{info}</p>
         </div>
 '''
     item_html = r'''<div class="item"><a href="{url}">{name}</a></div>'''
     selected_html = r'''<div class="item selected">{name}</div>'''
+    info = ''
+    info_file_path = selected+'.txt'
+    if os.path.exists(info_file_path):
+        with open(info_file_path, "r") as f:
+            info = f.read()
     items = ''
     for node_type in node_types:
         if node_type == selected:
             items += selected_html.format(name=node_type)
         else:
             items += item_html.format(name=node_type, url=node_type+'.html')
-    return html.format(items=items)
+    return html.format(items=items, info=info)
 
 ##------------------------------------------------------------------------------
 ## generate_toc

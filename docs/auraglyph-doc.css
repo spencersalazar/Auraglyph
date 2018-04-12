@@ -2,7 +2,7 @@
 body
 {
     margin: 2em 7em 2em 2em;
-    font-family: Helvetica, sans-serif;
+    font-family: Nunito, sans-serif;
 	font-size: 14px;
 }
 
@@ -36,6 +36,14 @@ body
 
 #top_menu .selected {
     background: #eee;
+}
+
+#top_menu p.description {
+    line-height: 1.3em;
+    text-align: left;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* */
@@ -79,7 +87,7 @@ body
 
 #title
 {
-    font-family: Orbitron, Helvetica, sans-serif;
+    font-family: Orbitron, sans-serif;
     float: left;
     width: 100%;
     border-bottom: 1px solid black;
@@ -184,14 +192,14 @@ h1 a { color: black; text-decoration: none; }
 
 .node_desc
 {
-    font-family: Helvetica;
+    font-family: Nunito, sans-serif;
 	font-size: 14px;
     margin-right: 4em;
 }
 
 .empty_node_desc
 {
-    font-family: Helvetica;
+    font-family: Nunito, sans-serif;
 	font-size: 12px;
 	font-style: italic;
 	color: grey;
@@ -229,7 +237,7 @@ h1 a { color: black; text-decoration: none; }
 
 .member_desc
 {
-    font-family: Helvetica;
+    font-family: Nunito, sans-serif;
 	font-size: 14px;
 	margin-top: 0;
     margin-bottom: 0;
@@ -237,7 +245,7 @@ h1 a { color: black; text-decoration: none; }
 
 .empty_member_desc
 {
-    font-family: Helvetica;
+    font-family: Nunito, sans-serif;
 	font-size: 12px;
 	font-style: italic;
 	color: grey;

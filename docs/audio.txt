@@ -1,0 +1,1 @@
+Audio nodes are used to generate or process audio-rate waveforms. These include basic oscillators, sound files, envelopes, filters, and many others. Audio nodes can also be used to modulate (change over time) parameters of other audio nodes, enabling complex relationships of sound over time.
