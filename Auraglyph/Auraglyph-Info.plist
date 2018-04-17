@@ -28,6 +28,10 @@
 	<true/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Auraglyph uses the microphone to provide audio input to your sonic creations. </string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Orbitron-Regular.ttf</string>
+	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

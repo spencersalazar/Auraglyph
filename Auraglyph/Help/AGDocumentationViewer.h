@@ -11,7 +11,5 @@
 class AGDocumentationViewer
 {
 public:
-    AGDocumentationViewer();
-    
-    void show();
+    static void show();
 };

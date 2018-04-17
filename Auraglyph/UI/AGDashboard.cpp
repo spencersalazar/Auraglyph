@@ -126,9 +126,7 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
     m_settingsMenu->addMenuItem("Reference", [this](){
         dbgprint("Reference\n");
         // TODO: analytics
-        if(m_docsViewer == nullptr)
-            m_docsViewer = new AGDocumentationViewer;
-        m_docsViewer->show();
+        AGDocumentationViewer::show();
     });
     m_settingsMenu->addMenuItem("Settings", [this](){
         dbgprint("Settings\n");

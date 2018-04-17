@@ -32,6 +32,8 @@ extern "C" int shaperecst(int argc, const char** argv);
 {
     application.statusBarHidden = YES;
     
+    (void) [UIFont familyNames];
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     self.viewController = [[AGViewController alloc] initWithNibName:@"AGViewController" bundle:nil];
