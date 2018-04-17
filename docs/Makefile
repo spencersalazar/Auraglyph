@@ -13,7 +13,8 @@ audio.html: $(NODES) $(GENERATOR)
 control.html: $(NODES) $(GENERATOR)
 	$(GENERATOR) control < $(NODES) > control.html
 
-DEPLOY_FILES=index.html audio.html control.html auraglyph-doc.css auraglyph-dark.css
+DEPLOY_FILES=index.html audio.html control.html \
+    auraglyph-doc.css auraglyph-dark.css auraglyph-fonts.css
 DEPLOY_SERVER=auraglyph.io
 DEPLOY_PATH=auragly.ph/docs/
 
