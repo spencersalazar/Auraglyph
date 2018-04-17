@@ -102,6 +102,8 @@
 		09B019D9208591C30071C8EC /* AGDocumentationViewer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B019D7208591C30071C8EC /* AGDocumentationViewer.mm */; };
 		09B019F4208597CA0071C8EC /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09B019F3208597CA0071C8EC /* WebKit.framework */; };
 		09B019F5208597F00071C8EC /* docs in Resources */ = {isa = PBXBuildFile; fileRef = 09B019EE2085923C0071C8EC /* docs */; };
+		09B019FF2085B6F00071C8EC /* Nunito-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 09B019FD2085AF410071C8EC /* Nunito-Regular.ttf */; };
+		09B01A012085B6F20071C8EC /* Nunito-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 09B019FC2085AF410071C8EC /* Nunito-Bold.ttf */; };
 		09B674441D6D9E8700F84E09 /* AGCompositeNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */; };
 		09B962521DD872C0001DCFB1 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09B962511DD872C0001DCFB1 /* CoreMotion.framework */; };
 		09B962551DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09B962531DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp */; };
@@ -1191,7 +1193,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				09B019FF2085B6F00071C8EC /* Nunito-Regular.ttf in Resources */,
 				09C7C3E618CF2B8E0099CE88 /* Waveform.vsh in Resources */,
+				09B01A012085B6F20071C8EC /* Nunito-Bold.ttf in Resources */,
 				09C7C3E718CF2B8E0099CE88 /* Waveform.fsh in Resources */,
 				0973FB9D1FC10815004CC25A /* auraglyph-title.png in Resources */,
 				0989132118A0870000AB98AD /* TexFont.fsh in Resources */,
