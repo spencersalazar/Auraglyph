@@ -66,7 +66,7 @@ AGDocument AGDocumentManager::load(const std::string &filename)
     if(doc.name().size() == 0)
     {
         // find this doc in listing
-        for(auto listing : *m_list)
+        for(auto listing : list())
         {
             if(listing.filename == filename)
             {
