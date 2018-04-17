@@ -22,6 +22,7 @@ AGFileManager::AGFileManager()
     m_soundfileDirectory = [documentPath UTF8String];
     m_userDataDirectory = [documentPath UTF8String];
     m_documentDirectory = [documentPath UTF8String];
+    m_examplesDirectory = [[[NSBundle mainBundle] pathForResource:@"examples" ofType:@""] stlString];
 }
 
 AGFileManager::~AGFileManager()
@@ -40,6 +41,11 @@ const string &AGFileManager::userDataDirectory()
 const string &AGFileManager::documentDirectory()
 {
     return m_documentDirectory;
+}
+
+const string &AGFileManager::examplesDirectory()
+{
+    return m_examplesDirectory;
 }
 
 bool AGFileManager::fileHasExtension(const string &filepathOrName, const string &extension)

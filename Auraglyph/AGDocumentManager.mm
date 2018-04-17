@@ -20,6 +20,13 @@ std::string documentLibraryPath()
     return [docLibraryPath stlString];
 }
 
+std::string exampleLibraryPath()
+{
+    NSString *libraryPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *exLibraryPath = [libraryPath stringByAppendingPathComponent:@"examples.json"];
+    return [exLibraryPath stlString];
+}
+
 std::string documentDirectory()
 {
     NSString *documentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
@@ -85,36 +92,38 @@ const std::vector<AGDocumentManager::DocumentListing> &AGDocumentManager::list()
     return *m_list;
 }
 
-void AGDocumentManager::_loadList(bool force)
+const std::vector<AGDocumentManager::DocumentListing> &AGDocumentManager::examplesList()
 {
-    if(m_list == NULL || force)
+    if(m_examplesList == nullptr)
+        m_examplesList = _doLoad(AGFileManager::instance().examplesDirectory(), exampleLibraryPath());
+    return *m_examplesList;
+}
+
+std::vector<AGDocumentManager::DocumentListing> *AGDocumentManager::_doLoad(const std::string &dir, const std::string &libraryPath)
+{
+    NSString *libPath = [NSString stringWithSTLString:libraryPath];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error = nil;
+    
+    auto list = new std::vector<DocumentListing>;
+    bool didUpdateList = false;
+    std::set<std::string> filenameSet;
+    
+    if([fileManager fileExistsAtPath:libPath])
     {
-        /* load cached file list */
-        
-        NSString *libraryPath = [NSString stringWithSTLString:documentLibraryPath()];
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        
-        if(![fileManager fileExistsAtPath:libraryPath])
-        {
-            // library file doesn't exist - use default (empty) library
-            m_list = new std::vector<DocumentListing>;
-            return;
-        }
-        
-        NSError *error = nil;
         // read data from disk
-        NSData *data = [NSData dataWithContentsOfFile:libraryPath
+        NSData *data = [NSData dataWithContentsOfFile:libPath
                                               options:0 error:&error];
         if(error != nil)
         {
             NSLog(@"error: loading document list: %@", error);
-            return;
+            return nullptr;
         }
         
         if(data == nil)
         {
             NSLog(@"error: loading document list");
-            return;
+            return nullptr;
         }
         
         NSArray *listObj = [NSJSONSerialization JSONObjectWithData:data
@@ -123,18 +132,16 @@ void AGDocumentManager::_loadList(bool force)
         if(error != nil)
         {
             NSLog(@"error: deserializing document list: %@", error);
-            return;
+            return nullptr;
         }
         
         if(listObj == nil)
         {
             NSLog(@"error: deserializing document list");
-            return;
+            return nullptr;
         }
         
         auto list = new std::vector<DocumentListing>;
-        std::set<std::string> filenameSet;
-        bool didUpdateList = false;
         
         for(NSDictionary *fileObj in listObj)
         {
@@ -184,35 +191,47 @@ void AGDocumentManager::_loadList(bool force)
             filenameSet.insert(filename);
             list->push_back({ filename, name });
         }
+    }
+    
+    /* scan for new items on the list */
+    NSString *documentDir = [NSString stringWithSTLString:dir];
+    NSArray *files = [fileManager contentsOfDirectoryAtPath:documentDir error:&error];
+    for(NSString *file in files)
+    {
+        std::string filename = [file stlString];
+        if(!AGFileManager::instance().fileHasExtension(filename, "json"))
+            continue;
+        if(filename == "nodes.json")
+            continue;
         
-        /* scan for new items on the list */
-        NSString *documentDir = [NSString stringWithSTLString:documentDirectory()];
-        NSArray *files = [fileManager contentsOfDirectoryAtPath:documentDir error:&error];
-        for(NSString *file in files)
+        if(!filenameSet.count(filename))
         {
-            std::string filename = [file stlString];
-            if(!AGFileManager::instance().fileHasExtension(filename, "json"))
-                continue;
-            if(filename == "nodes.json")
-                continue;
-            
-            if(!filenameSet.count(filename))
-            {
-                didUpdateList = true;
-                // load it
-                AGDocument doc = load(filename);
-                // pull out name
-                auto name = doc.name();
-                // add to list
-                list->push_back({ filename, name });
-            }
+            didUpdateList = true;
+            // load it
+            AGDocument doc = load(filename);
+            // pull out name
+            auto name = doc.name();
+            // add to list
+            list->push_back({ filename, name });
         }
+    }
+    
+    return list;
+}
 
-        m_list = list;
+void AGDocumentManager::_loadList(bool force)
+{
+    if(m_list == NULL || force)
+    {
+        /* load cached file list */
         
-        /* save updated list */
-        if(didUpdateList)
+        auto list = _doLoad(documentDirectory(), documentLibraryPath());
+        if(list != nullptr)
+        {
+            m_list = list;
+            /* save updated list */
             _saveList();
+        }
     }
 }
 

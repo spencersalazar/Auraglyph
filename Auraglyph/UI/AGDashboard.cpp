@@ -128,6 +128,11 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
         // TODO: analytics
         AGDocumentationViewer::show();
     });
+    m_settingsMenu->addMenuItem("Examples", [this](){
+        dbgprint("Examples\n");
+        // TODO: analytics
+        m_viewController->loadExample();
+    });
     m_settingsMenu->addMenuItem("Settings", [this](){
         dbgprint("Settings\n");
         // TODO: analytics

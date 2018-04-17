@@ -27,7 +27,8 @@
 #import "GeoGenerator.h"
 #import "spstl.h"
 #import "AGAnalytics.h"
-#import "AGUISaveLoadDialog.h"
+#import "AGUISaveDialog.h"
+#import "AGUILoadDialog.h"
 #import "AGPreferences.h"
 #import "AGDashboard.h"
 #import "NSString+STLString.h"
@@ -1220,6 +1221,18 @@ static AGViewController * g_instance = nil;
     _dashboard.push_back(loadDialog);
 }
 
+- (void)_openLoadExample
+{
+    AGUILoadDialog *loadDialog = AGUILoadDialog::loadExample();
+    
+    loadDialog->onLoad([self](const std::string &filename, AGDocument &doc){
+        _currentDocumentFilename = "";
+        [self _loadDocument:doc];
+    });
+    
+    _dashboard.push_back(loadDialog);
+}
+
 - (void)_clearDocument
 {
     // delete all objects
@@ -1321,6 +1334,11 @@ void AGViewController_::saveAs()
 void AGViewController_::load()
 {
     [m_viewController _openLoad];
+}
+
+void AGViewController_::loadExample()
+{
+    [m_viewController _openLoadExample];
 }
 
 void AGViewController_::showTrainer()

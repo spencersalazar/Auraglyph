@@ -26,18 +26,3 @@ public:
     virtual void onSave(const std::function<void (const std::string &file, const vector<vector<GLvertex2f>> &name)> &) = 0;
 };
 
-//------------------------------------------------------------------------------
-// ### AGUILoadDialog ###
-//------------------------------------------------------------------------------
-#pragma mark - AGUILoadDialog
-
-class AGUILoadDialog : public AGInteractiveObject
-{
-public:
-    static AGUILoadDialog *load(const GLvertex3f &pos = GLvertex3f(0, 0, 0));
-    
-    virtual ~AGUILoadDialog() { }
-    
-    virtual void onLoad(const std::function<void (const std::string &file, AGDocument &doc)> &) = 0;
-};
-

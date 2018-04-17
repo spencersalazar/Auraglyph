@@ -21,6 +21,7 @@ public:
     const string &userDataDirectory();
     const string &soundfileDirectory();
     const string &documentDirectory();
+    const string &examplesDirectory();
 
     bool fileHasExtension(const string &filepathOrName, const string &extension);
     bool filenameExists(const string &filename);
@@ -33,4 +34,5 @@ private:
     string m_soundfileDirectory;
     string m_userDataDirectory;
     string m_documentDirectory;
+    string m_examplesDirectory;
 };

@@ -89,7 +89,8 @@ public:
     void save();
     void saveAs();
     void load();
-    
+    void loadExample();
+
     void showTrainer();
     void showAbout();
     

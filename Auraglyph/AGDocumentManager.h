@@ -34,12 +34,15 @@ public:
     void update(const std::string &, const AGDocument &doc);
     AGDocument load(const std::string &);
     const std::vector<DocumentListing> &list();
-    
+    const std::vector<DocumentListing> &examplesList();
+
 private:
     
     std::vector<DocumentListing> *m_list;
-    
+    std::vector<DocumentListing> *m_examplesList;
+
     void _loadList(bool force = false);
+    std::vector<DocumentListing> *_doLoad(const std::string &dir, const std::string &listFile);
     void _saveList();
 };
 

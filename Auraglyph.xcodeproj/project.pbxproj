@@ -104,9 +104,11 @@
 		09B019F5208597F00071C8EC /* docs in Resources */ = {isa = PBXBuildFile; fileRef = 09B019EE2085923C0071C8EC /* docs */; };
 		09B019FF2085B6F00071C8EC /* Nunito-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 09B019FD2085AF410071C8EC /* Nunito-Regular.ttf */; };
 		09B01A012085B6F20071C8EC /* Nunito-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 09B019FC2085AF410071C8EC /* Nunito-Bold.ttf */; };
+		09B01A042085DA9C0071C8EC /* AGUILoadDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09B01A022085DA9C0071C8EC /* AGUILoadDialog.cpp */; };
+		09B01A062085DB790071C8EC /* examples in Resources */ = {isa = PBXBuildFile; fileRef = 09B01A052085DB790071C8EC /* examples */; };
 		09B674441D6D9E8700F84E09 /* AGCompositeNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */; };
 		09B962521DD872C0001DCFB1 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09B962511DD872C0001DCFB1 /* CoreMotion.framework */; };
-		09B962551DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09B962531DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp */; };
+		09B962551DDB1488001DCFB1 /* AGUISaveDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09B962531DDB1488001DCFB1 /* AGUISaveDialog.cpp */; };
 		09B9626E1DDE3F1E001DCFB1 /* AGDocumentManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B9626C1DDE3F1E001DCFB1 /* AGDocumentManager.mm */; };
 		09B962871DE2ED38001DCFB1 /* AGPreferences.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B962851DE2ED38001DCFB1 /* AGPreferences.mm */; };
 		09C7C3E618CF2B8E0099CE88 /* Waveform.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 09C7C3E318CF27AC0099CE88 /* Waveform.vsh */; };
@@ -443,12 +445,15 @@
 		09B019F3208597CA0071C8EC /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		09B019FC2085AF410071C8EC /* Nunito-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-Bold.ttf"; sourceTree = "<group>"; };
 		09B019FD2085AF410071C8EC /* Nunito-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-Regular.ttf"; sourceTree = "<group>"; };
+		09B01A022085DA9C0071C8EC /* AGUILoadDialog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGUILoadDialog.cpp; sourceTree = "<group>"; };
+		09B01A032085DA9C0071C8EC /* AGUILoadDialog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGUILoadDialog.h; sourceTree = "<group>"; };
+		09B01A052085DB790071C8EC /* examples */ = {isa = PBXFileReference; lastKnownFileType = folder; path = examples; sourceTree = SOURCE_ROOT; };
 		09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = AGCompositeNode.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		09B674431D6D9E8700F84E09 /* AGCompositeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AGCompositeNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		09B674461D6DA2B200F84E09 /* AGAudioCapturer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAudioCapturer.h; sourceTree = "<group>"; };
 		09B962511DD872C0001DCFB1 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
-		09B962531DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGUISaveLoadDialog.cpp; sourceTree = "<group>"; };
-		09B962541DDB1488001DCFB1 /* AGUISaveLoadDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGUISaveLoadDialog.h; sourceTree = "<group>"; };
+		09B962531DDB1488001DCFB1 /* AGUISaveDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGUISaveDialog.cpp; sourceTree = "<group>"; };
+		09B962541DDB1488001DCFB1 /* AGUISaveDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGUISaveDialog.h; sourceTree = "<group>"; };
 		09B9626C1DDE3F1E001DCFB1 /* AGDocumentManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGDocumentManager.mm; sourceTree = "<group>"; };
 		09B9626D1DDE3F1E001DCFB1 /* AGDocumentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGDocumentManager.h; sourceTree = "<group>"; };
 		09B962851DE2ED38001DCFB1 /* AGPreferences.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGPreferences.mm; sourceTree = "<group>"; };
@@ -573,8 +578,10 @@
 				095786171F031ED800286358 /* AGDashboard.cpp */,
 				098740B217BC61410098511A /* AGUserInterface.h */,
 				098740B117BC61410098511A /* AGUserInterface.cpp */,
-				09B962541DDB1488001DCFB1 /* AGUISaveLoadDialog.h */,
-				09B962531DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp */,
+				09B962541DDB1488001DCFB1 /* AGUISaveDialog.h */,
+				09B962531DDB1488001DCFB1 /* AGUISaveDialog.cpp */,
+				09B01A032085DA9C0071C8EC /* AGUILoadDialog.h */,
+				09B01A022085DA9C0071C8EC /* AGUILoadDialog.cpp */,
 				093395791A0A3785009E4802 /* AGAboutBox.h */,
 				093395781A0A3785009E4802 /* AGAboutBox.cpp */,
 				09030CF01EFEFEFB00D4A4F2 /* AGMenu.h */,
@@ -814,6 +821,7 @@
 		095D12CE17ACA36C0048A012 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				09B01A052085DB790071C8EC /* examples */,
 				09B019EE2085923C0071C8EC /* docs */,
 				09DC3D4C1FBD363A008B960F /* Auraglyph.entitlements */,
 				09DC3D531FBD393C008B960F /* LaunchPortrait.png */,
@@ -1200,6 +1208,7 @@
 				0973FB9D1FC10815004CC25A /* auraglyph-title.png in Resources */,
 				0989132118A0870000AB98AD /* TexFont.fsh in Resources */,
 				0989132218A0870000AB98AD /* Screen.fsh in Resources */,
+				09B01A062085DB790071C8EC /* examples in Resources */,
 				0989132318A0870000AB98AD /* Clip.fsh in Resources */,
 				0989132418A0870000AB98AD /* Shader.fsh in Resources */,
 				09FC924D1A153C0A005D14A3 /* flare.png in Resources */,
@@ -1276,13 +1285,14 @@
 				494019C01F2092FE000F05E8 /* AGControlMidiNoteIn.mm in Sources */,
 				09EE657F1EFB59BE00B4ED62 /* AGAudioRecorder.mm in Sources */,
 				09412E0C1A2112300065598D /* NSString+STLString.mm in Sources */,
-				09B962551DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp in Sources */,
+				09B962551DDB1488001DCFB1 /* AGUISaveDialog.cpp in Sources */,
 				098F9B3A19EE49BA00CE2F24 /* AGRenderObject.mm in Sources */,
 				0939D361206D693200EB3C1B /* AGGraph.cpp in Sources */,
 				095D12FF17ACAB7B0048A012 /* ShaderHelper.mm in Sources */,
 				095E853117B358FC0065EF8E /* shaperectst.mm in Sources */,
 				095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */,
 				492B3D601F3740C800E5E7F0 /* AGControlMidiCCIn.mm in Sources */,
+				09B01A042085DA9C0071C8EC /* AGUILoadDialog.cpp in Sources */,
 				09412E091A210B630065598D /* sputil.cpp in Sources */,
 				0987409C17B98D7C0098511A /* AGNode.mm in Sources */,
 				098740A017BA2AB90098511A /* mo_audio.mm in Sources */,
