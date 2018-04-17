@@ -14,6 +14,7 @@
 #include "GeoGenerator.h"
 #include "AGAnalytics.h"
 #include "AGUndoManager.h"
+#include "AGDocumentationViewer.h"
 
 #include <math.h>
 
@@ -122,6 +123,13 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
         gearIcon.push_back({ innerRadius*cosf(pos+rot), innerRadius*sinf(pos+rot), 0 });
     }
     m_settingsMenu->setIcon(gearIcon.data(), gearIcon.size(), GL_LINE_STRIP);
+    m_settingsMenu->addMenuItem("Reference", [this](){
+        dbgprint("Reference\n");
+        // TODO: analytics
+        if(m_docsViewer == nullptr)
+            m_docsViewer = new AGDocumentationViewer;
+        m_docsViewer->show();
+    });
     m_settingsMenu->addMenuItem("Settings", [this](){
         dbgprint("Settings\n");
         // TODO: analytics

@@ -14,6 +14,7 @@ class AGViewController_;
 class AGMenu;
 class AGUIButton;
 class AGUIIconButton;
+class AGDocumentationViewer;
 
 class AGDashboard : public AGInteractiveObject
 {
@@ -36,6 +37,8 @@ private:
     AGUIIconButton *m_nodeButton;
     AGUIIconButton *m_freedrawButton;
     AGUIIconButton *m_freedrawEraseButton;
+    
+    AGDocumentationViewer *m_docsViewer = nullptr;
     
     bool m_isRecording = false;
 };

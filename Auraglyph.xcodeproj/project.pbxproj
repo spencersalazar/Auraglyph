@@ -29,8 +29,8 @@
 		093395771A08BFAC009E4802 /* AGNodeSelector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 093395751A08BFAC009E4802 /* AGNodeSelector.cpp */; };
 		0934B6781E22135E009259E2 /* AGFileBrowser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0934B6761E22135E009259E2 /* AGFileBrowser.cpp */; };
 		0934B67B1E223B47009259E2 /* AGFileManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0934B6791E223B47009259E2 /* AGFileManager.mm */; };
-		0939D361206D693200EB3C1B /* AGGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0939D360206D693200EB3C1B /* AGGraph.cpp */; };
 		0939D3592068D4C500EB3C1B /* AGTutorial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0939D3562068D4C500EB3C1B /* AGTutorial.cpp */; };
+		0939D361206D693200EB3C1B /* AGGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0939D360206D693200EB3C1B /* AGGraph.cpp */; };
 		09412E061A205A070065598D /* AGDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09412E041A205A070065598D /* AGDocument.mm */; };
 		09412E091A210B630065598D /* sputil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09412E071A210B630065598D /* sputil.cpp */; };
 		09412E0C1A2112300065598D /* NSString+STLString.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09412E0B1A2112300065598D /* NSString+STLString.mm */; };
@@ -99,6 +99,9 @@
 		099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */; };
 		099AF11617D13365000BAB7B /* AGTrainerViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11517D13365000BAB7B /* AGTrainerViewCell.xib */; };
 		099AF11817D157C5000BAB7B /* AGTrainerHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11717D157C5000BAB7B /* AGTrainerHeaderView.xib */; };
+		09B019D9208591C30071C8EC /* AGDocumentationViewer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B019D7208591C30071C8EC /* AGDocumentationViewer.mm */; };
+		09B019F4208597CA0071C8EC /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09B019F3208597CA0071C8EC /* WebKit.framework */; };
+		09B019F5208597F00071C8EC /* docs in Resources */ = {isa = PBXBuildFile; fileRef = 09B019EE2085923C0071C8EC /* docs */; };
 		09B674441D6D9E8700F84E09 /* AGCompositeNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */; };
 		09B962521DD872C0001DCFB1 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09B962511DD872C0001DCFB1 /* CoreMotion.framework */; };
 		09B962551DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09B962531DDB1488001DCFB1 /* AGUISaveLoadDialog.cpp */; };
@@ -109,7 +112,6 @@
 		09D8C3FF1A0A4DF2008D788A /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 09D8C3FE1A0A4DF2008D788A /* OFL.txt */; };
 		09D9C9D01C98F13A005514A4 /* spRandom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09D9C9CE1C98F13A005514A4 /* spRandom.cpp */; };
 		09DC3D4E1FBD363F008B960F /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09DC3D4D1FBD363F008B960F /* StoreKit.framework */; };
-		09DC3D501FBD3647008B960F /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09DC3D4F1FBD3647008B960F /* GameKit.framework */; };
 		09DC3D521FBD3729008B960F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */; };
 		09DC3D541FBD393C008B960F /* LaunchPortrait.png in Resources */ = {isa = PBXBuildFile; fileRef = 09DC3D531FBD393C008B960F /* LaunchPortrait.png */; };
 		09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7A18A3484F00B21D97 /* Mutex.cpp */; };
@@ -147,6 +149,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		09B019F6208599F70071C8EC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 095D12B817ACA36C0048A012 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 09B019EF208592730071C8EC;
+			remoteInfo = docs;
+		};
 		09EE67361EFDB6F800B4ED62 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 09EE67311EFDB6F800B4ED62 /* EZAudio.xcodeproj */;
@@ -252,10 +261,10 @@
 		0934B6791E223B47009259E2 /* AGFileManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGFileManager.mm; sourceTree = "<group>"; };
 		0934B67A1E223B47009259E2 /* AGFileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGFileManager.h; sourceTree = "<group>"; };
 		0934B67C1E2366BF009259E2 /* gfx.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gfx.h; sourceTree = "<group>"; };
-		0939D35E206D693200EB3C1B /* AGGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGGraph.h; sourceTree = "<group>"; };
-		0939D360206D693200EB3C1B /* AGGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGGraph.cpp; sourceTree = "<group>"; };
 		0939D3562068D4C500EB3C1B /* AGTutorial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGTutorial.cpp; sourceTree = "<group>"; };
 		0939D3572068D4C500EB3C1B /* AGTutorial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGTutorial.h; sourceTree = "<group>"; };
+		0939D35E206D693200EB3C1B /* AGGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGGraph.h; sourceTree = "<group>"; };
+		0939D360206D693200EB3C1B /* AGGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGGraph.cpp; sourceTree = "<group>"; };
 		093D631E18CECF0A0012C4B7 /* Animation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Animation.h; sourceTree = "<group>"; };
 		09412E041A205A070065598D /* AGDocument.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGDocument.mm; sourceTree = "<group>"; };
 		09412E051A205A070065598D /* AGDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGDocument.h; sourceTree = "<group>"; };
@@ -426,6 +435,12 @@
 		099AF11717D157C5000BAB7B /* AGTrainerHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AGTrainerHeaderView.xib; sourceTree = "<group>"; };
 		099AF12D17D1A892000BAB7B /* projects.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = projects.zip; sourceTree = "<group>"; };
 		09A8BB4019F9E39E00E15BF7 /* spMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spMath.h; sourceTree = "<group>"; };
+		09B019D7208591C30071C8EC /* AGDocumentationViewer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AGDocumentationViewer.mm; sourceTree = "<group>"; };
+		09B019D8208591C30071C8EC /* AGDocumentationViewer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGDocumentationViewer.h; sourceTree = "<group>"; };
+		09B019EE2085923C0071C8EC /* docs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = docs; sourceTree = SOURCE_ROOT; };
+		09B019F3208597CA0071C8EC /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		09B019FC2085AF410071C8EC /* Nunito-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-Bold.ttf"; sourceTree = "<group>"; };
+		09B019FD2085AF410071C8EC /* Nunito-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-Regular.ttf"; sourceTree = "<group>"; };
 		09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = AGCompositeNode.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		09B674431D6D9E8700F84E09 /* AGCompositeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AGCompositeNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		09B674461D6DA2B200F84E09 /* AGAudioCapturer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAudioCapturer.h; sourceTree = "<group>"; };
@@ -445,7 +460,6 @@
 		09D9D2E917ECF65D00938871 /* Clip.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = Clip.vsh; path = Shaders/Clip.vsh; sourceTree = "<group>"; };
 		09DC3D4C1FBD363A008B960F /* Auraglyph.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Auraglyph.entitlements; sourceTree = "<group>"; };
 		09DC3D4D1FBD363F008B960F /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
-		09DC3D4F1FBD3647008B960F /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		09DC3D531FBD393C008B960F /* LaunchPortrait.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LaunchPortrait.png; sourceTree = "<group>"; };
 		09E5EC7A18A3484F00B21D97 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mutex.cpp; sourceTree = "<group>"; };
@@ -518,6 +532,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				09B019F4208597CA0071C8EC /* WebKit.framework in Frameworks */,
 				498438671F1EF43600FB2914 /* CoreMIDI.framework in Frameworks */,
 				09B962521DD872C0001DCFB1 /* CoreMotion.framework in Frameworks */,
 				0944E8C31DCB323000EB8087 /* libz.tbd in Frameworks */,
@@ -535,7 +550,6 @@
 				095E851F17B354BE0065EF8E /* libcommon.a in Frameworks */,
 				09F29D7B1CC73D8000502C01 /* libshaperecommon.a in Frameworks */,
 				09EE673A1EFDB72F00B4ED62 /* EZAudioiOS.framework in Frameworks */,
-				09DC3D501FBD3647008B960F /* GameKit.framework in Frameworks */,
 				09DC3D4E1FBD363F008B960F /* StoreKit.framework in Frameworks */,
 				0944E8BB1DCB31EA00EB8087 /* libGoogleAnalyticsServices.a in Frameworks */,
 				095E852217B354BE0065EF8E /* liblipiengine.a in Frameworks */,
@@ -628,6 +642,8 @@
 			children = (
 				0939D3572068D4C500EB3C1B /* AGTutorial.h */,
 				0939D3562068D4C500EB3C1B /* AGTutorial.cpp */,
+				09B019D8208591C30071C8EC /* AGDocumentationViewer.h */,
+				09B019D7208591C30071C8EC /* AGDocumentationViewer.mm */,
 			);
 			path = Help;
 			sourceTree = "<group>";
@@ -673,7 +689,7 @@
 		095D12C217ACA36C0048A012 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				09DC3D4F1FBD3647008B960F /* GameKit.framework */,
+				09B019F3208597CA0071C8EC /* WebKit.framework */,
 				09DC3D4D1FBD363F008B960F /* StoreKit.framework */,
 				498438661F1EF43600FB2914 /* CoreMIDI.framework */,
 				498438591F1EF40B00FB2914 /* PGMidi */,
@@ -796,10 +812,13 @@
 		095D12CE17ACA36C0048A012 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				09B019EE2085923C0071C8EC /* docs */,
 				09DC3D4C1FBD363A008B960F /* Auraglyph.entitlements */,
 				09DC3D531FBD393C008B960F /* LaunchPortrait.png */,
 				0900A3811B04A10800C249D9 /* Images.xcassets */,
 				09D8C3FE1A0A4DF2008D788A /* OFL.txt */,
+				09B019FC2085AF410071C8EC /* Nunito-Bold.ttf */,
+				09B019FD2085AF410071C8EC /* Nunito-Regular.ttf */,
 				0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */,
 				093395681A019D43009E4802 /* Orbitron-Regular.ttf */,
 				095D12CF17ACA36C0048A012 /* Auraglyph-Info.plist */,
@@ -1058,6 +1077,23 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXLegacyTarget section */
+		09B019EF208592730071C8EC /* docs */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 09B019F0208592730071C8EC /* Build configuration list for PBXLegacyTarget "docs" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = "$(PROJECT_DIR)/docs";
+			dependencies = (
+			);
+			name = docs;
+			passBuildSettingsInEnvironment = 0;
+			productName = docs;
+		};
+/* End PBXLegacyTarget section */
+
 /* Begin PBXNativeTarget section */
 		095D12BF17ACA36C0048A012 /* Auraglyph */ = {
 			isa = PBXNativeTarget;
@@ -1071,6 +1107,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				09B019F7208599F70071C8EC /* PBXTargetDependency */,
 				09EE673D1EFDB72F00B4ED62 /* PBXTargetDependency */,
 			);
 			name = Auraglyph;
@@ -1092,7 +1129,7 @@
 						DevelopmentTeam = 9GU9FHJ3JC;
 						SystemCapabilities = {
 							com.apple.GameCenter = {
-								enabled = 1;
+								enabled = 0;
 							};
 							com.apple.InAppPurchase = {
 								enabled = 1;
@@ -1101,6 +1138,9 @@
 								enabled = 1;
 							};
 						};
+					};
+					09B019EF208592730071C8EC = {
+						CreatedOnToolsVersion = 9.2;
 					};
 				};
 			};
@@ -1124,6 +1164,7 @@
 			projectRoot = "";
 			targets = (
 				095D12BF17ACA36C0048A012 /* Auraglyph */,
+				09B019EF208592730071C8EC /* docs */,
 			);
 		};
 /* End PBXProject section */
@@ -1162,6 +1203,7 @@
 				0900A3821B04A10800C249D9 /* Images.xcassets in Resources */,
 				0989131C18A086E800AB98AD /* TexFont.vsh in Resources */,
 				0933956B1A019E4F009E4802 /* Orbitron-Medium.ttf in Resources */,
+				09B019F5208597F00071C8EC /* docs in Resources */,
 				0989131D18A086E800AB98AD /* Screen.vsh in Resources */,
 				0989131E18A086E800AB98AD /* Clip.vsh in Resources */,
 				09DC3D541FBD393C008B960F /* LaunchPortrait.png in Resources */,
@@ -1252,6 +1294,7 @@
 				0934B6781E22135E009259E2 /* AGFileBrowser.cpp in Sources */,
 				09FC924B1A153A83005D14A3 /* AGConnection.mm in Sources */,
 				098740B317BC61410098511A /* AGUserInterface.cpp in Sources */,
+				09B019D9208591C30071C8EC /* AGDocumentationViewer.mm in Sources */,
 				09B674441D6D9E8700F84E09 /* AGCompositeNode.mm in Sources */,
 				0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */,
 				49C023051F22A01B00963AD9 /* AGPGMidiSourceDelegate.mm in Sources */,
@@ -1276,6 +1319,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		09B019F7208599F70071C8EC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 09B019EF208592730071C8EC /* docs */;
+			targetProxy = 09B019F6208599F70071C8EC /* PBXContainerItemProxy */;
+		};
 		09EE673D1EFDB72F00B4ED62 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = EZAudioiOS;
@@ -1457,6 +1505,18 @@
 			};
 			name = Release;
 		};
+		09B019F1208592730071C8EC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		09B019F2208592730071C8EC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1474,6 +1534,15 @@
 			buildConfigurations = (
 				095D12EC17ACA36C0048A012 /* Debug */,
 				095D12ED17ACA36C0048A012 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		09B019F0208592730071C8EC /* Build configuration list for PBXLegacyTarget "docs" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				09B019F1208592730071C8EC /* Debug */,
+				09B019F2208592730071C8EC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
