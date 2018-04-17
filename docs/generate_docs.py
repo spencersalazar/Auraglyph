@@ -11,8 +11,9 @@ def generate_page(nodes, nodetype):
     html = r'''<!DOCTYPE html>
 <html>
 <head>
-    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="auraglyph-fonts.css">
     <link rel="stylesheet" type="text/css" href="auraglyph-doc.css" />
+    <link rel="stylesheet" type="text/css" href="auraglyph-dark.css" />
 </head>
 <body>
     
@@ -155,7 +156,7 @@ def generate_node_symbol(icon, nodetype):
 ## generate_control_node_base
 ##------------------------------------------------------------------------------
 def generate_control_node_base():
-    html = r'''    <rect x="-50" y="-50" width="500" height="500" fill="#000038" stroke="none" transform="scale(0.125)"/>
+    html = r'''    <rect x="-50" y="-50" width="500" height="500" fill="#0C1021" stroke="none" transform="scale(0.125)"/>
     <rect x="16" y="16" width="368" height="368" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale(0.125)"/>
 '''
     return html
@@ -164,7 +165,7 @@ def generate_control_node_base():
 ## generate_audio_node_base
 ##------------------------------------------------------------------------------
 def generate_audio_node_base():
-    html = r'''    <circle cx="200" cy="200" r="250" fill="#000038" stroke="none" transform="scale(0.125)"/>
+    html = r'''    <circle cx="200" cy="200" r="250" fill="#0C1021" stroke="none" transform="scale(0.125)"/>
     <circle cx="200" cy="200" r="184" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale(0.125)"/>
 '''
     return html
