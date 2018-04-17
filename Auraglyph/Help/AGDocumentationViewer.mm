@@ -7,6 +7,8 @@
 //
 
 #include "AGDocumentationViewer.h"
+#include "AGStyle.h"
+
 #import <WebKit/WebKit.h>
 
 @interface AGDocumentationView : UIView
@@ -17,6 +19,7 @@
 
 - (id)initWithFrame:(CGRect)frame;
 
+- (void)open;
 - (void)close;
 
 @end
@@ -28,6 +31,7 @@
     if(self = [super initWithFrame:frame])
     {
         UIColor *fgColor = [UIColor colorWithRed:0.75 green:0.5 blue:0 alpha:1];
+        UIColor *bgColor = [UIColor colorWithRed:12.0/255.0 green:16.0/255.0 blue:33.0/255.0 alpha:1];
         self.backgroundColor = fgColor;
         
         float borderWidth = 2;
@@ -35,12 +39,17 @@
         rect.origin.x = borderWidth; rect.origin.y = borderWidth;
         rect.size.width -= borderWidth*2; rect.size.height -= borderWidth*2;
         
+        UIView *backgroundView = [[UIView alloc] initWithFrame:rect];
+        backgroundView.backgroundColor = bgColor;
+        [self addSubview:backgroundView];
+        
         WKWebViewConfiguration *config = [WKWebViewConfiguration new];
         _webView = [[WKWebView alloc] initWithFrame:rect configuration:config];
+        _webView.backgroundColor = bgColor;
         NSURL *indexUrl = [[NSBundle mainBundle] URLForResource:@"docs/index.html" withExtension:@""];
         NSURL *dirUrl = [[NSBundle mainBundle] bundleURL];
         [_webView loadFileURL:indexUrl allowingReadAccessToURL:dirUrl];
-        [self addSubview:_webView];
+        [self insertSubview:_webView aboveSubview:backgroundView];
         
         _button = [UIButton buttonWithType:UIButtonTypeSystem];
         CGRect buttonRect;
@@ -66,9 +75,39 @@
     return self;
 }
 
+- (void)open
+{
+    self.transform = CGAffineTransformMakeScale(0.01, 0.01);
+    
+    [UIView animateWithDuration:AGStyle::open_animTimeX delay:0.0
+                        options: UIViewAnimationOptionCurveLinear
+                     animations:^{
+                         self.transform = CGAffineTransformMakeScale(1, 0.01);
+                     } completion:^(BOOL finished) {
+                         [UIView animateWithDuration:AGStyle::open_animTimeY delay:0.0
+                                             options: UIViewAnimationOptionCurveLinear
+                                          animations:^{
+                                              self.transform = CGAffineTransformMakeScale(1, 1);
+                                          } completion:^(BOOL finished) {
+                                          }];
+                     }];
+}
+
 - (void)close
 {
-    [self removeFromSuperview];
+    [UIView animateWithDuration:AGStyle::open_animTimeY*0.5 delay:0.0
+                        options: UIViewAnimationOptionCurveLinear
+                     animations:^{
+                         self.transform = CGAffineTransformMakeScale(1, 0.01);
+                     } completion:^(BOOL finished) {
+                         [UIView animateWithDuration:AGStyle::open_animTimeX*0.5 delay:0.0
+                                             options: UIViewAnimationOptionCurveLinear
+                                          animations:^{
+                                              self.transform = CGAffineTransformMakeScale(0.01, 0.01);
+                                          } completion:^(BOOL finished) {
+                                              [self removeFromSuperview];
+                                          }];
+                     }];
 }
 
 - (void)orientationChanged
@@ -103,6 +142,7 @@ void AGDocumentationViewer::show()
     rect.size.width *= 0.8; rect.size.height *= 0.8;
     
     AGDocumentationView *docView = [[AGDocumentationView alloc] initWithFrame:rect];
+    [docView open];
     
     [window insertSubview:docView aboveSubview:window.rootViewController.view];
 }

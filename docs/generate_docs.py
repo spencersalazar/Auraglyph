@@ -94,7 +94,7 @@ def generate_node(node, nodetype):
 {node_outputs}
             <p class="top_link">[ <a href="#top">top</a> ]</p>
             </div>
-            <hr />
+            <!--<hr />-->
 '''
     node_header = generate_node_header(node, nodetype)
     node_inputs = generate_node_members(node['ports'], 'input')
