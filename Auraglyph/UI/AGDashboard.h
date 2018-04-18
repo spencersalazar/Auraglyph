@@ -32,7 +32,8 @@ private:
     AGMenu *m_fileMenu = nullptr;
     AGMenu *m_editMenu = nullptr;
     AGMenu *m_settingsMenu = nullptr;
-    
+    AGMenu *m_helpMenu = nullptr;
+
     AGUIButton *m_recordButton;
     AGUIIconButton *m_nodeButton;
     AGUIIconButton *m_freedrawButton;

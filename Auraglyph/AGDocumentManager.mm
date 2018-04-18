@@ -222,11 +222,9 @@ void AGDocumentManager::_loadList(bool force)
         /* load cached file list */
         
         auto list = _doLoad(documentDirectory(), documentLibraryPath(), AGFile::USER);
-        NSLog(@"list: %lu", list->size());
         if(list != nullptr)
         {
             m_list = list;
-            NSLog(@"m_list: %lu", m_list->size());
             /* save updated list */
             _saveList();
         }

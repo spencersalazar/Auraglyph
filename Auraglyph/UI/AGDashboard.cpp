@@ -18,54 +18,35 @@
 
 #include <math.h>
 
-AGDashboard::AGDashboard(AGViewController_ *viewController)
-: m_viewController(viewController)
+struct Geo
 {
-    float fileMenuWidth = 75;
-    float fileMenuHeight = fileMenuWidth*0.4;
-    m_fileMenu = new AGMenu(m_viewController->fixedCoordinateForScreenCoordinate(CGPointMake(10+fileMenuWidth/2,
-                                                                                            10+fileMenuHeight/2)),
-                           GLvertex2f(fileMenuWidth, fileMenuHeight));
-    m_fileMenu->init();
-    float iconRadius = fileMenuHeight/2*0.8f;
-    m_fileMenu->setIcon((GLvertex3f[]) {
+    vector<GLvertex3f> vertices;
+    int type;
+};
+
+static Geo makeFileIcon(float iconRadius)
+{
+    Geo geo;
+    geo.vertices = {
         { -iconRadius*0.7f, -iconRadius, 0 },
         { -iconRadius*0.7f,  iconRadius, 0 },
         {  iconRadius*0.7f,  iconRadius, 0 },
         {  iconRadius*0.7f, -iconRadius, 0 },
-    }, 4, GL_LINE_LOOP);
-    m_fileMenu->addMenuItem("New", [this](){
-        dbgprint("New\n");
-        m_viewController->createNew();
-    });
-    m_fileMenu->addMenuItem("Load", [this](){
-        dbgprint("Load\n");
-        //AGAnalytics::instance().event();
-        // TODO: analytics
-        m_viewController->load();
-    });
-    m_fileMenu->addMenuItem("Save", [this](){
-        dbgprint("Save\n");
-        AGAnalytics::instance().eventSave();
-        m_viewController->save();
-    });
-    m_fileMenu->addMenuItem("Save As", [this](){
-        dbgprint("Save As\n");
-        m_viewController->saveAs();
-    });
-    addChild(m_fileMenu);
-    
-    m_editMenu = new AGMenu(m_viewController->fixedCoordinateForScreenCoordinate(CGPointMake(10+fileMenuWidth*1.2+fileMenuWidth/2,
-                                                                                            10+fileMenuHeight/2)),
-                           GLvertex2f(fileMenuWidth, fileMenuHeight));
-    m_editMenu->init();
+    };
+    geo.type = GL_LINE_LOOP;
+    return geo;
+}
+
+static Geo makeEditIcon(float iconRadius)
+{
+    Geo geo;
     float wrenchRadius = iconRadius*1.25;
     float wrenchRadius2 = iconRadius*0.62;
     float wrenchInnerRadius = wrenchRadius*0.3;
     float sqrt2 = M_SQRT2;
     float sqrt1_2 = M_SQRT1_2;
     float wrenchRot = -M_PI*0.3;
-    vector<GLvertex3f> wrenchIcon = {
+    geo.vertices = {
         rotateZ({ -wrenchRadius2/3, 0, 0 }, wrenchRot),
         rotateZ({ -wrenchRadius2/3, wrenchRadius-wrenchInnerRadius*(1+sqrt2), 0 }, wrenchRot),
         rotateZ({ -wrenchRadius2/3-wrenchInnerRadius/sqrt2, wrenchRadius-wrenchInnerRadius*(1+sqrt1_2), 0 }, wrenchRot),
@@ -90,7 +71,105 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
         rotateZ({ -wrenchRadius2/3, -wrenchRadius+wrenchInnerRadius*(1+sqrt2), 0 }, wrenchRot),
         rotateZ({ -wrenchRadius2/3, 0, 0 }, wrenchRot),
     };
-    m_editMenu->setIcon(wrenchIcon.data(), wrenchIcon.size(), GL_LINE_STRIP);
+    geo.type = GL_LINE_STRIP;
+    
+    return geo;
+}
+
+Geo makeSettingsIcon(float iconRadius)
+{
+    Geo geo;
+    geo.type = GL_LINE_STRIP;
+    int numTeeth = 7;
+    float outerRadius = iconRadius;
+    float innerRadius = iconRadius*0.8;
+    float start = 0;
+    for(int i = 0; i < numTeeth; i++)
+    {
+        float rot = (2*M_PI)/numTeeth;
+        float pos = start+rot*i;
+        geo.vertices.push_back({ innerRadius*cosf(pos), innerRadius*sinf(pos), 0 });
+        geo.vertices.push_back({ outerRadius*cosf(pos), outerRadius*sinf(pos), 0 });
+        geo.vertices.push_back({ outerRadius*cosf(pos+rot/2), outerRadius*sinf(pos+rot/2), 0 });
+        geo.vertices.push_back({ innerRadius*cosf(pos+rot/2), innerRadius*sinf(pos+rot/2), 0 });
+        geo.vertices.push_back({ innerRadius*cosf(pos+rot), innerRadius*sinf(pos+rot), 0 });
+    }
+    
+    return geo;
+}
+
+Geo makeHelpIcon(float iconRadius)
+{
+    Geo geo;
+    geo.type = GL_LINES;
+    int numHook = 10;
+    float start = M_PI;
+    float end = -M_PI*0.5f;
+    GLvertex3f offset = { 0, 0, 0 };
+    GLvertex3f hookOffset = { 0, iconRadius*0.5f, 0 };
+    GLvertex2f hookScale = { 0.5f*2.0f, 0.5f };
+    for(int i = 0; i < numHook; i++)
+    {
+        float rot = (end-start)/numHook;
+        float posA = start+rot*i;
+        float posB = start+rot*(i+1);
+        GLvertex3f a = { iconRadius*cosf(posA)*hookScale.x, iconRadius*sinf(posA)*hookScale.y, 0 };
+        GLvertex3f b = { iconRadius*cosf(posB)*hookScale.x, iconRadius*sinf(posB)*hookScale.y, 0 };
+        geo.vertices.push_back(offset + hookOffset + a);
+        geo.vertices.push_back(offset + hookOffset + b);
+    }
+    
+    // straight line of question mark
+    geo.vertices.push_back(offset);
+    geo.vertices.push_back(offset + (GLvertex3f){ 0, -iconRadius*0.3f, 0 });
+    
+    // dot of question mark
+    geo.vertices.push_back(offset + (GLvertex3f){ 0, -iconRadius*0.6f, 0 });
+    geo.vertices.push_back(offset + (GLvertex3f){ 0, -iconRadius*0.7f, 0 });
+
+    return geo;
+}
+
+AGDashboard::AGDashboard(AGViewController_ *viewController)
+: m_viewController(viewController)
+{
+    float fileMenuWidth = 75;
+    float fileMenuHeight = fileMenuWidth*0.4;
+    float iconRadius = fileMenuHeight/2*0.8f;
+    m_fileMenu = new AGMenu(m_viewController->fixedCoordinateForScreenCoordinate(CGPointMake(10+fileMenuWidth/2,
+                                                                                            10+fileMenuHeight/2)),
+                           GLvertex2f(fileMenuWidth, fileMenuHeight));
+    m_fileMenu->init();
+    Geo fileIcon = makeFileIcon(iconRadius);
+    m_fileMenu->setIcon(fileIcon.vertices.data(), fileIcon.vertices.size(), fileIcon.type);
+    m_fileMenu->addMenuItem("New", [this](){
+        dbgprint("New\n");
+        // TODO: analytics
+        m_viewController->createNew();
+    });
+    m_fileMenu->addMenuItem("Load", [this](){
+        dbgprint("Load\n");
+        //AGAnalytics::instance().event();
+        // TODO: analytics
+        m_viewController->load();
+    });
+    m_fileMenu->addMenuItem("Save", [this](){
+        dbgprint("Save\n");
+        AGAnalytics::instance().eventSave();
+        m_viewController->save();
+    });
+    m_fileMenu->addMenuItem("Save As", [this](){
+        dbgprint("Save As\n");
+        m_viewController->saveAs();
+    });
+    addChild(m_fileMenu);
+    
+    m_editMenu = new AGMenu(m_viewController->fixedCoordinateForScreenCoordinate(CGPointMake(10+fileMenuWidth*1.2+fileMenuWidth/2,
+                                                                                            10+fileMenuHeight/2)),
+                           GLvertex2f(fileMenuWidth, fileMenuHeight));
+    m_editMenu->init();
+    Geo editIcon = makeEditIcon(iconRadius);
+    m_editMenu->setIcon(editIcon.vertices.data(), editIcon.vertices.size(), editIcon.type);
     m_editMenu->addMenuItem("Undo", [this](){
         dbgprint("Undo\n");
         // TODO: analytics
@@ -107,22 +186,8 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
                                                                                                 10+fileMenuHeight/2)),
                                GLvertex2f(fileMenuWidth, fileMenuHeight));
     m_settingsMenu->init();
-    vector<GLvertex3f> gearIcon;
-    int numTeeth = 7;
-    float outerRadius = iconRadius;
-    float innerRadius = iconRadius*0.8;
-    float start = 0;
-    for(int i = 0; i < numTeeth; i++)
-    {
-        float rot = (2*M_PI)/numTeeth;
-        float pos = start+rot*i;
-        gearIcon.push_back({ innerRadius*cosf(pos), innerRadius*sinf(pos), 0 });
-        gearIcon.push_back({ outerRadius*cosf(pos), outerRadius*sinf(pos), 0 });
-        gearIcon.push_back({ outerRadius*cosf(pos+rot/2), outerRadius*sinf(pos+rot/2), 0 });
-        gearIcon.push_back({ innerRadius*cosf(pos+rot/2), innerRadius*sinf(pos+rot/2), 0 });
-        gearIcon.push_back({ innerRadius*cosf(pos+rot), innerRadius*sinf(pos+rot), 0 });
-    }
-    m_settingsMenu->setIcon(gearIcon.data(), gearIcon.size(), GL_LINE_STRIP);
+    Geo settingsIcon = makeSettingsIcon(iconRadius);
+    m_settingsMenu->setIcon(settingsIcon.vertices.data(), settingsIcon.vertices.size(), settingsIcon.type);
     m_settingsMenu->addMenuItem("Reference", [this](){
         dbgprint("Reference\n");
         // TODO: analytics
@@ -148,6 +213,24 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
         m_viewController->showAbout();
     });
     addChild(m_settingsMenu);
+    
+//    m_helpMenu = new AGMenu(m_viewController->fixedCoordinateForScreenCoordinate(CGPointMake(10+fileMenuWidth*1.2*3+fileMenuWidth/2,
+//                                                                                             10+fileMenuHeight/2)),
+//                            GLvertex2f(fileMenuWidth, fileMenuHeight));
+//    m_helpMenu->init();
+//    Geo helpIcon = makeHelpIcon(iconRadius);
+//    m_helpMenu->setIcon(helpIcon.vertices.data(), helpIcon.vertices.size(), helpIcon.type);
+//    m_helpMenu->addMenuItem("Reference", [this](){
+//        dbgprint("Reference\n");
+//        // TODO: analytics
+//        AGDocumentationViewer::show();
+//    });
+//    m_helpMenu->addMenuItem("Examples", [this](){
+//        dbgprint("Examples\n");
+//        // TODO: analytics
+//        m_viewController->loadExample();
+//    });
+//    addChild(m_helpMenu);
     
     TexFont *font = AGStyle::standardFont96();
 
@@ -277,6 +360,9 @@ void AGDashboard::onInterfaceOrientationChange()
     
     CGPoint settingsMenuPos = CGPointMake(10+m_fileMenu->size().x*2*1.2+m_fileMenu->size().x/2, 10+m_fileMenu->size().y/2);
     m_settingsMenu->setPosition(m_viewController->fixedCoordinateForScreenCoordinate(settingsMenuPos));
+    
+//    CGPoint helpMenuPos = CGPointMake(10+m_fileMenu->size().x*3*1.2+m_fileMenu->size().x/2, 10+m_fileMenu->size().y/2);
+//    m_helpMenu->setPosition(m_viewController->fixedCoordinateForScreenCoordinate(helpMenuPos));
     
     CGPoint recordPos = CGPointMake(m_viewController->bounds().size.width-m_recordButton->size().x-20, 20+m_recordButton->size().y/2);
     m_recordButton->setPosition(m_viewController->fixedCoordinateForScreenCoordinate(recordPos));
