@@ -10,6 +10,7 @@
 #define AGDocumentManager_h
 
 #include "AGDocument.h"
+#include "AGFileManager.h"
 
 #include "Geometry.h"
 
@@ -26,13 +27,13 @@ public:
     
     struct DocumentListing
     {
-        std::string filename;
+        AGFile filename;
         std::vector<std::vector<GLvertex2f>> name;
     };
     
-    std::string save(const std::vector<std::vector<GLvertex2f>> &name, const AGDocument &doc);
-    void update(const std::string &, const AGDocument &doc);
-    AGDocument load(const std::string &);
+    AGFile save(const std::vector<std::vector<GLvertex2f>> &name, const AGDocument &doc);
+    void update(const AGFile &file, const AGDocument &doc);
+    AGDocument load(const AGFile &file);
     const std::vector<DocumentListing> &list();
     const std::vector<DocumentListing> &examplesList();
 
@@ -42,7 +43,7 @@ private:
     std::vector<DocumentListing> *m_examplesList;
 
     void _loadList(bool force = false);
-    std::vector<DocumentListing> *_doLoad(const std::string &dir, const std::string &listFile);
+    std::vector<DocumentListing> *_doLoad(const std::string &dir, const std::string &listFile, AGFile::Source source);
     void _saveList();
 };
 

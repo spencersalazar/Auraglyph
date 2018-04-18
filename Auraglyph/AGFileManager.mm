@@ -58,9 +58,9 @@ bool AGFileManager::fileHasExtension(const string &filepathOrName, const string 
     return hasExtensionAtEnd && hasDotBeforeExtension;
 }
 
-bool AGFileManager::filenameExists(const string &filename)
+bool AGFileManager::fileExists(const AGFile &file)
 {
-    std::string filepath = documentDirectory() + "/" + filename;
+    std::string filepath = getFullPath(file);
     return [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithSTLString:filepath]];
 }
 
@@ -76,4 +76,20 @@ vector<string> AGFileManager::listDirectory(const string &directory)
     }
     
     return pathList;
+}
+
+std::string AGFileManager::getFullPath(const AGFile& file)
+{
+    string path;
+    switch(file.m_source)
+    {
+        case AGFile::USER:
+            path = documentDirectory() + "/" + file.m_filename;
+            break;
+        case AGFile::EXAMPLE:
+            path = examplesDirectory() + "/" + file.m_filename;
+            break;
+    }
+    
+    return path;
 }

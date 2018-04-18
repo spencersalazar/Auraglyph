@@ -28,17 +28,22 @@ AGPreferences::AGPreferences()
 }
 
 
-void AGPreferences::setLastOpenedDocument(const std::string &filename)
+void AGPreferences::setLastOpenedDocument(const AGFile &file)
 {
-    [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithSTLString:filename]
-                                              forKey:AGPreferencesLastOpenedDocument];
+    if(file.m_source == AGFile::USER)
+    {
+        [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithSTLString:file.m_filename]
+                                                  forKey:AGPreferencesLastOpenedDocument];
+    }
 }
 
-std::string AGPreferences::lastOpenedDocument()
+AGFile AGPreferences::lastOpenedDocument()
 {
+    std::string filename;
     NSString *value = [[NSUserDefaults standardUserDefaults] stringForKey:AGPreferencesLastOpenedDocument];
     if(value != nil)
-        return [value stlString];
+        filename = [value stlString];
     else
-        return std::string("");
+        filename = std::string("");
+    return AGFile::UserFile(filename);
 }

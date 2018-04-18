@@ -114,7 +114,7 @@ enum InterfaceMode
     
     AGDashboard *_uiDashboard;
     
-    std::string _currentDocumentFilename;
+    AGFile _currentDocumentFile;
     std::vector<std::vector<GLvertex2f>> _currentDocName;
     
     AGViewController_ *_proxy;
@@ -210,10 +210,10 @@ static AGViewController * g_instance = nil;
     _graph = new AGGraph;
     
     /* load default program */
-    std::string _lastOpened = AGPreferences::instance().lastOpenedDocument();
-    if(_lastOpened.size() != 0 && AGFileManager::instance().filenameExists(_lastOpened))
+    AGFile _lastOpened = AGPreferences::instance().lastOpenedDocument();
+    if(_lastOpened.m_filename.size() != 0 && AGFileManager::instance().fileExists(_lastOpened))
     {
-        _currentDocumentFilename = _lastOpened;
+        _currentDocumentFile = _lastOpened;
         AGDocument doc = AGDocumentManager::instance().load(_lastOpened);
         [self _loadDocument:doc];
     }
@@ -1190,14 +1190,14 @@ static AGViewController * g_instance = nil;
         }
     });
     
-    if(_currentDocumentFilename.size() == 0 || saveAs)
+    if(_currentDocumentFile.m_filename.size() == 0 || saveAs)
     {
         AGUISaveDialog *saveDialog = AGUISaveDialog::save(doc);
         
-        saveDialog->onSave([self](const std::string &filename, const vector<vector<GLvertex2f>> &name) {
-            _currentDocumentFilename = filename;
+        saveDialog->onSave([self](const AGFile &file, const vector<vector<GLvertex2f>> &name) {
+            _currentDocumentFile = file;
             _currentDocName = name;
-            AGPreferences::instance().setLastOpenedDocument(_currentDocumentFilename);
+            AGPreferences::instance().setLastOpenedDocument(_currentDocumentFile);
         });
         
         _dashboard.push_back(saveDialog);
@@ -1205,7 +1205,7 @@ static AGViewController * g_instance = nil;
     else
     {
         doc.setName(_currentDocName);
-        AGDocumentManager::instance().update(_currentDocumentFilename, doc);
+        AGDocumentManager::instance().update(_currentDocumentFile, doc);
     }
 }
 
@@ -1213,8 +1213,8 @@ static AGViewController * g_instance = nil;
 {
     AGUILoadDialog *loadDialog = AGUILoadDialog::load();
     
-    loadDialog->onLoad([self](const std::string &filename, AGDocument &doc){
-        _currentDocumentFilename = filename;
+    loadDialog->onLoad([self](const AGFile &file, AGDocument &doc){
+        _currentDocumentFile = file;
         [self _loadDocument:doc];
     });
     
@@ -1225,8 +1225,8 @@ static AGViewController * g_instance = nil;
 {
     AGUILoadDialog *loadDialog = AGUILoadDialog::loadExample();
     
-    loadDialog->onLoad([self](const std::string &filename, AGDocument &doc){
-        _currentDocumentFilename = "";
+    loadDialog->onLoad([self](const AGFile &file, AGDocument &doc){
+        _currentDocumentFile = AGFile::UserFile("");
         [self _loadDocument:doc];
     });
     
@@ -1245,7 +1245,7 @@ static AGViewController * g_instance = nil;
 {
     [self _clearDocument];
     
-    _currentDocumentFilename = "";
+    _currentDocumentFile = AGFile::UserFile("");
     _currentDocName = std::vector<std::vector<GLvertex2f>>();
     
     // just create output node by itself
@@ -1260,7 +1260,7 @@ static AGViewController * g_instance = nil;
     [self _clearDocument];
     
     _currentDocName = doc.name();
-    AGPreferences::instance().setLastOpenedDocument(_currentDocumentFilename);
+    AGPreferences::instance().setLastOpenedDocument(_currentDocumentFile);
     
     __block map<string, AGNode *> uuid2node;
     

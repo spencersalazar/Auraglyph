@@ -10,6 +10,7 @@
 
 #include "AGUserInterface.h"
 #include "AGDocument.h"
+#include "AGFileManager.h"
 
 //------------------------------------------------------------------------------
 // ### AGUILoadDialog ###
@@ -24,7 +25,7 @@ public:
     
     virtual ~AGUILoadDialog() { }
     
-    virtual void onLoad(const std::function<void (const std::string &file, AGDocument &doc)> &) = 0;
+    virtual void onLoad(const std::function<void (const AGFile &file, AGDocument &doc)> &) = 0;
 };
 
 

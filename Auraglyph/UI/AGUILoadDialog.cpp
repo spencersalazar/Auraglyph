@@ -36,7 +36,7 @@ private:
     
     const std::vector<AGDocumentManager::DocumentListing> &m_documentList;
     
-    std::function<void (const std::string &file, AGDocument &doc)> m_onLoad;
+    std::function<void (const AGFile &file, AGDocument &doc)> m_onLoad;
     
 public:
     AGUIConcreteLoadDialog(const GLvertex3f &pos, const std::vector<AGDocumentManager::DocumentListing> &list) :
@@ -46,7 +46,7 @@ public:
         
         m_selection = -1;
         
-        m_onLoad = [](const std::string &, AGDocument &){};
+        m_onLoad = [](const AGFile &, AGDocument &){};
         m_size = GLvertex2f(500, 2*500/AGStyle::aspect16_9);
         m_itemStart = m_size.y/3.0f;
         m_itemHeight = m_size.y/3.0f;
@@ -243,9 +243,9 @@ public:
         
         if(m_selection >= 0)
         {
-            const string &filename = m_documentList[m_selection].filename;
-            AGDocument doc = AGDocumentManager::instance().load(m_documentList[m_selection].filename);
-            m_onLoad(filename, doc);
+            const AGFile &file = m_documentList[m_selection].filename;
+            AGDocument doc = AGDocumentManager::instance().load(file);
+            m_onLoad(file, doc);
             removeFromTopLevel();
         }
         
@@ -262,7 +262,7 @@ public:
         return m_squeeze.finishedClosing();
     }
     
-    virtual void onLoad(const std::function<void (const std::string &file, AGDocument &doc)> &_onLoad) override
+    virtual void onLoad(const std::function<void (const AGFile &file, AGDocument &doc)> &_onLoad) override
     {
         m_onLoad = _onLoad;
     }

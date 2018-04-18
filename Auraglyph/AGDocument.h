@@ -15,6 +15,7 @@
 #include <list>
 
 #include "Geometry.h"
+#include "AGFileManager.h"
 
 using namespace std;
 

@@ -41,31 +41,31 @@ AGDocumentManager &AGDocumentManager::instance()
     return s_instance;
 }
 
-std::string AGDocumentManager::save(const std::vector<std::vector<GLvertex2f>> &name, const AGDocument &doc)
+AGFile AGDocumentManager::save(const std::vector<std::vector<GLvertex2f>> &name, const AGDocument &doc)
 {
     _loadList();
     
-    std::string filename = makeUUID() + ".json";
-    std::string filepath = documentDirectory() + "/" + filename;
+    AGFile file = AGFile::UserFile(makeUUID() + ".json");
+    std::string filepath = AGFileManager::instance().getFullPath(file);
     
     doc.saveToPath(filepath);
     
-    m_list->push_back({filename, name});
+    m_list->push_back({ file, name });
     
     _saveList();
     
-    return filename;
+    return file;
 }
 
-void AGDocumentManager::update(const std::string &filename, const AGDocument &doc)
+void AGDocumentManager::update(const AGFile &file, const AGDocument &doc)
 {
-    std::string filepath = documentDirectory() + "/" + filename;
+    std::string filepath = AGFileManager::instance().getFullPath(file);
     doc.saveToPath(filepath);
 }
 
-AGDocument AGDocumentManager::load(const std::string &filename)
+AGDocument AGDocumentManager::load(const AGFile &file)
 {
-    std::string filepath = documentDirectory() + "/" + filename;
+    std::string filepath = AGFileManager::instance().getFullPath(file);
     AGDocument doc;
     doc.loadFromPath(filepath);
     
@@ -75,7 +75,7 @@ AGDocument AGDocumentManager::load(const std::string &filename)
         // find this doc in listing
         for(auto listing : list())
         {
-            if(listing.filename == filename)
+            if(listing.filename == file)
             {
                 doc.setName(listing.name);
                 break;
@@ -95,11 +95,11 @@ const std::vector<AGDocumentManager::DocumentListing> &AGDocumentManager::list()
 const std::vector<AGDocumentManager::DocumentListing> &AGDocumentManager::examplesList()
 {
     if(m_examplesList == nullptr)
-        m_examplesList = _doLoad(AGFileManager::instance().examplesDirectory(), exampleLibraryPath());
+        m_examplesList = _doLoad(AGFileManager::instance().examplesDirectory(), exampleLibraryPath(), AGFile::EXAMPLE);
     return *m_examplesList;
 }
 
-std::vector<AGDocumentManager::DocumentListing> *AGDocumentManager::_doLoad(const std::string &dir, const std::string &libraryPath)
+std::vector<AGDocumentManager::DocumentListing> *AGDocumentManager::_doLoad(const std::string &dir, const std::string &libraryPath, AGFile::Source source)
 {
     NSString *libPath = [NSString stringWithSTLString:libraryPath];
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -141,21 +141,16 @@ std::vector<AGDocumentManager::DocumentListing> *AGDocumentManager::_doLoad(cons
             return nullptr;
         }
         
-        auto list = new std::vector<DocumentListing>;
-        
         for(NSDictionary *fileObj in listObj)
         {
             if(fileObj[@"filename"] == nil) continue;
             if(fileObj[@"name"] == nil) continue;
             
             std::string filename = [(NSString *) fileObj[@"filename"] stlString];
+            AGFile file = { filename, source };
             
             // verify existence on disk
-            std::string filepath = documentDirectory() + "/" + filename;
-            BOOL isDirectory = NO;
-            if(![fileManager fileExistsAtPath:[NSString stringWithSTLString:filepath]
-                                  isDirectory:&isDirectory]
-               || isDirectory)
+            if(!AGFileManager::instance().fileExists(file))
             {
                 // file no longer exists; skip it
                 didUpdateList = true;
@@ -189,7 +184,7 @@ std::vector<AGDocumentManager::DocumentListing> *AGDocumentManager::_doLoad(cons
             if(!isValid) continue;
             
             filenameSet.insert(filename);
-            list->push_back({ filename, name });
+            list->push_back({ file, name });
         }
     }
     
@@ -208,11 +203,12 @@ std::vector<AGDocumentManager::DocumentListing> *AGDocumentManager::_doLoad(cons
         {
             didUpdateList = true;
             // load it
-            AGDocument doc = load(filename);
+            AGFile file = { filename, source };
+            AGDocument doc = load(file);
             // pull out name
             auto name = doc.name();
             // add to list
-            list->push_back({ filename, name });
+            list->push_back({ file, name });
         }
     }
     
@@ -225,10 +221,12 @@ void AGDocumentManager::_loadList(bool force)
     {
         /* load cached file list */
         
-        auto list = _doLoad(documentDirectory(), documentLibraryPath());
+        auto list = _doLoad(documentDirectory(), documentLibraryPath(), AGFile::USER);
+        NSLog(@"list: %lu", list->size());
         if(list != nullptr)
         {
             m_list = list;
+            NSLog(@"m_list: %lu", m_list->size());
             /* save updated list */
             _saveList();
         }
@@ -256,7 +254,8 @@ void AGDocumentManager::_saveList()
                 [nameObj addObject:figureObj];
             }
             
-            [listObj addObject:@{ @"filename": [NSString stringWithSTLString:file.filename],
+            [listObj addObject:@{ @"filename": [NSString stringWithSTLString:file.filename.m_filename],
+                                  @"source": (file.filename.m_source == AGFile::USER) ? @"user" : @"example",
                                   @"name": nameObj }];
         }
         

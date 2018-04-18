@@ -13,6 +13,27 @@
 
 using namespace std;
 
+class AGFile
+{
+public:
+    enum Source
+    {
+        USER,
+        EXAMPLE,
+    };
+    
+    static AGFile UserFile(const std::string &filename) { return { filename, USER }; }
+    static AGFile ExampleFile(const std::string &filename) { return { filename, EXAMPLE }; }
+
+    std::string m_filename;
+    Source m_source;
+    
+    bool operator==(const AGFile &other)
+    {
+        return other.m_filename == m_filename && other.m_source == m_source;
+    }
+};
+
 class AGFileManager
 {
 public:
@@ -24,8 +45,10 @@ public:
     const string &examplesDirectory();
 
     bool fileHasExtension(const string &filepathOrName, const string &extension);
-    bool filenameExists(const string &filename);
+    bool fileExists(const AGFile &file);
     vector<string> listDirectory(const string &directory);
+    
+    std::string getFullPath(const AGFile& file);
     
 private:
     AGFileManager();

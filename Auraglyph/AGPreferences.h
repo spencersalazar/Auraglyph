@@ -10,6 +10,7 @@
 #define AGPreferences_h
 
 #include <string>
+#include "AGDocumentManager.h"
 
 //------------------------------------------------------------------------------
 // ### AGPreferences ###
@@ -24,8 +25,8 @@ public:
     
     AGPreferences();
     
-    void setLastOpenedDocument(const std::string &filename);
-    std::string lastOpenedDocument();
+    void setLastOpenedDocument(const AGFile &file);
+    AGFile lastOpenedDocument();
 };
 
 
