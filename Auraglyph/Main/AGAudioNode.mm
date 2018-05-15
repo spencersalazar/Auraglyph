@@ -405,7 +405,7 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioInputNode::Manifest);
         nodeTypes.push_back(new AGAudioOutputNode::Manifest);
         
-        nodeTypes.push_back(new AGAudioCompositeNode::Manifest);
+//        nodeTypes.push_back(new AGAudioCompositeNode::Manifest);
         
         nodeTypes.push_back(new AGAudioStateVariableFilterNode::Manifest);
         
