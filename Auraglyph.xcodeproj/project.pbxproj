@@ -1475,7 +1475,10 @@
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Auraglyph/Auraglyph-Prefix.pch";
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/libs/LipiTk/include\"";
+				HEADER_SEARCH_PATHS = (
+					"\"$(PROJECT_DIR)/libs/LipiTk/include\"",
+					"\"$(PROJECT_DIR)/Auraglyph\"",
+				);
 				INFOPLIST_FILE = "Auraglyph/Auraglyph-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				KEEP_PRIVATE_EXTERNS = YES;
@@ -1508,7 +1511,10 @@
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Auraglyph/Auraglyph-Prefix.pch";
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/libs/LipiTk/include\"";
+				HEADER_SEARCH_PATHS = (
+					"\"$(PROJECT_DIR)/libs/LipiTk/include\"",
+					"\"$(PROJECT_DIR)/Auraglyph\"",
+				);
 				INFOPLIST_FILE = "Auraglyph/Auraglyph-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				KEEP_PRIVATE_EXTERNS = YES;
