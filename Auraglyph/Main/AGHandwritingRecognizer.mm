@@ -343,7 +343,9 @@ static AGHandwritingRecognizer * g_instance = NULL;
     
     if(results.size())
     {
-        return g_figureForShape[results[0].getShapeId()];
+        AGHandwritingRecognizerFigure figure = g_figureForShape[results[0].getShapeId()];
+        if(figure != AG_FIGURE_TRIANGLE_UP && figure != AG_FIGURE_TRIANGLE_DOWN)
+            return figure;
     }
     
     return AG_FIGURE_NONE;
