@@ -572,7 +572,8 @@ public:
             int NUM_SAMPS = 25;
             
             slewf iconSlew;
-            iconSlew.rate = 0.6;
+            iconSlew.reset(-1);
+            iconSlew.rate = 0.25;
             
             vector<GLvertex3f> iconGeo;
             
@@ -581,16 +582,16 @@ public:
                 GLvertex3f vert;
                 
                 vert.x = ((float)i/(NUM_SAMPS-1))*2*radius_x - radius_x;
-                vert.y = iconSlew * radius_y;
+                vert.y = iconSlew * radius_y * (G_RATIO-1);
 
                 if(i == 0)
-                    iconSlew = 1;
-                else if(i == 5)
                     iconSlew = -1;
-                else if(i == 13)
-                    iconSlew = 0.7;
+                else if(i == 5)
+                    iconSlew = 1;
+                else if(i == 15)
+                    iconSlew = -1;
                 else if(i == 19)
-                    iconSlew = -0.5;
+                    iconSlew = -1;
                 
                 iconSlew.interp();
                 iconGeo.push_back(vert);
