@@ -554,7 +554,7 @@ public:
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_RATE, "rate", .doc = "Slew rate." },
+                { PARAM_RATE, "rate", 0.15, 0, 2, AGPortInfo::LOG, AGControl::TYPE_FLOAT, .doc = "Slew rate." },
             };
         };
         
