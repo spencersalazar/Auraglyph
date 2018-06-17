@@ -947,8 +947,8 @@ const AGNodeManager &AGNodeManager::controlNodeManager()
         
         nodeTypes.push_back(new AGControlMidiNoteIn::Manifest);
         nodeTypes.push_back(new AGControlMidiCCIn::Manifest);
-        nodeTypes.push_back(new AGControlComparisonEQNode::Manifest);
-        nodeTypes.push_back(new AGControlGateNode::Manifest);
+//        nodeTypes.push_back(new AGControlComparisonEQNode::Manifest);
+//        nodeTypes.push_back(new AGControlGateNode::Manifest);
         
         nodeTypes.push_back(new AGControlMapNode::Manifest);
         nodeTypes.push_back(new AGControlScaleNode::Manifest);
