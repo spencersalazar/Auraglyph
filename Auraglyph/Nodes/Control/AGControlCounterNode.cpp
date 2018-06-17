@@ -57,17 +57,17 @@ public:
         
         vector<GLvertex3f> _iconGeo() const override
         {
-            float radius = 38;
-            float w = radius*1.3, h = w*0.2, t = h*0.75, rot = -M_PI*0.7f;
+            float r = 22; // radius
             
             return {
-                // pen
-                rotateZ(GLvertex2f( w/2,      0), rot),
-                rotateZ(GLvertex2f( w/2-t,  h/2), rot),
-                rotateZ(GLvertex2f(-w/2,    h/2), rot),
-                rotateZ(GLvertex2f(-w/2,   -h/2), rot),
-                rotateZ(GLvertex2f( w/2-t, -h/2), rot),
-                rotateZ(GLvertex2f( w/2,      0), rot),
+                // steps
+                GLvertex2f(   -r, -r),
+                GLvertex2f(   -r, -r/3),
+                GLvertex2f( -r/3, -r/3),
+                GLvertex2f( -r/3,  r/3),
+                GLvertex2f(  r/3,  r/3),
+                GLvertex2f(  r/3,  r),
+                GLvertex2f(    r,  r),
             };
         }
         
