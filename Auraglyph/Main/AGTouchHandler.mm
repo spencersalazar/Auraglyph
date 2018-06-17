@@ -651,8 +651,8 @@ public:
         TEXTPOSITION_RIGHT
     };
     
-    AGPortBrowserPort(AGNode *node, int portNum, const GLvertex3f &position, TextPosition textPosition) :
-    m_node(node), m_portNum(portNum), m_portInfo(m_node->inputPortInfo(portNum)),
+    AGPortBrowserPort(AGNode *node, const AGPortInfo &portInfo, const GLvertex3f &position, TextPosition textPosition) :
+    m_node(node), m_portInfo(portInfo),
     m_textPosition(textPosition), m_activate(false), m_alpha(0.2, 0),
     m_posLerp(0.2, 0), m_textAlpha(0.4, -1), m_textPosLerp(0.4, 0)
     {
@@ -761,7 +761,6 @@ private:
     
     AGNode * const m_node;
     const AGPortInfo &m_portInfo;
-    const int m_portNum;
     
     bool m_activate;
     
@@ -784,7 +783,13 @@ TexFont *AGPortBrowserPort::s_texFont = NULL;
 class AGPortBrowser : public AGInteractiveObject
 {
 public:
-    AGPortBrowser(AGNode *node) : m_node(node), m_scale(0.2), m_alpha(0.1, 1),
+    enum Type
+    {
+        TYPE_INPUT,
+        TYPE_OUTPUT,
+    };
+    
+    AGPortBrowser(AGNode *node, Type type) : m_node(node), m_type(type), m_scale(0.2), m_alpha(0.1, 1),
     m_selectedPort(-1)
     {
         float radius = 0.0125f*AGStyle::oldGlobalScale;
@@ -807,11 +812,10 @@ public:
         m_scale = 1;
         m_alpha = 1;
         
-        int numPorts = node->numInputPorts();
-        m_ports.reserve(numPorts);
+        m_ports.reserve(numPorts());
         float angle = 3.0f*M_PI/4.0f;
         float portRadius = radius*0.62;
-        for(int i = 0; i < numPorts; i++)
+        for(int i = 0; i < numPorts(); i++)
         {
             float _cos = cosf(angle);
             float _sin = sinf(angle);
@@ -829,13 +833,29 @@ public:
             }
             
             GLvertex3f pos = m_node->position() + GLvertex3f(portRadius*_cos, portRadius*_sin, 0);
-            AGPortBrowserPort *port = new AGPortBrowserPort(m_node, i, pos, textPos);
+            AGPortBrowserPort *port = new AGPortBrowserPort(m_node, portInfo(i), pos, textPos);
             port->init();
             addChild(port);
             m_ports.push_back(port);
             
-            angle -= M_PI*2.0f/((float)numPorts);
+            angle -= M_PI*2.0f/((float)numPorts());
         }
+    }
+    
+    int numPorts()
+    {
+        if(m_type == TYPE_INPUT)
+            return m_node->numInputPorts();
+        else
+            return m_node->numOutputPorts();
+    }
+    
+    const AGPortInfo &portInfo(int portNum)
+    {
+        if(m_type == TYPE_INPUT)
+            return m_node->inputPortInfo(portNum);
+        else
+            return m_node->outputPortInfo(portNum);
     }
     
     virtual void update(float t, float dt)
@@ -879,9 +899,8 @@ public:
         // location relative to this object's center point
         GLvertex3f relativeLocation = t - m_node->position();
         
-        int numPorts = m_node->numInputPorts();
         // no dead-zone for single-port objects
-        if(numPorts > 1)
+        if(numPorts() > 1)
         {
             // squared-distance from center
             float rho_sq = relativeLocation.magnitudeSquared();
@@ -895,13 +914,13 @@ public:
         // angle around that center point
         float theta = atan2f(relativeLocation.y, relativeLocation.x);
         // angle-width of each port's hit area
-        float width = (M_PI*2)/m_node->numInputPorts();
+        float width = (M_PI*2)/numPorts();
         // starting rotation (from 0) of first port
         float rot = 3.0f*M_PI/4.0f;
         // angle of touch, mapped to [0, 2pi) => [port0, ..., portN-1]
         theta = normAngle(-(theta-rot-width/2.0f));
         // calculate bin => port number
-        return (int) floorf(theta/(M_PI*2.0f)*m_node->numInputPorts());
+        return (int) floorf(theta/(M_PI*2.0f)*numPorts());
     }
     
     int selectedPort() { return m_selectedPort; }
@@ -925,6 +944,7 @@ private:
     slewf m_scale;
     slewf m_alpha;
     
+    Type m_type;
     int m_selectedPort;
     
     vector<AGPortBrowserPort *> m_ports;
@@ -938,8 +958,9 @@ private:
     AGNode * _originalHit;
     AGNode * _currentHit;
     
-    int srcPort;
-    int dstPort;
+    int _srcPort;
+    int _dstPort;
+    AGNode::HitTestResult _hitResult;
     
     AGProtoConnection *_proto;
     AGPortBrowser *_browser;
@@ -961,19 +982,19 @@ private:
     
     AGNode *hitNode;
     int port;
-    AGNode::HitTestResult hit = [_viewController hitTest:pos node:&hitNode port:&port];
+    _hitResult = [_viewController hitTest:pos node:&hitNode port:&port];
     
-    if(hit == AGNode::HIT_INPUT_NODE)
+    if(_hitResult == AGNode::HIT_INPUT_NODE)
     {
-        dstPort = port;
+        _dstPort = port;
         _connectInput = hitNode;
-        _connectInput->activateInputPort(1+dstPort);
+        _connectInput->activateInputPort(1+_dstPort);
     }
     else
     {
-        srcPort = port;
+        _srcPort = port;
         _connectOutput = hitNode;
-        _connectOutput->activateOutputPort(1+srcPort);
+        _connectOutput->activateOutputPort(1+_srcPort);
     }
     
     _originalHit = hitNode;
@@ -996,7 +1017,9 @@ private:
             [_viewController fadeOutAndDelete:_browser];
         if(hitNode)
         {
-            _browser = new AGPortBrowser(hitNode);
+            _browser = new AGPortBrowser(hitNode,
+                                         _hitResult == AGNode::HIT_INPUT_NODE ?
+                                         AGPortBrowser::TYPE_OUTPUT : AGPortBrowser::TYPE_INPUT);
             _browser->init();
             [_viewController addTopLevelObject:_browser under:_proto];
         }
@@ -1043,8 +1066,27 @@ private:
         int port = _browser->selectedPort();
         if(port != -1)
         {
-            AGAnalytics::instance().eventConnectNode(_originalHit->type(), _currentHit->type());
-            AGConnection *connection = AGConnection::connect(_originalHit, srcPort, _currentHit, port);
+            AGNode *srcNode, *dstNode;
+            int srcPort, dstPort;
+            
+            if(_hitResult == AGNode::HIT_INPUT_NODE)
+            {
+                srcNode = _currentHit;
+                srcPort = port;
+                dstNode = _originalHit;
+                dstPort = _dstPort;
+            }
+            else
+            {
+                srcNode = _originalHit;
+                srcPort = _srcPort;
+                dstNode = _currentHit;
+                dstPort = port;
+            }
+            
+            AGAnalytics::instance().eventConnectNode(srcNode->type(), dstNode->type());
+            
+            AGConnection *connection = AGConnection::connect(srcNode, srcPort, dstNode, dstPort);
             
             AGUndoAction *action = AGUndoAction::createConnectionUndoAction(connection);
             AGUndoManager::instance().pushUndoAction(action);
