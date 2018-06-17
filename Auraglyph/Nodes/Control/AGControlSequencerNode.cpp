@@ -575,6 +575,7 @@ void AGControlSequencerNode::initFinal()
     for(auto i = m_sequence.begin(); i != m_sequence.end(); i++)
         for(auto j = i->begin(); j != i->end(); j++)
             *j = Step(Random::unit(), 0.5);
+    m_outputPortInfo.push_back(_generateOutputPortInfo((int)m_outputPortInfo.size()));
     
     // apparently Block_copy is necessary since ARC doesn't work in C++(?)
 //    m_timer = AGTimer(60.0f/param(PARAM_BPM).getFloat(), Block_copy(^(AGTimer *) {
@@ -599,6 +600,7 @@ void AGControlSequencerNode::deserializeFinal(const AGDocument::Node &docNode)
         for(int seq = 0; seq < num_seqs; seq++)
         {
             m_sequence.push_back(std::vector<Step>(m_numSteps));
+            m_outputPortInfo.push_back(_generateOutputPortInfo((int)m_outputPortInfo.size()));
             
             string seqkey = "seq" + std::to_string(seq);
             if(docNode.params.count(seqkey))
@@ -620,6 +622,7 @@ void AGControlSequencerNode::deserializeFinal(const AGDocument::Node &docNode)
     else
     {
         m_sequence.push_back(std::vector<Step>(m_numSteps));
+        m_outputPortInfo.push_back(_generateOutputPortInfo((int)m_outputPortInfo.size()));
     }
 }
 
@@ -635,7 +638,12 @@ AGUINodeEditor *AGControlSequencerNode::createCustomEditor()
 
 int AGControlSequencerNode::numOutputPorts() const
 {
-    return (int) m_sequence.size();
+    return (int) m_outputPortInfo.size();
+}
+
+const AGPortInfo &AGControlSequencerNode::outputPortInfo(int port) const
+{
+    return m_outputPortInfo[port];
 }
 
 void AGControlSequencerNode::process(sampletime _t)
@@ -698,6 +706,14 @@ int AGControlSequencerNode::numSequences()
     return (int) m_sequence.size();
 }
 
+AGPortInfo AGControlSequencerNode::_generateOutputPortInfo(int portNum)
+{
+    std::stringstream strm;
+    strm << "seq" << portNum;
+    AGPortInfo portInfo = { portNum, strm.str() };
+    return portInfo;
+}
+
 void AGControlSequencerNode::setNumSequences(int num)
 {
     m_seqLock.lock();
@@ -706,9 +722,17 @@ void AGControlSequencerNode::setNumSequences(int num)
         num = 1;
     
     if(num < m_sequence.size())
+    {
         m_sequence.resize(num);
+        m_outputPortInfo.resize(num);
+    }
     else if(num > m_sequence.size())
+    {
         m_sequence.resize(num, std::vector<Step>(m_numSteps));
+        int add = num-(int)m_outputPortInfo.size();
+        for(int i = 0; i < add; i++)
+            m_outputPortInfo.push_back(_generateOutputPortInfo((int)m_outputPortInfo.size()));
+    }
     
     m_seqLock.unlock();
 }

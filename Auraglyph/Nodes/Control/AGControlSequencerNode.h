@@ -47,6 +47,7 @@ public:
     void deserializeFinal(const AGDocument::Node &docNode) override;
     
     virtual int numOutputPorts() const override;
+    virtual const AGPortInfo &outputPortInfo(int port) const override;
     virtual void editPortValueChanged(int paramId) override;
     
     virtual AGUINodeEditor *createCustomEditor() override;
@@ -73,6 +74,8 @@ public:
 private:
     static AGNodeInfo *s_nodeInfo;
     
+    AGPortInfo _generateOutputPortInfo(int portNum);
+    
     AGTimer m_timer;
     
     int m_pos;
@@ -91,6 +94,7 @@ private:
     
     Mutex m_seqLock;
     std::vector<std::vector<Step>> m_sequence;
+    std::vector<AGPortInfo> m_outputPortInfo;
     
     void updateStep();
 };
