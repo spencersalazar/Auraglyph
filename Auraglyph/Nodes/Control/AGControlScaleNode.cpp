@@ -169,21 +169,33 @@ public:
         
         vector<GLvertex3f> _iconGeo() const override
         {
-            float radius = 38;
-            float w = radius*1.3, h = w*0.2, t = h*0.75, rot = -M_PI*0.7f;
+            float r = 11; // radius of one hash
+            float w = r*0.75, h = r;
             
+            GLvertex2f c0 = GLvertex2f(-r*0.5,  r*1.5);
+            GLvertex2f c1 = GLvertex2f( r*1.25,  0);
+            GLvertex2f c2 = GLvertex2f(-r*0.5, -r*1.5);
+
             return {
-                // pen
-                rotateZ(GLvertex2f( w/2,      0), rot),
-                rotateZ(GLvertex2f( w/2-t,  h/2), rot),
-                rotateZ(GLvertex2f(-w/2,    h/2), rot),
-                rotateZ(GLvertex2f(-w/2,   -h/2), rot),
-                rotateZ(GLvertex2f( w/2-t, -h/2), rot),
-                rotateZ(GLvertex2f( w/2,      0), rot),
+                // #
+                c0+GLvertex2f(-w, h/3), c0+GLvertex2f(w, h/3),
+                c0+GLvertex2f(-w, -h/3), c0+GLvertex2f(w, -h/3),
+                c0+GLvertex2f(-w/3+2, h), c0+GLvertex2f(-w/3-2, -h),
+                c0+GLvertex2f(w/3+2, h), c0+GLvertex2f(w/3-2, -h),
+                // #
+                c1+GLvertex2f(-w, h/3), c1+GLvertex2f(w, h/3),
+                c1+GLvertex2f(-w, -h/3), c1+GLvertex2f(w, -h/3),
+                c1+GLvertex2f(-w/3+2, h), c1+GLvertex2f(-w/3-2, -h),
+                c1+GLvertex2f(w/3+2, h), c1+GLvertex2f(w/3-2, -h),
+                // #
+                c2+GLvertex2f(-w, h/3), c2+GLvertex2f(w, h/3),
+                c2+GLvertex2f(-w, -h/3), c2+GLvertex2f(w, -h/3),
+                c2+GLvertex2f(-w/3+2, h), c2+GLvertex2f(-w/3-2, -h),
+                c2+GLvertex2f(w/3+2, h), c2+GLvertex2f(w/3-2, -h),
             };
         }
         
-        GLuint _iconGeoType() const override { return GL_LINE_STRIP; };
+        GLuint _iconGeoType() const override { return GL_LINES; };
     };
     
     using AGControlNode::AGControlNode;
