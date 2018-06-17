@@ -932,7 +932,7 @@ const AGNodeManager &AGNodeManager::controlNodeManager()
         vector<const AGNodeManifest *> &nodeTypes = s_controlNodeManager->m_nodeTypes;
         
         nodeTypes.push_back(new AGControlTimerNode::Manifest);
-        nodeTypes.push_back(new AGControlArrayNode::Manifest);
+//        nodeTypes.push_back(new AGControlArrayNode::Manifest);
         nodeTypes.push_back(new AGControlSequencerNode::Manifest);
         nodeTypes.push_back(new AGControlMidiToFreqNode::Manifest);
         
