@@ -115,7 +115,6 @@
 		09C7C3E718CF2B8E0099CE88 /* Waveform.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 09C7C3E218CF27AC0099CE88 /* Waveform.fsh */; };
 		09D8C3FF1A0A4DF2008D788A /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 09D8C3FE1A0A4DF2008D788A /* OFL.txt */; };
 		09D9C9D01C98F13A005514A4 /* spRandom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09D9C9CE1C98F13A005514A4 /* spRandom.cpp */; };
-		09DC3D4E1FBD363F008B960F /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09DC3D4D1FBD363F008B960F /* StoreKit.framework */; };
 		09DC3D521FBD3729008B960F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */; };
 		09DC3D541FBD393C008B960F /* LaunchPortrait.png in Resources */ = {isa = PBXBuildFile; fileRef = 09DC3D531FBD393C008B960F /* LaunchPortrait.png */; };
 		09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7A18A3484F00B21D97 /* Mutex.cpp */; };
@@ -466,7 +465,6 @@
 		09D9D2E817ECF65D00938871 /* Clip.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; path = Clip.fsh; sourceTree = "<group>"; };
 		09D9D2E917ECF65D00938871 /* Clip.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; path = Clip.vsh; sourceTree = "<group>"; };
 		09DC3D4C1FBD363A008B960F /* Auraglyph.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Auraglyph.entitlements; sourceTree = "<group>"; };
-		09DC3D4D1FBD363F008B960F /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		09DC3D531FBD393C008B960F /* LaunchPortrait.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LaunchPortrait.png; sourceTree = "<group>"; };
 		09E5EC7A18A3484F00B21D97 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mutex.cpp; sourceTree = "<group>"; };
@@ -557,7 +555,6 @@
 				095E851F17B354BE0065EF8E /* libcommon.a in Frameworks */,
 				09F29D7B1CC73D8000502C01 /* libshaperecommon.a in Frameworks */,
 				09EE673A1EFDB72F00B4ED62 /* EZAudioiOS.framework in Frameworks */,
-				09DC3D4E1FBD363F008B960F /* StoreKit.framework in Frameworks */,
 				0944E8BB1DCB31EA00EB8087 /* libGoogleAnalyticsServices.a in Frameworks */,
 				095E852217B354BE0065EF8E /* liblipiengine.a in Frameworks */,
 				095E852517B354BE0065EF8E /* libnn.a in Frameworks */,
@@ -791,7 +788,6 @@
 			isa = PBXGroup;
 			children = (
 				09B019F3208597CA0071C8EC /* WebKit.framework */,
-				09DC3D4D1FBD363F008B960F /* StoreKit.framework */,
 				498438661F1EF43600FB2914 /* CoreMIDI.framework */,
 				498438591F1EF40B00FB2914 /* PGMidi */,
 				09EE67311EFDB6F800B4ED62 /* EZAudio.xcodeproj */,
@@ -1150,7 +1146,7 @@
 								enabled = 0;
 							};
 							com.apple.InAppPurchase = {
-								enabled = 1;
+								enabled = 0;
 							};
 							com.apple.InterAppAudio = {
 								enabled = 1;
