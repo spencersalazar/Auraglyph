@@ -23,7 +23,7 @@
 
         <div class="toc"><a id="toc"/>
             <p class="toc_node"><a href="#Timer" class="typename">Timer</a></p>
-            <p class="toc_node"><a href="#Array" class="typename">Array</a></p>
+            <p class="toc_node"><a href="#Counter" class="typename">Counter</a></p>
             <p class="toc_node"><a href="#Sequencer" class="typename">Sequencer</a></p>
             <p class="toc_node"><a href="#midi2freq" class="typename">midi2freq</a></p>
             <p class="toc_node"><a href="#Add" class="typename">Add</a></p>
@@ -34,11 +34,8 @@
             <p class="toc_node"><a href="#random" class="typename">random</a></p>
             <p class="toc_node"><a href="#MIDI Note In" class="typename">MIDI Note In</a></p>
             <p class="toc_node"><a href="#MIDI CC In" class="typename">MIDI CC In</a></p>
-            <p class="toc_node"><a href="#equals" class="typename">equals</a></p>
-            <p class="toc_node"><a href="#gate" class="typename">gate</a></p>
             <p class="toc_node"><a href="#Map" class="typename">Map</a></p>
             <p class="toc_node"><a href="#Scale" class="typename">Scale</a></p>
-            <p class="toc_node"><a href="#Counter" class="typename">Counter</a></p>
 
         </div>
 
@@ -248,7 +245,7 @@ transform="scale(0.125)" />
             </div>
             <!--<hr />-->
 
-            <a name="Array" />
+            <a name="Counter" />
             <div class="node">
 
                 <div class="node_header">
@@ -258,61 +255,15 @@ transform="scale(0.125)" />
     <rect x="-50" y="-50" width="500" height="500" fill="#0C1021" stroke="none" transform="scale(0.125)"/>
     <rect x="16" y="16" width="368" height="368" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale(0.125)"/>
 
-    <polyline points="86.0,154.4 86.0,245.6" 
+    <polyline points="112.0,288.0 112.0,229.33333199999998 170.66666800000002,229.33333199999998 170.66666800000002,170.66666800000002 229.33333199999998,170.66666800000002 229.33333199999998,112.0 288.0,112.0 " 
 stroke="#F9BB02" fill="none" stroke-width="10" 
 transform="scale(0.125)" />
-    <polyline points="86.0,154.4 131.6,154.4" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="86.0,245.6 131.6,245.6" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="131.6,154.4 131.6,245.6" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="131.6,154.4 177.199996,154.4" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="131.6,245.6 177.199996,245.6" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="177.199996,154.4 177.199996,245.6" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="177.199996,154.4 222.799996,154.4" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="177.199996,245.6 222.799996,245.6" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="222.79998799999998,154.4 222.79998799999998,245.6" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="222.79998799999998,154.4 268.4,154.4" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="222.79998799999998,245.6 268.4,245.6" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="268.4,154.4 268.4,245.6" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="268.4,154.4 314.0,154.4" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="268.4,245.6 314.0,245.6" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="314.0,245.6 314.0,154.4" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-
 </svg>
 
                     </div>
                     <div class="node_header_info">
-                        <h2 class="node_title" name="Array">Array</h2>
-                        <p class="node_desc">Stores an array of values.</p>
+                        <h2 class="node_title" name="Counter">Counter</h2>
+                        <p class="node_desc">Count up a specified number of times and then down a specified number of times, then resets to zero.</p>
                     </div>
                 </div>
 
@@ -320,8 +271,18 @@ transform="scale(0.125)" />
             <div class="members inputs">
 
                 <div class="member input">
-                    <p class="member_name input_name">iterate</p>
-                    <p class="member_desc input_desc">Advance array by one item and push that item.</p>
+                    <p class="member_name input_name">count</p>
+                    <p class="member_desc input_desc">Non-zero input triggers count.</p>
+                </div>
+
+                <div class="member input">
+                    <p class="member_name input_name">up</p>
+                    <p class="member_desc input_desc">Number of times to count up.</p>
+                </div>
+
+                <div class="member input">
+                    <p class="member_name input_name">down</p>
+                    <p class="member_desc input_desc">Number of times to count down.</p>
                 </div>
 
             </div>
@@ -329,14 +290,24 @@ transform="scale(0.125)" />
             <h3 class="node_section_header">params</h3>
             <div class="members params">
 
+                <div class="member input">
+                    <p class="member_name param_name">up</p>
+                    <p class="member_desc param_desc">Number of times to count up.</p>
+                </div>
+
+                <div class="member input">
+                    <p class="member_name param_name">down</p>
+                    <p class="member_desc param_desc">Number of times to count down.</p>
+                </div>
+
             </div>
 
             <h3 class="node_section_header">outputs</h3>
             <div class="members outputs">
 
                 <div class="member input">
-                    <p class="member_name output_name">value</p>
-                    <p class="member_desc output_desc">Value of selected array item.</p>
+                    <p class="member_name output_name">output</p>
+                    <p class="member_desc output_desc"></p>
                 </div>
 
             </div>
@@ -1025,7 +996,7 @@ transform="scale(0.125)" />
     <rect x="-50" y="-50" width="500" height="500" fill="#0C1021" stroke="none" transform="scale(0.125)"/>
     <rect x="16" y="16" width="368" height="368" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale(0.125)"/>
 
-    <polyline points="100.0,200.0 108.33332,140.0 116.66668,116.0 125.0,106.4 133.33332000000001,102.56 141.66667999999999,101.024 150.0,220.4096 158.33332000000001,268.16384 166.666672,287.26556 175.0,294.9062 183.333328,297.96248 191.666672,299.185 200.0,299.674 208.333336,299.8696 216.666664,197.947836 225.0,157.17912 233.333344,140.87164 241.66664,134.34868 250.0,131.73948000000001 258.33335999999997,130.69580000000002 266.66664000000003,202.278316 275.0,230.911328 283.33335999999997,242.36452 291.66664000000003,246.9458 300.0,248.77832 " 
+    <polyline points="100.0,261.8034 108.33332,261.8034 116.66668,261.8034 125.0,261.8034 133.33332000000001,261.8034 141.66667999999999,261.8034 150.0,230.9017 158.33332000000001,207.725424 166.666672,190.34322 175.0,177.306564 183.333328,167.52907199999999 191.666672,160.195952 200.0,154.69612 208.333336,150.57124 216.666664,147.47755999999998 225.0,145.15732 233.333344,174.318852 241.66664,196.1899876 250.0,212.59334 258.33335999999997,224.895856 266.66664000000003,234.12274 275.0,241.04292 283.33335999999997,246.23304000000002 291.66664000000003,250.12564 300.0,253.04507999999998 " 
 stroke="#F9BB02" fill="none" stroke-width="10" 
 transform="scale(0.125)" />
 </svg>
@@ -1081,7 +1052,7 @@ transform="scale(0.125)" />
     <rect x="-50" y="-50" width="500" height="500" fill="#0C1021" stroke="none" transform="scale(0.125)"/>
     <rect x="16" y="16" width="368" height="368" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale(0.125)"/>
 
-    <polyline points="100.0,197.987354 114.28572,221.6616 128.57144,298.05244 142.85716,182.489944 157.14288,187.622856 171.428572,227.375156 185.714288,272.34524 200.0,168.17696 214.28572,167.529368 228.571428,100.71048 242.85716,266.54628 257.14284,109.55568 271.42856,213.92554 285.71428000000003,190.269364 300.0,277.3816 " 
+    <polyline points="100.0,224.339688 114.28572,210.457276 128.57144,112.36124 142.85716,186.093272 157.14288,233.219688 171.428572,111.10504 185.714288,241.66388 200.0,277.563 214.28572,241.14024 228.571428,243.70600000000002 242.85716,206.53956 257.14284,259.73424 271.42856,237.11151999999998 285.71428000000003,220.363696 300.0,105.4236 " 
 stroke="#F9BB02" fill="none" stroke-width="10" 
 transform="scale(0.125)" />
 </svg>
@@ -1883,197 +1854,6 @@ transform="scale(0.125)" />
             </div>
             <!--<hr />-->
 
-            <a name="equals" />
-            <div class="node">
-
-                <div class="node_header">
-                    <div class="node_symbol" width="5em" height="5em">
-
-<svg width="5em" height="5em" transform="">
-    <rect x="-50" y="-50" width="500" height="500" fill="#0C1021" stroke="none" transform="scale(0.125)"/>
-    <rect x="16" y="16" width="368" height="368" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale(0.125)"/>
-
-    <polyline points="110.0,180.0 180.0,180.0" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="290.0,180.0 220.0,180.0" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="110.0,220.0 180.0,220.0" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="290.0,220.0 220.0,220.0" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-
-</svg>
-
-                    </div>
-                    <div class="node_header_info">
-                        <h2 class="node_title" name="equals">equals</h2>
-                        <p class="node_desc">Tests equality of two values.</p>
-                    </div>
-                </div>
-
-            <h3 class="node_section_header">inputs</h3>
-            <div class="members inputs">
-
-                <div class="member input">
-                    <p class="member_name input_name">hot in</p>
-                    <p class="member_desc input_desc">Hot inlet.</p>
-                </div>
-
-                <div class="member input">
-                    <p class="member_name input_name">cold in</p>
-                    <p class="member_desc input_desc">Cold inlet.</p>
-                </div>
-
-            </div>
-
-            <h3 class="node_section_header">params</h3>
-            <div class="members params">
-
-                <div class="member input">
-                    <p class="member_name param_name">cold in</p>
-                    <p class="member_desc param_desc">Cold inlet.</p>
-                </div>
-
-            </div>
-
-            <h3 class="node_section_header">outputs</h3>
-            <div class="members outputs">
-
-                <div class="member input">
-                    <p class="member_name output_name">output</p>
-                    <p class="member_desc output_desc">Output.</p>
-                </div>
-
-            </div>
-
-            <p class="top_link">[ <a href="#top">top</a> ]</p>
-            </div>
-            <!--<hr />-->
-
-            <a name="gate" />
-            <div class="node">
-
-                <div class="node_header">
-                    <div class="node_symbol" width="5em" height="5em">
-
-<svg width="5em" height="5em" transform="">
-    <rect x="-50" y="-50" width="500" height="500" fill="#0C1021" stroke="none" transform="scale(0.125)"/>
-    <rect x="16" y="16" width="368" height="368" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale(0.125)"/>
-
-    <polyline points="248.0,200.0 244.3462,181.631196" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="244.3462,181.631196 233.941124,166.058876" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="233.941124,166.058876 218.368804,155.6538" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="218.368804,155.6538 199.9999979018536,152.0" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="199.9999979018536,152.0 181.631196,155.6538" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="181.631196,155.6538 166.058876,166.058876" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="166.058876,166.058876 155.6538,181.631192" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="155.6538,181.631192 152.0,200.000004196292" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="152.0,200.000004196292 155.6538,218.368804" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="155.6538,218.368804 166.058872,233.941124" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="166.058872,233.941124 181.631188,244.3462" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="181.631188,244.3462 200.0000005723944,248.0" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="200.0000005723944,248.0 218.368812,244.3462" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="218.368812,244.3462 233.94112,233.941132" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="233.94112,233.941132 244.3462,218.368804" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="244.3462,218.368804 248.0,199.999991607412" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="166.058876,166.058876 233.941124,233.941124" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="166.058876,233.941124 233.941124,166.058876" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="92.0,176.0 176.0,176.0" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="308.0,176.0 224.0,176.0" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="92.0,224.0 176.0,224.0" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-    <polyline points="308.0,224.0 224.0,224.0" 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-
-</svg>
-
-                    </div>
-                    <div class="node_header_info">
-                        <h2 class="node_title" name="gate">gate</h2>
-                        <p class="node_desc">First inlet gates signal present at second inlet</p>
-                    </div>
-                </div>
-
-            <h3 class="node_section_header">inputs</h3>
-            <div class="members inputs">
-
-                <div class="member input">
-                    <p class="member_name input_name">gate in</p>
-                    <p class="member_desc input_desc">Gate signal inlet.</p>
-                </div>
-
-                <div class="member input">
-                    <p class="member_name input_name">value in</p>
-                    <p class="member_desc input_desc">Value signal inlet.</p>
-                </div>
-
-            </div>
-
-            <h3 class="node_section_header">params</h3>
-            <div class="members params">
-
-            </div>
-
-            <h3 class="node_section_header">outputs</h3>
-            <div class="members outputs">
-
-                <div class="member input">
-                    <p class="member_name output_name">output</p>
-                    <p class="member_desc output_desc">Output.</p>
-                </div>
-
-            </div>
-
-            <p class="top_link">[ <a href="#top">top</a> ]</p>
-            </div>
-            <!--<hr />-->
-
             <a name="Map" />
             <div class="node">
 
@@ -2194,9 +1974,43 @@ transform="scale(0.125)" />
     <rect x="-50" y="-50" width="500" height="500" fill="#0C1021" stroke="none" transform="scale(0.125)"/>
     <rect x="16" y="16" width="368" height="368" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale(0.125)"/>
 
-    <polyline points="141.92684,279.93088 175.334948,267.56624 274.05935999999997,131.68376 242.087,108.45448 143.3626,244.337 141.92684,279.93088 " 
+    <polyline points="123.0,119.33332 189.0,119.33332" 
 stroke="#F9BB02" fill="none" stroke-width="10" 
 transform="scale(0.125)" />
+    <polyline points="123.0,148.66667999999999 189.0,148.66667999999999" 
+stroke="#F9BB02" fill="none" stroke-width="10" 
+transform="scale(0.125)" />
+    <polyline points="153.0,90.0 137.0,178.0" 
+stroke="#F9BB02" fill="none" stroke-width="10" 
+transform="scale(0.125)" />
+    <polyline points="175.0,90.0 159.0,178.0" 
+stroke="#F9BB02" fill="none" stroke-width="10" 
+transform="scale(0.125)" />
+    <polyline points="222.0,185.333332 288.0,185.333332" 
+stroke="#F9BB02" fill="none" stroke-width="10" 
+transform="scale(0.125)" />
+    <polyline points="222.0,214.666668 288.0,214.666668" 
+stroke="#F9BB02" fill="none" stroke-width="10" 
+transform="scale(0.125)" />
+    <polyline points="252.0,156.0 236.0,244.0" 
+stroke="#F9BB02" fill="none" stroke-width="10" 
+transform="scale(0.125)" />
+    <polyline points="274.0,156.0 258.0,244.0" 
+stroke="#F9BB02" fill="none" stroke-width="10" 
+transform="scale(0.125)" />
+    <polyline points="145.0,251.33332000000001 211.0,251.33332000000001" 
+stroke="#F9BB02" fill="none" stroke-width="10" 
+transform="scale(0.125)" />
+    <polyline points="145.0,280.66668 211.0,280.66668" 
+stroke="#F9BB02" fill="none" stroke-width="10" 
+transform="scale(0.125)" />
+    <polyline points="175.0,222.0 159.0,310.0" 
+stroke="#F9BB02" fill="none" stroke-width="10" 
+transform="scale(0.125)" />
+    <polyline points="197.0,222.0 181.0,310.0" 
+stroke="#F9BB02" fill="none" stroke-width="10" 
+transform="scale(0.125)" />
+
 </svg>
 
                     </div>
@@ -2262,77 +2076,6 @@ transform="scale(0.125)" />
                 <div class="member input">
                     <p class="member_name param_name">qntize</p>
                     <p class="member_desc param_desc">Quantize output value to a whole integer.</p>
-                </div>
-
-            </div>
-
-            <h3 class="node_section_header">outputs</h3>
-            <div class="members outputs">
-
-                <div class="member input">
-                    <p class="member_name output_name">output</p>
-                    <p class="member_desc output_desc"></p>
-                </div>
-
-            </div>
-
-            <p class="top_link">[ <a href="#top">top</a> ]</p>
-            </div>
-            <!--<hr />-->
-
-            <a name="Counter" />
-            <div class="node">
-
-                <div class="node_header">
-                    <div class="node_symbol" width="5em" height="5em">
-
-<svg width="5em" height="5em" transform="">
-    <rect x="-50" y="-50" width="500" height="500" fill="#0C1021" stroke="none" transform="scale(0.125)"/>
-    <rect x="16" y="16" width="368" height="368" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale(0.125)"/>
-
-    <polyline points="141.92684,279.93088 175.334948,267.56624 274.05935999999997,131.68376 242.087,108.45448 143.3626,244.337 141.92684,279.93088 " 
-stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
-</svg>
-
-                    </div>
-                    <div class="node_header_info">
-                        <h2 class="node_title" name="Counter">Counter</h2>
-                        <p class="node_desc">Count up a specified number of times and then down a specified number of times, then resets to zero.</p>
-                    </div>
-                </div>
-
-            <h3 class="node_section_header">inputs</h3>
-            <div class="members inputs">
-
-                <div class="member input">
-                    <p class="member_name input_name">count</p>
-                    <p class="member_desc input_desc">Non-zero input triggers count.</p>
-                </div>
-
-                <div class="member input">
-                    <p class="member_name input_name">up</p>
-                    <p class="member_desc input_desc">Number of times to count up.</p>
-                </div>
-
-                <div class="member input">
-                    <p class="member_name input_name">down</p>
-                    <p class="member_desc input_desc">Number of times to count down.</p>
-                </div>
-
-            </div>
-
-            <h3 class="node_section_header">params</h3>
-            <div class="members params">
-
-                <div class="member input">
-                    <p class="member_name param_name">up</p>
-                    <p class="member_desc param_desc">Number of times to count up.</p>
-                </div>
-
-                <div class="member input">
-                    <p class="member_name param_name">down</p>
-                    <p class="member_desc param_desc">Number of times to count down.</p>
                 </div>
 
             </div>
