@@ -39,6 +39,7 @@ class AGFileManager
 public:
     static AGFileManager &instance();
     
+    const string &resourcesDirectory();
     const string &userDataDirectory();
     const string &soundfileDirectory();
     const string &documentDirectory();
@@ -50,10 +51,13 @@ public:
     
     std::string getFullPath(const AGFile& file);
     
+    std::vector<std::string> getLines(const string &filepath);
+    
 private:
     AGFileManager();
     ~AGFileManager();
     
+    string m_resourcesDirectory;
     string m_soundfileDirectory;
     string m_userDataDirectory;
     string m_documentDirectory;

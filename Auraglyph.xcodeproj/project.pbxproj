@@ -113,10 +113,15 @@
 		09B962871DE2ED38001DCFB1 /* AGPreferences.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B962851DE2ED38001DCFB1 /* AGPreferences.mm */; };
 		09C7C3E618CF2B8E0099CE88 /* Waveform.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 09C7C3E318CF27AC0099CE88 /* Waveform.vsh */; };
 		09C7C3E718CF2B8E0099CE88 /* Waveform.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 09C7C3E218CF27AC0099CE88 /* Waveform.fsh */; };
+		09D22C4720E45A550036CFF5 /* spstring.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09D22C4520E45A550036CFF5 /* spstring.cpp */; };
 		09D8C3FF1A0A4DF2008D788A /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 09D8C3FE1A0A4DF2008D788A /* OFL.txt */; };
 		09D9C9D01C98F13A005514A4 /* spRandom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09D9C9CE1C98F13A005514A4 /* spRandom.cpp */; };
 		09DC3D521FBD3729008B960F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */; };
 		09DC3D541FBD393C008B960F /* LaunchPortrait.png in Resources */ = {isa = PBXBuildFile; fileRef = 09DC3D531FBD393C008B960F /* LaunchPortrait.png */; };
+		09E5864920DF09B300860DEC /* svm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5864720DF09B300860DEC /* svm.cpp */; };
+		09E5864C20DF09D800860DEC /* AGHWRRasterSVM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5864A20DF09D800860DEC /* AGHWRRasterSVM.cpp */; };
+		09E5864E20DF222400860DEC /* datasets in Resources */ = {isa = PBXBuildFile; fileRef = 09E5864D20DF222300860DEC /* datasets */; };
+		09E5865120DF227200860DEC /* AGHWRDataset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5864F20DF227200860DEC /* AGHWRDataset.cpp */; };
 		09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7A18A3484F00B21D97 /* Mutex.cpp */; };
 		09E5EC7F18A36A9D00B21D97 /* SPFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */; };
 		09E5EC8218A46F7300B21D97 /* AGControl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC8018A46F7300B21D97 /* AGControl.mm */; };
@@ -459,6 +464,8 @@
 		09B962861DE2ED38001DCFB1 /* AGPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGPreferences.h; sourceTree = "<group>"; };
 		09C7C3E218CF27AC0099CE88 /* Waveform.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; path = Waveform.fsh; sourceTree = "<group>"; };
 		09C7C3E318CF27AC0099CE88 /* Waveform.vsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; path = Waveform.vsh; sourceTree = "<group>"; };
+		09D22C4520E45A550036CFF5 /* spstring.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = spstring.cpp; sourceTree = "<group>"; };
+		09D22C4620E45A550036CFF5 /* spstring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spstring.h; sourceTree = "<group>"; };
 		09D8C3FE1A0A4DF2008D788A /* OFL.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
 		09D9C9CE1C98F13A005514A4 /* spRandom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spRandom.cpp; sourceTree = "<group>"; };
 		09D9C9CF1C98F13A005514A4 /* spRandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spRandom.h; sourceTree = "<group>"; };
@@ -467,6 +474,13 @@
 		09DC3D4C1FBD363A008B960F /* Auraglyph.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Auraglyph.entitlements; sourceTree = "<group>"; };
 		09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		09DC3D531FBD393C008B960F /* LaunchPortrait.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LaunchPortrait.png; sourceTree = "<group>"; };
+		09E5864720DF09B300860DEC /* svm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = svm.cpp; sourceTree = "<group>"; };
+		09E5864820DF09B300860DEC /* svm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = svm.h; sourceTree = "<group>"; };
+		09E5864A20DF09D800860DEC /* AGHWRRasterSVM.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGHWRRasterSVM.cpp; sourceTree = "<group>"; };
+		09E5864B20DF09D800860DEC /* AGHWRRasterSVM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGHWRRasterSVM.h; sourceTree = "<group>"; };
+		09E5864D20DF222300860DEC /* datasets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = datasets; sourceTree = "<group>"; };
+		09E5864F20DF227200860DEC /* AGHWRDataset.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGHWRDataset.cpp; sourceTree = "<group>"; };
+		09E5865020DF227200860DEC /* AGHWRDataset.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGHWRDataset.h; sourceTree = "<group>"; };
 		09E5EC7A18A3484F00B21D97 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mutex.cpp; sourceTree = "<group>"; };
 		09E5EC7B18A3484F00B21D97 /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = "<group>"; };
 		09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SPFilter.cpp; sourceTree = "<group>"; };
@@ -662,8 +676,6 @@
 				09891315189F70D200AB98AD /* AGTouchHandler.mm */,
 				0923100D1F46163200DF06B5 /* AGUndoManager.h */,
 				0923100C1F46163200DF06B5 /* AGUndoManager.cpp */,
-				095E854017B5E1D30065EF8E /* AGHandwritingRecognizer.h */,
-				095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */,
 				098740A117BA2EA70098511A /* AGAudioManager.h */,
 				098740A217BA2EA70098511A /* AGAudioManager.mm */,
 				09F700B51D6FA79B00294BDD /* AGAudioRenderer.h */,
@@ -777,6 +789,7 @@
 		095D12C217ACA36C0048A012 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				09E5864620DF096A00860DEC /* libsvm */,
 				09B019F3208597CA0071C8EC /* WebKit.framework */,
 				498438661F1EF43600FB2914 /* CoreMIDI.framework */,
 				498438591F1EF40B00FB2914 /* PGMidi */,
@@ -806,6 +819,7 @@
 				0939D3552068D4C500EB3C1B /* Help */,
 				09030CEC1EFEFDDE00D4A4F2 /* UI */,
 				09B674411D6D9D6500F84E09 /* Nodes */,
+				09E5864420DF094800860DEC /* HWR */,
 				0989130F189F6D3A00AB98AD /* Images */,
 				095D12CE17ACA36C0048A012 /* Supporting Files */,
 			);
@@ -863,6 +877,8 @@
 				09817F3819F87CC7000E9FB3 /* GeoGenerator.cpp */,
 				09A8BB4019F9E39E00E15BF7 /* spMath.h */,
 				09FC92481A14F915005D14A3 /* spstl.h */,
+				09D22C4620E45A550036CFF5 /* spstring.h */,
+				09D22C4520E45A550036CFF5 /* spstring.cpp */,
 				09412E081A210B630065598D /* sputil.h */,
 				09412E071A210B630065598D /* sputil.cpp */,
 				0991BA7D1D83A5140080175C /* spdsp.h */,
@@ -1001,6 +1017,30 @@
 				49942E561F30515A00914E75 /* MIDI */,
 			);
 			path = Nodes;
+			sourceTree = "<group>";
+		};
+		09E5864420DF094800860DEC /* HWR */ = {
+			isa = PBXGroup;
+			children = (
+				095E854017B5E1D30065EF8E /* AGHandwritingRecognizer.h */,
+				095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */,
+				09E5865020DF227200860DEC /* AGHWRDataset.h */,
+				09E5864F20DF227200860DEC /* AGHWRDataset.cpp */,
+				09E5864B20DF09D800860DEC /* AGHWRRasterSVM.h */,
+				09E5864A20DF09D800860DEC /* AGHWRRasterSVM.cpp */,
+				09E5864D20DF222300860DEC /* datasets */,
+			);
+			path = HWR;
+			sourceTree = "<group>";
+		};
+		09E5864620DF096A00860DEC /* libsvm */ = {
+			isa = PBXGroup;
+			children = (
+				09E5864720DF09B300860DEC /* svm.cpp */,
+				09E5864820DF09B300860DEC /* svm.h */,
+			);
+			name = libsvm;
+			path = libs/libsvm;
 			sourceTree = "<group>";
 		};
 		09E5EC8318A5A84C00B21D97 /* stk */ = {
@@ -1215,6 +1255,7 @@
 				09B01A062085DB790071C8EC /* examples in Resources */,
 				0989132318A0870000AB98AD /* Clip.fsh in Resources */,
 				0989132418A0870000AB98AD /* Shader.fsh in Resources */,
+				09E5864E20DF222400860DEC /* datasets in Resources */,
 				09FC924D1A153C0A005D14A3 /* flare.png in Resources */,
 				0989132518A0870000AB98AD /* Texture.fsh in Resources */,
 				0900A3821B04A10800C249D9 /* Images.xcassets in Resources */,
@@ -1292,6 +1333,7 @@
 				09B962551DDB1488001DCFB1 /* AGUISaveDialog.cpp in Sources */,
 				098F9B3A19EE49BA00CE2F24 /* AGRenderObject.mm in Sources */,
 				0939D361206D693200EB3C1B /* AGGraph.cpp in Sources */,
+				09E5864920DF09B300860DEC /* svm.cpp in Sources */,
 				095D12FF17ACAB7B0048A012 /* ShaderHelper.mm in Sources */,
 				095E853117B358FC0065EF8E /* shaperectst.mm in Sources */,
 				095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */,
@@ -1301,6 +1343,7 @@
 				0987409C17B98D7C0098511A /* AGNode.mm in Sources */,
 				098740A017BA2AB90098511A /* mo_audio.mm in Sources */,
 				494019CA1F21CC6A000F05E8 /* AGPGMidiContext.mm in Sources */,
+				09D22C4720E45A550036CFF5 /* spstring.cpp in Sources */,
 				098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */,
 				092310121F46399800DF06B5 /* AGGraphManager.cpp in Sources */,
 				098740AA17BB99DE0098511A /* TexFont.mm in Sources */,
@@ -1325,8 +1368,10 @@
 				494019CD1F21CCF3000F05E8 /* AGPGMidiDelegate.mm in Sources */,
 				09EE65821EFB64C700B4ED62 /* SampleCircularBuffer.cpp in Sources */,
 				0944E8C61DCB325D00EB8087 /* AGAnalytics.mm in Sources */,
+				09E5864C20DF09D800860DEC /* AGHWRRasterSVM.cpp in Sources */,
 				09230FB31F3D8C9500DF06B5 /* AGAboutBox.cpp in Sources */,
 				0991BA851D8654C70080175C /* FileWvIn.cpp in Sources */,
+				09E5865120DF227200860DEC /* AGHWRDataset.cpp in Sources */,
 				09030CEB1EFEF83D00D4A4F2 /* Signal.cpp in Sources */,
 				0934B67B1E223B47009259E2 /* AGFileManager.mm in Sources */,
 				498438621F1EF40B00FB2914 /* PGMidi.mm in Sources */,

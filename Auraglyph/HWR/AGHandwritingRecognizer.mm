@@ -18,6 +18,9 @@
 #include "LTKOSUtilFactory.h"
 #include "LTKOSUtil.h"
 
+#include "AGHWRDataset.h"
+#include "AGHWRRasterSVM.h"
+
 
 extern "C" LTKLipiEngineInterface* createLTKLipiEngine();
 
@@ -53,6 +56,8 @@ static AGHandwritingRecognizerFigure g_figureForShape[] =
     LTKLipiEngineInterface *_engine;
     LTKShapeRecognizer * _numeralReco;
     LTKShapeRecognizer * _shapeReco;
+    
+    AGHWRRasterSVMModel *_model;
 }
 
 - (void)loadData;
@@ -108,6 +113,12 @@ static AGHandwritingRecognizer * g_instance = NULL;
     {
         if(![[NSFileManager defaultManager] fileExistsAtPath:[AGHandwritingRecognizer projectPath]])
             [self loadData];
+        
+        AGHWRDataset dataset = AGHWRDataset::loadNumerals();
+        
+        AGHWRRasterSVMTrainer trainer(dataset);
+        _model = trainer.getModel();
+        
         
         int iResult;
         
@@ -229,6 +240,10 @@ static AGHandwritingRecognizer * g_instance = NULL;
         _engine = NULL;
     }
     
+    if(_model)
+    {
+        SAFE_DELETE(_model);
+    }
 }
 
 
@@ -253,33 +268,45 @@ static AGHandwritingRecognizer * g_instance = NULL;
 
 - (AGHandwritingRecognizerFigure)recognizeNumeral:(const LTKTrace &)trace
 {
-	LTKScreenContext screenContext;
-	vector<int> shapeSubset;
-	int numChoices = 1;
-	float confThreshold = 0.5f;
-	vector<LTKShapeRecoResult> results;
-	LTKTraceGroup traceGroup;
+//    LTKScreenContext screenContext;
+//    vector<int> shapeSubset;
+//    int numChoices = 1;
+//    float confThreshold = 0.5f;
+//    vector<LTKShapeRecoResult> results;
+//    LTKTraceGroup traceGroup;
+//
+//    screenContext.setBboxLeft(self.view.bounds.origin.x);
+//    screenContext.setBboxRight(self.view.bounds.origin.x+view.bounds.size.width);
+//    screenContext.setBboxTop(self.view.bounds.origin.y);
+//    screenContext.setBboxBottom(self.view.bounds.origin.y+view.bounds.size.height);
+//
+//    traceGroup.addTrace(trace);
+//
+//    int iResult = _numeralReco->recognize(traceGroup, screenContext,
+//                                          shapeSubset, confThreshold,
+//                                          numChoices, results);
+//    if(iResult != SUCCESS)
+//    {
+//        cout << iResult << ": Error while recognizing." << endl;
+//        return AG_FIGURE_NONE;
+//    }
+//
+//    if(results.size())
+//    {
+//        return g_figureForNumeralShape[results[0].getShapeId()];
+//    }
     
-    screenContext.setBboxLeft(self.view.bounds.origin.x);
-    screenContext.setBboxRight(self.view.bounds.origin.x+view.bounds.size.width);
-    screenContext.setBboxTop(self.view.bounds.origin.y);
-    screenContext.setBboxBottom(self.view.bounds.origin.y+view.bounds.size.height);
-    
-    traceGroup.addTrace(trace);
-    
-	int iResult = _numeralReco->recognize(traceGroup, screenContext,
-                                          shapeSubset, confThreshold,
-                                          numChoices, results);
-	if(iResult != SUCCESS)
-	{
-		cout << iResult << ": Error while recognizing." << endl;
-        return AG_FIGURE_NONE;
-	}
-    
-    if(results.size())
-    {
-        return g_figureForNumeralShape[results[0].getShapeId()];
+    MultiStroke strokes;
+    strokes.strokes.push_back(vector<Point2D>());
+    for (int i = 0; i < trace.getNumberOfPoints(); i++) {
+        floatVector pt;
+        trace.getPointAt(i, pt);
+        strokes.strokes[0].push_back(Point2D(pt[0], pt[1]));
     }
+    
+    int cls = _model->predict(strokes);
+    
+    return g_figureForNumeralShape[cls];
     
     // detect period
     const float PERIOD_AREA_MAX = 225;

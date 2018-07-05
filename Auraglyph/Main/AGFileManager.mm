@@ -19,6 +19,7 @@ AGFileManager::AGFileManager()
 {
     NSString *documentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     
+    m_resourcesDirectory = [[[NSBundle mainBundle] resourcePath] stlString];
     m_soundfileDirectory = [documentPath UTF8String];
     m_userDataDirectory = [documentPath UTF8String];
     m_documentDirectory = [documentPath UTF8String];
@@ -27,6 +28,11 @@ AGFileManager::AGFileManager()
 
 AGFileManager::~AGFileManager()
 { }
+
+const string &AGFileManager::resourcesDirectory()
+{
+    return m_resourcesDirectory;
+}
 
 const string &AGFileManager::soundfileDirectory()
 {
@@ -76,6 +82,21 @@ vector<string> AGFileManager::listDirectory(const string &directory)
     }
     
     return pathList;
+}
+
+std::vector<std::string> AGFileManager::getLines(const string &filepath)
+{
+    std::vector<std::string> lines;
+    NSError *error = nil;
+    NSString *fileContents = [NSString stringWithContentsOfFile:[NSString stringWithSTLString:filepath]
+                                                       encoding:NSUTF8StringEncoding error:&error];
+    NSArray *linesArray = [fileContents componentsSeparatedByString:@"\n"];
+    
+    for (NSString *line in linesArray) {
+        lines.push_back([line stlString]);
+    }
+    
+    return lines;
 }
 
 std::string AGFileManager::getFullPath(const AGFile& file)
