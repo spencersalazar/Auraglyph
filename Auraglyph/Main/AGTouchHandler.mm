@@ -174,7 +174,7 @@
     }
 #endif // AG_ENABLE_COMPOSITE
     
-    AGHandwritingRecognizerFigure figure = [[AGHandwritingRecognizer instance] recognizeShape:_currentTrace];
+    AGHandwritingRecognizerFigure figure = _AGHandwritingRecognizer::shapeRecognizer().recognizeShape(_currentTrace);
     
     if(figure == AG_FIGURE_CIRCLE)
     {

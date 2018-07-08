@@ -208,10 +208,8 @@ int AGHWRRasterSVMModel::predict(const MultiStroke& strokes)
     
     svm_node *node = new svm_node[RASTER_N*RASTER_N+1];
     
-    for(int y = 0; y < RASTER_N; y++)
-    {
-        for(int x = 0; x < RASTER_N; x++)
-        {
+    for (int y = 0; y < RASTER_N; y++) {
+        for (int x = 0; x < RASTER_N; x++) {
             int j = y*RASTER_N+x;
             node[j].index = j;
             node[j].value = raster.grid[x][y];
@@ -220,9 +218,24 @@ int AGHWRRasterSVMModel::predict(const MultiStroke& strokes)
     // set end sentinel
     node[RASTER_N*RASTER_N].index = -1;
     
-    float _class = svm_predict(m_model, node);
+    int numClasses = svm_get_nr_class(m_model);
+    double probs[numClasses];
+    int _class = (int) svm_predict_probability(m_model, node, probs);
     
     delete[] node;
+    
+//    if (probs[_class] < 0.5) {
+//        fprintf(stderr, "fails prob criterion (more than 50%% likely)\n");
+//        return -1;
+//    }
+    
+    for (int i = 0; i < numClasses; i++) {
+        fprintf(stderr, "p(%i) = %lf\n", i, probs[i]);
+        if (i != _class && probs[_class] <= probs[i]*2) {
+            fprintf(stderr, "fails prob criterion (2x next most likely class)\n");
+            return -1;
+        }
+    }
     
     return (int) _class;
 }

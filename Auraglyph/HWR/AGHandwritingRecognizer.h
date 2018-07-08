@@ -6,9 +6,6 @@
 //  Copyright (c) 2013 Spencer Salazar. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
-#include "LTKTypes.h"
 #include "LTKTrace.h"
 #include "LTKTraceGroup.h"
 
@@ -37,17 +34,19 @@ enum AGHandwritingRecognizerFigure
     AG_FIGURE_TRIANGLE_DOWN,
 };
 
-// TODO: refactor as C++
 
-@interface AGHandwritingRecognizer : NSObject
+class _AGHandwritingRecognizer
+{
+public:
+    
+    static _AGHandwritingRecognizer &shapeRecognizer();
+    static _AGHandwritingRecognizer &numeralRecognizer();
 
-@property (nonatomic, weak) UIView *view;
+    virtual ~_AGHandwritingRecognizer() { }
+    
+    virtual AGHandwritingRecognizerFigure recognizeNumeral(const LTKTrace &trace) = 0;
+    virtual void addSample(const LTKTraceGroup &tg, AGHandwritingRecognizerFigure num) = 0;
+    
+    virtual AGHandwritingRecognizerFigure recognizeShape(const LTKTrace &trace) = 0;
+};
 
-+ (id)instance;
-
-- (AGHandwritingRecognizerFigure)recognizeNumeral:(const LTKTrace &)trace;
-- (void)addSample:(const LTKTraceGroup &)tg forNumeral:(AGHandwritingRecognizerFigure)num;
-
-- (AGHandwritingRecognizerFigure)recognizeShape:(const LTKTrace &)trace;
-
-@end

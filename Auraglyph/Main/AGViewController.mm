@@ -202,9 +202,10 @@ static AGViewController * g_instance = nil;
     // update matrices so that worldCoordinateForScreenCoordinate works
     [self updateMatrices];
     
-    /* preload hw recognizer */
-    (void) [AGHandwritingRecognizer instance];
-    
+    /* preload hw recognizers */
+    (void) _AGHandwritingRecognizer::numeralRecognizer();
+    (void) _AGHandwritingRecognizer::shapeRecognizer();
+
     [self initUI];
     
     _graph = new AGGraph;
