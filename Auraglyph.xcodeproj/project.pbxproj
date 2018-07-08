@@ -63,7 +63,7 @@
 		095E852B17B354BE0065EF8E /* libutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851B17B354BE0065EF8E /* libutil.a */; };
 		095E852C17B354BE0065EF8E /* libwordreccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851C17B354BE0065EF8E /* libwordreccommon.a */; };
 		095E853117B358FC0065EF8E /* shaperectst.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E852F17B358FC0065EF8E /* shaperectst.mm */; };
-		095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */; };
+		095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.cpp */; };
 		096F42051D9CF04600600717 /* AGWaveformAudioNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096F42031D9CF04600600717 /* AGWaveformAudioNode.cpp */; };
 		0973FB9C1FC10815004CC25A /* agoutput-nobg.png in Resources */ = {isa = PBXBuildFile; fileRef = 0973FB991FC10815004CC25A /* agoutput-nobg.png */; };
 		0973FB9D1FC10815004CC25A /* auraglyph-title.png in Resources */ = {isa = PBXBuildFile; fileRef = 0973FB9B1FC10815004CC25A /* auraglyph-title.png */; };
@@ -392,7 +392,7 @@
 		095E853E17B35A330065EF8E /* LTKStringUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKStringUtil.h; sourceTree = "<group>"; };
 		095E853F17B35A330065EF8E /* LTKVersionCompatibilityCheck.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKVersionCompatibilityCheck.h; sourceTree = "<group>"; };
 		095E854017B5E1D30065EF8E /* AGHandwritingRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGHandwritingRecognizer.h; sourceTree = "<group>"; };
-		095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGHandwritingRecognizer.mm; sourceTree = "<group>"; };
+		095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGHandwritingRecognizer.cpp; sourceTree = "<group>"; };
 		096F42031D9CF04600600717 /* AGWaveformAudioNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = AGWaveformAudioNode.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		096F42041D9CF04600600717 /* AGWaveformAudioNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AGWaveformAudioNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		0973FB991FC10815004CC25A /* agoutput-nobg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "agoutput-nobg.png"; sourceTree = "<group>"; };
@@ -1029,7 +1029,7 @@
 			isa = PBXGroup;
 			children = (
 				095E854017B5E1D30065EF8E /* AGHandwritingRecognizer.h */,
-				095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */,
+				095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.cpp */,
 				09E51DFB20F1889900E515FD /* AGLipiTkHandwritingRecognizer.h */,
 				09E51DFA20F1889900E515FD /* AGLipiTkHandwritingRecognizer.mm */,
 				09E51DFF20F1924A00E515FD /* AGRasterSVMHandwritingRecognizer.h */,
@@ -1347,7 +1347,7 @@
 				09E5864920DF09B300860DEC /* svm.cpp in Sources */,
 				095D12FF17ACAB7B0048A012 /* ShaderHelper.mm in Sources */,
 				095E853117B358FC0065EF8E /* shaperectst.mm in Sources */,
-				095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */,
+				095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.cpp in Sources */,
 				492B3D601F3740C800E5E7F0 /* AGControlMidiCCIn.mm in Sources */,
 				09B01A042085DA9C0071C8EC /* AGUILoadDialog.cpp in Sources */,
 				09E51DFC20F1889900E515FD /* AGLipiTkHandwritingRecognizer.mm in Sources */,
