@@ -35,14 +35,14 @@ enum AGHandwritingRecognizerFigure
 };
 
 
-class _AGHandwritingRecognizer
+class AGHandwritingRecognizer
 {
 public:
     
-    static _AGHandwritingRecognizer &shapeRecognizer();
-    static _AGHandwritingRecognizer &numeralRecognizer();
+    static AGHandwritingRecognizer &shapeRecognizer();
+    static AGHandwritingRecognizer &numeralRecognizer();
 
-    virtual ~_AGHandwritingRecognizer() { }
+    virtual ~AGHandwritingRecognizer() { }
     
     virtual AGHandwritingRecognizerFigure recognizeNumeral(const LTKTrace &trace) = 0;
     virtual void addSample(const LTKTraceGroup &tg, AGHandwritingRecognizerFigure num) = 0;

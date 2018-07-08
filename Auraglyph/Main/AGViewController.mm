@@ -203,8 +203,8 @@ static AGViewController * g_instance = nil;
     [self updateMatrices];
     
     /* preload hw recognizers */
-    (void) _AGHandwritingRecognizer::numeralRecognizer();
-    (void) _AGHandwritingRecognizer::shapeRecognizer();
+    (void) AGHandwritingRecognizer::numeralRecognizer();
+    (void) AGHandwritingRecognizer::shapeRecognizer();
 
     [self initUI];
     

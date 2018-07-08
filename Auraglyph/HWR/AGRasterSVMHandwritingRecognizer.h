@@ -11,7 +11,7 @@
 #include "AGHandwritingRecognizer.h"
 #include "AGHWRRasterSVM.h"
 
-class AGRasterSVMHandwritingRecognizer : public _AGHandwritingRecognizer
+class AGRasterSVMHandwritingRecognizer : public AGHandwritingRecognizer
 {
 public:
     AGRasterSVMHandwritingRecognizer();

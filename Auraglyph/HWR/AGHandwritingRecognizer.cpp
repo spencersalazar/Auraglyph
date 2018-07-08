@@ -12,13 +12,13 @@
 #include "AGRasterSVMHandwritingRecognizer.h"
 
 
-_AGHandwritingRecognizer &_AGHandwritingRecognizer::shapeRecognizer()
+AGHandwritingRecognizer &AGHandwritingRecognizer::shapeRecognizer()
 {
     static AGLipiTkHandwritingRecognizer s_shapeRecognizer;
     return s_shapeRecognizer;
 }
 
-_AGHandwritingRecognizer &_AGHandwritingRecognizer::numeralRecognizer()
+AGHandwritingRecognizer &AGHandwritingRecognizer::numeralRecognizer()
 {
     static AGRasterSVMHandwritingRecognizer s_numeralRecognizer;
     return s_numeralRecognizer;

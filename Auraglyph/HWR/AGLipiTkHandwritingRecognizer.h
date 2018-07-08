@@ -23,7 +23,7 @@
 
 #include <string>
 
-class AGLipiTkHandwritingRecognizer : public _AGHandwritingRecognizer
+class AGLipiTkHandwritingRecognizer : public AGHandwritingRecognizer
 {
 public:
     AGLipiTkHandwritingRecognizer();
