@@ -59,8 +59,11 @@ AGHandwritingRecognizerFigure AGRasterSVMHandwritingRecognizer::recognizeNumeral
     
     int cls = m_model->predict(strokes);
     
-    if (cls != -1)
-        return g_figureForNumeralShape[cls];
+    if (cls != -1) {
+        AGHandwritingRecognizerFigure figure = g_figureForNumeralShape[cls];
+        _saveFigure("numerals", figure, trace);
+        return figure;
+    }
     
     // detect period
     const float PERIOD_AREA_MAX = 225;
@@ -79,9 +82,13 @@ AGHandwritingRecognizerFigure AGRasterSVMHandwritingRecognizer::recognizeNumeral
     
     float area = (maxX - minX)*(maxY - minY);
     
-    if(area < PERIOD_AREA_MAX && trace.getNumberOfPoints() < PERIOD_NUMPOINTS_MAX)
+    if(area < PERIOD_AREA_MAX && trace.getNumberOfPoints() < PERIOD_NUMPOINTS_MAX) {
+        _saveFigure("numerals", AG_FIGURE_PERIOD, trace);
         return AG_FIGURE_PERIOD;
+    }
     //    fprintf(stderr, "area: %f number of points: %i\n", (maxX - minX)*(maxY - minY), trace.getNumberOfPoints());
+    
+    _saveFigure("numerals", AG_FIGURE_NONE, trace);
     
     return AG_FIGURE_NONE;
 }

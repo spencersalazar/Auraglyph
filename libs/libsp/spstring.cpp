@@ -21,3 +21,19 @@ std::vector<std::string> split(const std::string &stringToSplit, char splitBy)
 
     return substrings;
 }
+
+std::string pathJoin(const std::vector<std::string> &strings)
+{
+    return join(strings, '/');
+}
+
+std::string join(const std::vector<std::string> &strings, char joinBy)
+{
+    std::string out;
+    for (int i = 0; i < strings.size(); i++) {
+        out += strings[i];
+        if (i+1 < strings.size())
+            out += joinBy;
+    }
+    return out;
+}

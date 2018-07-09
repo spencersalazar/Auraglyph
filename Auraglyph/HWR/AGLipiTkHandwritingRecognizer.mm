@@ -200,12 +200,15 @@ AGHandwritingRecognizerFigure AGLipiTkHandwritingRecognizer::recognizeNumeral(co
     if(iResult != SUCCESS)
     {
         cout << iResult << ": Error while recognizing." << endl;
+        _saveFigure("numerals", AG_FIGURE_NONE, trace);
         return AG_FIGURE_NONE;
     }
 
     if(results.size())
     {
-        return g_figureForNumeralShape[results[0].getShapeId()];
+        AGHandwritingRecognizerFigure figure = g_figureForNumeralShape[results[0].getShapeId()];
+        _saveFigure("numerals", figure, trace);
+        return figure;
     }
     
     // detect period
@@ -225,10 +228,13 @@ AGHandwritingRecognizerFigure AGLipiTkHandwritingRecognizer::recognizeNumeral(co
     
     float area = (maxX - minX)*(maxY - minY);
     
-    if(area < PERIOD_AREA_MAX && trace.getNumberOfPoints() < PERIOD_NUMPOINTS_MAX)
+    if(area < PERIOD_AREA_MAX && trace.getNumberOfPoints() < PERIOD_NUMPOINTS_MAX) {
+        _saveFigure("numerals", AG_FIGURE_PERIOD, trace);
         return AG_FIGURE_PERIOD;
+    }
     //    fprintf(stderr, "area: %f number of points: %i\n", (maxX - minX)*(maxY - minY), trace.getNumberOfPoints());
     
+    _saveFigure("numerals", AG_FIGURE_NONE, trace);
     return AG_FIGURE_NONE;
 }
 
@@ -251,18 +257,21 @@ AGHandwritingRecognizerFigure AGLipiTkHandwritingRecognizer::recognizeShape(cons
     int iResult = _shapeReco->recognize(traceGroup, screenContext,
                                         shapeSubset, confThreshold,
                                         numChoices, results);
-    if(iResult != SUCCESS)
-    {
+    if(iResult != SUCCESS) {
         cout << iResult << ": Error while recognizing." << endl;
+        _saveFigure("shapes", AG_FIGURE_NONE, trace);
         return AG_FIGURE_NONE;
     }
     
-    if(results.size())
-    {
+    if(results.size()) {
         AGHandwritingRecognizerFigure figure = g_figureForShape[results[0].getShapeId()];
-        if(figure != AG_FIGURE_TRIANGLE_UP && figure != AG_FIGURE_TRIANGLE_DOWN)
+        if(figure != AG_FIGURE_TRIANGLE_UP && figure != AG_FIGURE_TRIANGLE_DOWN) {
+            _saveFigure("numerals", figure, trace);
             return figure;
+        }
     }
+    
+    _saveFigure("numerals", AG_FIGURE_NONE, trace);
     
     return AG_FIGURE_NONE;
 }

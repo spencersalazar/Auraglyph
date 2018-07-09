@@ -12,3 +12,8 @@
 #include <vector>
 
 std::vector<std::string> split(const std::string &stringToSplit, char splitBy);
+
+std::string join(const std::vector<std::string> &strings, char joinBy);
+
+std::string pathJoin(const std::vector<std::string> &strings);
+

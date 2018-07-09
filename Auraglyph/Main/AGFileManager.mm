@@ -44,9 +44,13 @@ const string &AGFileManager::userDataDirectory()
     return m_userDataDirectory;
 }
 
-const string &AGFileManager::documentDirectory()
+string AGFileManager::documentDirectory(const string &subpath)
 {
-    return m_documentDirectory;
+    if (subpath.length() > 0) {
+        return m_documentDirectory + "/" + subpath;
+    } else {
+        return m_documentDirectory;
+    }
 }
 
 const string &AGFileManager::examplesDirectory()
@@ -97,6 +101,26 @@ std::vector<std::string> AGFileManager::getLines(const string &filepath)
     }
     
     return lines;
+}
+
+bool AGFileManager::writeToFile(const string &filepath, const string &contents)
+{
+    NSString *filepathStr = [NSString stringWithSTLString:filepath];
+    NSString *contentsStr = [NSString stringWithSTLString:contents];
+    
+    NSError *error = nil;
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    [fileManager createDirectoryAtPath:[filepathStr stringByDeletingLastPathComponent]
+           withIntermediateDirectories:YES attributes:nil error:&error];
+    if (error != nil)
+        return false;
+    
+    [contentsStr writeToFile:filepathStr atomically:YES encoding:NSUTF8StringEncoding error:&error];
+    if (error != nil)
+        return false;
+    
+    return true;
 }
 
 std::string AGFileManager::getFullPath(const AGFile& file)

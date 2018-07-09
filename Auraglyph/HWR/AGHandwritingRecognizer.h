@@ -48,5 +48,8 @@ public:
     virtual void addSample(const LTKTraceGroup &tg, AGHandwritingRecognizerFigure num) = 0;
     
     virtual AGHandwritingRecognizerFigure recognizeShape(const LTKTrace &trace) = 0;
+    
+protected:
+    void _saveFigure(const string &type, AGHandwritingRecognizerFigure figure, const LTKTrace &trace);
 };
 

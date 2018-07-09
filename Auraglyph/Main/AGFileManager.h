@@ -38,11 +38,11 @@ class AGFileManager
 {
 public:
     static AGFileManager &instance();
-    
+
     const string &resourcesDirectory();
     const string &userDataDirectory();
     const string &soundfileDirectory();
-    const string &documentDirectory();
+    string documentDirectory(const string &subpath = "");
     const string &examplesDirectory();
 
     bool fileHasExtension(const string &filepathOrName, const string &extension);
@@ -52,7 +52,8 @@ public:
     std::string getFullPath(const AGFile& file);
     
     std::vector<std::string> getLines(const string &filepath);
-    
+    bool writeToFile(const string &filepath, const string &contents);
+
 private:
     AGFileManager();
     ~AGFileManager();
