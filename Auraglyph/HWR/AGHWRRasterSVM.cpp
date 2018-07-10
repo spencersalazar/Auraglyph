@@ -11,11 +11,16 @@
 #include <float.h>
 #include <math.h>
 #include <algorithm>
+#include <random>
 
 #include "svm.h"
 
 #define RASTER_N 15
 #define RASTER_STROKE_WIDTH 1
+
+#define NUM_AUGMENT 0
+#define AUGMENT_ROT M_PI/18
+#define AUGMENT_NOISE 0.02
 
 float dist(Point2D a, Point2D b)
 {
@@ -123,6 +128,44 @@ void AGHWRRasterSVMTrainer::addExample(int _class, const MultiStroke& strokes)
     example._class = _class;
     example.raster = _raster(strokes, RASTER_N, RASTER_STROKE_WIDTH);
     m_trainingData.push_back(example);
+    
+    // get min/max of each dimension
+    float minx = FLT_MAX, maxx = -FLT_MAX, miny = FLT_MAX, maxy = -FLT_MAX;
+    for (auto stroke : strokes.strokes) {
+        for (auto pt : stroke) {
+            if (pt.x < minx) minx = pt.x;
+            if (pt.x > maxx) maxx = pt.x;
+            if (pt.y < miny) miny = pt.y;
+            if (pt.y > maxy) maxy = pt.y;
+        }
+    }
+    
+    float maxdim = maxx-minx > maxy-miny ? maxx-minx : maxy-miny;
+    
+    auto gaussian = std::normal_distribution<float>();
+    std::default_random_engine gen;
+    for (int i = 0; i < NUM_AUGMENT; i++) {
+        MultiStroke augment = strokes;
+        float rot = gaussian(gen)*M_PI/18;
+        float cs = cosf(rot), sn = sinf(rot);
+        for (int j = 0; j < augment.strokes.size(); j++) {
+            for (int k = 0; k < augment.strokes[j].size(); k++) {
+                // rotate
+                float x = augment.strokes[j][k].x, y = augment.strokes[j][k].y;
+                augment.strokes[j][k].x = x*cs-y*sn;
+                augment.strokes[j][k].y = x*sn+y*cs;
+                // add noise
+                float noisex = gaussian(gen)*maxdim*0.02, noisey = gaussian(gen)*maxdim*0.02;
+                augment.strokes[j][k].x += noisex;
+                augment.strokes[j][k].y += noisey;
+
+                Example example;
+                example._class = _class;
+                example.raster = _raster(augment, RASTER_N, RASTER_STROKE_WIDTH);
+                m_trainingData.push_back(example);
+            }
+        }
+    }
 }
 
 AGHWRRasterSVMModel *AGHWRRasterSVMTrainer::train(const AGHWRDataset &dataset)
