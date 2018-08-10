@@ -363,6 +363,7 @@ float *AGAudioNode::inputPortVector(int paramId)
 #include "Nodes/Audio/AGAudioStateVariableFilterNode.cpp"
 #include "Nodes/Audio/AGAudioTriangleWaveNode.cpp"
 #include "Nodes/Audio/AGAudioWaveformNode.cpp"
+#include "Nodes/Audio/AGAudioReverbNode.cpp"
 
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
@@ -408,15 +409,14 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
 //        nodeTypes.push_back(new AGAudioCompositeNode::Manifest);
         
         nodeTypes.push_back(new AGAudioStateVariableFilterNode::Manifest);
-        
         nodeTypes.push_back(new AGAudioAllpassNode::Manifest);
         
         nodeTypes.push_back(new AGAudioBiquadNode::Manifest);
-        
         nodeTypes.push_back(new AGAudioPannerNode::Manifest);
         
         nodeTypes.push_back(new AGAudioMatrixMixerNode::Manifest);
-        
+        nodeTypes.push_back(new AGAudioReverbNode::Manifest);
+
         for(const AGNodeManifest *const &mf : nodeTypes)
             mf->initialize();
     }

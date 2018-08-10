@@ -467,6 +467,8 @@
 		09DC3D4C1FBD363A008B960F /* Auraglyph.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Auraglyph.entitlements; sourceTree = "<group>"; };
 		09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		09DC3D531FBD393C008B960F /* LaunchPortrait.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LaunchPortrait.png; sourceTree = "<group>"; };
+		09E5211F211513D200E515FD /* nh_hall.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nh_hall.hpp; sourceTree = "<group>"; };
+		09E52121211513E400E515FD /* AGAudioReverbNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioReverbNode.cpp; sourceTree = "<group>"; };
 		09E5EC7A18A3484F00B21D97 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mutex.cpp; sourceTree = "<group>"; };
 		09E5EC7B18A3484F00B21D97 /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = "<group>"; };
 		09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SPFilter.cpp; sourceTree = "<group>"; };
@@ -621,6 +623,7 @@
 				09230FCF1F3FEC5700DF06B5 /* AGAudioStateVariableFilterNode.cpp */,
 				09230FD01F3FEC5700DF06B5 /* AGAudioTriangleWaveNode.cpp */,
 				09230FD11F3FEC5700DF06B5 /* AGAudioWaveformNode.cpp */,
+				09E52121211513E400E515FD /* AGAudioReverbNode.cpp */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -777,6 +780,7 @@
 		095D12C217ACA36C0048A012 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				09E5211E211513D200E515FD /* NHHall */,
 				09B019F3208597CA0071C8EC /* WebKit.framework */,
 				498438661F1EF43600FB2914 /* CoreMIDI.framework */,
 				498438591F1EF40B00FB2914 /* PGMidi */,
@@ -1001,6 +1005,15 @@
 				49942E561F30515A00914E75 /* MIDI */,
 			);
 			path = Nodes;
+			sourceTree = "<group>";
+		};
+		09E5211E211513D200E515FD /* NHHall */ = {
+			isa = PBXGroup;
+			children = (
+				09E5211F211513D200E515FD /* nh_hall.hpp */,
+			);
+			name = NHHall;
+			path = libs/NHHall;
 			sourceTree = "<group>";
 		};
 		09E5EC8318A5A84C00B21D97 /* stk */ = {
@@ -1474,6 +1487,7 @@
 				HEADER_SEARCH_PATHS = (
 					"\"$(PROJECT_DIR)/libs/LipiTk/include\"",
 					"\"$(PROJECT_DIR)/Auraglyph\"",
+					"$(PROJECT_DIR)/libs",
 				);
 				INFOPLIST_FILE = "Auraglyph/Auraglyph-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -1510,6 +1524,7 @@
 				HEADER_SEARCH_PATHS = (
 					"\"$(PROJECT_DIR)/libs/LipiTk/include\"",
 					"\"$(PROJECT_DIR)/Auraglyph\"",
+					"$(PROJECT_DIR)/libs",
 				);
 				INFOPLIST_FILE = "Auraglyph/Auraglyph-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
