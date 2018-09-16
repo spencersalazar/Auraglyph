@@ -38,7 +38,7 @@ public:
     
     int addClass(const std::string &name);
     std::string getClassName(int _class);
-    int numClasses() const { return m_classes.size(); }
+    int numClasses() const { return (int) m_classes.size(); }
     
     void addExample(int _class, const MultiStroke &strokes);
     const std::vector<MultiStroke> &examplesForClass(int _class) const;

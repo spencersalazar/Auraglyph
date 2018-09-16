@@ -10,6 +10,7 @@
 
 #include "AGLipiTkHandwritingRecognizer.h"
 #include "AGRasterSVMHandwritingRecognizer.h"
+#include "AGDTWHandwritingRecognizer.h"
 #include "AGFileManager.h"
 #include "spstring.h"
 
@@ -43,7 +44,7 @@ AGHandwritingRecognizer &AGHandwritingRecognizer::shapeRecognizer()
 
 AGHandwritingRecognizer &AGHandwritingRecognizer::numeralRecognizer()
 {
-    static AGRasterSVMHandwritingRecognizer s_numeralRecognizer;
+    static AGDTWHandwritingRecognizer s_numeralRecognizer;
     return s_numeralRecognizer;
 }
 

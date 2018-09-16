@@ -120,6 +120,11 @@
 		09DC3D541FBD393C008B960F /* LaunchPortrait.png in Resources */ = {isa = PBXBuildFile; fileRef = 09DC3D531FBD393C008B960F /* LaunchPortrait.png */; };
 		09E51DFC20F1889900E515FD /* AGLipiTkHandwritingRecognizer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09E51DFA20F1889900E515FD /* AGLipiTkHandwritingRecognizer.mm */; };
 		09E51E0020F1924A00E515FD /* AGRasterSVMHandwritingRecognizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E51DFE20F1924A00E515FD /* AGRasterSVMHandwritingRecognizer.cpp */; };
+		09E51E4020F884F900E515FD /* AGDTWHandwritingRecognizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E51E3E20F884F900E515FD /* AGDTWHandwritingRecognizer.cpp */; };
+		09E52134211D311A00E515FD /* pkmDTW.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E52127211D311A00E515FD /* pkmDTW.cpp */; };
+		09E52138211D311A00E515FD /* pkmMatrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5212F211D311A00E515FD /* pkmMatrix.cpp */; };
+		09E52139211D311A00E515FD /* pkmMedianFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E52131211D311A00E515FD /* pkmMedianFilter.cpp */; };
+		09E5213B211D31E800E515FD /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09E5213A211D31E700E515FD /* Accelerate.framework */; };
 		09E5864920DF09B300860DEC /* svm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5864720DF09B300860DEC /* svm.cpp */; };
 		09E5864C20DF09D800860DEC /* AGHWRRasterSVM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5864A20DF09D800860DEC /* AGHWRRasterSVM.cpp */; };
 		09E5864E20DF222400860DEC /* datasets in Resources */ = {isa = PBXBuildFile; fileRef = 09E5864D20DF222300860DEC /* datasets */; };
@@ -480,6 +485,15 @@
 		09E51DFB20F1889900E515FD /* AGLipiTkHandwritingRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGLipiTkHandwritingRecognizer.h; sourceTree = "<group>"; };
 		09E51DFE20F1924A00E515FD /* AGRasterSVMHandwritingRecognizer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGRasterSVMHandwritingRecognizer.cpp; sourceTree = "<group>"; };
 		09E51DFF20F1924A00E515FD /* AGRasterSVMHandwritingRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGRasterSVMHandwritingRecognizer.h; sourceTree = "<group>"; };
+		09E51E3E20F884F900E515FD /* AGDTWHandwritingRecognizer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGDTWHandwritingRecognizer.cpp; sourceTree = "<group>"; };
+		09E51E3F20F884F900E515FD /* AGDTWHandwritingRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGDTWHandwritingRecognizer.h; sourceTree = "<group>"; };
+		09E52127211D311A00E515FD /* pkmDTW.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pkmDTW.cpp; sourceTree = "<group>"; };
+		09E52128211D311A00E515FD /* pkmDTW.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pkmDTW.h; sourceTree = "<group>"; };
+		09E5212F211D311A00E515FD /* pkmMatrix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pkmMatrix.cpp; sourceTree = "<group>"; };
+		09E52130211D311A00E515FD /* pkmMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pkmMatrix.h; sourceTree = "<group>"; };
+		09E52131211D311A00E515FD /* pkmMedianFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pkmMedianFilter.cpp; sourceTree = "<group>"; };
+		09E52132211D311A00E515FD /* pkmMedianFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pkmMedianFilter.h; sourceTree = "<group>"; };
+		09E5213A211D31E700E515FD /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		09E5864720DF09B300860DEC /* svm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = svm.cpp; sourceTree = "<group>"; };
 		09E5864820DF09B300860DEC /* svm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = svm.h; sourceTree = "<group>"; };
 		09E5864A20DF09D800860DEC /* AGHWRRasterSVM.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGHWRRasterSVM.cpp; sourceTree = "<group>"; };
@@ -557,6 +571,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				09E5213B211D31E800E515FD /* Accelerate.framework in Frameworks */,
 				09B019F4208597CA0071C8EC /* WebKit.framework in Frameworks */,
 				498438671F1EF43600FB2914 /* CoreMIDI.framework in Frameworks */,
 				09B962521DD872C0001DCFB1 /* CoreMotion.framework in Frameworks */,
@@ -795,6 +810,8 @@
 		095D12C217ACA36C0048A012 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				09E5213A211D31E700E515FD /* Accelerate.framework */,
+				09E52126211D311A00E515FD /* pkMatrix */,
 				09E5864620DF096A00860DEC /* libsvm */,
 				09B019F3208597CA0071C8EC /* WebKit.framework */,
 				498438661F1EF43600FB2914 /* CoreMIDI.framework */,
@@ -1025,6 +1042,20 @@
 			path = Nodes;
 			sourceTree = "<group>";
 		};
+		09E52126211D311A00E515FD /* pkMatrix */ = {
+			isa = PBXGroup;
+			children = (
+				09E52127211D311A00E515FD /* pkmDTW.cpp */,
+				09E52128211D311A00E515FD /* pkmDTW.h */,
+				09E5212F211D311A00E515FD /* pkmMatrix.cpp */,
+				09E52130211D311A00E515FD /* pkmMatrix.h */,
+				09E52131211D311A00E515FD /* pkmMedianFilter.cpp */,
+				09E52132211D311A00E515FD /* pkmMedianFilter.h */,
+			);
+			name = pkMatrix;
+			path = libs/pkMatrix;
+			sourceTree = "<group>";
+		};
 		09E5864420DF094800860DEC /* HWR */ = {
 			isa = PBXGroup;
 			children = (
@@ -1034,6 +1065,8 @@
 				09E51DFA20F1889900E515FD /* AGLipiTkHandwritingRecognizer.mm */,
 				09E51DFF20F1924A00E515FD /* AGRasterSVMHandwritingRecognizer.h */,
 				09E51DFE20F1924A00E515FD /* AGRasterSVMHandwritingRecognizer.cpp */,
+				09E51E3F20F884F900E515FD /* AGDTWHandwritingRecognizer.h */,
+				09E51E3E20F884F900E515FD /* AGDTWHandwritingRecognizer.cpp */,
 				09E5865020DF227200860DEC /* AGHWRDataset.h */,
 				09E5864F20DF227200860DEC /* AGHWRDataset.cpp */,
 				09E5864B20DF09D800860DEC /* AGHWRRasterSVM.h */,
@@ -1304,6 +1337,7 @@
 				498438641F1EF40B00FB2914 /* PGMidiFind.mm in Sources */,
 				095D12D417ACA36C0048A012 /* main.m in Sources */,
 				0933956E1A08799A009E4802 /* AGFormulaNode.mm in Sources */,
+				09E52134211D311A00E515FD /* pkmDTW.cpp in Sources */,
 				0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */,
 				09030CF11EFEFEFB00D4A4F2 /* AGMenu.cpp in Sources */,
 				095786191F031ED800286358 /* AGDashboard.cpp in Sources */,
@@ -1311,6 +1345,7 @@
 				09F29DAF1CCA086200502C01 /* AGSlider.cpp in Sources */,
 				095D12D817ACA36C0048A012 /* AGAppDelegate.mm in Sources */,
 				095D12E517ACA36C0048A012 /* AGViewController.mm in Sources */,
+				09E51E4020F884F900E515FD /* AGDTWHandwritingRecognizer.cpp in Sources */,
 				09E5EC8218A46F7300B21D97 /* AGControl.mm in Sources */,
 				09230FFA1F41868A00DF06B5 /* AGArrayNode.mm in Sources */,
 				09891316189F70D200AB98AD /* AGTouchHandler.mm in Sources */,
@@ -1333,6 +1368,7 @@
 				09817F3919F87CC7000E9FB3 /* GeoGenerator.cpp in Sources */,
 				0991BA841D8654C70080175C /* FileRead.cpp in Sources */,
 				0991BA7A1D839BB10080175C /* AGCompressorNode.cpp in Sources */,
+				09E52139211D311A00E515FD /* pkmMedianFilter.cpp in Sources */,
 				09E5EC8718A5A88100B21D97 /* ADSR.cpp in Sources */,
 				09230FFD1F41868A00DF06B5 /* AGControlSequencerNode.cpp in Sources */,
 				09D9C9D01C98F13A005514A4 /* spRandom.cpp in Sources */,
@@ -1384,6 +1420,7 @@
 				09230FB31F3D8C9500DF06B5 /* AGAboutBox.cpp in Sources */,
 				0991BA851D8654C70080175C /* FileWvIn.cpp in Sources */,
 				09E5865120DF227200860DEC /* AGHWRDataset.cpp in Sources */,
+				09E52138211D311A00E515FD /* pkmMatrix.cpp in Sources */,
 				09030CEB1EFEF83D00D4A4F2 /* Signal.cpp in Sources */,
 				0934B67B1E223B47009259E2 /* AGFileManager.mm in Sources */,
 				498438621F1EF40B00FB2914 /* PGMidi.mm in Sources */,
