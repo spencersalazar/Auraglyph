@@ -62,6 +62,32 @@ AGHWRDataset AGHWRDataset::loadNumerals()
     return dataset;
 }
 
+AGHWRDataset AGHWRDataset::loadShapes()
+{
+    AGFileManager &fileManager = AGFileManager::instance();
+    
+    std::string resourcesDir = fileManager.resourcesDirectory();
+    std::string datasetPath = resourcesDir + "/" + "datasets/shapes";
+    
+    AGHWRDataset dataset;
+    
+    string classNames[] = { "circle", "square" };
+    for (string _className : classNames) {
+        int _class = dataset.addClass(_className);
+        string classPath = datasetPath + "/" + _className;
+        vector<string> dir = fileManager.listDirectory(classPath);
+        for (string exampleFile : dir) {
+            if (fileManager.fileHasExtension(exampleFile, "txt")) {
+                string examplePath = classPath + "/" + exampleFile;
+                MultiStroke example = loadExampleFromFile(examplePath);
+                dataset.addExample(_class, example);
+            }
+        }
+    }
+    
+    return dataset;
+}
+
 AGHWRDataset::AGHWRDataset()
 { }
 

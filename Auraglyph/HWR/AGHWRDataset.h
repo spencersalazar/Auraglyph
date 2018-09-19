@@ -31,6 +31,8 @@ class AGHWRDataset
 public:
     
     static MultiStroke loadExampleFromFile(const std::string &filepath);
+    
+    static AGHWRDataset loadShapes();
     static AGHWRDataset loadNumerals();
 
     AGHWRDataset();
