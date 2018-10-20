@@ -85,17 +85,17 @@
 #define EPS1 0.001F
 
 //Isolated character recognizers
-#define PCA "pca"
-#define DTW "dtw"
-#define POS "pos"
-#define ZONE "zone"
-#define HOLISTIC "holistic"
-#define BCC "bcc"
-#define EigDef "eigdef"
-#define NN "nn"
-#define HMM "hmm"
-#define ACTIVEDTW "activedtw"
-#define NEURALNET	"neuralnet"
+//#define PCA "pca"
+//#define DTW "dtw"
+//#define POS "pos"
+//#define ZONE "zone"
+//#define HOLISTIC "holistic"
+//#define BCC "bcc"
+//#define EigDef "eigdef"
+//#define NN "nn"
+//#define HMM "hmm"
+//#define ACTIVEDTW "activedtw"
+//#define NEURALNET    "neuralnet"
 
 //Feature Extractors
 #define POINT_FLOAT "pointfloat"
@@ -646,7 +646,7 @@
 /**
 * @brief Defines the euclidean type of distance to be calculated
 */
-#define EUCLIDEAN_DISTANCE 		"eu"
+//#define EUCLIDEAN_DISTANCE         "eu"
 
 /**
 * @brief Defines the delimiter for the feature extractor

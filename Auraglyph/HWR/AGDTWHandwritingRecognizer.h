@@ -10,6 +10,7 @@
 
 #include "AGHandwritingRecognizer.h"
 #include "pkmDTW.h"
+#include "GRT.h"
 
 class AGDTWHandwritingRecognizer : public AGHandwritingRecognizer
 {
@@ -25,5 +26,8 @@ public:
 private:
     std::vector<int> m_exampleToClass;
     pkmDTW m_dtw;
+    
+    std::vector<int> m_exampleToShape;
+    GRT::DTW m_dtwShapes;
 };
 

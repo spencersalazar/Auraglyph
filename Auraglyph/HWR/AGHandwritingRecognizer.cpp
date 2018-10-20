@@ -35,17 +35,23 @@ static std::map<AGHandwritingRecognizerFigure, std::string> s_figureToName = {
     {AG_FIGURE_SQUARE, "square"},
 };
 
+static AGLipiTkHandwritingRecognizer *s_shapeRecognizer = nullptr;
+static AGDTWHandwritingRecognizer *s_dtwRecognizer = nullptr;
+
 
 AGHandwritingRecognizer &AGHandwritingRecognizer::shapeRecognizer()
 {
-    static AGLipiTkHandwritingRecognizer s_shapeRecognizer;
-    return s_shapeRecognizer;
+    if (s_dtwRecognizer == nullptr)
+        s_dtwRecognizer = new AGDTWHandwritingRecognizer;
+    return *s_dtwRecognizer;
 }
 
 AGHandwritingRecognizer &AGHandwritingRecognizer::numeralRecognizer()
 {
-    static AGDTWHandwritingRecognizer s_numeralRecognizer;
-    return s_numeralRecognizer;
+    if (s_dtwRecognizer == nullptr)
+        s_dtwRecognizer = new AGDTWHandwritingRecognizer;
+    
+    return *s_dtwRecognizer;
 }
 
 void AGHandwritingRecognizer::_saveFigure(const string &type, AGHandwritingRecognizerFigure figure, const LTKTrace &trace)

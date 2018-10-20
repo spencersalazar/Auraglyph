@@ -22,6 +22,22 @@ static Mat traceToMat(const LTKTrace &trace)
     return mat;
 }
 
+
+static GRT::MatrixFloat traceToMatrixFloat(const LTKTrace &trace)
+{
+    GRT::MatrixFloat mf;
+    
+    for (int i = 0; i < trace.getNumberOfPoints(); i++) {
+        floatVector pt;
+        trace.getPointAt(i, pt);
+        GRT::VectorFloat vf(2);
+        vf[0] = pt[0]; vf[1] = pt[1];
+        mf.push_back(vf);
+    }
+    
+    return mf;
+}
+
 static Mat multistrokeToMat(const MultiStroke &multistroke, int strokeNum = 0)
 {
     Mat mat;
@@ -32,6 +48,20 @@ static Mat multistrokeToMat(const MultiStroke &multistroke, int strokeNum = 0)
     
     return mat;
 }
+
+static GRT::MatrixFloat multistrokeToMatrixFloat(const MultiStroke &multistroke, int strokeNum = 0)
+{
+    GRT::MatrixFloat mf;
+    
+    for (auto pt : multistroke.strokes[strokeNum]) {
+        GRT::VectorFloat vf(2);
+        vf[0] = pt.x; vf[1] = pt.y;
+        mf.push_back(vf);
+    }
+    
+    return mf;
+}
+
 
 static AGHandwritingRecognizerFigure g_figureForNumeralShape[] =
 {
@@ -48,6 +78,13 @@ static AGHandwritingRecognizerFigure g_figureForNumeralShape[] =
     AG_FIGURE_NONE,
 };
 
+static AGHandwritingRecognizerFigure g_figureForShape[] =
+{
+    AG_FIGURE_CIRCLE,
+    AG_FIGURE_SQUARE,
+    AG_FIGURE_NONE,
+};
+
 AGDTWHandwritingRecognizer::AGDTWHandwritingRecognizer()
 {
     AGHWRDataset dataset = AGHWRDataset::loadNumerals();
@@ -61,6 +98,21 @@ AGDTWHandwritingRecognizer::AGDTWHandwritingRecognizer()
             m_exampleToClass.push_back(cls);
         }
     }
+    
+    AGHWRDataset shapesDataset = AGHWRDataset::loadShapes();
+    GRT::TimeSeriesClassificationData trainingData;
+    trainingData.setNumDimensions(2);
+    
+    for (int cls = 0; cls < shapesDataset.numClasses(); cls++) {
+        auto examples = dataset.examplesForClass(cls);
+        for (auto example : examples) {
+            // only consider first stroke
+            GRT::MatrixFloat exMat = multistrokeToMatrixFloat(example, 0);
+            trainingData.addSample(cls, exMat);
+        }
+    }
+
+    m_dtwShapes.train_(trainingData);
 }
 
 AGDTWHandwritingRecognizer::~AGDTWHandwritingRecognizer()
@@ -79,6 +131,17 @@ AGHandwritingRecognizerFigure AGDTWHandwritingRecognizer::recognizeNumeral(const
 
 AGHandwritingRecognizerFigure AGDTWHandwritingRecognizer::recognizeShape(const LTKTrace &trace)
 {
+    GRT::MatrixFloat mat = traceToMatrixFloat(trace);
+    bool success = m_dtwShapes.predict_(mat);
+    
+    if (success) {
+        int cls = m_dtwShapes.getPredictedClassLabel();
+        double maximumLikelihood = m_dtwShapes.getMaximumLikelihood();
+        
+        if (maximumLikelihood > 0.5)
+            return g_figureForShape[cls];
+    }
+
     return AG_FIGURE_NONE;
 }
 
