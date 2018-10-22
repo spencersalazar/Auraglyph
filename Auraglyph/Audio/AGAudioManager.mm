@@ -60,6 +60,7 @@ private:
     
     Mutex _sessionRecorderMutex;
     AGAudioRecorder *_sessionRecorder;
+    AGInterAppAudioHelper *_iaaHelper;
 }
 
 - (void)renderAudio:(Float32 *)buffer numFrames:(UInt32)numFrames;
@@ -99,6 +100,10 @@ static AGAudioManager *g_audioManager;
         
         MoAudio::init(AGAudioNode::sampleRate(), AGAudioNode::bufferSize(), 2);
         MoAudio::start(audio_cb, (__bridge void *) self);
+        
+        _iaaHelper = [AGInterAppAudioHelper new];
+        _iaaHelper.delegate = self;
+        [_iaaHelper setup];
     }
     
     return self;
@@ -245,6 +250,13 @@ static AGAudioManager *g_audioManager;
     _sessionRecorderMutex.unlock();
 }
 
+#pragma mark AGInterAppAudioHelperDelegate protocol
+
+- (void)interAppAudioHelperDidConnectInterAppAudio:(AGInterAppAudioHelper *)helper
+{
+    if (helper.isInterAppAudio)
+        MoAudio::start(audio_cb, (__bridge void *) self);
+}
 
 @end
 

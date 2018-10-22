@@ -28,7 +28,9 @@ public:
 
 #ifdef __OBJC__
 
-@interface AGAudioManager : NSObject
+#import "AGInterAppAudioHelper.h"
+
+@interface AGAudioManager : NSObject<AGInterAppAudioHelperDelegate>
 
 @property (nonatomic) AGAudioOutputDestination *masterOut;
 
@@ -48,13 +50,13 @@ public:
 
 @end
 
-#else //
+#else // not __OBJC__
 
 typedef void AGAudioManager;
 
 #endif // __OBJC__
 
-// proxy class for C++-only code
+/** Proxy class for C++-only code */
 class AGAudioManager_
 {
 public:

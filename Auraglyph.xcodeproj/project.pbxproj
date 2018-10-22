@@ -72,7 +72,6 @@
 		0987409C17B98D7C0098511A /* AGNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0987409A17B98D7C0098511A /* AGNode.mm */; };
 		098740A017BA2AB90098511A /* mo_audio.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0987409E17BA2AB90098511A /* mo_audio.mm */; };
 		098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740A217BA2EA70098511A /* AGAudioManager.mm */; };
-		098740A617BA317E0098511A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 098740A417BA317E0098511A /* AudioToolbox.framework */; };
 		098740AA17BB99DE0098511A /* TexFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740A817BB99DE0098511A /* TexFont.mm */; };
 		098740AD17BC377E0098511A /* AGAudioNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740AB17BC377E0098511A /* AGAudioNode.mm */; };
 		098740B017BC527E0098511A /* ES2Render.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740AE17BC527E0098511A /* ES2Render.mm */; };
@@ -117,6 +116,8 @@
 		09D9C9D01C98F13A005514A4 /* spRandom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09D9C9CE1C98F13A005514A4 /* spRandom.cpp */; };
 		09DC3D521FBD3729008B960F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */; };
 		09DC3D541FBD393C008B960F /* LaunchPortrait.png in Resources */ = {isa = PBXBuildFile; fileRef = 09DC3D531FBD393C008B960F /* LaunchPortrait.png */; };
+		09DF259F217BE0E9005B47C9 /* AGInterAppAudioHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09DF259E217BE0E9005B47C9 /* AGInterAppAudioHelper.mm */; };
+		09DF25A1217BFFE5005B47C9 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09DF25A0217BFFE5005B47C9 /* AudioToolbox.framework */; };
 		09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7A18A3484F00B21D97 /* Mutex.cpp */; };
 		09E5EC7F18A36A9D00B21D97 /* SPFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */; };
 		09E5EC8218A46F7300B21D97 /* AGControl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC8018A46F7300B21D97 /* AGControl.mm */; };
@@ -401,7 +402,6 @@
 		0987409F17BA2AB90098511A /* mo_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mo_def.h; sourceTree = "<group>"; };
 		098740A117BA2EA70098511A /* AGAudioManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAudioManager.h; sourceTree = "<group>"; };
 		098740A217BA2EA70098511A /* AGAudioManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGAudioManager.mm; sourceTree = "<group>"; };
-		098740A417BA317E0098511A /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		098740A817BB99DE0098511A /* TexFont.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TexFont.mm; sourceTree = "<group>"; };
 		098740A917BB99DE0098511A /* TexFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TexFont.h; sourceTree = "<group>"; };
 		098740AB17BC377E0098511A /* AGAudioNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = AGAudioNode.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -467,6 +467,9 @@
 		09DC3D4C1FBD363A008B960F /* Auraglyph.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Auraglyph.entitlements; sourceTree = "<group>"; };
 		09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		09DC3D531FBD393C008B960F /* LaunchPortrait.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LaunchPortrait.png; sourceTree = "<group>"; };
+		09DF259D217BE0E9005B47C9 /* AGInterAppAudioHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGInterAppAudioHelper.h; sourceTree = "<group>"; };
+		09DF259E217BE0E9005B47C9 /* AGInterAppAudioHelper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AGInterAppAudioHelper.mm; sourceTree = "<group>"; };
+		09DF25A0217BFFE5005B47C9 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		09E5EC7A18A3484F00B21D97 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mutex.cpp; sourceTree = "<group>"; };
 		09E5EC7B18A3484F00B21D97 /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = "<group>"; };
 		09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SPFilter.cpp; sourceTree = "<group>"; };
@@ -546,10 +549,10 @@
 				0944E8BD1DCB321B00EB8087 /* CoreData.framework in Frameworks */,
 				098740BD17BCD9820098511A /* CoreText.framework in Frameworks */,
 				09F29D7A1CC73D7A00502C01 /* libfeatureextractorcommon.a in Frameworks */,
-				098740A617BA317E0098511A /* AudioToolbox.framework in Frameworks */,
 				095D12C417ACA36C0048A012 /* UIKit.framework in Frameworks */,
 				095D12C617ACA36C0048A012 /* Foundation.framework in Frameworks */,
 				095D12C817ACA36C0048A012 /* CoreGraphics.framework in Frameworks */,
+				09DF25A1217BFFE5005B47C9 /* AudioToolbox.framework in Frameworks */,
 				095D12CA17ACA36C0048A012 /* GLKit.framework in Frameworks */,
 				095D12CC17ACA36C0048A012 /* OpenGLES.framework in Frameworks */,
 				095E851F17B354BE0065EF8E /* libcommon.a in Frameworks */,
@@ -664,8 +667,6 @@
 				0923100C1F46163200DF06B5 /* AGUndoManager.cpp */,
 				095E854017B5E1D30065EF8E /* AGHandwritingRecognizer.h */,
 				095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */,
-				098740A117BA2EA70098511A /* AGAudioManager.h */,
-				098740A217BA2EA70098511A /* AGAudioManager.mm */,
 				09F700B51D6FA79B00294BDD /* AGAudioRenderer.h */,
 				09B674461D6DA2B200F84E09 /* AGAudioCapturer.h */,
 				09F700B41D6FA75900294BDD /* AGAudioOutputDestination.h */,
@@ -777,6 +778,7 @@
 		095D12C217ACA36C0048A012 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				09DF25A0217BFFE5005B47C9 /* AudioToolbox.framework */,
 				09B019F3208597CA0071C8EC /* WebKit.framework */,
 				498438661F1EF43600FB2914 /* CoreMIDI.framework */,
 				498438591F1EF40B00FB2914 /* PGMidi */,
@@ -788,7 +790,6 @@
 				0944E8BC1DCB321B00EB8087 /* CoreData.framework */,
 				0944E8AF1DCB31EA00EB8087 /* GoogleAnalytics */,
 				098740BC17BCD9810098511A /* CoreText.framework */,
-				098740A417BA317E0098511A /* AudioToolbox.framework */,
 				095E84EA17B354BE0065EF8E /* LipiTk */,
 				095D12C317ACA36C0048A012 /* UIKit.framework */,
 				095D12C517ACA36C0048A012 /* Foundation.framework */,
@@ -805,6 +806,7 @@
 				092F3797208936F2002A2754 /* Main */,
 				0939D3552068D4C500EB3C1B /* Help */,
 				09030CEC1EFEFDDE00D4A4F2 /* UI */,
+				09DF259B217BE0C1005B47C9 /* Audio */,
 				09B674411D6D9D6500F84E09 /* Nodes */,
 				0989130F189F6D3A00AB98AD /* Images */,
 				095D12CE17ACA36C0048A012 /* Supporting Files */,
@@ -1001,6 +1003,17 @@
 				49942E561F30515A00914E75 /* MIDI */,
 			);
 			path = Nodes;
+			sourceTree = "<group>";
+		};
+		09DF259B217BE0C1005B47C9 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				098740A117BA2EA70098511A /* AGAudioManager.h */,
+				098740A217BA2EA70098511A /* AGAudioManager.mm */,
+				09DF259D217BE0E9005B47C9 /* AGInterAppAudioHelper.h */,
+				09DF259E217BE0E9005B47C9 /* AGInterAppAudioHelper.mm */,
+			);
+			path = Audio;
 			sourceTree = "<group>";
 		};
 		09E5EC8318A5A84C00B21D97 /* stk */ = {
@@ -1323,6 +1336,7 @@
 				099AF11317D12DD9000BAB7B /* AGTrainerViewController.mm in Sources */,
 				09F2D53A1D7EA33400F537C7 /* Delay.cpp in Sources */,
 				494019CD1F21CCF3000F05E8 /* AGPGMidiDelegate.mm in Sources */,
+				09DF259F217BE0E9005B47C9 /* AGInterAppAudioHelper.mm in Sources */,
 				09EE65821EFB64C700B4ED62 /* SampleCircularBuffer.cpp in Sources */,
 				0944E8C61DCB325D00EB8087 /* AGAnalytics.mm in Sources */,
 				09230FB31F3D8C9500DF06B5 /* AGAboutBox.cpp in Sources */,
@@ -1485,7 +1499,7 @@
 					"$(PROJECT_DIR)/libs/GoogleAnalytics",
 				);
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_BUNDLE_IDENTIFIER = io.auraglyph.auraglyph;
+				PRODUCT_BUNDLE_IDENTIFIER = io.auraglyph.auraglyph3;
 				PRODUCT_NAME = Auraglyph;
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -1521,7 +1535,7 @@
 					"$(PROJECT_DIR)/libs/GoogleAnalytics",
 				);
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_BUNDLE_IDENTIFIER = io.auraglyph.auraglyph;
+				PRODUCT_BUNDLE_IDENTIFIER = io.auraglyph.auraglyph3;
 				PRODUCT_NAME = Auraglyph;
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = NO;
