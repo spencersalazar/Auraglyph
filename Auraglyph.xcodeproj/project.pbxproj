@@ -67,6 +67,7 @@
 		096F42051D9CF04600600717 /* AGWaveformAudioNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096F42031D9CF04600600717 /* AGWaveformAudioNode.cpp */; };
 		0973FB9C1FC10815004CC25A /* agoutput-nobg.png in Resources */ = {isa = PBXBuildFile; fileRef = 0973FB991FC10815004CC25A /* agoutput-nobg.png */; };
 		0973FB9D1FC10815004CC25A /* auraglyph-title.png in Resources */ = {isa = PBXBuildFile; fileRef = 0973FB9B1FC10815004CC25A /* auraglyph-title.png */; };
+		097519BD218CF35300FF8D1B /* AGAudioDistortionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 097519BC218CF35300FF8D1B /* AGAudioDistortionNode.cpp */; };
 		09817F3919F87CC7000E9FB3 /* GeoGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09817F3819F87CC7000E9FB3 /* GeoGenerator.cpp */; };
 		0985E5361D8C952800B536C8 /* AGInteractiveObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0985E5341D8C952800B536C8 /* AGInteractiveObject.mm */; };
 		0987409C17B98D7C0098511A /* AGNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0987409A17B98D7C0098511A /* AGNode.mm */; };
@@ -390,6 +391,7 @@
 		096F42041D9CF04600600717 /* AGWaveformAudioNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AGWaveformAudioNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		0973FB991FC10815004CC25A /* agoutput-nobg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "agoutput-nobg.png"; sourceTree = "<group>"; };
 		0973FB9B1FC10815004CC25A /* auraglyph-title.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "auraglyph-title.png"; sourceTree = "<group>"; };
+		097519BC218CF35300FF8D1B /* AGAudioDistortionNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioDistortionNode.cpp; sourceTree = "<group>"; };
 		09817F3719F78B3F000E9FB3 /* GeoGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeoGenerator.h; sourceTree = "<group>"; };
 		09817F3819F87CC7000E9FB3 /* GeoGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeoGenerator.cpp; sourceTree = "<group>"; };
 		0985E5341D8C952800B536C8 /* AGInteractiveObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGInteractiveObject.mm; sourceTree = "<group>"; };
@@ -621,6 +623,7 @@
 				09230FCF1F3FEC5700DF06B5 /* AGAudioStateVariableFilterNode.cpp */,
 				09230FD01F3FEC5700DF06B5 /* AGAudioTriangleWaveNode.cpp */,
 				09230FD11F3FEC5700DF06B5 /* AGAudioWaveformNode.cpp */,
+				097519BC218CF35300FF8D1B /* AGAudioDistortionNode.cpp */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -1254,6 +1257,7 @@
 				095D12D417ACA36C0048A012 /* main.m in Sources */,
 				0933956E1A08799A009E4802 /* AGFormulaNode.mm in Sources */,
 				0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */,
+				097519BD218CF35300FF8D1B /* AGAudioDistortionNode.cpp in Sources */,
 				09030CF11EFEFEFB00D4A4F2 /* AGMenu.cpp in Sources */,
 				095786191F031ED800286358 /* AGDashboard.cpp in Sources */,
 				09F29DAF1CCA086200502C01 /* AGSlider.cpp in Sources */,

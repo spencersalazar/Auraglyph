@@ -363,6 +363,7 @@ float *AGAudioNode::inputPortVector(int paramId)
 #include "Nodes/Audio/AGAudioStateVariableFilterNode.cpp"
 #include "Nodes/Audio/AGAudioTriangleWaveNode.cpp"
 #include "Nodes/Audio/AGAudioWaveformNode.cpp"
+#include "Nodes/Audio/AGAudioDistortionNode.cpp"
 
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
@@ -387,17 +388,16 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioNoiseNode::Manifest);
         
         nodeTypes.push_back(new AGAudioSoundFileNode::Manifest);
-        
         nodeTypes.push_back(new AGAudioADSRNode::Manifest);
+
         nodeTypes.push_back(new AGAudioFeedbackNode::Manifest);
-
         nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RLPF>::ManifestLPF);
-        nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RHPF>::ManifestHPF);
-        
-        nodeTypes.push_back(new AGAudioFilterFQNode<Butter2BPF>::ManifestBPF);
-        nodeTypes.push_back(new AGAudioCompressorNode::Manifest);
 
-        nodeTypes.push_back(new AGAudioEnvelopeFollowerNode::Manifest);
+        nodeTypes.push_back(new AGAudioFilterFQNode<Butter2RHPF>::ManifestHPF);
+        nodeTypes.push_back(new AGAudioFilterFQNode<Butter2BPF>::ManifestBPF);
+
+        nodeTypes.push_back(new AGAudioCompressorNode::Manifest);
+        nodeTypes.push_back(new AGAudioDistortionNode::Manifest);
         
         nodeTypes.push_back(new AGAudioAddNode::Manifest);
         nodeTypes.push_back(new AGAudioMultiplyNode::Manifest);
@@ -405,16 +405,15 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         nodeTypes.push_back(new AGAudioInputNode::Manifest);
         nodeTypes.push_back(new AGAudioOutputNode::Manifest);
         
-//        nodeTypes.push_back(new AGAudioCompositeNode::Manifest);
-        
+        nodeTypes.push_back(new AGAudioEnvelopeFollowerNode::Manifest);
         nodeTypes.push_back(new AGAudioStateVariableFilterNode::Manifest);
+
+        // nodeTypes.push_back(new AGAudioCompositeNode::Manifest);
         
         nodeTypes.push_back(new AGAudioAllpassNode::Manifest);
-        
         nodeTypes.push_back(new AGAudioBiquadNode::Manifest);
         
         nodeTypes.push_back(new AGAudioPannerNode::Manifest);
-        
         nodeTypes.push_back(new AGAudioMatrixMixerNode::Manifest);
         
         for(const AGNodeManifest *const &mf : nodeTypes)
