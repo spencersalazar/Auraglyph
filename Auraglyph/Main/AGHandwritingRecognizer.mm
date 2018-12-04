@@ -250,6 +250,15 @@ static AGHandwritingRecognizer * g_instance = NULL;
         NSLog(@"-[AGHandwritingRecognizer loadData]: error copying model data: %@", error.localizedDescription);
 }
 
+- (BOOL)figureIsNumeral:(AGHandwritingRecognizerFigure)figure
+{
+    return figure >= AG_FIGURE_0 && figure <= AG_FIGURE_9;
+}
+
+- (BOOL)figureIsShape:(AGHandwritingRecognizerFigure)figure
+{
+    return figure >= AG_FIGURE_CIRCLE && figure <= AG_FIGURE_TRIANGLE_DOWN;
+}
 
 - (AGHandwritingRecognizerFigure)recognizeNumeral:(const LTKTrace &)trace
 {
@@ -349,6 +358,16 @@ static AGHandwritingRecognizer * g_instance = NULL;
     }
     
     return AG_FIGURE_NONE;
+}
+
+- (void)addSample:(const LTKTraceGroup &)tg forShape:(AGHandwritingRecognizerFigure)num
+{
+    int shapeID = 0;
+    while(g_figureForShape[shapeID] != num && g_figureForShape[shapeID] != AG_FIGURE_NONE)
+        shapeID++;
+    
+    if(g_figureForShape[shapeID] != AG_FIGURE_NONE)
+        _shapeReco->addSample(tg, shapeID);
 }
 
 

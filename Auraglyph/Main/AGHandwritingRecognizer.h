@@ -45,9 +45,13 @@ enum AGHandwritingRecognizerFigure
 
 + (id)instance;
 
+- (BOOL)figureIsNumeral:(AGHandwritingRecognizerFigure)figure;
+- (BOOL)figureIsShape:(AGHandwritingRecognizerFigure)figure;
+
 - (AGHandwritingRecognizerFigure)recognizeNumeral:(const LTKTrace &)trace;
 - (void)addSample:(const LTKTraceGroup &)tg forNumeral:(AGHandwritingRecognizerFigure)num;
 
 - (AGHandwritingRecognizerFigure)recognizeShape:(const LTKTrace &)trace;
+- (void)addSample:(const LTKTraceGroup &)tg forShape:(AGHandwritingRecognizerFigure)num;
 
 @end

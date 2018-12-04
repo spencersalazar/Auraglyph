@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="TrebuchetMS.ttf">
+            <string>TrebuchetMS</string>
+        </array>
+        <array key="TrebuchetMSBold.ttf">
+            <string>TrebuchetMS-Bold</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AGTrainerViewController">
+            <connections>
+                <outlet property="figureCollectionView" destination="4" id="56"/>
+                <outlet property="selectedFigureLabel" destination="59" id="65"/>
+                <outlet property="trainerView" destination="55" id="57"/>
+                <outlet property="view" destination="2" id="3"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="2">
+            <rect key="frame" x="0.0" y="0.0" width="768" height="1004"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceHorizontal="YES" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="4">
+                    <rect key="frame" x="0.0" y="44" width="768" height="130"/>
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="130" id="stl-PV-xMf"/>
+                    </constraints>
+                    <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="5">
+                        <size key="itemSize" width="50" height="50"/>
+                        <size key="headerReferenceSize" width="50" height="50"/>
+                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                        <inset key="sectionInset" minX="10" minY="10" maxX="20" maxY="10"/>
+                    </collectionViewFlowLayout>
+                    <cells/>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="53"/>
+                        <outlet property="delegate" destination="-1" id="54"/>
+                    </connections>
+                </collectionView>
+                <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="17">
+                    <rect key="frame" x="0.0" y="0.0" width="768" height="44"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="44" id="0EC-Qp-IZU"/>
+                    </constraints>
+                    <items>
+                        <navigationItem title="AURAGRPH Trainer" id="18">
+                            <barButtonItem key="rightBarButtonItem" title="Done" id="36">
+                                <connections>
+                                    <action selector="done" destination="-1" id="49"/>
+                                </connections>
+                            </barButtonItem>
+                        </navigationItem>
+                    </items>
+                </navigationBar>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="55" customClass="AGTrainerView">
+                    <rect key="frame" x="0.0" y="174" width="768" height="830"/>
+                    <subviews>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Selected: " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="58">
+                            <rect key="frame" x="20" y="20" width="145" height="39"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="39" id="3e8-Qv-avT"/>
+                                <constraint firstAttribute="width" constant="145" id="v7V-pU-dtc"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" name="TrebuchetMS" family="Trebuchet MS" pointSize="32"/>
+                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="A" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="59">
+                            <rect key="frame" x="173" y="20" width="54" height="39"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="54" id="GLW-qj-kxt"/>
+                                <constraint firstAttribute="height" constant="39" id="LhD-l9-GgV"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" name="TrebuchetMS" family="Trebuchet MS" pointSize="32"/>
+                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="60">
+                            <rect key="frame" x="20" y="675" width="135" height="135"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="135" id="flQ-6z-VXh"/>
+                                <constraint firstAttribute="height" constant="135" id="vEh-Wd-2U8"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" name="TrebuchetMS-Bold" family="Trebuchet MS" pointSize="28"/>
+                            <state key="normal" title="Discard">
+                                <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </state>
+                            <state key="highlighted">
+                                <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </state>
+                            <connections>
+                                <action selector="discard" destination="-1" eventType="touchUpInside" id="64"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="61">
+                            <rect key="frame" x="613" y="675" width="135" height="135"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="135" id="C1e-BO-luy"/>
+                                <constraint firstAttribute="height" constant="135" id="ClV-at-4TV"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" name="TrebuchetMS-Bold" family="Trebuchet MS" pointSize="28"/>
+                            <state key="normal" title="Accept">
+                                <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </state>
+                            <state key="highlighted">
+                                <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </state>
+                            <connections>
+                                <action selector="accept" destination="-1" eventType="touchUpInside" id="63"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstItem="59" firstAttribute="top" secondItem="55" secondAttribute="top" constant="20" id="18I-7j-TRc"/>
+                        <constraint firstItem="60" firstAttribute="leading" secondItem="55" secondAttribute="leading" constant="20" id="9Wj-7x-Rkx"/>
+                        <constraint firstItem="58" firstAttribute="leading" secondItem="55" secondAttribute="leading" constant="20" id="9zB-dr-ydS"/>
+                        <constraint firstAttribute="bottom" secondItem="61" secondAttribute="bottom" constant="20" id="Fs1-ln-yd3"/>
+                        <constraint firstItem="59" firstAttribute="leading" secondItem="58" secondAttribute="trailing" constant="8" id="HIT-Ki-20T"/>
+                        <constraint firstAttribute="trailing" secondItem="61" secondAttribute="trailing" constant="20" id="avj-Qk-4NS"/>
+                        <constraint firstItem="58" firstAttribute="top" secondItem="55" secondAttribute="top" constant="20" id="d7d-Ei-bGl"/>
+                        <constraint firstAttribute="bottom" secondItem="60" secondAttribute="bottom" constant="20" id="hoe-eJ-LAs"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="4" secondAttribute="trailing" id="061-ug-0ye"/>
+                <constraint firstItem="55" firstAttribute="leading" secondItem="2" secondAttribute="leading" id="49D-xu-4x6"/>
+                <constraint firstAttribute="bottom" secondItem="55" secondAttribute="bottom" id="H7h-Y3-CQW"/>
+                <constraint firstItem="17" firstAttribute="top" secondItem="2" secondAttribute="top" id="Qte-aK-FUC"/>
+                <constraint firstItem="17" firstAttribute="leading" secondItem="2" secondAttribute="leading" id="Z0P-dC-Zyo"/>
+                <constraint firstAttribute="trailing" secondItem="17" secondAttribute="trailing" id="ZQl-Wc-LHg"/>
+                <constraint firstItem="4" firstAttribute="leading" secondItem="2" secondAttribute="leading" id="fMg-BQ-ggq"/>
+                <constraint firstAttribute="trailing" secondItem="55" secondAttribute="trailing" id="kks-hg-TiY"/>
+                <constraint firstItem="55" firstAttribute="top" secondItem="4" secondAttribute="bottom" id="wtU-uq-HF3"/>
+                <constraint firstItem="4" firstAttribute="top" secondItem="17" secondAttribute="bottom" id="zMZ-p5-ulQ"/>
+            </constraints>
+            <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="blackOpaque"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+        </view>
+    </objects>
+</document>

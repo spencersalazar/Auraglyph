@@ -7,17 +7,47 @@
 //
 
 #import "AGTrainerViewController.h"
-
 #import "AGHandwritingRecognizer.h"
+#import "AGTrainerView.h"
 
 #include "LTKTypes.h"
 #include "LTKTrace.h"
 #include "LTKTraceGroup.h"
 
+enum AGTrainerSection
+{
+    kAGTrainerSection_Numerals = 0,
+    kAGTrainerSection_Shapes,
+};
+
+static NSString *AGTrainerShapeLabel[] = {
+    @"\u25EF",
+    @"\u25A2",
+};
+
+
+@interface AGTrainerViewCell : UICollectionViewCell
+@property (strong) IBOutlet UIButton *title;
+@end
+
+
+@interface AGTrainerHeaderView : UICollectionReusableView
+@property (strong) IBOutlet UILabel *title;
+@end
+
+
 @interface AGTrainerViewController ()
 {
     AGHandwritingRecognizerFigure _selectedFigure;
 }
+
+@property (strong) IBOutlet UICollectionView *figureCollectionView;
+@property (strong) IBOutlet AGTrainerView *trainerView;
+@property (strong) IBOutlet UILabel *selectedFigureLabel;
+
+- (IBAction)done;
+- (IBAction)accept;
+- (IBAction)discard;
 
 - (void)figureSelected:(id)sender;
 
@@ -71,8 +101,17 @@
 
 - (IBAction)accept
 {
-    [[AGHandwritingRecognizer instance] addSample:[self.trainerView currentTraceGroup]
-                                       forNumeral:_selectedFigure];
+    AGHandwritingRecognizer *hwr = [AGHandwritingRecognizer instance];
+    if([hwr figureIsNumeral:_selectedFigure])
+    {
+        [hwr addSample:[self.trainerView currentTraceGroup]
+            forNumeral:_selectedFigure];
+    }
+    else if([hwr figureIsShape:_selectedFigure])
+    {
+        [hwr addSample:[self.trainerView currentTraceGroup]
+            forShape:_selectedFigure];
+    }
 }
 
 - (IBAction)discard
@@ -84,20 +123,40 @@
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
-    return 1;
+    return 2;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return 10;
+    switch(section)
+    {
+        case kAGTrainerSection_Numerals:
+            return 10;
+        case kAGTrainerSection_Shapes:
+            return 2;
+    }
+    
+    return 0;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     AGTrainerViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"FigureCell" forIndexPath:indexPath];
-    [cell.title setTitle:[NSString stringWithFormat:@"%li", (long)indexPath.row] forState:UIControlStateNormal];
     [cell.title addTarget:self action:@selector(figureSelected:) forControlEvents:UIControlEventTouchUpInside];
-    cell.title.tag = AG_FIGURE_0 + indexPath.row;
+
+    switch(indexPath.section)
+    {
+        case kAGTrainerSection_Numerals: {
+            [cell.title setTitle:[NSString stringWithFormat:@"%li", (long)indexPath.row] forState:UIControlStateNormal];
+            cell.title.tag = AG_FIGURE_0 + indexPath.row;
+        } break;
+
+        case kAGTrainerSection_Shapes: {
+            [cell.title setTitle:AGTrainerShapeLabel[indexPath.row] forState:UIControlStateNormal];
+            cell.title.tag = AG_FIGURE_CIRCLE + indexPath.row;
+            return cell;
+        } break;
+    }
     
     return cell;
 }
@@ -105,7 +164,12 @@
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
     AGTrainerHeaderView *view = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"FigureHeader" forIndexPath:indexPath];
-    view.title.text = @"NUMERALS";
+    
+    switch(indexPath.section)
+    {
+        case kAGTrainerSection_Numerals: view.title.text = @"NUMERALS"; break;
+        case kAGTrainerSection_Shapes: view.title.text = @"SHAPES"; break;
+    }
     
     return view;
 }
@@ -131,88 +195,3 @@
 
 @end
 
-
-@interface AGTrainerView ()
-{
-    UIBezierPath *path;
-    LTKTrace trace;
-}
-
-
-@end
-
-@implementation AGTrainerView
-
-- (void)awakeFromNib
-{
-    [super awakeFromNib];
-    
-    path = [UIBezierPath new];
-}
-
-- (void)drawRect:(CGRect)rect
-{
-    [[UIColor blackColor] setStroke];
-    [path stroke];
-}
-
-- (void)clear
-{
-    [path removeAllPoints];
-    trace = LTKTrace();
-    
-    [self setNeedsDisplay];
-}
-
-- (LTKTraceGroup)currentTraceGroup
-{
-    LTKTraceGroup traceGroup;
-    traceGroup.addTrace(trace);
-    
-    return traceGroup;
-}
-
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    UITouch *touch = [touches anyObject];
-    CGPoint p = [touch locationInView:self];
-    
-    [path removeAllPoints];
-    trace = LTKTrace();
-    
-    [path moveToPoint:p];
-
-    vector<float> point;
-    point.push_back(p.x);
-    point.push_back(p.y);
-    trace.addPoint(point);
-}
-
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    UITouch *touch = [touches anyObject];
-    CGPoint p = [touch locationInView:self];
-
-    [path addLineToPoint:p];
-    
-    vector<float> point;
-    point.push_back(p.x);
-    point.push_back(p.y);
-    trace.addPoint(point);
-    
-    [self setNeedsDisplay];
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    
-}
-
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    [self touchesEnded:touches withEvent:event];
-}
-
-
-
-@end
