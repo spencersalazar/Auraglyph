@@ -21,3 +21,5 @@ DEPLOY_PATH=auragly.ph/docs/
 .PHONY=deploy
 deploy: $(DEPLOY_FILES)
 	scp $(DEPLOY_FILES) $(DEPLOY_SERVER):$(DEPLOY_PATH)
+
+install: docs
