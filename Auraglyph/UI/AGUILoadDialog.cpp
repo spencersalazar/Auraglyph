@@ -34,7 +34,7 @@ private:
     GLvertex3f m_lastTouch;
     int m_selection;
     
-    const std::vector<AGDocumentManager::DocumentListing> &m_documentList;
+    std::vector<AGDocumentManager::DocumentListing> m_documentList;
     
     std::function<void (const AGFile &file, AGDocument &doc)> m_onLoad;
     
@@ -120,7 +120,7 @@ public:
         shader.useProgram();
         shader.setClip(m_pos.xy()-m_size/2, m_size);
         
-        for(auto document : m_documentList)
+        for(const AGDocumentManager::DocumentListing &document : m_documentList)
         {
             GLKMatrix4 xform = GLKMatrix4MakeTranslation(0, yPos, 0);
             shader.setLocalMatrix(xform);
@@ -270,7 +270,12 @@ public:
 
 AGUILoadDialog *AGUILoadDialog::load(const GLvertex3f &pos)
 {
-    AGUILoadDialog *loadDialog = new AGUIConcreteLoadDialog(pos, AGDocumentManager::instance().list());
+    std::vector<AGDocumentManager::DocumentListing> list = AGDocumentManager::instance().list();
+    std::sort(list.begin(), list.end(), [](const AGDocumentManager::DocumentListing &a,
+                                           const AGDocumentManager::DocumentListing &b) {
+        return a.filename.m_creationTime > b.filename.m_creationTime;
+    });
+    AGUILoadDialog *loadDialog = new AGUIConcreteLoadDialog(pos, list);
     loadDialog->init();
     return loadDialog;
 }

@@ -22,11 +22,15 @@ public:
         EXAMPLE,
     };
     
-    static AGFile UserFile(const std::string &filename) { return { filename, USER }; }
-    static AGFile ExampleFile(const std::string &filename) { return { filename, EXAMPLE }; }
-
+    static AGFile UserFile(const std::string &filename);
+    static AGFile ExampleFile(const std::string &filename);
+    
+    AGFile();
+    AGFile(const std::string &filename, Source source, time_t creationTime = 0);
+    
     std::string m_filename;
     Source m_source;
+    time_t m_creationTime;
     
     bool operator==(const AGFile &other)
     {
@@ -47,9 +51,11 @@ public:
     bool fileHasExtension(const string &filepathOrName, const string &extension);
     bool fileExists(const AGFile &file);
     vector<string> listDirectory(const string &directory);
+    time_t creationTimeForFilepath(const string &filepath);
     
     std::string getFullPath(const AGFile& file);
-    
+    std::string getFullPath(const string& filename, AGFile::Source fileSource);
+
 private:
     AGFileManager();
     ~AGFileManager();

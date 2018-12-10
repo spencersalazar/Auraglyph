@@ -147,7 +147,7 @@ std::vector<AGDocumentManager::DocumentListing> *AGDocumentManager::_doLoad(cons
             if(fileObj[@"name"] == nil) continue;
             
             std::string filename = [(NSString *) fileObj[@"filename"] stlString];
-            AGFile file = { filename, source };
+            AGFile file = AGFile(filename, source);
             
             // verify existence on disk
             if(!AGFileManager::instance().fileExists(file))
@@ -203,7 +203,7 @@ std::vector<AGDocumentManager::DocumentListing> *AGDocumentManager::_doLoad(cons
         {
             didUpdateList = true;
             // load it
-            AGFile file = { filename, source };
+            AGFile file(filename, source);
             AGDocument doc = load(file);
             // pull out name
             auto name = doc.name();

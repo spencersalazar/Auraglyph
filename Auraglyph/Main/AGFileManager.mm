@@ -9,6 +9,25 @@
 #include "AGFileManager.h"
 #include "NSString+STLString.h"
 
+
+AGFile::AGFile()
+: m_filename(), m_source(USER), m_creationTime(0)
+{ }
+
+AGFile::AGFile(const std::string &filename, Source source, time_t creationTime)
+: m_filename(filename), m_source(source), m_creationTime(creationTime)
+{
+    if(m_creationTime == 0)
+    {
+        std::string fullpath = AGFileManager::instance().getFullPath(filename, source);
+        m_creationTime = AGFileManager::instance().creationTimeForFilepath(fullpath);
+    }
+}
+
+AGFile AGFile::UserFile(const std::string &filename) { return AGFile(filename, USER); }
+
+AGFile AGFile::ExampleFile(const std::string &filename) { return AGFile(filename, EXAMPLE); }
+
 AGFileManager &AGFileManager::instance()
 {
     static AGFileManager s_manager;
@@ -78,18 +97,35 @@ vector<string> AGFileManager::listDirectory(const string &directory)
     return pathList;
 }
 
-std::string AGFileManager::getFullPath(const AGFile& file)
+time_t AGFileManager::creationTimeForFilepath(const string &filepath)
+{
+    NSError *error = nil;
+    NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithSTLString:filepath]
+                                                                                error:&error];
+    if(error != nil)
+        return 0;
+    
+    NSDate *date = attributes[NSFileCreationDate];
+    return [date timeIntervalSince1970];
+}
+
+std::string AGFileManager::getFullPath(const string& filename, AGFile::Source fileSource)
 {
     string path;
-    switch(file.m_source)
+    switch(fileSource)
     {
         case AGFile::USER:
-            path = documentDirectory() + "/" + file.m_filename;
+            path = documentDirectory() + "/" + filename;
             break;
         case AGFile::EXAMPLE:
-            path = examplesDirectory() + "/" + file.m_filename;
+            path = examplesDirectory() + "/" + filename;
             break;
     }
     
     return path;
+}
+
+std::string AGFileManager::getFullPath(const AGFile& file)
+{
+    return getFullPath(file.m_filename, file.m_source);
 }
