@@ -25,7 +25,7 @@ private:
     float m_itemHeight;
     //clampf m_verticalScrollPos;
     momentum<float, clampf> m_verticalScrollPos;
-    clampf m_horizontalScrollPos;
+    clampf m_horizontalSlidePos;
     
     AGSqueezeAnimation m_squeeze;
     
@@ -63,8 +63,8 @@ public:
         m_deleteButtonWidth = m_size.x/5;
         
         m_verticalScrollPos.raw().clampTo(0, max(0.0f, (m_documentList.size()-3.0f)*m_itemHeight));
-        m_horizontalScrollPos.clampTo(-m_deleteButtonWidth, 0);
-        m_horizontalScrollPos = 0;
+        m_horizontalSlidePos.clampTo(-m_deleteButtonWidth, 0);
+        m_horizontalSlidePos = 0;
 
         float buttonWidth = 100;
         float buttonHeight = 25;
@@ -137,7 +137,7 @@ public:
         {
             float xPos = 0;
             if(i == m_deleteSelection)
-                xPos = m_horizontalScrollPos.value;
+                xPos = m_horizontalSlidePos.value;
             
             GLKMatrix4 xform = GLKMatrix4MakeTranslation(xPos, yPos, 0);
             shader.setLocalMatrix(xform);
@@ -281,7 +281,7 @@ public:
         float margin = m_marginFraction;
         GLvertex3f relPos = position-m_pos;
         // check if touch x is in delete button area
-        if(relPos.x < m_size.x/2*margin+m_horizontalScrollPos ||
+        if(relPos.x < m_size.x/2*margin+m_horizontalSlidePos ||
            relPos.x > m_size.x/2*margin)
             return false;
         
@@ -292,21 +292,20 @@ public:
     {
         if(m_deleteSelection != -1 && _hitTestDeleteButton(t.position))
         {
-            fprintf(stderr, "stuff\n");
+            
         }
         else
         {
-            fprintf(stderr, "not stuff\n");
-
             m_deleteSelection = -1;
-            m_horizontalScrollPos = 0;
+            m_horizontalSlidePos = 0;
             
             m_selection = _itemForPosition(t.position);
             
-            m_touchStart = t.position;
-            m_lastTouch = t.position;
             m_verticalScrollPos.on();
         }
+        
+        m_touchStart = t.position;
+        m_lastTouch = t.position;
     }
     
     virtual void touchMove(const AGTouchInfo &t) override
@@ -314,7 +313,7 @@ public:
         if(m_slidingHorizontal)
         {
             // continue to scroll sideways
-            m_horizontalScrollPos += (t.position.x - m_lastTouch.x);
+            m_horizontalSlidePos += (t.position.x - m_lastTouch.x);
         }
         else if(m_scrollingVertical)
         {
@@ -352,6 +351,11 @@ public:
             m_onLoad(file, doc);
             removeFromTopLevel();
         }
+        
+        if(fabsf(m_horizontalSlidePos) > m_deleteButtonWidth/2)
+            m_horizontalSlidePos = -m_deleteButtonWidth;
+        else
+            m_horizontalSlidePos = 0;
         
         m_verticalScrollPos.off();
         m_scrollingVertical = false;
