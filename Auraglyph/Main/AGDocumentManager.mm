@@ -86,6 +86,12 @@ AGDocument AGDocumentManager::load(const AGFile &file)
     return doc;
 }
 
+void AGDocumentManager::remove(const AGFile &file)
+{
+    std::string filepath = AGFileManager::instance().getFullPath(file);
+    AGFileManager::instance().removeFile(filepath);
+}
+
 const std::vector<AGDocumentManager::DocumentListing> &AGDocumentManager::list()
 {
     _loadList(true);

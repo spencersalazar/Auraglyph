@@ -46,9 +46,6 @@ private:
     
     std::vector<AGDocumentManager::DocumentListing> m_documentList;
     
-    std::function<void (const AGFile &file, AGDocument &doc)> m_onLoad;
-    std::function<void (const AGFile &file)> m_onUtility;
-
 public:
     AGUIConcreteLoadDialog(const GLvertex3f &pos, const std::vector<AGDocumentManager::DocumentListing> &list) :
     m_documentList(list)
@@ -132,10 +129,10 @@ public:
         }, 4);
     }
     
-    void _renderUtilityButton(AGClipShader &shader)
+    void _renderUtilityButton(AGClipShader &shader, int itemNum)
     {
         float xPos = m_horizontalSlidePos.value;
-        float yPos = m_itemStart + m_verticalScrollPos;
+        float yPos = m_itemStart + m_verticalScrollPos - m_itemHeight*itemNum;
         float deleteButtonLeftMargin = m_utilityButtonWidth*0.1;
         
         // translate to right edge of button position
@@ -230,7 +227,7 @@ public:
             
             // draw delete button (if it exists)
             if(i == m_utilitySelection && fabsf(m_horizontalSlidePos/m_utilityButtonWidth) > 0.01)
-                _renderUtilityButton(shader);
+                _renderUtilityButton(shader, i);
             
             // draw separating line between rows
             if(i != len-1 || len == 1)
@@ -339,6 +336,7 @@ public:
         m_scrollingVertical = false;
         m_slidingHorizontal = false;
         m_utilityHitOnTouchDown = false;
+        m_utilityHit = false;
         
         if(m_utilitySelection != -1 && _hitTestDeleteButton(t.position))
         {
@@ -410,7 +408,7 @@ public:
         bool forceUtilitySlideOut = false;
         if(m_utilityHitOnTouchDown && _hitTestDeleteButton(t.position))
         {
-            m_onUtility(m_documentList[m_selection].filename);
+            m_onUtility(m_documentList[m_utilitySelection].filename);
             forceUtilitySlideOut = true;
         }
         
@@ -419,6 +417,7 @@ public:
         else
             m_horizontalSlidePos = -m_utilityButtonWidth;
         
+        m_utilityHit = false;
         m_verticalScrollPos.off();
     }
     

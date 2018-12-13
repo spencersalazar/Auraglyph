@@ -1218,6 +1218,10 @@ static AGViewController * g_instance = nil;
         [self _loadDocument:doc];
     });
     
+    loadDialog->onUtility([self](const AGFile &file){
+        AGDocumentManager::instance().remove(file);
+    });
+
     _dashboard.push_back(loadDialog);
 }
 

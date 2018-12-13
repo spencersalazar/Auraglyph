@@ -30,7 +30,7 @@ public:
     /** Called when the utility function (e.g. delete) is called for the given file */
     virtual void onUtility(const std::function<void (const AGFile &file)> &onUtility) { m_onUtility = onUtility; }
     
-private:
+protected:
     std::function<void (const AGFile &file, AGDocument &doc)> m_onLoad = [](const AGFile &, AGDocument &) {};
     std::function<void (const AGFile &file)> m_onUtility = [](const AGFile &) {};
 };

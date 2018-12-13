@@ -109,6 +109,13 @@ time_t AGFileManager::creationTimeForFilepath(const string &filepath)
     return [date timeIntervalSince1970];
 }
 
+void AGFileManager::removeFile(const std::string &path)
+{
+    NSFileManager *manager = [NSFileManager defaultManager];
+    NSError *error = nil;
+    [manager removeItemAtPath:[NSString stringWithSTLString:path] error:&error];
+}
+
 std::string AGFileManager::getFullPath(const string& filename, AGFile::Source fileSource)
 {
     string path;

@@ -34,6 +34,8 @@ public:
     AGFile save(const std::vector<std::vector<GLvertex2f>> &name, const AGDocument &doc);
     void update(const AGFile &file, const AGDocument &doc);
     AGDocument load(const AGFile &file);
+    void remove(const AGFile &file);
+    
     const std::vector<DocumentListing> &list();
     const std::vector<DocumentListing> &examplesList();
 

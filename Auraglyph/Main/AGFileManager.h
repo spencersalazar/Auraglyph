@@ -55,6 +55,8 @@ public:
     
     std::string getFullPath(const AGFile& file);
     std::string getFullPath(const string& filename, AGFile::Source fileSource);
+    
+    void removeFile(const std::string &path);
 
 private:
     AGFileManager();
