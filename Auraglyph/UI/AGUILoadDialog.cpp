@@ -25,7 +25,7 @@ private:
     float m_itemHeight;
     //clampf m_verticalScrollPos;
     momentum<float, clampf> m_verticalScrollPos;
-    clampf m_horizontalSlidePos;
+    slew<float, clampf> m_horizontalSlidePos;
     
     AGSqueezeAnimation m_squeeze;
     
@@ -34,18 +34,21 @@ private:
     GLvertex3f m_touchStart;
     GLvertex3f m_lastTouch;
     int m_selection = -1;
-    int m_deleteSelection = -1;
-    
+    int m_utilitySelection = -1;
+    bool m_utilityHit = false;
+    bool m_utilityHitOnTouchDown = false;
+
     bool m_scrollingVertical = false;
     bool m_slidingHorizontal = false;
     
-    float m_deleteButtonWidth;
+    float m_utilityButtonWidth;
     float m_marginFraction = 0.9;
     
     std::vector<AGDocumentManager::DocumentListing> m_documentList;
     
     std::function<void (const AGFile &file, AGDocument &doc)> m_onLoad;
-    
+    std::function<void (const AGFile &file)> m_onUtility;
+
 public:
     AGUIConcreteLoadDialog(const GLvertex3f &pos, const std::vector<AGDocumentManager::DocumentListing> &list) :
     m_documentList(list)
@@ -53,18 +56,23 @@ public:
         setPosition(pos);
         
         m_selection = -1;
-        m_deleteSelection = -1;
+        m_utilitySelection = -1;
         
         m_onLoad = [](const AGFile &, AGDocument &){};
+        m_onUtility = [](const AGFile &){};
+        
         m_size = GLvertex2f(500, 2*500/AGStyle::aspect16_9);
         m_itemStart = m_size.y/3.0f;
         m_itemHeight = m_size.y/3.0f;
         
-        m_deleteButtonWidth = m_size.x/5;
+        m_utilityButtonWidth = m_size.x/5;
         
         m_verticalScrollPos.raw().clampTo(0, max(0.0f, (m_documentList.size()-3.0f)*m_itemHeight));
-        m_horizontalSlidePos.clampTo(-m_deleteButtonWidth, 0);
-        m_horizontalSlidePos = 0;
+        
+        m_horizontalSlidePos.rate = 0.6;
+        m_horizontalSlidePos.target.clampTo(-m_utilityButtonWidth, 0);
+        m_horizontalSlidePos.value.clampTo(-m_utilityButtonWidth, 0);
+        m_horizontalSlidePos.reset(0);
 
         float buttonWidth = 100;
         float buttonHeight = 25;
@@ -95,14 +103,15 @@ public:
     {
         m_squeeze.update(t, dt);
         m_verticalScrollPos.update(t, dt);
-        
+        m_horizontalSlidePos.interp();
+
         m_renderState.projection = projectionMatrix();
         m_renderState.modelview = GLKMatrix4Multiply(fixedModelViewMatrix(), localTransform());
         
         updateChildren(t, dt);
     }
     
-    virtual void render() override
+    void _renderFrame()
     {
         // draw inner box
         AGStyle::frameBackgroundColor().set();
@@ -121,7 +130,59 @@ public:
             {  m_size.x/2,  m_size.y/2, 0 },
             { -m_size.x/2,  m_size.y/2, 0 },
         }, 4);
+    }
+    
+    void _renderUtilityButton(AGClipShader &shader)
+    {
+        float xPos = m_horizontalSlidePos.value;
+        float yPos = m_itemStart + m_verticalScrollPos;
+        float deleteButtonLeftMargin = m_utilityButtonWidth*0.1;
         
+        // translate to right edge of button position
+        GLKMatrix4 xform = GLKMatrix4MakeTranslation(m_size.x/2*m_marginFraction, yPos, 0);
+        shader.setLocalMatrix(xform);
+        
+        xform = GLKMatrix4Scale(xform, fabsf(xPos)/m_utilityButtonWidth, 1, 1);
+        
+        // draw box
+        AGStyle::foregroundColor().set();
+        GLvertex3f geo[] = {
+            { -m_utilityButtonWidth+deleteButtonLeftMargin,  m_itemHeight/2*m_marginFraction, 0 },
+            { -m_utilityButtonWidth+deleteButtonLeftMargin, -m_itemHeight/2*m_marginFraction, 0 },
+            {  0, -m_itemHeight/2*m_marginFraction, 0 },
+            {  0,  m_itemHeight/2*m_marginFraction, 0 }
+        };
+        
+        if(m_utilityHit)
+        {
+            drawLineLoop(shader, geo, 4, xform);
+        }
+        else
+        {
+            drawTriangleFan(shader, geo, 4, xform);
+        }
+        
+        // draw x
+        // radius of X figure (both x and y dimensions)
+        float xRadius = m_utilityButtonWidth/3/2;
+        if(m_utilityHit)
+            AGStyle::foregroundColor().set();
+        else
+            AGStyle::backgroundColor().set();
+        
+        float leftEdge = (-m_utilityButtonWidth+deleteButtonLeftMargin)/2;
+        drawLineStrip(shader, (GLvertex2f[]){
+            { leftEdge-xRadius,  xRadius },
+            { leftEdge+xRadius, -xRadius },
+        }, 2, xform);
+        drawLineStrip(shader, (GLvertex2f[]){
+            { leftEdge+xRadius,  xRadius },
+            { leftEdge-xRadius, -xRadius },
+        }, 2, xform);
+    }
+    
+    void _renderDocuments()
+    {
         GLcolor4f whiteA = AGStyle::foregroundColor().withAlpha(0.75);
         float yPos = m_itemStart + m_verticalScrollPos;
         int i = 0;
@@ -136,7 +197,7 @@ public:
         for(const AGDocumentManager::DocumentListing &document : m_documentList)
         {
             float xPos = 0;
-            if(i == m_deleteSelection)
+            if(i == m_utilitySelection)
                 xPos = m_horizontalSlidePos.value;
             
             GLKMatrix4 xform = GLKMatrix4MakeTranslation(xPos, yPos, 0);
@@ -168,35 +229,8 @@ public:
                 drawLineStrip(shader, figure.data(), figure.size(), xform);
             
             // draw delete button (if it exists)
-            if(i == m_deleteSelection)
-            {
-                // translate to right edge of button position
-                xform = GLKMatrix4MakeTranslation(m_size.x/2*margin, yPos, 0);
-                shader.setLocalMatrix(xform);
-                xform = GLKMatrix4Scale(xform, fabsf(xPos)/m_deleteButtonWidth, 1, 1);
-
-                // draw box
-                AGStyle::foregroundColor().set();
-                drawTriangleFan(shader, (GLvertex3f[]){
-                    { -m_deleteButtonWidth,  m_itemHeight/2*margin, 0 },
-                    { -m_deleteButtonWidth, -m_itemHeight/2*margin, 0 },
-                    {  0, -m_itemHeight/2*margin, 0 },
-                    {  0,  m_itemHeight/2*margin, 0 },
-                }, 4, xform);
-                
-                // draw x
-                // radius of X figure (both x and y dimensions)
-                float xRadius = m_deleteButtonWidth/3/2;
-                AGStyle::backgroundColor().set();
-                drawLineStrip(shader, (GLvertex2f[]){
-                    { -m_deleteButtonWidth/2-xRadius,  xRadius },
-                    { -m_deleteButtonWidth/2+xRadius, -xRadius },
-                }, 2, xform);
-                drawLineStrip(shader, (GLvertex2f[]){
-                    { -m_deleteButtonWidth/2+xRadius,  xRadius },
-                    { -m_deleteButtonWidth/2-xRadius, -xRadius },
-                }, 2, xform);
-            }
+            if(i == m_utilitySelection && fabsf(m_horizontalSlidePos/m_utilityButtonWidth) > 0.01)
+                _renderUtilityButton(shader);
             
             // draw separating line between rows
             if(i != len-1 || len == 1)
@@ -213,7 +247,10 @@ public:
             yPos -= m_itemHeight;
             i++;
         }
-        
+    }
+    
+    void _renderScrollbar()
+    {
         /* draw scroll bar */
         int nRows = (int) m_documentList.size();
         if(nRows > 3)
@@ -236,6 +273,15 @@ public:
                 { m_size.x/2*scroll_bar_margin, m_size.y/2*scroll_bar_margin-(scroll_bar_y+scroll_bar_height) },
             }, 2);
         }
+    }
+    
+    virtual void render() override
+    {
+        _renderFrame();
+        
+        _renderDocuments();
+        
+        _renderScrollbar();
         
         // restore color
         glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor());
@@ -270,18 +316,18 @@ public:
     
     bool _hitTestDeleteButton(const GLvertex3f &position)
     {
-        if(m_deleteSelection == -1)
+        if(m_utilitySelection == -1)
             return false;
         
         // check if in area of right item
         int item = _itemForPosition(position);
-        if (item != m_deleteSelection)
+        if (item != m_utilitySelection)
             return false;
         
         float margin = m_marginFraction;
         GLvertex3f relPos = position-m_pos;
         // check if touch x is in delete button area
-        if(relPos.x < m_size.x/2*margin+m_horizontalSlidePos ||
+        if(relPos.x < m_size.x/2*margin+m_horizontalSlidePos.value ||
            relPos.x > m_size.x/2*margin)
             return false;
         
@@ -290,14 +336,19 @@ public:
     
     virtual void touchDown(const AGTouchInfo &t) override
     {
-        if(m_deleteSelection != -1 && _hitTestDeleteButton(t.position))
+        m_scrollingVertical = false;
+        m_slidingHorizontal = false;
+        m_utilityHitOnTouchDown = false;
+        
+        if(m_utilitySelection != -1 && _hitTestDeleteButton(t.position))
         {
-            
+            m_utilityHitOnTouchDown = true;
+            m_utilityHit = true;
         }
         else
         {
-            m_deleteSelection = -1;
-            m_horizontalSlidePos = 0;
+            //m_utilitySelection = -1;
+            m_horizontalSlidePos = 0.0f;
             
             m_selection = _itemForPosition(t.position);
             
@@ -310,10 +361,14 @@ public:
     
     virtual void touchMove(const AGTouchInfo &t) override
     {
-        if(m_slidingHorizontal)
+        if(m_utilityHitOnTouchDown)
+        {
+            m_utilityHit = _hitTestDeleteButton(t.position);
+        }
+        else if(m_slidingHorizontal)
         {
             // continue to scroll sideways
-            m_horizontalSlidePos += (t.position.x - m_lastTouch.x);
+            m_horizontalSlidePos.reset(m_horizontalSlidePos+(t.position.x - m_lastTouch.x));
         }
         else if(m_scrollingVertical)
         {
@@ -330,7 +385,7 @@ public:
         {
             // start to show delete button
             m_selection = -1;
-            m_deleteSelection = _itemForPosition(m_touchStart);
+            m_utilitySelection = _itemForPosition(m_touchStart);
             m_slidingHorizontal = true;
         }
 
@@ -352,14 +407,19 @@ public:
             removeFromTopLevel();
         }
         
-        if(fabsf(m_horizontalSlidePos) > m_deleteButtonWidth/2)
-            m_horizontalSlidePos = -m_deleteButtonWidth;
-        else
+        bool forceUtilitySlideOut = false;
+        if(m_utilityHitOnTouchDown && _hitTestDeleteButton(t.position))
+        {
+            m_onUtility(m_documentList[m_selection].filename);
+            forceUtilitySlideOut = true;
+        }
+        
+        if(forceUtilitySlideOut || fabsf(m_horizontalSlidePos) < m_utilityButtonWidth/2)
             m_horizontalSlidePos = 0;
+        else
+            m_horizontalSlidePos = -m_utilityButtonWidth;
         
         m_verticalScrollPos.off();
-        m_scrollingVertical = false;
-        m_slidingHorizontal = false;
     }
     
     virtual void renderOut() override
@@ -370,11 +430,6 @@ public:
     virtual bool finishedRenderingOut() override
     {
         return m_squeeze.finishedClosing();
-    }
-    
-    virtual void onLoad(const std::function<void (const AGFile &file, AGDocument &doc)> &_onLoad) override
-    {
-        m_onLoad = _onLoad;
     }
 };
 

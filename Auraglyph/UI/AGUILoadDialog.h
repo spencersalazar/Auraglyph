@@ -25,7 +25,14 @@ public:
     
     virtual ~AGUILoadDialog() { }
     
-    virtual void onLoad(const std::function<void (const AGFile &file, AGDocument &doc)> &) = 0;
+    /** Called when the given document is selected for loading */
+    virtual void onLoad(const std::function<void (const AGFile &file, AGDocument &doc)> &onLoad) { m_onLoad = onLoad; }
+    /** Called when the utility function (e.g. delete) is called for the given file */
+    virtual void onUtility(const std::function<void (const AGFile &file)> &onUtility) { m_onUtility = onUtility; }
+    
+private:
+    std::function<void (const AGFile &file, AGDocument &doc)> m_onLoad = [](const AGFile &, AGDocument &) {};
+    std::function<void (const AGFile &file)> m_onUtility = [](const AGFile &) {};
 };
 
 

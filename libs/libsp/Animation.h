@@ -14,27 +14,32 @@
  Gradually ease data type to target value. "Getting" the value returns the
  smoothed value, while "setting" it sets the target that is eased to. You need
  to call interp() at a periodic interval, e.g. the graphics frame rate.
+ 
+ Supports a DestType (the final type of the thing you are tracking) and a
+ ContainerType, which can be any type that is convertible to the DestType
+ (e.g. clamp<DestType>).
  -----------------------------------------------------------------------------*/
-template<typename T>
+template<typename DestType, typename ContainerType=DestType>
 struct slew
 {
     slew() : value(0), target(0), rate(0) { }
     slew(float _rate) : value(0), target(0), rate(_rate) { }
-    slew(float _rate, T _start) : value(_start), target(_start), rate(_rate) { }
+    slew(float _rate, DestType _start) : value(_start), target(_start), rate(_rate) { }
     
-    inline void reset(T _val) { target = _val; value = _val; }
+    inline void reset() { value = target; }
+    inline void reset(DestType _val) { target = _val; value = _val; }
     inline void interp() { value = (target-value)*rate + value; }
     
     // cast directly to float
-    operator const T &() const { return value; }
+    operator const DestType &() const { return value; }
     
-    void operator=(const T &f) { target = f; }
-    void operator+=(const T &f) { *this = value+f; }
-    void operator-=(const T &f) { *this = value-f; }
-    void operator*=(const T &f) { *this = value*f; }
-    void operator/=(const T &f) { *this = value/f; }
+    void operator=(const DestType &f) { target = f; }
+    void operator+=(const DestType &f) { *this = value+f; }
+    void operator-=(const DestType &f) { *this = value-f; }
+    void operator*=(const DestType &f) { *this = value*f; }
+    void operator/=(const DestType &f) { *this = value/f; }
     
-    T value, target;
+    ContainerType value, target;
     float rate;
 };
 
@@ -80,9 +85,11 @@ typedef clamp<float> clampf;
 /*------------------------------------------------------------------------------
  ### momentum ###
  Apply momentum to a value after it is moved manually based on velocity of the
- manual tracking. Supports a DestType (the final type of the thing you are 
- tracking) and a ContainerType, which can be any type that is convertible to
- the DestType (e.g. clamp<DestType>).
+ manual tracking.
+ 
+ Supports a DestType (the final type of the thing you are tracking) and a
+ ContainerType, which can be any type that is convertible to the DestType
+ (e.g. clamp<DestType>).
  -----------------------------------------------------------------------------*/
 #pragma mark - momentum
 
