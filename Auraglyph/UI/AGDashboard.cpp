@@ -15,6 +15,7 @@
 #include "AGAnalytics.h"
 #include "AGUndoManager.h"
 #include "AGDocumentationViewer.h"
+#include "AGModalDialog.h"
 
 #include <math.h>
 
