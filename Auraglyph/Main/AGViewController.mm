@@ -37,6 +37,7 @@
 #import "AGFileManager.h"
 #import "AGGraph.h"
 #import "AGTutorial.h"
+#import "AGModalDialog.h"
 
 #import <list>
 #import <map>
@@ -92,8 +93,6 @@ enum InterfaceMode
     
     AGGraph *_graph;
     
-//    std::list<AGNode *> _nodes;
-//    std::map<std::string, AGNode *> _uuid2Node;
     std::list<AGFreeDraw *> _freedraws;
     std::list<AGInteractiveObject *> _dashboard;
     std::list<AGInteractiveObject *> _objects;
@@ -103,8 +102,6 @@ enum InterfaceMode
     list<AGInteractiveObject *> _touchOutsideListeners;
     list<AGTouchHandler *> _touchOutsideHandlers;
     
-//    map<AGNode *, string> _nodeUUID;
-//    map<AGConnection *, string> _conectionUUID;
     map<AGFreeDraw *, string> _freedrawUUID;
     
     AGPGMidiContext *midiManager;
@@ -309,6 +306,9 @@ static AGViewController * g_instance = nil;
     
     /* trash */
     AGUITrash::instance().setPosition([self fixedCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
+    
+    /* modal dialog */
+    AGModalDialog::setGlobalViewController(_proxy);
 }
 
 - (void)_updateFixedUIPosition
@@ -1382,6 +1382,16 @@ GLvertex3f AGViewController_::fixedCoordinateForScreenCoordinate(CGPoint p)
 CGRect AGViewController_::bounds()
 {
     return m_viewController.view.bounds;
+}
+
+void AGViewController_::addTopLevelObject(AGInteractiveObject *object)
+{
+    [m_viewController addTopLevelObject:object];
+}
+
+void AGViewController_::fadeOutAndDelete(AGInteractiveObject *object)
+{
+    [m_viewController fadeOutAndDelete:object];
 }
 
 void AGViewController_::addNodeToTopLevel(AGNode *node)

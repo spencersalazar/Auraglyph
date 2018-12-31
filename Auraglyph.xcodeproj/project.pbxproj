@@ -43,6 +43,7 @@
 		0944E8C31DCB323000EB8087 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0944E8C21DCB323000EB8087 /* libz.tbd */; };
 		0944E8C61DCB325D00EB8087 /* AGAnalytics.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0944E8C41DCB325D00EB8087 /* AGAnalytics.mm */; };
 		095786191F031ED800286358 /* AGDashboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 095786171F031ED800286358 /* AGDashboard.cpp */; };
+		0957DF4321D9AFC400D6A69C /* AGModalDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0957DF4121D9AFC400D6A69C /* AGModalDialog.cpp */; };
 		095D12C417ACA36C0048A012 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C317ACA36C0048A012 /* UIKit.framework */; };
 		095D12C617ACA36C0048A012 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C517ACA36C0048A012 /* Foundation.framework */; };
 		095D12C817ACA36C0048A012 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C717ACA36C0048A012 /* CoreGraphics.framework */; };
@@ -299,6 +300,8 @@
 		0944E8C51DCB325D00EB8087 /* AGAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAnalytics.h; sourceTree = "<group>"; };
 		095786171F031ED800286358 /* AGDashboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGDashboard.cpp; sourceTree = "<group>"; };
 		095786181F031ED800286358 /* AGDashboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGDashboard.h; sourceTree = "<group>"; };
+		0957DF4121D9AFC400D6A69C /* AGModalDialog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGModalDialog.cpp; sourceTree = "<group>"; };
+		0957DF4221D9AFC400D6A69C /* AGModalDialog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGModalDialog.h; sourceTree = "<group>"; };
 		095D12C017ACA36C0048A012 /* Auraglyph.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Auraglyph.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		095D12C317ACA36C0048A012 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		095D12C517ACA36C0048A012 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -588,6 +591,8 @@
 				093395781A0A3785009E4802 /* AGAboutBox.cpp */,
 				09030CF01EFEFEFB00D4A4F2 /* AGMenu.h */,
 				09030CEF1EFEFEFB00D4A4F2 /* AGMenu.cpp */,
+				0957DF4221D9AFC400D6A69C /* AGModalDialog.h */,
+				0957DF4121D9AFC400D6A69C /* AGModalDialog.cpp */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -1345,6 +1350,7 @@
 				0944E8C61DCB325D00EB8087 /* AGAnalytics.mm in Sources */,
 				09230FB31F3D8C9500DF06B5 /* AGAboutBox.cpp in Sources */,
 				0991BA851D8654C70080175C /* FileWvIn.cpp in Sources */,
+				0957DF4321D9AFC400D6A69C /* AGModalDialog.cpp in Sources */,
 				09030CEB1EFEF83D00D4A4F2 /* Signal.cpp in Sources */,
 				0934B67B1E223B47009259E2 /* AGFileManager.mm in Sources */,
 				498438621F1EF40B00FB2914 /* PGMidi.mm in Sources */,

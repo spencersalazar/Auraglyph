@@ -104,6 +104,9 @@ public:
     
     CGRect bounds();
     
+    void addTopLevelObject(AGInteractiveObject *object);
+    void fadeOutAndDelete(AGInteractiveObject *object);
+
     void addNodeToTopLevel(AGNode *node);
     AGGraph *graph();
     

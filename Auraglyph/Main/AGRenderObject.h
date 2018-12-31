@@ -140,6 +140,10 @@ public:
     void drawLineStrip(GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform);
     void drawLineStrip(AGGenericShader &shader, GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform);
     void drawLineStrip(GLvertex3f geo[], unsigned long size);
+    
+    void fillCenteredRect(float width, float height);
+    void strokeCenteredRect(float width, float height);
+
     void drawWaveform(float waveform[], unsigned long size, GLvertex2f from, GLvertex2f to, float gain = 1.0f, float yScale = 1.0f);
     
 protected:

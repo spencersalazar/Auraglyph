@@ -479,6 +479,26 @@ void AGRenderObject::drawLineStrip(GLvertex3f geo[], unsigned long size)
     glDrawArrays(GL_LINE_STRIP, 0, (int) size);
 }
 
+void AGRenderObject::fillCenteredRect(float width, float height)
+{
+    drawTriangleFan((GLvertex2f[]){
+        { -width/2, -height/2 },
+        {  width/2, -height/2 },
+        {  width/2,  height/2 },
+        { -width/2,  height/2 },
+    }, 4);
+}
+
+void AGRenderObject::strokeCenteredRect(float width, float height)
+{
+    drawLineLoop((GLvertex2f[]){
+        { -width/2, -height/2 },
+        {  width/2, -height/2 },
+        {  width/2,  height/2 },
+        { -width/2,  height/2 },
+    }, 4);
+}
+
 void AGRenderObject::drawWaveform(float waveform[], unsigned long size, GLvertex2f from, GLvertex2f to, float gain, float yScale)
 {
     GLvertex2f vec = (to - from);
