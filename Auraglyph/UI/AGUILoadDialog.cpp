@@ -311,7 +311,7 @@ public:
         return -1;
     }
     
-    bool _hitTestDeleteButton(const GLvertex3f &position)
+    bool _hitTestUtilityButton(const GLvertex3f &position)
     {
         if(m_utilitySelection == -1)
             return false;
@@ -338,7 +338,7 @@ public:
         m_utilityHitOnTouchDown = false;
         m_utilityHit = false;
         
-        if(m_utilitySelection != -1 && _hitTestDeleteButton(t.position))
+        if(m_utilitySelection != -1 && _hitTestUtilityButton(t.position))
         {
             m_utilityHitOnTouchDown = true;
             m_utilityHit = true;
@@ -361,7 +361,7 @@ public:
     {
         if(m_utilityHitOnTouchDown)
         {
-            m_utilityHit = _hitTestDeleteButton(t.position);
+            m_utilityHit = _hitTestUtilityButton(t.position);
         }
         else if(m_slidingHorizontal)
         {
@@ -406,7 +406,7 @@ public:
         }
         
         bool forceUtilitySlideOut = false;
-        if(m_utilityHitOnTouchDown && _hitTestDeleteButton(t.position))
+        if(m_utilityHitOnTouchDown && _hitTestUtilityButton(t.position))
         {
             m_onUtility(m_documentList[m_utilitySelection].filename);
             forceUtilitySlideOut = true;
