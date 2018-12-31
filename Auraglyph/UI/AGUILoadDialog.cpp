@@ -10,6 +10,7 @@
 #include "AGDocumentManager.h"
 #include "AGGenericShader.h"
 #include "AGStyle.h"
+#include "AGModalDialog.h"
 
 //------------------------------------------------------------------------------
 // ### AGUIConcreteLoadDialog ###
@@ -405,17 +406,24 @@ public:
             removeFromTopLevel();
         }
         
-        bool forceUtilitySlideOut = false;
         if(m_utilityHitOnTouchDown && _hitTestUtilityButton(t.position))
         {
-            m_onUtility(m_documentList[m_utilitySelection].filename);
-            forceUtilitySlideOut = true;
+            AGModalDialog::showModalDialog("Are you sure you want to delete this file?",
+                "Delete", [this](){
+                    m_onUtility(m_documentList[m_utilitySelection].filename);
+                    m_horizontalSlidePos = 0;
+                },
+                "Cancel", [this](){
+                    m_horizontalSlidePos = 0;
+                });
         }
-        
-        if(forceUtilitySlideOut || fabsf(m_horizontalSlidePos) < m_utilityButtonWidth/2)
-            m_horizontalSlidePos = 0;
         else
-            m_horizontalSlidePos = -m_utilityButtonWidth;
+        {
+            if(fabsf(m_horizontalSlidePos) < m_utilityButtonWidth/2)
+                m_horizontalSlidePos = 0;
+            else
+                m_horizontalSlidePos = -m_utilityButtonWidth;
+        }
         
         m_utilityHit = false;
         m_verticalScrollPos.off();
