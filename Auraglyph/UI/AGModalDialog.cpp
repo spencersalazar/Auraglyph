@@ -9,16 +9,75 @@
 #include "AGModalDialog.h"
 #include "AGViewController.h"
 
-const float AGMODALDIALOG_OVERLAY_ALPHA = G_RATIO-1;
+
+const float AGMODALOVERLAY_ALPHA = G_RATIO-1;
+
+
+AGModalOverlay::AGModalOverlay()
+{
+    m_alpha.forceTo(0);
+}
+
+void AGModalOverlay::setScreenSize(GLvertex2f size)
+{
+    float maxScreenDimension = std::max(size.x, size.y);
+    m_size = GLvertex2f(maxScreenDimension, maxScreenDimension);
+    // hacky extra factor
+    m_size = m_size*1.1;
+}
+
+AGInteractiveObject *AGModalOverlay::hitTest(const GLvertex3f &t)
+{
+    if(m_alpha > 0.001)
+        return AGInteractiveObject::hitTest(t);
+    else
+        return nullptr;
+}
+
+void AGModalOverlay::update(float t, float dt)
+{
+    m_alpha.update(dt);
+    
+    m_renderState.projection = projectionMatrix();
+    m_renderState.modelview = GLKMatrix4Multiply(fixedModelViewMatrix(), localTransform());
+    
+    updateChildren(t, dt);
+}
+
+void AGModalOverlay::render()
+{
+    AGStyle::frameBackgroundColor().withAlpha(m_alpha*AGMODALOVERLAY_ALPHA).set();
+    fillCenteredRect(m_size.x, m_size.y);
+    
+    renderChildren();
+}
+
+void AGModalOverlay::addModalDialog(AGModalDialog *dialog)
+{
+    if(m_modalDialogs.size() == 0)
+        m_alpha.reset(0, 1);
+    m_modalDialogs.push_back(dialog);
+    addChild(dialog);
+}
+
+void AGModalOverlay::removeModalDialog(AGModalDialog *dialog)
+{
+    m_modalDialogs.remove(dialog);
+    removeChild(dialog);
+    if(m_modalDialogs.size() == 0)
+        m_alpha.reset(1, 0);
+}
+
+
 const float AGMODALDIALOG_DIALOG_WIDTH = 375;
 const float AGMODALDIALOG_DIALOG_HEIGHT = AGMODALDIALOG_DIALOG_WIDTH/G_RATIO;
 const float AGMODALDIALOG_DIALOG_MARGIN_RATIO = 0.9;
 
-AGViewController_ *AGModalDialog::s_viewController = nullptr;
+AGModalOverlay *AGModalDialog::s_globalOverlay = nullptr;
 
-void AGModalDialog::setGlobalViewController(AGViewController_ *viewController)
+void AGModalDialog::setGlobalModalOverlay(AGModalOverlay *modalOverlay)
 {
-    s_viewController = viewController;
+    s_globalOverlay = modalOverlay;
 }
 
 void AGModalDialog::showModalDialog(const std::string &description,
@@ -28,7 +87,8 @@ void AGModalDialog::showModalDialog(const std::string &description,
                                     const std::function<void ()> &cancelAction)
 {
     AGModalDialog *dialog = new AGModalDialog(description, ok, okAction, cancel, cancelAction);
-    s_viewController->addTopLevelObject(dialog);
+    dialog->init();
+    s_globalOverlay->addModalDialog(dialog);
 }
 
 AGModalDialog::AGModalDialog(const std::string &description,
@@ -41,10 +101,6 @@ AGModalDialog::AGModalDialog(const std::string &description,
   m_cancel(cancel), m_cancelAction(cancelAction)
 {
     m_pos = GLvertex2f(0, 0);
-    float maxScreenDimension = std::max(s_viewController->bounds().size.width, s_viewController->bounds().size.height);
-    m_size = GLvertex2f(maxScreenDimension, maxScreenDimension);
-    // hack: need to make it a little bigger
-    m_size = m_size*1.1f;
     
     float frameWidth = AGMODALDIALOG_DIALOG_WIDTH;
     float frameHeight = AGMODALDIALOG_DIALOG_HEIGHT;
@@ -58,7 +114,7 @@ AGModalDialog::AGModalDialog(const std::string &description,
     okButton->init();
     okButton->setAction(^(){
         m_okAction();
-        s_viewController->fadeOutAndDelete(this);
+        s_globalOverlay->removeModalDialog(this);
     });
     addChild(okButton);
     
@@ -68,7 +124,10 @@ AGModalDialog::AGModalDialog(const std::string &description,
                                                   GLvertex2f(-frameWidth/2*marginRatio, -frameHeight/2*marginRatio),
                                                   GLvertex2f(buttonWidth, buttonHeight));
         cancelButton->init();
-        cancelButton->setAction(^(){ m_cancelAction(); });
+        cancelButton->setAction(^(){
+            m_cancelAction();
+            s_globalOverlay->removeModalDialog(this);
+        });
         addChild(cancelButton);
     }
     
@@ -104,7 +163,6 @@ bool AGModalDialog::finishedRenderingOut()
 void AGModalDialog::update(float t, float dt)
 {
     m_squeeze.update(t, dt);
-    m_alpha.update(dt);
     
     m_renderState.projection = projectionMatrix();
     m_renderState.modelview = GLKMatrix4Multiply(fixedModelViewMatrix(), localTransform());
@@ -114,17 +172,6 @@ void AGModalDialog::update(float t, float dt)
 
 void AGModalDialog::render()
 {
-    // draw overlay
-    // save squeezed modelview
-    GLKMatrix4 modelview = m_renderState.modelview;
-    // use un-squeezed model view matrix
-    m_renderState.modelview = fixedModelViewMatrix();
-    // render it
-    AGStyle::frameBackgroundColor().withAlpha(m_alpha*AGMODALDIALOG_OVERLAY_ALPHA).set();
-    fillCenteredRect(m_size.x, m_size.y);
-    
-    // restore squeezed matrix
-    m_renderState.modelview = modelview;
     float frameWidth = AGMODALDIALOG_DIALOG_WIDTH;
     float frameHeight = AGMODALDIALOG_DIALOG_HEIGHT;
 

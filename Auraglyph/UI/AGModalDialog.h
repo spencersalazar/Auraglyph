@@ -14,17 +14,43 @@
 
 #include <string>
 #include <vector>
+#include <list>
 #include <functional>
 
 
 class AGViewController_;
+class AGModalDialog;
+
+class AGModalOverlay : public AGInteractiveObject
+{
+public:
+    AGModalOverlay();
+    
+    bool renderFixed() override { return true; }
+    GLvertex2f size() override { return m_size; }
+    
+    void setScreenSize(GLvertex2f size);
+
+    void update(float t, float dt) override;
+    void render() override;
+    
+    AGInteractiveObject *hitTest(const GLvertex3f &t) override;
+    
+    void addModalDialog(AGModalDialog *dialog);
+    void removeModalDialog(AGModalDialog *dialog);
+
+private:
+    GLvertex2f m_size;
+    std::list<AGModalDialog *> m_modalDialogs;
+};
 
 
 class AGModalDialog : public AGInteractiveObject
 {
 public:
     
-    static void setGlobalViewController(AGViewController_ *viewController);
+    static void setGlobalModalOverlay(AGModalOverlay *modalOverlay);
+    
     static void showModalDialog(const std::string &description,
                                 const std::string &ok = "OK",
                                 const std::function<void ()> &okAction = [](){},
@@ -50,7 +76,7 @@ public:
 
 private:
     
-    static AGViewController_ *s_viewController;
+    static AGModalOverlay *s_globalOverlay;
     
     std::string m_description;
     std::vector<std::string> m_descriptionLines;

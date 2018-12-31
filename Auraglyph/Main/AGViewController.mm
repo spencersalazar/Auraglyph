@@ -110,6 +110,7 @@ enum InterfaceMode
     InterfaceMode _interfaceMode;
     
     AGDashboard *_uiDashboard;
+    AGModalOverlay _modalOverlay;
     
     AGFile _currentDocumentFile;
     std::vector<std::vector<GLvertex2f>> _currentDocName;
@@ -308,7 +309,8 @@ static AGViewController * g_instance = nil;
     AGUITrash::instance().setPosition([self fixedCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
     
     /* modal dialog */
-    AGModalDialog::setGlobalViewController(_proxy);
+    _modalOverlay.init();
+    AGModalDialog::setGlobalModalOverlay(&_modalOverlay);
 }
 
 - (void)_updateFixedUIPosition
@@ -319,6 +321,8 @@ static AGViewController * g_instance = nil;
     _uiDashboard->onInterfaceOrientationChange();
     
     AGUITrash::instance().setPosition([self fixedCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-30)]);
+    
+    _modalOverlay.setScreenSize(GLvertex2f(self.view.bounds.size.width, self.view.bounds.size.height));
 }
 
 - (void)dealloc
@@ -704,6 +708,8 @@ static AGViewController * g_instance = nil;
     
     _uiDashboard->update(_t, dt);
     
+    _modalOverlay.update(_t, dt);
+    
     itmap_safe(_dashboard, ^(AGInteractiveObject *&object){
         object->update(_t, dt);
     });
@@ -775,6 +781,8 @@ static AGViewController * g_instance = nil;
     
     if(_currentTutorial)
         _currentTutorial->render();
+    
+    _modalOverlay.render();
 }
 
 - (void)renderUser
@@ -844,22 +852,32 @@ static AGViewController * g_instance = nil;
         AGInteractiveObject *touchCapture = NULL;
         AGInteractiveObject *touchCaptureTopLevelObject = NULL;
         
-        // search dashboard items
-        // search in reverse order
-        for(auto i = _dashboard.rbegin(); i != _dashboard.rend(); i++)
+        // check modal overlay
+        touchCapture = _modalOverlay.hitTest(fixedPos);
+        if(touchCapture)
         {
-            AGInteractiveObject *object = *i;
-            
-            // check regular interactive object
-            if(object->renderFixed())
-                touchCapture = object->hitTest(fixedPos);
-            else
-                touchCapture = object->hitTest(pos);
-            
-            if(touchCapture)
+            touchCaptureTopLevelObject = &_modalOverlay;
+        }
+        
+        if(touchCapture == NULL)
+        {
+            // search dashboard items
+            // search in reverse order
+            for(auto i = _dashboard.rbegin(); i != _dashboard.rend(); i++)
             {
-                touchCaptureTopLevelObject = object;
-                break;
+                AGInteractiveObject *object = *i;
+                
+                // check regular interactive object
+                if(object->renderFixed())
+                    touchCapture = object->hitTest(fixedPos);
+                else
+                    touchCapture = object->hitTest(pos);
+                
+                if(touchCapture)
+                {
+                    touchCaptureTopLevelObject = object;
+                    break;
+                }
             }
         }
         
