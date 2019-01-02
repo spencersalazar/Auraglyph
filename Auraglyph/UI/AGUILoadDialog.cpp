@@ -24,7 +24,6 @@ private:
     
     float m_itemStart;
     float m_itemHeight;
-    //clampf m_verticalScrollPos;
     float m_maxVerticalScrollPos = 0;
     momentum<float, clampf> m_verticalScrollPos;
     slew<float, clampf> m_horizontalSlidePos;
