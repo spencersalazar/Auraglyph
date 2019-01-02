@@ -133,20 +133,25 @@ public:
     void drawTriangleFan(GLvertex2f geo[], unsigned long size);
     void drawTriangleFan(GLvertex3f geo[], unsigned long size);
     void drawTriangleFan(GLvertex3f geo[], unsigned long size, const GLKMatrix4 &xform);
+    void drawTriangleFan(AGGenericShader &shader, GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform);
     void drawTriangleFan(AGGenericShader &shader, GLvertex3f geo[], unsigned long size, const GLKMatrix4 &xform);
-    
+
     void drawLineLoop(GLvertex2f geo[], unsigned long size);
     void drawLineLoop(GLvertex3f geo[], unsigned long size);
     void drawLineLoop(GLvertex3f geo[], unsigned long size, const GLKMatrix4 &xform);
+    void drawLineLoop(AGGenericShader &shader, GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform);
     void drawLineLoop(AGGenericShader &shader, GLvertex3f geo[], unsigned long size, const GLKMatrix4 &xform);
-    
+
     void drawLineStrip(GLvertex2f geo[], unsigned long size);
+    void drawLineStrip(GLvertex3f geo[], unsigned long size);
     void drawLineStrip(GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform);
     void drawLineStrip(AGGenericShader &shader, GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform);
-    void drawLineStrip(GLvertex3f geo[], unsigned long size);
     
     void fillCenteredRect(float width, float height);
-    void strokeCenteredRect(float width, float height);
+    void fillCenteredRect(AGGenericShader &shader, float width, float height, const GLKMatrix4 &xform);
+    
+    void strokeCenteredRect(float width, float height, float weight);
+    void strokeCenteredRect(AGGenericShader &shader, float width, float height, float weight, const GLKMatrix4 &xform);
 
     void drawWaveform(float waveform[], unsigned long size, GLvertex2f from, GLvertex2f to, float gain = 1.0f, float yScale = 1.0f);
     

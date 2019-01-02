@@ -359,10 +359,20 @@ void AGRenderObject::drawTriangleFan(GLvertex3f geo[], unsigned long size, const
     glDrawArrays(GL_TRIANGLE_FAN, 0, (int) size);
 }
 
+void AGRenderObject::drawTriangleFan(AGGenericShader &shader, GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform)
+{
+    GLKMatrix4 modelview = GLKMatrix4Multiply(m_renderState.modelview, xform);
+    shader.setModelViewMatrix(modelview);
+    shader.setProjectionMatrix(m_renderState.projection);
+    
+    glVertexAttribPointer(AGVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
+    
+    glDrawArrays(GL_TRIANGLE_FAN, 0, (int) size);
+}
+
 void AGRenderObject::drawTriangleFan(AGGenericShader &shader, GLvertex3f geo[], unsigned long size, const GLKMatrix4 &xform)
 {
-//    shader.useProgram();
-    
     GLKMatrix4 modelview = GLKMatrix4Multiply(m_renderState.modelview, xform);
     shader.setModelViewMatrix(modelview);
     shader.setProjectionMatrix(m_renderState.projection);
@@ -383,18 +393,6 @@ void AGRenderObject::drawLineLoop(GLvertex2f geo[], unsigned long size)
     shader.setProjectionMatrix(m_renderState.projection);
     
     glVertexAttribPointer(AGVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);
-    glEnableVertexAttribArray(AGVertexAttribPosition);
-    
-    glDrawArrays(GL_LINE_LOOP, 0, (int) size);
-}
-
-void AGRenderObject::drawLineLoop(AGGenericShader &shader, GLvertex3f geo[], unsigned long size, const GLKMatrix4 &xform)
-{
-    GLKMatrix4 modelview = GLKMatrix4Multiply(m_renderState.modelview, xform);
-    shader.setModelViewMatrix(modelview);
-    shader.setProjectionMatrix(m_renderState.projection);
-    
-    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
     glEnableVertexAttribArray(AGVertexAttribPosition);
     
     glDrawArrays(GL_LINE_LOOP, 0, (int) size);
@@ -421,6 +419,30 @@ void AGRenderObject::drawLineLoop(GLvertex3f geo[], unsigned long size, const GL
     
     shader.useProgram();
     
+    GLKMatrix4 modelview = GLKMatrix4Multiply(m_renderState.modelview, xform);
+    shader.setModelViewMatrix(modelview);
+    shader.setProjectionMatrix(m_renderState.projection);
+    
+    glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
+    
+    glDrawArrays(GL_LINE_LOOP, 0, (int) size);
+}
+
+void AGRenderObject::drawLineLoop(AGGenericShader &shader, GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform)
+{
+    GLKMatrix4 modelview = GLKMatrix4Multiply(m_renderState.modelview, xform);
+    shader.setModelViewMatrix(modelview);
+    shader.setProjectionMatrix(m_renderState.projection);
+    
+    glVertexAttribPointer(AGVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);
+    glEnableVertexAttribArray(AGVertexAttribPosition);
+    
+    glDrawArrays(GL_LINE_LOOP, 0, (int) size);
+}
+
+void AGRenderObject::drawLineLoop(AGGenericShader &shader, GLvertex3f geo[], unsigned long size, const GLKMatrix4 &xform)
+{
     GLKMatrix4 modelview = GLKMatrix4Multiply(m_renderState.modelview, xform);
     shader.setModelViewMatrix(modelview);
     shader.setProjectionMatrix(m_renderState.projection);
@@ -501,14 +523,38 @@ void AGRenderObject::fillCenteredRect(float width, float height)
     }, 4);
 }
 
-void AGRenderObject::strokeCenteredRect(float width, float height)
+void AGRenderObject::fillCenteredRect(AGGenericShader &shader, float width, float height, const GLKMatrix4 &xform)
 {
+    drawTriangleFan(shader, (GLvertex2f[]){
+        { -width/2, -height/2 },
+        {  width/2, -height/2 },
+        {  width/2,  height/2 },
+        { -width/2,  height/2 },
+    }, 4, xform);
+}
+
+void AGRenderObject::strokeCenteredRect(float width, float height, float weight)
+{
+    glLineWidth(weight);
+    
     drawLineLoop((GLvertex2f[]){
         { -width/2, -height/2 },
         {  width/2, -height/2 },
         {  width/2,  height/2 },
         { -width/2,  height/2 },
     }, 4);
+}
+
+void AGRenderObject::strokeCenteredRect(AGGenericShader &shader, float width, float height, float weight, const GLKMatrix4 &xform)
+{
+    glLineWidth(weight);
+    
+    drawLineLoop(shader, (GLvertex2f[]){
+        { -width/2, -height/2 },
+        {  width/2, -height/2 },
+        {  width/2,  height/2 },
+        { -width/2,  height/2 },
+    }, 4, xform);
 }
 
 void AGRenderObject::drawWaveform(float waveform[], unsigned long size, GLvertex2f from, GLvertex2f to, float gain, float yScale)
