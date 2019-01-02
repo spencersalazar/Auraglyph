@@ -125,12 +125,10 @@ struct GLcolor4f
         this->a = a;
     }
     
-#if ENABLE_GLKIT
     inline void set(AGVertexAttrib attrib = AGVertexAttribColor) const
     {
         glVertexAttrib4fv(attrib, (const GLfloat *) this);
     }
-#endif // ENABLE_GLKIT
     
     inline GLcolor4f withAlpha(float alpha) const
     {

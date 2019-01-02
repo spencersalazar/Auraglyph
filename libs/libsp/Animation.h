@@ -61,7 +61,7 @@ struct clamp
     
     clamp(T _value = 0, T _min = 0, T _max = 1) { clampTo(_min, _max); *this = _value; }
     
-    inline void clampTo(T _min, T _max) { min = _min; max = _max; }
+    inline void clampTo(T _min, T _max) { min = _min; max = _max;  *this = value; }
     
     inline operator const T &() const { return value; }
     
