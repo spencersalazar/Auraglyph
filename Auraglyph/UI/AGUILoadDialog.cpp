@@ -35,9 +35,13 @@ private:
     GLvertex3f m_touchStart;
     GLvertex3f m_lastTouch;
     int m_selection = -1;
+    
     int m_utilitySelection = -1;
     bool m_utilityHit = false;
     bool m_utilityHitOnTouchDown = false;
+    
+    int m_deletingRow = -1;
+    powcurvef m_deletingRowHeight;
 
     bool m_scrollingVertical = false;
     bool m_slidingHorizontal = false;
@@ -71,6 +75,10 @@ public:
         m_horizontalSlidePos.target.clampTo(-m_utilityButtonWidth, 0);
         m_horizontalSlidePos.value.clampTo(-m_utilityButtonWidth, 0);
         m_horizontalSlidePos.reset(0);
+        
+        m_deletingRowHeight.k = 3;
+        m_deletingRowHeight.rate = 1.5;
+        /* DEBUG */ // m_deletingRowHeight.rate = 0.75;
 
         float buttonWidth = 100;
         float buttonHeight = 25;
@@ -102,9 +110,23 @@ public:
         m_squeeze.update(t, dt);
         m_verticalScrollPos.update(t, dt);
         m_horizontalSlidePos.interp();
+        m_deletingRowHeight.update(dt);
 
         m_renderState.projection = projectionMatrix();
         m_renderState.modelview = GLKMatrix4Multiply(fixedModelViewMatrix(), localTransform());
+        
+        
+        /* DEBUG
+         if(m_deletingRow != -1 && m_deletingRowHeight < 0.001)
+            m_deletingRowHeight.reset(1, 0);
+         */
+        
+         // TODO: probably a better way to manage this
+        if(m_deletingRow != -1 && m_deletingRowHeight < 0.001)
+        {
+            m_documentList.erase(m_documentList.begin()+m_deletingRow);
+            m_deletingRow = -1;
+        }
         
         updateChildren(t, dt);
     }
@@ -113,21 +135,10 @@ public:
     {
         // draw inner box
         AGStyle::frameBackgroundColor().set();
-        drawTriangleFan((GLvertex3f[]){
-            { -m_size.x/2, -m_size.y/2, 0 },
-            {  m_size.x/2, -m_size.y/2, 0 },
-            {  m_size.x/2,  m_size.y/2, 0 },
-            { -m_size.x/2,  m_size.y/2, 0 },
-        }, 4);
+        fillCenteredRect(m_size.x, m_size.y);
         
         AGStyle::foregroundColor().set();
-        glLineWidth(4.0f);
-        drawLineLoop((GLvertex3f[]){
-            { -m_size.x/2, -m_size.y/2, 0 },
-            {  m_size.x/2, -m_size.y/2, 0 },
-            {  m_size.x/2,  m_size.y/2, 0 },
-            { -m_size.x/2,  m_size.y/2, 0 },
-        }, 4);
+        strokeCenteredRect(m_size.x, m_size.y, 4.0f);
     }
     
     void _renderUtilityButton(AGClipShader &shader, int itemNum)
@@ -152,13 +163,9 @@ public:
         };
         
         if(m_utilityHit)
-        {
             drawLineLoop(shader, geo, 4, xform);
-        }
         else
-        {
             drawTriangleFan(shader, geo, 4, xform);
-        }
         
         // draw x
         // radius of X figure (both x and y dimensions)
@@ -195,10 +202,22 @@ public:
         for(const AGDocumentManager::DocumentListing &document : m_documentList)
         {
             float xPos = 0;
+            float yScale = 1;
+            
             if(i == m_utilitySelection)
                 xPos = m_horizontalSlidePos.value;
+            if(i == m_deletingRow)
+                yScale = m_deletingRowHeight;
             
             GLKMatrix4 xform = GLKMatrix4MakeTranslation(xPos, yPos, 0);
+            if(yScale != 1)
+            {
+                // shift up by half the height so that it "folds" into the top rather than the center
+                xform = GLKMatrix4Translate(xform, 0, (1-yScale)*m_itemHeight/2, 0);
+                // scale inwards
+                xform = GLKMatrix4Scale(xform, 1, yScale, 1);
+            }
+            
             shader.setLocalMatrix(xform);
             
             float margin = m_marginFraction;
@@ -206,20 +225,15 @@ public:
             if(i == m_selection)
             {
                 // draw selection box
-                glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor());
-                
-                drawTriangleFan(shader, (GLvertex3f[]){
-                    { -m_size.x/2*margin,  m_itemHeight/2*margin, 0 },
-                    { -m_size.x/2*margin, -m_itemHeight/2*margin, 0 },
-                    {  m_size.x/2*margin, -m_itemHeight/2*margin, 0 },
-                    {  m_size.x/2*margin,  m_itemHeight/2*margin, 0 },
-                }, 4, xform);
-                
-                glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &AGStyle::frameBackgroundColor());
+                AGStyle::foregroundColor().set();
+                fillCenteredRect(shader, m_size.x*margin, m_itemHeight*margin, xform);
+                // draw figure with inverted color
+                AGStyle::frameBackgroundColor().set();
             }
             else
             {
-                glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &AGStyle::foregroundColor());
+                // draw figure with normal/non-inverted color
+                AGStyle::foregroundColor().set();
             }
             
             // draw each "figure" in the "name"
@@ -238,11 +252,12 @@ public:
                 
                 glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &whiteA);
                 drawLineStrip(shader, (GLvertex2f[]){
-                    { -m_size.x/2*margin, -m_itemHeight/2 }, { m_size.x/2*margin, -m_itemHeight/2 },
+                    { -m_size.x/2*margin, -m_itemHeight/2+m_itemHeight*(1-yScale) },
+                    {  m_size.x/2*margin, -m_itemHeight/2+m_itemHeight*(1-yScale) },
                 }, 2, xform);
             }
             
-            yPos -= m_itemHeight;
+            yPos -= m_itemHeight*yScale;
             i++;
         }
     }
@@ -410,8 +425,13 @@ public:
         {
             AGModalDialog::showModalDialog("Are you sure you want to delete this file?",
                 "Delete", [this](){
-                    m_onUtility(m_documentList[m_utilitySelection].filename);
+                    // call the callbaack
+                    // m_onUtility(m_documentList[m_utilitySelection].filename);
+                    // slide utility button back in
                     m_horizontalSlidePos = 0;
+                    // animate row deletion
+                    m_deletingRow = m_utilitySelection;
+                    m_deletingRowHeight.reset(1, 0);
                 },
                 "Cancel", [this](){
                     m_horizontalSlidePos = 0;

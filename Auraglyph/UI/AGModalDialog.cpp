@@ -181,8 +181,7 @@ void AGModalDialog::render()
     
     // draw dialog frame
     AGStyle::foregroundColor().set();
-    glLineWidth(4.0f);
-    strokeCenteredRect(frameWidth, frameHeight);
+    strokeCenteredRect(frameWidth, frameHeight, 4.0f);
 
     // render description
     TexFont *text = AGStyle::standardFont64();
