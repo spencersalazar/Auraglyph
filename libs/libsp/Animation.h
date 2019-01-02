@@ -22,13 +22,14 @@
 template<typename DestType, typename ContainerType=DestType>
 struct slew
 {
-    slew() : value(0), target(0), rate(0) { }
+    slew() : value(0), target(0), rate(0.5) { }
     slew(float _rate) : value(0), target(0), rate(_rate) { }
     slew(float _rate, DestType _start) : value(_start), target(_start), rate(_rate) { }
     
     inline void reset() { value = target; }
     inline void reset(DestType _val) { target = _val; value = _val; }
     inline void interp() { value = (target-value)*rate + value; }
+    inline void fromTo(DestType from, DestType to) { value = from; target = to; }
     
     // cast directly to float
     operator const DestType &() const { return value; }
