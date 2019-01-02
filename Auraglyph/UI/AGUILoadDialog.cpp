@@ -25,6 +25,7 @@ private:
     float m_itemStart;
     float m_itemHeight;
     //clampf m_verticalScrollPos;
+    float m_maxVerticalScrollPos = 0;
     momentum<float, clampf> m_verticalScrollPos;
     slew<float, clampf> m_horizontalSlidePos;
     
@@ -69,7 +70,8 @@ public:
         
         m_utilityButtonWidth = m_size.x/5;
         
-        m_verticalScrollPos.raw().clampTo(0, max(0.0f, (m_documentList.size()-3.0f)*m_itemHeight));
+        m_maxVerticalScrollPos = max(0.0f, (m_documentList.size()-3.0f)*m_itemHeight);
+        m_verticalScrollPos.raw().clampTo(0, m_maxVerticalScrollPos);
         
         m_horizontalSlidePos.rate = 0.6;
         m_horizontalSlidePos.target.clampTo(-m_utilityButtonWidth, 0);
@@ -122,10 +124,24 @@ public:
          */
         
          // TODO: probably a better way to manage this
-        if(m_deletingRow != -1 && m_deletingRowHeight < 0.001)
+        if(m_deletingRow != -1)
         {
-            m_documentList.erase(m_documentList.begin()+m_deletingRow);
-            m_deletingRow = -1;
+            if(m_deletingRowHeight < 0.001)
+            {
+                // erase from document list
+                m_documentList.erase(m_documentList.begin()+m_deletingRow);
+                // update total scroll height
+                m_maxVerticalScrollPos = max(0.0f, (m_documentList.size()-3.0f)*m_itemHeight);
+                m_deletingRow = -1;
+            }
+            else
+            {
+                // update total scroll height
+                m_maxVerticalScrollPos = max(0.0f, (m_documentList.size()-3.0f-m_deletingRowHeight)*m_itemHeight);
+            }
+            
+            // update scroll clamp
+            m_verticalScrollPos.raw().clampTo(0, m_maxVerticalScrollPos);
         }
         
         updateChildren(t, dt);
@@ -426,7 +442,7 @@ public:
             AGModalDialog::showModalDialog("Are you sure you want to delete this file?",
                 "Delete", [this](){
                     // call the callbaack
-                    // m_onUtility(m_documentList[m_utilitySelection].filename);
+                    m_onUtility(m_documentList[m_utilitySelection].filename);
                     // slide utility button back in
                     m_horizontalSlidePos = 0;
                     // animate row deletion
