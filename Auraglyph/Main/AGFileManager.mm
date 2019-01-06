@@ -83,6 +83,11 @@ bool AGFileManager::fileExists(const AGFile &file)
     return [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithSTLString:filepath]];
 }
 
+bool AGFileManager::fileExistsAtPath(const std::string &filepath)
+{
+    return [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithSTLString:filepath]];
+}
+
 vector<string> AGFileManager::listDirectory(const string &directory)
 {
     vector<string> pathList;
@@ -90,9 +95,7 @@ vector<string> AGFileManager::listDirectory(const string &directory)
     NSArray *pathArray = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[NSString stringWithUTF8String:directory.c_str()]
                                                                              error:&error];
     for(NSString *path in pathArray)
-    {
         pathList.push_back([path UTF8String]);
-    }
     
     return pathList;
 }

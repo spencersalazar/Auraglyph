@@ -50,6 +50,7 @@ public:
 
     bool fileHasExtension(const string &filepathOrName, const string &extension);
     bool fileExists(const AGFile &file);
+    bool fileExistsAtPath(const std::string &filepath);
     vector<string> listDirectory(const string &directory);
     time_t creationTimeForFilepath(const string &filepath);
     
