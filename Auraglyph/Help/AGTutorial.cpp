@@ -10,21 +10,75 @@
 
 #include "Geometry.h"
 #include "AGStyle.h"
-
 #include "AGGraphManager.h"
 
 #include <string>
 
+class AGTutorialEnvironment
+{
+public:
+    void store(const std::string &name, const Variant &variable) { m_variables[name] = variable; }
+    const Variant &fetch(const std::string &name, const Variant &variable) { return m_variables[name]; }
+    
+private:
+    map<std::string, Variant> m_variables;
+};
+
+
+class AGTutorialStep : public AGRenderObject
+{
+public:
+    AGTutorialStep(const map<std::string, Variant> &parameters,
+                   std::function<void (AGTutorialEnvironment &env)> onPrepare = [](AGTutorialEnvironment &env){ },
+                   std::function<void (AGTutorialEnvironment &env)> onFinalize = [](AGTutorialEnvironment &env){ });
+    
+    void prepare(AGTutorialEnvironment &environment);
+    virtual bool isComplete() = 0;
+    void finalize(AGTutorialEnvironment &environment);
+    
+protected:
+    
+    virtual void prepareInternal(AGTutorialEnvironment &environment) { }
+    virtual void finalizeInternal(AGTutorialEnvironment &environment) { }
+    
+    const Variant &getParameter(const std::string &name);
+    
+    map<std::string, Variant> m_parameters;
+    std::function<void (AGTutorialEnvironment &env)> m_onPrepare;
+    std::function<void (AGTutorialEnvironment &env)> m_onFinalize;
+};
+
+
+
+AGTutorialStep::AGTutorialStep(const map<std::string, Variant> &parameters,
+                               std::function<void (AGTutorialEnvironment &env)> onPrepare,
+                               std::function<void (AGTutorialEnvironment &env)> onFinalize)
+: m_parameters(parameters), m_onPrepare(onPrepare), m_onFinalize(onFinalize)
+{ }
+
+const Variant &AGTutorialStep::getParameter(const std::string &name)
+{
+    return m_parameters[name];
+}
+
+void AGTutorialStep::prepare(AGTutorialEnvironment &environment)
+{
+    prepareInternal(environment);
+    m_onPrepare(environment);
+}
+
+void AGTutorialStep::finalize(AGTutorialEnvironment &environment)
+{
+    finalizeInternal(environment);
+    m_onFinalize(environment);
+}
+
 class AGTextTutorialStep : public AGTutorialStep
 {
 public:
-    AGTextTutorialStep(const std::string &text, GLvertex3f pos)
-    : m_text(text)
-    {
-        m_pos = pos;
-    }
+    using AGTutorialStep::AGTutorialStep;
     
-    virtual void render()
+    void render() override
     {
         TexFont *text = AGStyle::standardFont64();
         
@@ -35,21 +89,25 @@ public:
         text->render(m_text, AGStyle::foregroundColor(), mv, projection());
     }
     
-    virtual bool isComplete() { return true; }
+    bool isComplete() override { return true; }
     
-private:
+protected:
     string m_text;
+    
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        m_text = getParameter("text").getString();
+        m_pos = getParameter("position").getVertex3();
+    }
 };
 
 
 class AGTimedTextTutorialStep : public AGTextTutorialStep
 {
 public:
-    AGTimedTextTutorialStep(const std::string &text, GLvertex3f pos, float duration)
-    : AGTextTutorialStep(text, pos), m_duration(duration)
-    { }
-    
-    virtual void update(float t, float dt)
+    using AGTextTutorialStep::AGTextTutorialStep;
+
+    void update(float t, float dt) override
     {
         AGRenderObject::update(t, dt);
         
@@ -59,31 +117,48 @@ public:
             m_duration = 0;
     }
     
-    virtual bool isComplete() { return m_duration == 0; }
+    bool isComplete() override { return m_duration == 0; }
     
-private:
+protected:
     float m_duration;
+    
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        m_text = getParameter("text").getString();
+        m_pos = getParameter("position").getVertex3();
+        m_duration = getParameter("duration").getFloat();
+    }
 };
 
 class AGCreateNodeTutorialStep : public AGTextTutorialStep
 {
 public:
-    AGCreateNodeTutorialStep(const std::string &text, GLvertex3f pos, AGGraphManager *graphManager, const std::string &nodeType)
-    : AGTextTutorialStep(text, pos)
-    { }
+    using AGTextTutorialStep::AGTextTutorialStep;
     
     virtual bool isComplete() { return true; }
     
-private:
+protected:
     
 };
 
 AGTutorial *AGTutorial::createInitialTutorial()
 {
     auto steps = (std::list<AGTutorialStep*>){
-        new AGTimedTextTutorialStep("Welcome to Auraglyph", GLvertex3f(0, 200, 0), 5),
-        new AGTimedTextTutorialStep("To start, draw a circle", GLvertex3f(0, 200, 0), 5),
-        new AGTimedTextTutorialStep("Now, choose an oscillator from the menu", GLvertex3f(0, 200, 0), 5),
+        new AGTimedTextTutorialStep((std::map<std::string, Variant>) {
+            { "text", std::string("Welcome to Auraglyph") },
+            { "position", GLvertex3f(0, 200, 0) },
+            { "duration", 5 },
+        }),
+        new AGTimedTextTutorialStep({
+            { "text", std::string("To start, draw a circle") },
+            { "position", GLvertex3f(0, 200, 0) },
+            { "duration", 5 },
+        }),
+        new AGTimedTextTutorialStep({
+            { "text", std::string("Now, choose an oscillator from the menu") },
+            { "position", GLvertex3f(0, 200, 0) },
+            { "duration", 5 },
+        }),
     };
     for(auto step : steps)
         step->init();

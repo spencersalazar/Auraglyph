@@ -10,7 +10,10 @@
 
 #include "AGRenderObject.h"
 
+#include "Variant.h"
+
 #include <list>
+#include <map>
 
 class AGTutorialStep;
 
@@ -31,10 +34,4 @@ public:
 private:
     std::list<AGTutorialStep*> m_steps;
     std::list<AGTutorialStep*>::iterator m_currentStep;
-};
-
-class AGTutorialStep : public AGRenderObject
-{
-public:
-    virtual bool isComplete() = 0;
 };
