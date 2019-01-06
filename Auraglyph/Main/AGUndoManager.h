@@ -12,65 +12,13 @@
 #include <list>
 #include <string>
 
-#include "Geometry.h"
-
-class AGNode;
-class AGConnection;
-class AGFreeDraw;
-
-//------------------------------------------------------------------------------
-// ### AGUndoAction ###
-//------------------------------------------------------------------------------
-#pragma mark - AGUndoAction
-
-class AGUndoAction
-{
-public:
-    static AGUndoAction *editParamUndoAction(AGNode *node, int port, float oldValue, float newValue);
-    static AGUndoAction *createNodeUndoAction(AGNode *node);
-    static AGUndoAction *moveNodeUndoAction(AGNode *node, const GLvertex3f &oldPos, const GLvertex3f &newPos);
-    static AGUndoAction *deleteNodeUndoAction(AGNode *node);
-    static AGUndoAction *createConnectionUndoAction(AGConnection *connection);
-    static AGUndoAction *deleteConnectionUndoAction(AGConnection *connection);
-    
-    AGUndoAction(const std::string &title) : m_title(title) { }
-    virtual ~AGUndoAction() { }
-    
-    virtual void undo() = 0;
-    virtual void redo() = 0;
-    
-    const std::string &title() { return m_title; }
-    
-private:
-    std::string m_title;
-};
+#include "AGActivityManager.h"
 
 
 //------------------------------------------------------------------------------
-// ### AGBasicUndoAction ###
+// ### AGUndoManagerListener ###
 //------------------------------------------------------------------------------
-#pragma mark - AGBasicUndoAction
-
-class AGBasicUndoAction : public AGUndoAction
-{
-public:
-    AGBasicUndoAction(const std::string &title,
-                      std::function<void ()> _undo,
-                      std::function<void ()> _redo);
-    
-    virtual void undo() override;
-    virtual void redo() override;
-
-private:
-    std::function<void ()> m_undo;
-    std::function<void ()> m_redo;
-};
-
-
-//------------------------------------------------------------------------------
-// ### AGBasicUndoAction ###
-//------------------------------------------------------------------------------
-#pragma mark - AGBasicUndoAction
+#pragma mark - AGUndoManagerListener
 
 class AGUndoManagerListener
 {
@@ -86,7 +34,7 @@ public:
 //------------------------------------------------------------------------------
 #pragma mark - AGUndoManager
 
-class AGUndoManager
+class AGUndoManager : public AGActivityListener
 {
 public:
     static AGUndoManager &instance();
@@ -94,7 +42,7 @@ public:
     AGUndoManager();
     ~AGUndoManager();
     
-    void pushUndoAction(AGUndoAction *action);
+    void pushUndoAction(AGActivity *action);
     void undoLast();
     void redoLast();
     
@@ -107,8 +55,10 @@ public:
     void addListener(AGUndoManagerListener *);
     void removeListener(AGUndoManagerListener *);
     
+    void activityOccurred(AGActivity *activity) override;
+    
 private:
-    std::list<AGUndoAction *> m_undo;
-    std::list<AGUndoAction *> m_redo;
+    std::list<AGActivity *> m_undo;
+    std::list<AGActivity *> m_redo;
     std::list<AGUndoManagerListener *> m_listeners;
 };

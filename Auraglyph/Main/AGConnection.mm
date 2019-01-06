@@ -19,7 +19,8 @@
 #include "AGStyle.h"
 
 #include "AGGraphManager.h"
-#include "AGUndoManager.h"
+#include "AGActivityManager.h"
+#include "AGActivity.h"
 
 bool AGConnection::s_init = false;
 GLuint AGConnection::s_flareTex = 0;
@@ -336,8 +337,8 @@ void AGConnection::touchUp(const GLvertex3f &t)
     
     if(m_break)
     {
-        AGUndoAction *action = AGUndoAction::deleteConnectionUndoAction(this);
-        AGUndoManager::instance().pushUndoAction(action);
+        AGActivity *action = AGActivity::deleteConnectionActivity(this);
+        AGActivityManager::instance().addActivity(action);
         
         removeFromTopLevel();
     }

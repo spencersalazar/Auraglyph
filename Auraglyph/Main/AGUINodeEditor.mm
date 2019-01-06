@@ -14,7 +14,8 @@
 #include "AGSlider.h"
 #include "AGFileBrowser.h"
 #include "AGFileManager.h"
-#include "AGUndoManager.h"
+#include "AGActivityManager.h"
+#include "AGActivity.h"
 #include "AGAnalytics.h"
 #include "TexFont.h"
 
@@ -379,8 +380,8 @@ m_lastTraceWasRecognized(true)
             [this, port](float _old, float _new){
                 AGAnalytics::instance().eventEditNodeParamSlider(m_node->type(), m_node->editPortInfo(port).name);
                 // handle undo/redo
-                AGUndoAction *action = AGUndoAction::editParamUndoAction(m_node, port, _old, _new);
-                AGUndoManager::instance().pushUndoAction(action);
+                AGActivity *action = AGActivity::editParamActivity(m_node, port, _old, _new);
+                AGActivityManager::instance().addActivity(action);
             });
             slider->setValidator([this, port] (float _old, float _new) {
                 return m_node->validateEditPortValue(port, _new);

@@ -38,6 +38,8 @@
 #import "AGGraph.h"
 #import "AGTutorial.h"
 #import "AGModalDialog.h"
+#import "AGActivityManager.h"
+#import "AGUndoManager.h"
 
 #import <list>
 #import <map>
@@ -288,6 +290,8 @@ static AGViewController * g_instance = nil;
     [jsonData writeToFile:nodeInfoPath atomically:YES];
     
 #endif // AG_EXPORT_NODES
+    
+    AGActivityManager::instance().addActivityListener(&AGUndoManager::instance());
     
     // _currentTutorial = AGTutorial::createInitialTutorial();
 }

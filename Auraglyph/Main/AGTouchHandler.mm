@@ -26,7 +26,8 @@
 #import "AGNodeSelector.h"
 #import "AGUINodeEditor.h"
 #import "AGGenericShader.h"
-#include "AGUndoManager.h"
+#include "AGActivityManager.h"
+#include "AGActivity.h"
 #import "AGAnalytics.h"
 
 #import "GeoGenerator.h"
@@ -578,15 +579,15 @@
         {
             AGAnalytics::instance().eventDeleteNode(_moveNode->type());
             
-            AGUndoAction *action = AGUndoAction::deleteNodeUndoAction(_moveNode);
-            AGUndoManager::instance().pushUndoAction(action);
+            AGActivity *action = AGActivity::deleteNodeActivity(_moveNode);
+            AGActivityManager::instance().addActivity(action);
             
             _moveNode->removeFromTopLevel();
         }
         else
         {
-            AGUndoAction *action = AGUndoAction::moveNodeUndoAction(_moveNode, _initialPos, _moveNode->position());
-            AGUndoManager::instance().pushUndoAction(action);
+            AGActivity *action = AGActivity::moveNodeActivity(_moveNode, _initialPos, _moveNode->position());
+            AGActivityManager::instance().addActivity(action);
         }
     }
 }
@@ -1088,8 +1089,8 @@ private:
             
             AGConnection *connection = AGConnection::connect(srcNode, srcPort, dstNode, dstPort);
             
-            AGUndoAction *action = AGUndoAction::createConnectionUndoAction(connection);
-            AGUndoManager::instance().pushUndoAction(action);
+            AGActivity *action = AGActivity::createConnectionActivity(connection);
+            AGActivityManager::instance().addActivity(action);
         }
     }
     
@@ -1175,8 +1176,8 @@ private:
             outputNode->setOutputDestination([AGAudioManager instance].masterOut);
         }
         
-        AGUndoAction *action = AGUndoAction::createNodeUndoAction(newNode);
-        AGUndoManager::instance().pushUndoAction(action);
+        AGActivity *action = AGActivity::createNodeActivity(newNode);
+        AGActivityManager::instance().addActivity(action);
     }
     
     if(!_nodeSelector->done())
