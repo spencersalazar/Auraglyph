@@ -8,9 +8,7 @@
 
 #pragma once
 
-#if __OBJC__
-#import <Foundation/Foundation.h>
-#endif // __OBJC__
+#include "Geometry.h"
 
 #include "LTKTypes.h"
 #include "LTKTrace.h"
@@ -41,25 +39,37 @@ enum AGHandwritingRecognizerFigure
     AG_FIGURE_TRIANGLE_DOWN,
 };
 
-// TODO: refactor as C++
+class LTKOSUtil;
+class LTKLipiEngineInterface;
+class LTKShapeRecognizer;
 
-#if __OBJC__
+class AGHandwritingRecognizer
+{
+public:
+    static AGHandwritingRecognizer &instance();
+    
+    AGHandwritingRecognizer();
+    ~AGHandwritingRecognizer();
+    
+    void setViewBounds(const GLvrectf &bounds);
+    
+    bool figureIsNumeral(AGHandwritingRecognizerFigure figure);
+    bool figureIsShape(AGHandwritingRecognizerFigure figure);
+    
+    AGHandwritingRecognizerFigure recognizeNumeral(const LTKTrace &trace);
+    void addSampleForNumeral(const LTKTraceGroup &tg, AGHandwritingRecognizerFigure num);
+    
+    AGHandwritingRecognizerFigure recognizeShape(const LTKTrace &trace);
+    void addSampleForShape(const LTKTraceGroup &tg, AGHandwritingRecognizerFigure num);
+    
+private:
+    LTKOSUtil* _util;
+    LTKLipiEngineInterface *_engine;
+    LTKShapeRecognizer * _numeralReco;
+    LTKShapeRecognizer * _shapeReco;
+    
+    GLvrectf m_bounds;
+    
+    void _loadData();
+};
 
-@interface AGHandwritingRecognizer : NSObject
-
-@property (nonatomic, weak) UIView *view;
-
-+ (id)instance;
-
-- (BOOL)figureIsNumeral:(AGHandwritingRecognizerFigure)figure;
-- (BOOL)figureIsShape:(AGHandwritingRecognizerFigure)figure;
-
-- (AGHandwritingRecognizerFigure)recognizeNumeral:(const LTKTrace &)trace;
-- (void)addSample:(const LTKTraceGroup &)tg forNumeral:(AGHandwritingRecognizerFigure)num;
-
-- (AGHandwritingRecognizerFigure)recognizeShape:(const LTKTrace &)trace;
-- (void)addSample:(const LTKTraceGroup &)tg forShape:(AGHandwritingRecognizerFigure)num;
-
-@end
-
-#endif // __OBJC__

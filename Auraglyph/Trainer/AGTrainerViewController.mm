@@ -101,16 +101,14 @@ static NSString *AGTrainerShapeLabel[] = {
 
 - (IBAction)accept
 {
-    AGHandwritingRecognizer *hwr = [AGHandwritingRecognizer instance];
-    if([hwr figureIsNumeral:_selectedFigure])
+    AGHandwritingRecognizer &hwr = AGHandwritingRecognizer::instance();
+    if(hwr.figureIsNumeral(_selectedFigure))
     {
-        [hwr addSample:[self.trainerView currentTraceGroup]
-            forNumeral:_selectedFigure];
+        hwr.addSampleForNumeral([self.trainerView currentTraceGroup], _selectedFigure);
     }
-    else if([hwr figureIsShape:_selectedFigure])
+    else if(hwr.figureIsShape(_selectedFigure))
     {
-        [hwr addSample:[self.trainerView currentTraceGroup]
-            forShape:_selectedFigure];
+        hwr.addSampleForShape([self.trainerView currentTraceGroup], _selectedFigure);
     }
 }
 
