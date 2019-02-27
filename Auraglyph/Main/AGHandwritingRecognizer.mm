@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Spencer Salazar. All rights reserved.
 //
 
+/* TODO: strip out remaining objective-c and convert entirely to C++ */
+
 #import "AGHandwritingRecognizer.h"
 
 #include "AGFileManager.h"
