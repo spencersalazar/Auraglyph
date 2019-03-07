@@ -122,6 +122,13 @@
 		09D9C9D01C98F13A005514A4 /* spRandom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09D9C9CE1C98F13A005514A4 /* spRandom.cpp */; };
 		09DC3D521FBD3729008B960F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */; };
 		09DC3D541FBD393C008B960F /* LaunchPortrait.png in Resources */ = {isa = PBXBuildFile; fileRef = 09DC3D531FBD393C008B960F /* LaunchPortrait.png */; };
+		09DDE4B82231AA4A008ACF0B /* AGEditTouchHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09DDE4AA2231AA48008ACF0B /* AGEditTouchHandler.mm */; };
+		09DDE4B92231AA4A008ACF0B /* AGDrawNodeTouchHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09DDE4AB2231AA48008ACF0B /* AGDrawNodeTouchHandler.mm */; };
+		09DDE4BA2231AA4A008ACF0B /* AGMoveNodeTouchHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09DDE4AF2231AA48008ACF0B /* AGMoveNodeTouchHandler.mm */; };
+		09DDE4BB2231AA4A008ACF0B /* AGDrawFreedrawTouchHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09DDE4B12231AA49008ACF0B /* AGDrawFreedrawTouchHandler.mm */; };
+		09DDE4BC2231AA4A008ACF0B /* AGConnectTouchHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09DDE4B42231AA49008ACF0B /* AGConnectTouchHandler.mm */; };
+		09DDE4BD2231AA4A008ACF0B /* AGEraseFreedrawTouchHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09DDE4B52231AA49008ACF0B /* AGEraseFreedrawTouchHandler.mm */; };
+		09DDE4BE2231AA4A008ACF0B /* AGSelectNodeTouchHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09DDE4B72231AA49008ACF0B /* AGSelectNodeTouchHandler.mm */; };
 		09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7A18A3484F00B21D97 /* Mutex.cpp */; };
 		09E5EC7F18A36A9D00B21D97 /* SPFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */; };
 		09E5EC8218A46F7300B21D97 /* AGControl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC8018A46F7300B21D97 /* AGControl.mm */; };
@@ -482,6 +489,20 @@
 		09DC3D4C1FBD363A008B960F /* Auraglyph.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Auraglyph.entitlements; sourceTree = "<group>"; };
 		09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		09DC3D531FBD393C008B960F /* LaunchPortrait.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LaunchPortrait.png; sourceTree = "<group>"; };
+		09DDE4AA2231AA48008ACF0B /* AGEditTouchHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGEditTouchHandler.mm; sourceTree = "<group>"; };
+		09DDE4AB2231AA48008ACF0B /* AGDrawNodeTouchHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGDrawNodeTouchHandler.mm; sourceTree = "<group>"; };
+		09DDE4AC2231AA48008ACF0B /* AGSelectNodeTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGSelectNodeTouchHandler.h; sourceTree = "<group>"; };
+		09DDE4AD2231AA48008ACF0B /* AGDrawNodeTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGDrawNodeTouchHandler.h; sourceTree = "<group>"; };
+		09DDE4AE2231AA48008ACF0B /* AGEraseFreedrawTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGEraseFreedrawTouchHandler.h; sourceTree = "<group>"; };
+		09DDE4AF2231AA48008ACF0B /* AGMoveNodeTouchHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGMoveNodeTouchHandler.mm; sourceTree = "<group>"; };
+		09DDE4B02231AA49008ACF0B /* AGConnectTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGConnectTouchHandler.h; sourceTree = "<group>"; };
+		09DDE4B12231AA49008ACF0B /* AGDrawFreedrawTouchHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGDrawFreedrawTouchHandler.mm; sourceTree = "<group>"; };
+		09DDE4B22231AA49008ACF0B /* AGEditTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGEditTouchHandler.h; sourceTree = "<group>"; };
+		09DDE4B32231AA49008ACF0B /* AGMoveNodeTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGMoveNodeTouchHandler.h; sourceTree = "<group>"; };
+		09DDE4B42231AA49008ACF0B /* AGConnectTouchHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGConnectTouchHandler.mm; sourceTree = "<group>"; };
+		09DDE4B52231AA49008ACF0B /* AGEraseFreedrawTouchHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGEraseFreedrawTouchHandler.mm; sourceTree = "<group>"; };
+		09DDE4B62231AA49008ACF0B /* AGDrawFreedrawTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGDrawFreedrawTouchHandler.h; sourceTree = "<group>"; };
+		09DDE4B72231AA49008ACF0B /* AGSelectNodeTouchHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGSelectNodeTouchHandler.mm; sourceTree = "<group>"; };
 		09E5EC7A18A3484F00B21D97 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mutex.cpp; sourceTree = "<group>"; };
 		09E5EC7B18A3484F00B21D97 /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = "<group>"; };
 		09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SPFilter.cpp; sourceTree = "<group>"; };
@@ -690,8 +711,7 @@
 				0939D360206D693200EB3C1B /* AGGraph.cpp */,
 				092310111F46399800DF06B5 /* AGGraphManager.h */,
 				092310101F46399800DF06B5 /* AGGraphManager.cpp */,
-				09891314189F70D200AB98AD /* AGTouchHandler.h */,
-				09891315189F70D200AB98AD /* AGTouchHandler.mm */,
+				09DDE4A82231A993008ACF0B /* TouchHandlers */,
 				09635B0121E0202400921309 /* AGActivity.h */,
 				09635B0021E0202400921309 /* AGActivity.cpp */,
 				09635AFE21E01A3000921309 /* AGActivityManager.h */,
@@ -1036,6 +1056,29 @@
 			path = Nodes;
 			sourceTree = "<group>";
 		};
+		09DDE4A82231A993008ACF0B /* TouchHandlers */ = {
+			isa = PBXGroup;
+			children = (
+				09891314189F70D200AB98AD /* AGTouchHandler.h */,
+				09891315189F70D200AB98AD /* AGTouchHandler.mm */,
+				09DDE4B02231AA49008ACF0B /* AGConnectTouchHandler.h */,
+				09DDE4B42231AA49008ACF0B /* AGConnectTouchHandler.mm */,
+				09DDE4B62231AA49008ACF0B /* AGDrawFreedrawTouchHandler.h */,
+				09DDE4B12231AA49008ACF0B /* AGDrawFreedrawTouchHandler.mm */,
+				09DDE4AD2231AA48008ACF0B /* AGDrawNodeTouchHandler.h */,
+				09DDE4AB2231AA48008ACF0B /* AGDrawNodeTouchHandler.mm */,
+				09DDE4B22231AA49008ACF0B /* AGEditTouchHandler.h */,
+				09DDE4AA2231AA48008ACF0B /* AGEditTouchHandler.mm */,
+				09DDE4AE2231AA48008ACF0B /* AGEraseFreedrawTouchHandler.h */,
+				09DDE4B52231AA49008ACF0B /* AGEraseFreedrawTouchHandler.mm */,
+				09DDE4B32231AA49008ACF0B /* AGMoveNodeTouchHandler.h */,
+				09DDE4AF2231AA48008ACF0B /* AGMoveNodeTouchHandler.mm */,
+				09DDE4AC2231AA48008ACF0B /* AGSelectNodeTouchHandler.h */,
+				09DDE4B72231AA49008ACF0B /* AGSelectNodeTouchHandler.mm */,
+			);
+			path = TouchHandlers;
+			sourceTree = "<group>";
+		};
 		09E5EC8318A5A84C00B21D97 /* stk */ = {
 			isa = PBXGroup;
 			children = (
@@ -1283,11 +1326,14 @@
 				09F2D53B1D7EA33400F537C7 /* DelayA.cpp in Sources */,
 				4921A39C1F17FC3E0071823D /* AGMatrixMixerNode.cpp in Sources */,
 				091C70CC1C48A9A600B513C2 /* AGUINodeEditor.mm in Sources */,
+				09DDE4BA2231AA4A008ACF0B /* AGMoveNodeTouchHandler.mm in Sources */,
 				498438641F1EF40B00FB2914 /* PGMidiFind.mm in Sources */,
 				095D12D417ACA36C0048A012 /* main.m in Sources */,
 				0933956E1A08799A009E4802 /* AGFormulaNode.mm in Sources */,
 				09635AFF21E01A3000921309 /* AGActivityManager.cpp in Sources */,
 				0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */,
+				09DDE4B92231AA4A008ACF0B /* AGDrawNodeTouchHandler.mm in Sources */,
+				09DDE4BD2231AA4A008ACF0B /* AGEraseFreedrawTouchHandler.mm in Sources */,
 				097519BD218CF35300FF8D1B /* AGAudioDistortionNode.cpp in Sources */,
 				09030CF11EFEFEFB00D4A4F2 /* AGMenu.cpp in Sources */,
 				095786191F031ED800286358 /* AGDashboard.cpp in Sources */,
@@ -1303,6 +1349,7 @@
 				093395771A08BFAC009E4802 /* AGNodeSelector.cpp in Sources */,
 				096F42051D9CF04600600717 /* AGWaveformAudioNode.cpp in Sources */,
 				09F700B81D71046300294BDD /* Buffers.cpp in Sources */,
+				09DDE4BC2231AA4A008ACF0B /* AGConnectTouchHandler.mm in Sources */,
 				0985E5361D8C952800B536C8 /* AGInteractiveObject.mm in Sources */,
 				095D12FC17ACAA100048A012 /* Texture.mm in Sources */,
 				09E5EC7F18A36A9D00B21D97 /* SPFilter.cpp in Sources */,
@@ -1326,15 +1373,18 @@
 				09EE657F1EFB59BE00B4ED62 /* AGAudioRecorder.mm in Sources */,
 				09412E0C1A2112300065598D /* NSString+STLString.mm in Sources */,
 				09B962551DDB1488001DCFB1 /* AGUISaveDialog.cpp in Sources */,
+				09DDE4BE2231AA4A008ACF0B /* AGSelectNodeTouchHandler.mm in Sources */,
 				098F9B3A19EE49BA00CE2F24 /* AGRenderObject.mm in Sources */,
 				0939D361206D693200EB3C1B /* AGGraph.cpp in Sources */,
 				095D12FF17ACAB7B0048A012 /* ShaderHelper.mm in Sources */,
 				095E853117B358FC0065EF8E /* shaperectst.mm in Sources */,
 				095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */,
 				492B3D601F3740C800E5E7F0 /* AGControlMidiCCIn.mm in Sources */,
+				09DDE4B82231AA4A008ACF0B /* AGEditTouchHandler.mm in Sources */,
 				09B01A042085DA9C0071C8EC /* AGUILoadDialog.cpp in Sources */,
 				09412E091A210B630065598D /* sputil.cpp in Sources */,
 				0987409C17B98D7C0098511A /* AGNode.mm in Sources */,
+				09DDE4BB2231AA4A008ACF0B /* AGDrawFreedrawTouchHandler.mm in Sources */,
 				098740A017BA2AB90098511A /* mo_audio.mm in Sources */,
 				494019CA1F21CC6A000F05E8 /* AGPGMidiContext.mm in Sources */,
 				098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */,

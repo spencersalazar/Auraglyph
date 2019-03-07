@@ -15,7 +15,7 @@
 /* normAngle()
  - Normalize angle to [0, 2*pi)
  */
-float normAngle(float th)
+static inline float normAngle(float th)
 {
     if(th == INFINITY || th == -INFINITY || th == NAN)
         return th;

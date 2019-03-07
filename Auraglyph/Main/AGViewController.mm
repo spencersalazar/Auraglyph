@@ -7,40 +7,58 @@
 //
 
 #import "AGViewController.h"
+
+// Basics
+#import "AGDef.h"
 #import "Geometry.h"
-//#import "ShaderHelper.h"
-//#import "ES2Render.h"
-#import "AGHandwritingRecognizer.h"
+#import "GeoGenerator.h"
+#import "spstl.h"
+#import "TexFont.h"
+#import "NSString+STLString.h"
+
+// Data model
 #import "AGInteractiveObject.h"
 #import "AGNode.h"
 #import "AGFreeDraw.h"
-#import "AGAudioManager.h"
-#import "AGUserInterface.h"
-#import "TexFont.h"
-#import "AGDef.h"
-#import "AGTrainerViewController.h"
-#import "AGGenericShader.h"
-#import "AGTouchHandler.h"
-#import "AGAboutBox.h"
-#import "AGDocument.h"
-#import "AGDocumentManager.h"
-#import "GeoGenerator.h"
-#import "spstl.h"
-#import "AGAnalytics.h"
-#import "AGUISaveDialog.h"
-#import "AGUILoadDialog.h"
-#import "AGPreferences.h"
-#import "AGDashboard.h"
-#import "NSString+STLString.h"
-#import "AGPGMidiContext.h"
+
+// Managers/etc
+#import "AGHandwritingRecognizer.h"
 #import "AGGraphManager.h"
 #import "AGFileManager.h"
 #import "AGGraph.h"
-#import "AGTutorial.h"
-#import "AGModalDialog.h"
+#import "AGAudioManager.h"
+#import "AGGenericShader.h"
 #import "AGActivityManager.h"
 #import "AGUndoManager.h"
+#import "AGAnalytics.h"
 
+// Touch handlers
+#import "AGTouchHandler.h"
+#import "AGConnectTouchHandler.h"
+#import "AGMoveNodeTouchHandler.h"
+#import "AGDrawNodeTouchHandler.h"
+#import "AGDrawFreedrawTouchHandler.h"
+#import "AGEraseFreedrawTouchHandler.h"
+
+// Document management
+#import "AGDocument.h"
+#import "AGDocumentManager.h"
+
+// UI
+#import "AGUserInterface.h"
+#import "AGTrainerViewController.h"
+#import "AGDashboard.h"
+#import "AGAboutBox.h"
+#import "AGUISaveDialog.h"
+#import "AGUILoadDialog.h"
+#import "AGPreferences.h"
+#import "AGTutorial.h"
+#import "AGModalDialog.h"
+
+// MIDI (for some reason?)
+#import "AGPGMidiContext.h"
+
+// STL
 #import <list>
 #import <map>
 
