@@ -51,8 +51,6 @@ static AGHandwritingRecognizerFigure g_figureForShape[] =
 };
 
 
-static AGHandwritingRecognizer * g_instance = NULL;
-
 AGHandwritingRecognizer &AGHandwritingRecognizer::instance()
 {
     static AGHandwritingRecognizer s_instance;
