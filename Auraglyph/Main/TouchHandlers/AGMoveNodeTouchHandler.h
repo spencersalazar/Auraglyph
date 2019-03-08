@@ -11,10 +11,7 @@
 #import "AGTouchHandler.h"
 
 #import "Geometry.h"
-#import "AGHandwritingRecognizer.h"
 #import "AGNode.h"
-#import "AGUserInterface.h"
-#import "AGNodeSelector.h"
 
 @interface AGMoveNodeTouchHandler : AGTouchHandler
 {

@@ -1,5 +1,5 @@
 //
-//  AGTouchHandler.h
+//  AGDrawFreedrawTouchHandler.h
 //  Auragraph
 //
 //  Created by Spencer Salazar on 2/2/14.
@@ -9,8 +9,11 @@
 #import <Foundation/Foundation.h>
 
 #import "AGTouchHandler.h"
+
 #import "Geometry.h"
 #import "AGHandwritingRecognizer.h"
+
+#include <vector>
 
 
 @interface AGDrawFreedrawTouchHandler : AGTouchHandler

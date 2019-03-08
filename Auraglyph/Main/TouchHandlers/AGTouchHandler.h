@@ -9,10 +9,6 @@
 #import <Foundation/Foundation.h>
 
 #import "Geometry.h"
-#import "AGHandwritingRecognizer.h"
-#import "AGNode.h"
-#import "AGUserInterface.h"
-#import "AGNodeSelector.h"
 
 /* TODO: convert all of this to C++ */
 

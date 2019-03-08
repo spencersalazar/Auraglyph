@@ -6,37 +6,22 @@
 //  Copyright (c) 2014 Spencer Salazar. All rights reserved.
 //
 
-#import "AGTouchHandler.h"
 #import "AGConnectTouchHandler.h"
 
-#import "AGViewController.h"
-#import "Geometry.h"
-#import "ShaderHelper.h"
-#import "hsv.h"
-#import "ES2Render.h"
-#import "AGHandwritingRecognizer.h"
-#import "AGNode.h"
-#import "AGFreeDraw.h"
-#import "AGCompositeNode.h"
-#import "AGAudioCapturer.h"
-#import "AGAudioManager.h"
-#import "AGUserInterface.h"
-#import "TexFont.h"
 #import "AGDef.h"
-#import "AGTrainerViewController.h"
-#import "AGNodeSelector.h"
-#import "AGUINodeEditor.h"
-#import "AGGenericShader.h"
-#include "AGActivityManager.h"
-#include "AGActivity.h"
-#import "AGAnalytics.h"
 
+#import "Geometry.h"
+#import "TexFont.h"
 #import "GeoGenerator.h"
 #import "spMath.h"
 
 #include "AGStyle.h"
-
-#import <set>
+#import "AGViewController.h"
+#import "AGNode.h"
+#import "AGGenericShader.h"
+#import "AGActivityManager.h"
+#import "AGActivity.h"
+#import "AGAnalytics.h"
 
 
 //------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 //
-//  AGTouchHandler.h
+//  AGDrawNodeTouchHandler.h
 //  Auragraph
 //
 //  Created by Spencer Salazar on 2/2/14.
@@ -10,7 +10,8 @@
 
 #import "AGTouchHandler.h"
 
-
+/** Touch handler for drawing nodes. 
+ */
 @interface AGDrawNodeTouchHandler : AGTouchHandler
 
 @end

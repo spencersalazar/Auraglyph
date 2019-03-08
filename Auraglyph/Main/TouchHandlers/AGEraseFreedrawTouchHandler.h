@@ -1,5 +1,5 @@
 //
-//  AGTouchHandler.h
+//  AGEraseFreedrawTouchHandler.h
 //  Auragraph
 //
 //  Created by Spencer Salazar on 2/2/14.

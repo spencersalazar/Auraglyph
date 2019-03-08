@@ -1,42 +1,22 @@
 //
-//  AGTouchHandler.m
+//  AGDrawFreedrawTouchHandler.m
 //  Auragraph
 //
 //  Created by Spencer Salazar on 2/2/14.
 //  Copyright (c) 2014 Spencer Salazar. All rights reserved.
 //
 
-#import "AGTouchHandler.h"
 #import "AGDrawFreedrawTouchHandler.h"
 
-#import "AGViewController.h"
+#import "AGDef.h"
 #import "Geometry.h"
-#import "ShaderHelper.h"
-#import "hsv.h"
-#import "ES2Render.h"
-#import "AGHandwritingRecognizer.h"
+
+#import "AGViewController.h"
 #import "AGNode.h"
 #import "AGFreeDraw.h"
-#import "AGCompositeNode.h"
-#import "AGAudioCapturer.h"
-#import "AGAudioManager.h"
-#import "AGUserInterface.h"
-#import "TexFont.h"
-#import "AGDef.h"
-#import "AGTrainerViewController.h"
-#import "AGNodeSelector.h"
-#import "AGUINodeEditor.h"
+#import "AGStyle.h"
 #import "AGGenericShader.h"
-#include "AGActivityManager.h"
-#include "AGActivity.h"
 #import "AGAnalytics.h"
-
-#import "GeoGenerator.h"
-#import "spMath.h"
-
-#include "AGStyle.h"
-
-#import <set>
 
 
 //------------------------------------------------------------------------------
