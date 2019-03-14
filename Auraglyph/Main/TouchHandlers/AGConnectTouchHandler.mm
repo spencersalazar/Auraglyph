@@ -11,6 +11,7 @@
 #import "AGDef.h"
 
 #import "Geometry.h"
+#import "Matrix.h"
 #import "TexFont.h"
 #import "GeoGenerator.h"
 #import "spMath.h"
@@ -135,7 +136,7 @@ public:
     {
         AGRenderObject::update(t, dt);
         
-        GLKMatrix4 baseModelView = m_renderState.modelview;
+        Matrix4 baseModelView = m_renderState.modelview;
         
         m_alpha.interp();
         m_textAlpha.interp();
@@ -148,14 +149,14 @@ public:
         m_textColor.a = m_textAlpha;
         
         GLvertex3f position = lerp(m_posLerp, m_node->position(), m_pos);
-        m_renderState.modelview = GLKMatrix4Multiply(baseModelView, GLKMatrix4MakeTranslation(position.x, position.y, position.z));
+        m_renderState.modelview = baseModelView.translate(position);
         float radius = 0.00275*AGStyle::oldGlobalScale;
         m_renderState.modelview = GLKMatrix4Multiply(m_renderState.modelview, GLKMatrix4MakeScale(radius, radius, radius));
         
         GLvertex3f textPosition = lerp(m_textPosLerp, position+m_textOriginOffset, position+m_textOffset);
-        m_textMV = GLKMatrix4Multiply(baseModelView, GLKMatrix4MakeTranslation(textPosition.x, textPosition.y, textPosition.z));
+        m_textMV = baseModelView.translate(textPosition);
         float textScale = AGPortBrowserPort_TextScale;
-        m_textMV = GLKMatrix4Multiply(m_textMV, GLKMatrix4MakeScale(textScale, textScale, textScale));
+        m_textMV.scaleInPlace(textScale, textScale, textScale);
     }
     
     virtual void render()
@@ -196,7 +197,7 @@ private:
     const TextPosition m_textPosition;
     GLvertex3f m_textOffset;
     GLvertex3f m_textOriginOffset;
-    GLKMatrix4 m_textMV;
+    Matrix4 m_textMV;
     GLcolor4f m_textColor;
     
     AGRenderInfoV m_portRenderInfo;

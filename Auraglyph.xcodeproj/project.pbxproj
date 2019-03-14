@@ -23,6 +23,7 @@
 		0923100E1F46163200DF06B5 /* AGUndoManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0923100C1F46163200DF06B5 /* AGUndoManager.cpp */; };
 		092310121F46399800DF06B5 /* AGGraphManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 092310101F46399800DF06B5 /* AGGraphManager.cpp */; };
 		0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */; };
+		092CF2632239E19F002C523D /* Matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 092CF2622239E19F002C523D /* Matrix.cpp */; };
 		093395691A019D43009E4802 /* Orbitron-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 093395681A019D43009E4802 /* Orbitron-Regular.ttf */; };
 		0933956B1A019E4F009E4802 /* Orbitron-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */; };
 		0933956E1A08799A009E4802 /* AGFormulaNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0933956C1A08799A009E4802 /* AGFormulaNode.mm */; };
@@ -263,6 +264,8 @@
 		092310111F46399800DF06B5 /* AGGraphManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGGraphManager.h; sourceTree = "<group>"; };
 		0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGInputNode.mm; sourceTree = "<group>"; };
 		0927D7DF1ADCE4E000AD8AE5 /* AGInputNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGInputNode.h; sourceTree = "<group>"; };
+		092CF2602239E19F002C523D /* Matrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix.h; sourceTree = "<group>"; };
+		092CF2622239E19F002C523D /* Matrix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Matrix.cpp; sourceTree = "<group>"; };
 		093395681A019D43009E4802 /* Orbitron-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Orbitron-Regular.ttf"; sourceTree = "<group>"; };
 		0933956A1A019E4F009E4802 /* Orbitron-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Orbitron-Medium.ttf"; sourceTree = "<group>"; };
 		0933956C1A08799A009E4802 /* AGFormulaNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = AGFormulaNode.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -888,6 +891,8 @@
 		095D12EE17ACA9CA0048A012 /* libsp */ = {
 			isa = PBXGroup;
 			children = (
+				092CF2602239E19F002C523D /* Matrix.h */,
+				092CF2622239E19F002C523D /* Matrix.cpp */,
 				09E5EC7E18A36A9D00B21D97 /* SPFilter.h */,
 				09E5EC7D18A36A9D00B21D97 /* SPFilter.cpp */,
 				0987409D17BA2AB90098511A /* mo_audio.h */,
@@ -1375,6 +1380,7 @@
 				09B962551DDB1488001DCFB1 /* AGUISaveDialog.cpp in Sources */,
 				09DDE4BE2231AA4A008ACF0B /* AGSelectNodeTouchHandler.mm in Sources */,
 				098F9B3A19EE49BA00CE2F24 /* AGRenderObject.mm in Sources */,
+				092CF2632239E19F002C523D /* Matrix.cpp in Sources */,
 				0939D361206D693200EB3C1B /* AGGraph.cpp in Sources */,
 				095D12FF17ACAB7B0048A012 /* ShaderHelper.mm in Sources */,
 				095E853117B358FC0065EF8E /* shaperectst.mm in Sources */,
