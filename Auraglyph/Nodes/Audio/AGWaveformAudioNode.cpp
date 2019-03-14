@@ -30,6 +30,9 @@ private:
     
     AGUIButton *m_pinButton;
     
+    constexpr static const float MAX_FREQ_TO_DRAW_PHASE = 4;
+    constexpr static const float FREQ_TO_DRAW_FADED_PHASE = 2;
+
 public:
     AGWaveformEditor(AGAudioWaveformNode *node) :
     m_node(node), m_doneEditing(false)
@@ -198,13 +201,25 @@ public:
                      1.0f, m_waveformSize.y*0.5f);
         
         // draw phase
-//        glLineWidth(1.0f);
-//        float phaseOffset = (m_node->m_phase-0.5f);
-//        glVertexAttrib4fv(AGVertexAttribColor, (const float *) &GLcolor4f::white);
-//        drawLineStrip((GLvertex2f[]) {
-//            m_waveformPos + GLvertex2f{ phaseOffset*m_waveformSize.x,  m_waveformSize.y*0.5f },
-//            m_waveformPos + GLvertex2f{ phaseOffset*m_waveformSize.x, -m_waveformSize.y*0.5f },
-//        }, 2);
+        float freq = m_node->param(AGAudioWaveformNode::PARAM_FREQ).getFloat();
+        if (freq < MAX_FREQ_TO_DRAW_PHASE) {
+            glLineWidth(4.0f);
+            float phaseOffset = (m_node->m_phase-0.5f);
+            
+            float alpha = 0.5;
+            if (freq > FREQ_TO_DRAW_FADED_PHASE)
+            {
+                // lerp from alpha 0.5->0 with freq=mid->max
+                float d = (MAX_FREQ_TO_DRAW_PHASE-freq)/(MAX_FREQ_TO_DRAW_PHASE-FREQ_TO_DRAW_FADED_PHASE);
+                alpha = alpha*(d); // lerp: v1*d+v2*(1-d) (v2 is 0 here)
+            }
+            AGStyle::foregroundColor().withAlpha(alpha).set();
+            
+            drawLineStrip((GLvertex2f[]) {
+                m_waveformPos + GLvertex2f{ phaseOffset*m_waveformSize.x,  m_waveformSize.y*0.5f },
+                m_waveformPos + GLvertex2f{ phaseOffset*m_waveformSize.x, -m_waveformSize.y*0.5f },
+            }, 2);
+        }
         
         //AGRenderObject::render();
         renderChildren();
