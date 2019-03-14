@@ -51,6 +51,7 @@
 {
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
     GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
+    GLvertex3f fixedPos = [_viewController fixedCoordinateForScreenCoordinate:p];
     
     float travel = _firstPoint.distanceSquaredTo(GLvertex2f(p.x, p.y));
     if(travel > _maxTouchTravel)
@@ -63,7 +64,6 @@
     }
     
     AGUITrash &trash = AGUITrash::instance();
-    GLvertex3f fixedPos = GLKMatrix4MultiplyVector4(AGNode::cameraMatrix(), pos.asGLKVector4());
     if(trash.hitTest(fixedPos))
         trash.activate();
     else
@@ -73,8 +73,8 @@
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     CGPoint p = [[touches anyObject] locationInView:_viewController.view];
-    GLvertex3f pos = [_viewController worldCoordinateForScreenCoordinate:p];
-    
+    GLvertex3f fixedPos = [_viewController fixedCoordinateForScreenCoordinate:p];
+
     AGUITrash &trash = AGUITrash::instance();
     trash.deactivate();
     
@@ -98,7 +98,6 @@
     {
         AGAnalytics::instance().eventMoveNode(_moveNode->type());
         
-        GLvertex3f fixedPos = GLKMatrix4MultiplyVector4(AGNode::cameraMatrix(), pos.asGLKVector4());
         if(trash.hitTest(fixedPos))
         {
             AGAnalytics::instance().eventDeleteNode(_moveNode->type());
@@ -115,7 +114,6 @@
         }
     }
 }
-
 
 @end
 
