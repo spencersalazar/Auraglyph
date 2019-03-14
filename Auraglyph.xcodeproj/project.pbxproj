@@ -65,7 +65,6 @@
 		095E852817B354BE0065EF8E /* libpreproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851817B354BE0065EF8E /* libpreproc.a */; };
 		095E852B17B354BE0065EF8E /* libutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851B17B354BE0065EF8E /* libutil.a */; };
 		095E852C17B354BE0065EF8E /* libwordreccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851C17B354BE0065EF8E /* libwordreccommon.a */; };
-		095E853117B358FC0065EF8E /* shaperectst.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E852F17B358FC0065EF8E /* shaperectst.mm */; };
 		095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */; };
 		09635AFF21E01A3000921309 /* AGActivityManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09635AFD21E01A3000921309 /* AGActivityManager.cpp */; };
 		09635B0221E0202400921309 /* AGActivity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09635B0021E0202400921309 /* AGActivity.cpp */; };
@@ -387,8 +386,6 @@
 		095E851A17B354BE0065EF8E /* libsubstroke.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsubstroke.a; sourceTree = "<group>"; };
 		095E851B17B354BE0065EF8E /* libutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libutil.a; sourceTree = "<group>"; };
 		095E851C17B354BE0065EF8E /* libwordreccommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwordreccommon.a; sourceTree = "<group>"; };
-		095E852F17B358FC0065EF8E /* shaperectst.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = shaperectst.mm; sourceTree = "<group>"; };
-		095E853017B358FC0065EF8E /* shaperectst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shaperectst.h; sourceTree = "<group>"; };
 		095E853217B35A330065EF8E /* LTKCheckSumGenerate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKCheckSumGenerate.h; sourceTree = "<group>"; };
 		095E853317B35A330065EF8E /* LTKConfigFileReader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKConfigFileReader.h; sourceTree = "<group>"; };
 		095E853417B35A330065EF8E /* LTKDynamicTimeWarping.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LTKDynamicTimeWarping.h; sourceTree = "<group>"; };
@@ -699,55 +696,41 @@
 			path = Control;
 			sourceTree = "<group>";
 		};
-		092F3797208936F2002A2754 /* Main */ = {
+		092CF2642239F0AD002C523D /* Audio */ = {
 			isa = PBXGroup;
 			children = (
-				095E853017B358FC0065EF8E /* shaperectst.h */,
-				09077FD117C0BFFA00DFE42F /* AGDef.h */,
-				095E852F17B358FC0065EF8E /* shaperectst.mm */,
-				095D12D617ACA36C0048A012 /* AGAppDelegate.h */,
-				095D12D717ACA36C0048A012 /* AGAppDelegate.mm */,
-				095D12E317ACA36C0048A012 /* AGViewController.h */,
-				095D12E417ACA36C0048A012 /* AGViewController.mm */,
-				095D12E617ACA36C0048A012 /* AGViewController.xib */,
 				0939D35E206D693200EB3C1B /* AGGraph.h */,
 				0939D360206D693200EB3C1B /* AGGraph.cpp */,
 				092310111F46399800DF06B5 /* AGGraphManager.h */,
 				092310101F46399800DF06B5 /* AGGraphManager.cpp */,
-				09DDE4A82231A993008ACF0B /* TouchHandlers */,
-				09635B0121E0202400921309 /* AGActivity.h */,
-				09635B0021E0202400921309 /* AGActivity.cpp */,
-				09635AFE21E01A3000921309 /* AGActivityManager.h */,
-				09635AFD21E01A3000921309 /* AGActivityManager.cpp */,
-				0923100D1F46163200DF06B5 /* AGUndoManager.h */,
-				0923100C1F46163200DF06B5 /* AGUndoManager.cpp */,
-				095E854017B5E1D30065EF8E /* AGHandwritingRecognizer.h */,
-				095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */,
 				098740A117BA2EA70098511A /* AGAudioManager.h */,
 				098740A217BA2EA70098511A /* AGAudioManager.mm */,
 				09F700B51D6FA79B00294BDD /* AGAudioRenderer.h */,
 				09B674461D6DA2B200F84E09 /* AGAudioCapturer.h */,
 				09F700B41D6FA75900294BDD /* AGAudioOutputDestination.h */,
+				09EE657E1EFB59BE00B4ED62 /* AGAudioRecorder.h */,
+				09EE657D1EFB59BE00B4ED62 /* AGAudioRecorder.mm */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		092CF2652239F0C8002C523D /* Graphics */ = {
+			isa = PBXGroup;
+			children = (
 				098F9B3919EE49BA00CE2F24 /* AGRenderObject.h */,
 				098F9B3819EE49BA00CE2F24 /* AGRenderObject.mm */,
 				0985E5351D8C952800B536C8 /* AGInteractiveObject.h */,
 				0985E5341D8C952800B536C8 /* AGInteractiveObject.mm */,
-				49C8AB5A1F05E664005671BE /* AGFreeDraw.h */,
-				49C8AB5C1F05E6F1005671BE /* AGFreeDraw.cpp */,
-				09FC924A1A153A83005D14A3 /* AGConnection.h */,
-				09FC92491A153A83005D14A3 /* AGConnection.mm */,
-				093395761A08BFAC009E4802 /* AGNodeSelector.h */,
-				093395751A08BFAC009E4802 /* AGNodeSelector.cpp */,
-				091C70CB1C48A9A600B513C2 /* AGUINodeEditor.h */,
-				091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */,
-				09F29DAE1CCA086200502C01 /* AGSlider.h */,
-				09F29DAD1CCA086200502C01 /* AGSlider.cpp */,
-				0934B6771E22135E009259E2 /* AGFileBrowser.h */,
-				0934B6761E22135E009259E2 /* AGFileBrowser.cpp */,
-				09E5EC8118A46F7300B21D97 /* AGControl.h */,
-				09E5EC8018A46F7300B21D97 /* AGControl.mm */,
 				0901C1BB17BE2F970032904B /* AGGenericShader.h */,
 				0901C1BA17BE2F970032904B /* AGGenericShader.mm */,
+				092CF2662239F103002C523D /* Shaders */,
+			);
+			path = Graphics;
+			sourceTree = "<group>";
+		};
+		092CF2662239F103002C523D /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
 				095D12E117ACA36C0048A012 /* Shader.vsh */,
 				095D12DF17ACA36C0048A012 /* Shader.fsh */,
 				09D9D2E917ECF65D00938871 /* Clip.vsh */,
@@ -758,6 +741,65 @@
 				09C7C3E218CF27AC0099CE88 /* Waveform.fsh */,
 				098C0E1317C4278C00171366 /* Screen.vsh */,
 				098C0E1217C4278C00171366 /* Screen.fsh */,
+			);
+			path = Shaders;
+			sourceTree = "<group>";
+		};
+		092CF2672239F11C002C523D /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0987409B17B98D7C0098511A /* AGNode.h */,
+				0987409A17B98D7C0098511A /* AGNode.mm */,
+				098740AC17BC377E0098511A /* AGAudioNode.h */,
+				098740AB17BC377E0098511A /* AGAudioNode.mm */,
+				093395721A088849009E4802 /* AGControlNode.mm */,
+				093395731A088849009E4802 /* AGControlNode.h */,
+				0927D7DF1ADCE4E000AD8AE5 /* AGInputNode.h */,
+				0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */,
+				09F6E8791D6A3758006DBC9E /* AGOutputNode.h */,
+				09F6E8781D6A3758006DBC9E /* AGOutputNode.mm */,
+				49C8AB5A1F05E664005671BE /* AGFreeDraw.h */,
+				49C8AB5C1F05E6F1005671BE /* AGFreeDraw.cpp */,
+				09FC924A1A153A83005D14A3 /* AGConnection.h */,
+				09FC92491A153A83005D14A3 /* AGConnection.mm */,
+				09E5EC8118A46F7300B21D97 /* AGControl.h */,
+				09E5EC8018A46F7300B21D97 /* AGControl.mm */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		092CF2682239F2EB002C523D /* Interface */ = {
+			isa = PBXGroup;
+			children = (
+				093395761A08BFAC009E4802 /* AGNodeSelector.h */,
+				093395751A08BFAC009E4802 /* AGNodeSelector.cpp */,
+				091C70CB1C48A9A600B513C2 /* AGUINodeEditor.h */,
+				091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */,
+				09F29DAE1CCA086200502C01 /* AGSlider.h */,
+				09F29DAD1CCA086200502C01 /* AGSlider.cpp */,
+				0934B6771E22135E009259E2 /* AGFileBrowser.h */,
+				0934B6761E22135E009259E2 /* AGFileBrowser.cpp */,
+			);
+			path = Interface;
+			sourceTree = "<group>";
+		};
+		092CF2692239F379002C523D /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				09077FD117C0BFFA00DFE42F /* AGDef.h */,
+				095D12D617ACA36C0048A012 /* AGAppDelegate.h */,
+				095D12D717ACA36C0048A012 /* AGAppDelegate.mm */,
+				095D12E317ACA36C0048A012 /* AGViewController.h */,
+				095D12E417ACA36C0048A012 /* AGViewController.mm */,
+				095D12E617ACA36C0048A012 /* AGViewController.xib */,
+				09635B0121E0202400921309 /* AGActivity.h */,
+				09635B0021E0202400921309 /* AGActivity.cpp */,
+				09635AFE21E01A3000921309 /* AGActivityManager.h */,
+				09635AFD21E01A3000921309 /* AGActivityManager.cpp */,
+				0923100D1F46163200DF06B5 /* AGUndoManager.h */,
+				0923100C1F46163200DF06B5 /* AGUndoManager.cpp */,
+				095E854017B5E1D30065EF8E /* AGHandwritingRecognizer.h */,
+				095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */,
 				0910817F1A0B63DB0063028B /* AGStyle.h */,
 				0910817E1A0B63DB0063028B /* AGStyle.mm */,
 				09FC92461A14F55D005D14A3 /* AGTimer.h */,
@@ -768,13 +810,24 @@
 				09B9626C1DDE3F1E001DCFB1 /* AGDocumentManager.mm */,
 				0934B67A1E223B47009259E2 /* AGFileManager.h */,
 				0934B6791E223B47009259E2 /* AGFileManager.mm */,
-				09EE657E1EFB59BE00B4ED62 /* AGAudioRecorder.h */,
-				09EE657D1EFB59BE00B4ED62 /* AGAudioRecorder.mm */,
 				09B962861DE2ED38001DCFB1 /* AGPreferences.h */,
 				09B962851DE2ED38001DCFB1 /* AGPreferences.mm */,
 				0944E8C51DCB325D00EB8087 /* AGAnalytics.h */,
 				0944E8C41DCB325D00EB8087 /* AGAnalytics.mm */,
 				09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		092F3797208936F2002A2754 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				092CF2692239F379002C523D /* Core */,
+				092CF2642239F0AD002C523D /* Audio */,
+				092CF2652239F0C8002C523D /* Graphics */,
+				092CF2672239F11C002C523D /* Model */,
+				09DDE4A82231A993008ACF0B /* TouchHandlers */,
+				092CF2682239F2EB002C523D /* Interface */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -1044,16 +1097,6 @@
 		09B674411D6D9D6500F84E09 /* Nodes */ = {
 			isa = PBXGroup;
 			children = (
-				0987409B17B98D7C0098511A /* AGNode.h */,
-				0987409A17B98D7C0098511A /* AGNode.mm */,
-				098740AC17BC377E0098511A /* AGAudioNode.h */,
-				098740AB17BC377E0098511A /* AGAudioNode.mm */,
-				093395721A088849009E4802 /* AGControlNode.mm */,
-				093395731A088849009E4802 /* AGControlNode.h */,
-				0927D7DF1ADCE4E000AD8AE5 /* AGInputNode.h */,
-				0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */,
-				09F6E8791D6A3758006DBC9E /* AGOutputNode.h */,
-				09F6E8781D6A3758006DBC9E /* AGOutputNode.mm */,
 				09230FB91F3FDE3700DF06B5 /* Audio */,
 				09230FF11F41868A00DF06B5 /* Control */,
 				49942E561F30515A00914E75 /* MIDI */,
@@ -1383,7 +1426,6 @@
 				092CF2632239E19F002C523D /* Matrix.cpp in Sources */,
 				0939D361206D693200EB3C1B /* AGGraph.cpp in Sources */,
 				095D12FF17ACAB7B0048A012 /* ShaderHelper.mm in Sources */,
-				095E853117B358FC0065EF8E /* shaperectst.mm in Sources */,
 				095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */,
 				492B3D601F3740C800E5E7F0 /* AGControlMidiCCIn.mm in Sources */,
 				09DDE4B82231AA4A008ACF0B /* AGEditTouchHandler.mm in Sources */,
