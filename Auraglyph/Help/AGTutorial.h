@@ -16,14 +16,16 @@
 #include <map>
 
 class AGTutorialStep;
+class AGTutorialEnvironment;
+class AGViewController_;
 
 class AGTutorial : public AGRenderObject
 {
 public:
     
-    static AGTutorial *createInitialTutorial();
+    static AGTutorial *createInitialTutorial(AGViewController_ *viewController);
     
-    AGTutorial(std::list<AGTutorialStep*> &steps);
+    AGTutorial(std::list<AGTutorialStep*> &steps, AGViewController_ *viewController);
     ~AGTutorial();
     
     virtual void update(float t, float dt);
@@ -32,6 +34,9 @@ public:
     bool isComplete();
     
 private:
+    std::unique_ptr<AGTutorialEnvironment> m_environment;
+    
     std::list<AGTutorialStep*> m_steps;
+    std::list<AGTutorialStep*> m_activeSteps;
     std::list<AGTutorialStep*>::iterator m_currentStep;
 };

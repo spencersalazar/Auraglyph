@@ -12,6 +12,7 @@
 #include "TexFont.h"
 #include <string>
 #include "Animation.h"
+#include "Matrix.h"
 
 
 using namespace std;
@@ -104,15 +105,11 @@ public:
         m_yScale = lincurvef(AGStyle::open_animTimeY/2, 1, AGStyle::open_squeezeHeight);
     }
     
-    bool finishedClosing()
-    {
-        return m_xScale <= AGStyle::open_squeezeHeight;
-    }
+    bool finishedClosing() { return m_xScale <= AGStyle::open_squeezeHeight; }
     
-    bool isHorzOpen()
-    {
-        return m_xScale >= 0.99;
-    }
+    bool isHorzOpen() { return m_xScale >= 0.99; }
+    
+    float scaleY() { return m_yScale; }
     
     GLKMatrix4 matrix()
     {
@@ -129,6 +126,13 @@ public:
                                1.0f);
     }
     
+    Matrix4 applyMat(const Matrix4 &m)
+    {
+        float scaleX = m_yScale <= AGStyle::open_squeezeHeight ? (float)m_xScale : 1.0f;
+        float scaleY = m_xScale >= 0.99f ? (float)m_yScale : AGStyle::open_squeezeHeight;
+        return m.scale(scaleX, scaleY, 1.0f);
+    }
+
     void update(float t, float dt)
     {
         if(m_yScale <= AGStyle::open_squeezeHeight) m_xScale.update(dt);

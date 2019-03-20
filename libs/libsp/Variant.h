@@ -20,9 +20,11 @@ public:
     enum Type { NONE = 0, INT, FLOAT, STRING, VERTEX2, VERTEX3, };
     
     Variant() : m_type(NONE), m_dynamic(false) { }
-    Variant(int i) : m_type(INT), m_dynamic(false), m_i(i) { }
+    Variant(int i) : m_type(INT), m_dynamic(false), m_i(i), m_f(i) { }
     Variant(float f) : m_type(FLOAT), m_dynamic(false), m_f(f) { }
+    Variant(double f) : m_type(FLOAT), m_dynamic(false), m_f((float)f) { }
     Variant(const std::string &str) : m_type(STRING), m_dynamic(false), m_str(str) { }
+    Variant(const char *str) : m_type(STRING), m_dynamic(false), m_str(std::string(str)) { }
     Variant(const GLvertex2f &v2) : m_type(VERTEX2), m_dynamic(false), m_v2(v2) { }
     Variant(const GLvertex3f &v3) : m_type(VERTEX3), m_dynamic(false), m_v3(v3) { }
     
@@ -48,8 +50,8 @@ public:
 
 private:
     
-    int m_i;
-    float m_f;
+    int m_i = 0;
+    float m_f = 0;
     std::string m_str;
     GLvertex2f m_v2;
     GLvertex3f m_v3;

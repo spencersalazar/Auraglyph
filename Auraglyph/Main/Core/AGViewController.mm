@@ -311,7 +311,7 @@ static AGViewController * g_instance = nil;
     
     AGActivityManager::instance().addActivityListener(&AGUndoManager::instance());
     
-    // _currentTutorial = AGTutorial::createInitialTutorial();
+    _currentTutorial = AGTutorial::createInitialTutorial(_proxy);
 }
 
 - (void)initUI
@@ -578,6 +578,16 @@ static AGViewController * g_instance = nil;
 - (const list<AGFreeDraw *> &)freedraws
 {
     return _freedraws;
+}
+
+- (void) showDashboard
+{
+    _uiDashboard->unhide();
+}
+
+- (void) hideDashboard
+{
+    _uiDashboard->hide();
 }
 
 - (void)addTouchOutsideListener:(AGInteractiveObject *)listener
@@ -1447,4 +1457,15 @@ AGGraph *AGViewController_::graph()
 {
     return [m_viewController graph];
 }
+
+void AGViewController_::showDashboard()
+{
+    [m_viewController showDashboard];
+}
+
+void AGViewController_::hideDashboard()
+{
+    [m_viewController hideDashboard];
+}
+
 

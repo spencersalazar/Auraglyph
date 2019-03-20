@@ -68,6 +68,9 @@ enum AGDrawMode
 - (GLvertex3f)fixedCoordinateForScreenCoordinate:(CGPoint)p;
 - (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)node port:(int *)port;
 
+- (void) showDashboard;
+- (void) hideDashboard;
+
 + (NSString *)styleFontPath;
 
 @end
@@ -110,6 +113,9 @@ public:
     void addNodeToTopLevel(AGNode *node);
     AGGraph *graph();
     
+    void showDashboard();
+    void hideDashboard();
+
 private:
     AGViewController *m_viewController = nil;
 };

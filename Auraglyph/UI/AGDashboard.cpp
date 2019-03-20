@@ -373,3 +373,11 @@ void AGDashboard::onInterfaceOrientationChange()
     m_freedrawEraseButton->setPosition(modeButtonStartPos + GLvertex3f(m_freedrawButton->size().y*1.25, 0, 0));
     m_nodeButton->setPosition(modeButtonStartPos + GLvertex3f(0, m_freedrawButton->size().y*1.25, 0));
 }
+
+void AGDashboard::update(float t, float dt)
+{
+    AGRenderObject::update(t, dt);
+    
+    for(auto child : children())
+        child->m_renderState.alpha = m_alpha;
+}

@@ -26,6 +26,8 @@ public:
     
     bool renderFixed() override { return true; }
     
+    void update(float t, float dt) override;
+    
 private:
     AGViewController_ *m_viewController = nullptr;
     
