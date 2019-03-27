@@ -332,7 +332,7 @@ AGUIIconButton::IconMode AGUIIconButton::getIconMode()
 
 void AGUIIconButton::update(float t, float dt)
 {
-    AGInteractiveObject::update(t, dt);
+    AGRenderObject::update(t, dt);
     
     GLKMatrix4 parentModelview;
     if(m_parent) parentModelview = m_parent->m_renderState.modelview;
@@ -351,7 +351,7 @@ void AGUIIconButton::render()
 
     if(m_iconMode == ICONMODE_SQUARE)
     {
-        AGStyle::lightColor().set();
+        AGStyle::lightColor().withAlpha(m_renderState.alpha).set();
         // fill square
         if(isPressed()) drawTriangleFan(m_boxGeo, 4);
         // stroke square
@@ -362,23 +362,23 @@ void AGUIIconButton::render()
         // fill circle
         if(isPressed())
         {
-            AGStyle::lightColor().set();
+            AGStyle::lightColor().withAlpha(m_renderState.alpha).set();
             drawTriangleFan(m_boxGeo, 48);
         }
         // stroke circle + fill circle in bg color
         else
         {
-            AGStyle::frameBackgroundColor().set();
+            AGStyle::frameBackgroundColor().withAlpha(m_renderState.alpha).set();
             drawTriangleFan(m_boxGeo, 48);
-            AGStyle::lightColor().set();
+            AGStyle::lightColor().withAlpha(m_renderState.alpha).set();
             drawLineLoop(m_boxGeo+1, 47);
         }
     }
     
     if(isPressed())
-        AGStyle::darkColor().set();
+        AGStyle::darkColor().withAlpha(m_renderState.alpha).set();
     else
-        AGStyle::lightColor().set();
+        AGStyle::lightColor().withAlpha(m_renderState.alpha).set();
     
     if(m_iconGeo.size())
         drawGeometry(m_iconGeo.data(), m_iconGeo.size(), m_iconGeoType);
@@ -470,7 +470,7 @@ AGUITrash::~AGUITrash()
 
 void AGUITrash::update(float t, float dt)
 {
-    AGInteractiveObject::update(t, dt);
+    AGRenderObject::update(t, dt);
     
     if(m_active)
         m_scale = 1.25;
@@ -508,10 +508,7 @@ void AGUITrash::render()
     color.a = m_renderState.alpha;
 
     glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
-    if(m_active)
-        glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &color);
-    else
-        glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &color);
+    color.set();
     
     glEnable(GL_TEXTURE_2D);
     glActiveTexture(GL_TEXTURE0);

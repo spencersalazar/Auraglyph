@@ -74,10 +74,11 @@ void AGMenu::render()
     
     if(!m_open)
     {
-        AGStyle::frameBackgroundColor().set();
+        AGStyle::frameBackgroundColor().withAlpha(m_renderState.alpha).set();
         // draw frame background (fill rect)
         drawTriangleFan(m_frameGeo.data(), m_frameGeo.size());
-        AGStyle::foregroundColor().set();
+        
+        AGStyle::foregroundColor().withAlpha(m_renderState.alpha).set();
         // draw frame (stroke rect)
         drawLineLoop(m_frameGeo.data(), m_frameGeo.size());
         // draw icon
@@ -85,11 +86,12 @@ void AGMenu::render()
     }
     else
     {
-        AGStyle::foregroundColor().set();
+        AGStyle::foregroundColor().withAlpha(m_renderState.alpha).set();
         // draw frame (fill circle)
         drawGeometry(m_frameGeo.data(), m_frameGeo.size(), GL_TRIANGLE_FAN);
+        
         // draw icon (inverted color)
-        AGStyle::frameBackgroundColor().set();
+        AGStyle::frameBackgroundColor().withAlpha(m_renderState.alpha).set();
         drawGeometry(m_iconGeo.data(), m_iconGeo.size(), m_iconGeoKind);
     }
     
@@ -132,12 +134,12 @@ void AGMenu::render()
                 bgColor = AGStyle::foregroundColor();
             }
             
-            fgColor.a = m_itemsAlpha;
-            bgColor.a = m_itemsAlpha;
+            fgColor.a = m_itemsAlpha*m_renderState.alpha;
+            bgColor.a = m_itemsAlpha*m_renderState.alpha;
             
             if(i == m_selectedItem)
             {
-                glVertexAttrib4fv(AGVertexAttribColor, (const float *) &bgColor);
+                bgColor.set();
                 GLvrectf r = this->_boundingBoxForItem(i);
                 drawTriangleFan((GLvertex3f[]) {
                     { r.bl.x, r.bl.y, m_pos.z },
@@ -148,7 +150,7 @@ void AGMenu::render()
             }
             
             glLineWidth(4.0);
-            glVertexAttrib4fv(AGVertexAttribColor, (const float *) &fgColor);
+            fgColor.set();
             
             // draw bar on left side
             drawLineStrip((GLvertex2f[]) {

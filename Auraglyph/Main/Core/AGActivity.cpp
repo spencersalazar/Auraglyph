@@ -16,13 +16,13 @@
 #include "AGAudioNode.h"
 
 
-const std::string AGActivityEditParamActivityType = "EditParam";
-const std::string AGActivityDrawFigureActivityType = "DrawFigure";
-const std::string AGActivityCreateNodeActivityType = "CreateNode";
-const std::string AGActivityMoveNodeActivityType = "MoveNode";
-const std::string AGActivityDeleteNodeActivityType = "DeleteNode";
-const std::string AGActivityCreateConnectionActivityType = "CreateConnection";
-const std::string AGActivityDeleteConnectionActivityType = "DeleteConnection";
+const AGActivity::Type AGActivity::EditParamActivityType = "EditParam";
+const AGActivity::Type AGActivity::DrawNodeActivityType = "DrawNodeG";
+const AGActivity::Type AGActivity::CreateNodeActivityType = "CreateNode";
+const AGActivity::Type AGActivity::MoveNodeActivityType = "MoveNode";
+const AGActivity::Type AGActivity::DeleteNodeActivityType = "DeleteNode";
+const AGActivity::Type AGActivity::CreateConnectionActivityType = "CreateConnection";
+const AGActivity::Type AGActivity::DeleteConnectionActivityType = "DeleteConnection";
 
 
 //------------------------------------------------------------------------------
@@ -47,6 +47,7 @@ public:
 private:
     std::function<void ()> m_undo;
     std::function<void ()> m_redo;
+    std::function<std::string ()> m_serialize;
 };
 
 
@@ -59,7 +60,7 @@ AGActivity *AGActivity::editParamActivity(AGNode *node, int port, float oldValue
 {
     std::string uuid = node->uuid();
     AGUndoableActivity *action = new AGUndoableActivity(
-        AGActivityEditParamActivityType,
+        AGActivity::EditParamActivityType,
         "Parameter Change",
         [uuid, port, oldValue]() {
             // undo
@@ -78,13 +79,18 @@ AGActivity *AGActivity::editParamActivity(AGNode *node, int port, float oldValue
     return action;
 }
 
+AGActivity *AGActivity::drawNodeActivity(AGHandwritingRecognizerFigure figure)
+{
+    return new AGActivity(AGActivity::DrawNodeActivityType, "Draw Node");
+}
+
 AGActivity *AGActivity::createNodeActivity(AGNode *node)
 {
     bool isOutput = node->type() == "Output";
     AGDocument::Node serializedNode = node->serialize();
     std::string uuid = node->uuid();
     AGUndoableActivity *action = new AGUndoableActivity(
-        AGActivityCreateNodeActivityType,
+        AGActivity::CreateNodeActivityType,
         "Create Node",
         [uuid]() {
             // remove/delete the node
@@ -110,7 +116,7 @@ AGActivity *AGActivity::moveNodeActivity(AGNode *node, const GLvertex3f &oldPos,
 {
     std::string uuid = node->uuid();
     AGUndoableActivity *action = new AGUndoableActivity(
-        AGActivityMoveNodeActivityType,
+        AGActivity::MoveNodeActivityType,
         "Move Node",
         [uuid, oldPos]() {
             // move the node back
@@ -133,7 +139,7 @@ AGActivity *AGActivity::deleteNodeActivity(AGNode *node)
     AGDocument::Node serializedNode = node->serialize();
     std::string uuid = node->uuid();
     AGUndoableActivity *action = new AGUndoableActivity(
-        AGActivityDeleteNodeActivityType,
+        AGActivity::DeleteNodeActivityType,
         "Delete Node",
         [serializedNode, isOutput]() {
             // re-create/re-add the node
@@ -166,7 +172,7 @@ AGActivity *AGActivity::createConnectionActivity(AGConnection *connection)
     AGDocument::Connection serializedConnection = connection->serialize();
     std::string uuid = connection->uuid();
     AGUndoableActivity *action = new AGUndoableActivity(
-        AGActivityCreateConnectionActivityType,
+        AGActivity::CreateConnectionActivityType,
         "Create Connection",
         [uuid]() {
             // delete the connection
@@ -187,7 +193,7 @@ AGActivity *AGActivity::deleteConnectionActivity(AGConnection *connection)
     AGDocument::Connection serializedConnection = connection->serialize();
     std::string uuid = connection->uuid();
     AGUndoableActivity *action = new AGUndoableActivity(
-        AGActivityDeleteConnectionActivityType,
+        AGActivity::DeleteConnectionActivityType,
         "Delete Connection",
         [serializedConnection]() {
             // recreate the connection

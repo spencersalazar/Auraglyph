@@ -192,6 +192,8 @@ void AGRenderObject::update(float t, float dt)
     m_alpha.update(dt);
     
     m_renderState.alpha = m_alpha;
+    if(parent())
+        m_renderState.alpha *= parent()->m_renderState.alpha;
     m_renderState.projection = projectionMatrix();
     if(renderFixed())
         m_renderState.modelview = fixedModelViewMatrix();

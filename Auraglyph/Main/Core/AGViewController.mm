@@ -157,7 +157,7 @@ enum InterfaceMode
 - (void)_save:(BOOL)saveAs;
 - (void)_openLoad;
 - (void)_clearDocument;
-- (void)_newDocument;
+- (void)_newDocument:(BOOL)createDefaultOutputNode;
 - (void)_loadDocument:(AGDocument &)doc;
 
 @end
@@ -227,23 +227,24 @@ static AGViewController * g_instance = nil;
     
     _graph = new AGGraph;
     
-    /* load default program */
-    AGFile _lastOpened = AGPreferences::instance().lastOpenedDocument();
-    if(_lastOpened.m_filename.size() != 0 && AGFileManager::instance().fileExists(_lastOpened))
-    {
-        _currentDocumentFile = _lastOpened;
-        AGDocument doc = AGDocumentManager::instance().load(_lastOpened);
-        [self _loadDocument:doc];
-    }
-    else
-    {
-        // just create output node by itself
-        GLvertex3f pos = [self worldCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)];
-        AGNode *node = AGNodeManager::audioNodeManager().createNodeOfType("Output", pos);
-        AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
-        outputNode->setOutputDestination([AGAudioManager instance].masterOut);
-        
-        [self addNode:node];
+    bool doTutorial = true;
+    
+    if (doTutorial) {
+        _currentTutorial = AGTutorial::createInitialTutorial(_proxy);
+        [self _newDocument:NO];
+    } else {
+        /* load default program */
+        AGFile _lastOpened = AGPreferences::instance().lastOpenedDocument();
+        if(_lastOpened.m_filename.size() != 0 && AGFileManager::instance().fileExists(_lastOpened))
+        {
+            _currentDocumentFile = _lastOpened;
+            AGDocument doc = AGDocumentManager::instance().load(_lastOpened);
+            [self _loadDocument:doc];
+        }
+        else
+        {
+            [self _newDocument:YES];
+        }
     }
     
     g_instance = self;
@@ -310,8 +311,6 @@ static AGViewController * g_instance = nil;
 #endif // AG_EXPORT_NODES
     
     AGActivityManager::instance().addActivityListener(&AGUndoManager::instance());
-    
-    _currentTutorial = AGTutorial::createInitialTutorial(_proxy);
 }
 
 - (void)initUI
@@ -327,9 +326,6 @@ static AGViewController * g_instance = nil;
 //    _interfaceMode = INTERFACEMODE_USER;
     _interfaceMode = INTERFACEMODE_EDIT;
     
-    /* trash */
-    AGUITrash::instance().setPosition([self fixedCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-20)]);
-    
     /* modal dialog */
     _modalOverlay.init();
     AGModalDialog::setGlobalModalOverlay(&_modalOverlay);
@@ -341,8 +337,6 @@ static AGViewController * g_instance = nil;
     [self updateMatrices];
     
     _uiDashboard->onInterfaceOrientationChange();
-    
-    AGUITrash::instance().setPosition([self fixedCoordinateForScreenCoordinate:CGPointMake(self.view.bounds.size.width-30, self.view.bounds.size.height-30)]);
     
     _modalOverlay.setScreenSize(GLvertex2f(self.view.bounds.size.width, self.view.bounds.size.height));
 }
@@ -736,8 +730,6 @@ static AGViewController * g_instance = nil;
     float dt = self.timeSinceLastUpdate;
     _t += dt;
     
-    AGUITrash::instance().update(_t, dt);
-    
     _uiDashboard->update(_t, dt);
     
     _modalOverlay.update(_t, dt);
@@ -792,9 +784,6 @@ static AGViewController * g_instance = nil;
     glUseProgram(0);
     glBindVertexArrayOES(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
-    // render trash icon
-    AGUITrash::instance().render();
     
     // render objects
     for(AGInteractiveObject *object : _objects)
@@ -1295,18 +1284,20 @@ static AGViewController * g_instance = nil;
     });
 }
 
-- (void)_newDocument
+- (void)_newDocument:(BOOL)createDefaultOutputNode
 {
     [self _clearDocument];
     
     _currentDocumentFile = AGFile::UserFile("");
     _currentDocName = std::vector<std::vector<GLvertex2f>>();
     
-    // just create output node by itself
-    AGNode *node = AGNodeManager::audioNodeManager().createNodeOfType("Output", GLvertex3f(0, 0, 0));
-    AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
-    outputNode->setOutputDestination([AGAudioManager instance].masterOut);
-    [self addNode:node];
+    if (createDefaultOutputNode) {
+        // just create output node by itself
+        AGNode *node = AGNodeManager::audioNodeManager().createNodeOfType("Output", GLvertex3f(0, 0, 0));
+        AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
+        outputNode->setOutputDestination([AGAudioManager instance].masterOut);
+        [self addNode:node];
+    }
 }
 
 - (void)_loadDocument:(AGDocument &)doc
@@ -1372,7 +1363,7 @@ AGViewController_::~AGViewController_()
     
 void AGViewController_::createNew()
 {
-    [m_viewController _newDocument];
+    [m_viewController _newDocument:YES];
 }
 
 void AGViewController_::save()

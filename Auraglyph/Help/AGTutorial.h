@@ -9,7 +9,7 @@
 #pragma once
 
 #include "AGRenderObject.h"
-
+#include "AGActivityManager.h"
 #include "Variant.h"
 
 #include <list>
@@ -19,7 +19,7 @@ class AGTutorialStep;
 class AGTutorialEnvironment;
 class AGViewController_;
 
-class AGTutorial : public AGRenderObject
+class AGTutorial : public AGRenderObject, public AGActivityListener
 {
 public:
     
@@ -28,10 +28,12 @@ public:
     AGTutorial(std::list<AGTutorialStep*> &steps, AGViewController_ *viewController);
     ~AGTutorial();
     
-    virtual void update(float t, float dt);
-    virtual void render();
+    virtual void update(float t, float dt) override;
+    virtual void render() override;
     
     bool isComplete();
+    
+    void activityOccurred(AGActivity *activity) override;
     
 private:
     std::unique_ptr<AGTutorialEnvironment> m_environment;

@@ -16,6 +16,8 @@
 #import "AGCompositeNode.h"
 #import "AGHandwritingRecognizer.h"
 #import "AGAnalytics.h"
+#import "AGActivity.h"
+#import "AGActivityManager.h"
 
 #import "AGSelectNodeTouchHandler.h"
 
@@ -127,6 +129,7 @@
     if(figure == AG_FIGURE_CIRCLE)
     {
         AGAnalytics::instance().eventDrawNodeCircle();
+        AGActivityManager::instance().addActivity(AGActivity::drawNodeActivity(figure));
         
         {
             AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::audioNodeSelector(centroidMVP);

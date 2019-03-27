@@ -344,6 +344,12 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
     }, true);
     
     addChild(modeButtonGroup);
+    
+    /* trash */
+    AGUITrash::instance().setPosition(m_viewController->fixedCoordinateForScreenCoordinate(CGPointMake(m_viewController->bounds().size.width-30,
+                                                                                                       m_viewController->bounds().size.height-30)));
+    
+    addChild(&AGUITrash::instance());
 }
 
 AGDashboard::~AGDashboard()
@@ -372,6 +378,9 @@ void AGDashboard::onInterfaceOrientationChange()
     m_freedrawButton->setPosition(modeButtonStartPos);
     m_freedrawEraseButton->setPosition(modeButtonStartPos + GLvertex3f(m_freedrawButton->size().y*1.25, 0, 0));
     m_nodeButton->setPosition(modeButtonStartPos + GLvertex3f(0, m_freedrawButton->size().y*1.25, 0));
+    
+    AGUITrash::instance().setPosition(m_viewController->fixedCoordinateForScreenCoordinate(CGPointMake(m_viewController->bounds().size.width-30,
+                                                                                                       m_viewController->bounds().size.height-30)));
 }
 
 void AGDashboard::update(float t, float dt)

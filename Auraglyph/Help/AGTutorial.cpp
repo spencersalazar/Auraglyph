@@ -45,7 +45,7 @@ private:
 };
 
 /** Base class for a single "step" in a tutorial. */
-class AGTutorialStep : public AGRenderObject
+class AGTutorialStep : public AGRenderObject, public AGActivityListener
 {
 public:
     /** Constructor */
@@ -73,6 +73,8 @@ public:
     
     bool renderFixed() override { return true; }
     
+    void activityOccurred(AGActivity *activity) override { }
+
 protected:
     
     virtual void prepareInternal(AGTutorialEnvironment &environment) { }
@@ -180,6 +182,13 @@ public:
     
     bool canContinue() override { return m_currentStep == m_steps.end() && m_t >= m_pause; }
 
+    void activityOccurred(AGActivity *activity)
+    {
+        if(m_currentStep != m_steps.end()) {
+            (*m_currentStep)->activityOccurred(activity);
+        }
+    }
+    
 private:
     std::list<AGTutorialStep *> m_steps;
     std::list<AGTutorialStep *> m_activeSteps;
@@ -285,6 +294,80 @@ private:
 };
 
 
+#include "AGActivity.h"
+#include "GeoGenerator.h"
+
+/**
+ */
+class AGDrawNodeTutorialStep : public AGTextTutorialStep
+{
+public:
+    using AGTextTutorialStep::AGTextTutorialStep;
+    
+    void update(float t, float dt) override
+    {
+        AGTextTutorialStep::update(t, dt);
+        
+        m_tFig += dt;
+        while (m_tFig > TOTAL_TIME)
+            m_tFig -= TOTAL_TIME;
+    }
+    
+    void render() override
+    {
+        AGTextTutorialStep::render();
+        
+        int num = min(m_tFig/CYCLE_TIME, 1.0f)*m_figure.size();
+        
+        float alpha = 1;
+        if (m_tFig >= CYCLE_PAUSE) {
+            alpha = max(0.0f, 1-(m_tFig-CYCLE_TIME-CYCLE_PAUSE)/FADE_TIME);
+        }
+        
+        AGStyle::foregroundColor().withAlpha(alpha).set();
+        drawLineStrip(m_figure.data(), num);
+    }
+    
+    bool canContinue() override { return m_canContinue; }
+    
+    bool isComplete() override { return m_canContinue; }
+    
+    void activityOccurred(AGActivity *activity) override
+    {
+        if (activity->type() == AGActivity::DrawNodeActivityType) {
+            m_canContinue = true;
+        }
+    }
+    
+protected:
+    
+    constexpr static const float CYCLE_TIME = 1;
+    constexpr static const float CYCLE_PAUSE = 0.125;
+    constexpr static const float FADE_TIME = 0.5;
+    constexpr static const float FADE_PAUSE = 0.25;
+    constexpr static const float TOTAL_TIME = CYCLE_TIME+CYCLE_PAUSE+FADE_TIME+FADE_PAUSE;
+
+    std::vector<GLvertex3f> m_figure;
+    bool m_canContinue = false;
+    GLvertex3f m_figurePos;
+    float m_tFig = 0;
+    
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        AGTextTutorialStep::prepareInternal(environment);
+        
+        GeoGen::makeCircleStroke(m_figure, 64, 62.5);
+        // add original point to draw as line strip
+        m_figure.push_back(m_figure[0]);
+        // rotate to start at +pi/2
+        for(int i = 0; i < m_figure.size(); i++) {
+            m_figure[i] = rotateZ(m_figure[i], M_PI_2);
+        }
+        
+        m_figurePos = getParameter("figurePosition", GLvertex3f()).getVertex3();
+    }
+};
+
 /**
  */
 class AGCreateNodeTutorialStep : public AGTextTutorialStep
@@ -292,50 +375,99 @@ class AGCreateNodeTutorialStep : public AGTextTutorialStep
 public:
     using AGTextTutorialStep::AGTextTutorialStep;
     
-    virtual bool isComplete() { return true; }
+    
+    
+    virtual bool canContinue() override { return m_canContinue; }
+    
+    virtual bool isComplete() override { return m_canContinue; }
+    
+    void activityOccurred(AGActivity *activity) override
+    {
+        if (activity->type() == AGActivity::CreateNodeActivityType) {
+            m_canContinue = true;
+        }
+    }
     
 protected:
-    
+    bool m_canContinue = false;
 };
 
 AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
 {
-    float left = -600;
-    float top = 400;
+    CGRect bounds = viewController->bounds();
+    GLvertex3f startPos = viewController->fixedCoordinateForScreenCoordinate(CGPointMake(bounds.origin.x+30, bounds.origin.y+30));
+
     auto steps = (std::list<AGTutorialStep*>){
         new AGHideUITutorialStep({ { "hide", 1 } }),
         new AGTutorialStepGroup((std::list<AGTutorialStep*>) {
             new AGTextTutorialStep({
-                { "text", std::string("welcome to Auraglyph") },
-                { "position", GLvertex3f(left, top, 0) },
+                { "text", "welcome to Auraglyph." },
+                { "position", GLvertex3f(startPos.x, startPos.y, 0) },
                 { "pause", 1.0 },
             }),
             new AGTextTutorialStep({
-                { "text", std::string("an infinite") },
-                { "position", GLvertex3f(left, top-40, 0) },
+                { "text", "an infinite" },
+                { "position", GLvertex3f(startPos.x, startPos.y-40, 0) },
                 { "pause", 0.25 },
             }),
             new AGTextTutorialStep({
-                { "text", std::string("modular") },
-                { "position", GLvertex3f(left, top-70, 0) },
+                { "text", "modular" },
+                { "position", GLvertex3f(startPos.x, startPos.y-70, 0) },
                 { "pause", 0.25 },
             }),
             new AGTextTutorialStep({
-                { "text", std::string("music") },
-                { "position", GLvertex3f(left, top-100, 0) },
+                { "text", "music" },
+                { "position", GLvertex3f(startPos.x, startPos.y-100, 0) },
                 { "pause", 0.25 },
             }),
             new AGTextTutorialStep({
-                { "text", std::string("sketchpad") },
-                { "position", GLvertex3f(left, top-140, 0) },
+                { "text", "sketchpad." },
+                { "position", GLvertex3f(startPos.x, startPos.y-130, 0) },
+                { "pause", 2 },
+            }),
+            new AGDrawNodeTutorialStep({
+                { "text", "to start, draw a circle." },
+                { "position", GLvertex3f(startPos.x, startPos.y-200, 0) },
+                { "pause", 0.01 },
+            }),
+        }, { { "pause", 0.01 } }),
+        new AGTutorialStepGroup((std::list<AGTutorialStep*>) {
+            new AGTextTutorialStep({
+                { "text", "awesome! " },
+                { "position", GLvertex3f(startPos.x, startPos.y, 0) },
                 { "pause", 0.25 },
             }),
-        }, { { "pause", 3 } }),
-        new AGTextTutorialStep({
-            { "text", std::string("to start, draw a circle") },
-            { "position", GLvertex3f(left, top-200, 0) },
-            { "pause", 0 },
-        }),
+            new AGTextTutorialStep({
+                { "text", "you created an audio node." },
+                { "position", GLvertex3f(startPos.x, startPos.y-40, 0) },
+                { "pause", 0.25 },
+            }),
+            new AGTextTutorialStep({
+                { "text", "audio nodes can create sound" },
+                { "position", GLvertex3f(startPos.x, startPos.y-80, 0) },
+                { "pause", 0 },
+            }),
+            new AGTextTutorialStep({
+                { "text", "or process an existing sound." },
+                { "position", GLvertex3f(startPos.x, startPos.y-110, 0) },
+                { "pause", 0.25 },
+            }),
+            new AGTextTutorialStep({
+                { "text", "here, you can see a menu" },
+                { "position", GLvertex3f(startPos.x, startPos.y-150, 0) },
+                { "pause", 0 },
+            }),
+            new AGTextTutorialStep({
+                { "text", "of different audio nodes to choose from." },
+                { "position", GLvertex3f(startPos.x, startPos.y-180, 0) },
+                { "pause", 0.25 },
+            }),
+            new AGCreateNodeTutorialStep({
+                { "text", "start by choosing the sine wave." },
+                { "position", GLvertex3f(startPos.x, startPos.y-220, 0) },
+                { "pause", 0 },
+            }),
+        }, { { "pause", 0.01 } }),
         new AGHideUITutorialStep({ { "hide", 0 } }),
     };
     for(auto step : steps)
@@ -353,6 +485,8 @@ AGTutorial::AGTutorial(std::list<AGTutorialStep*> &steps, AGViewController_ *vie
     
     (*m_currentStep)->prepare(*m_environment);
     m_activeSteps.push_back(*m_currentStep);
+    
+    AGActivityManager::instance().addActivityListener(this);
 }
 
 AGTutorial::~AGTutorial()
@@ -360,6 +494,8 @@ AGTutorial::~AGTutorial()
     for(auto step : m_steps)
         delete step;    
     m_steps.clear();
+    
+    AGActivityManager::instance().removeActivityListener(this);
 }
 
 void AGTutorial::update(float t, float dt)
@@ -401,5 +537,12 @@ void AGTutorial::render()
 bool AGTutorial::isComplete()
 {
     return m_currentStep == m_steps.end();
+}
+
+void AGTutorial::activityOccurred(AGActivity *activity)
+{
+    if(m_currentStep != m_steps.end()) {
+        (*m_currentStep)->activityOccurred(activity);
+    }
 }
 
