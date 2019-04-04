@@ -16,6 +16,7 @@
 
 #include <string>
 
+
 /** Used to store and fetch information about the environment in which a
  tutorial is run, e.g. state that may change from instance to instance. For
  example, the UUIDs of nodes can be stored and then accessed later to check the
@@ -44,180 +45,283 @@ private:
     map<std::string, Variant> m_variables;
 };
 
-/** Base class for a single "step" in a tutorial. */
-class AGTutorialStep : public AGRenderObject, public AGActivityListener
+/** Base class for tutorial-based entities. Captures parameters and a
+ tutorial environment, is "prepared" right before it is engaged, and is
+ "finalized" right after it is engaged.
+ 
+ "Finalize" events are used to store information about the entity for future
+ use by other entities, e.g. the position of a user action.
+ 
+ "Prepare" events are used to set up the tutorial step based on parameters or
+ variables from the environment, e.g. to position a graphical element based on
+ previous user activity.
+ 
+ Base classes include
+ - AGTutorialAction, a small atomic action such as displaying text or graphics
+ - AGTutorialCondition, which awaits a certain condition to advance to another
+ tutorial step
+ - AGTutorialStep, a discrete tutorial "step" comprising one or more actions
+ and one more conditions for moving to successive tutorial steps
+ */
+class AGTutorialEntity
 {
 public:
     /** Constructor */
-    AGTutorialStep(const map<std::string, Variant> &parameters,
-                   std::function<void (AGTutorialEnvironment &env)> onPrepare = [](AGTutorialEnvironment &env){ },
-                   std::function<void (AGTutorialEnvironment &env)> onFinalize = [](AGTutorialEnvironment &env){ });
+    AGTutorialEntity(const map<std::string, Variant> &parameters,
+                     std::function<void (AGTutorialEnvironment &env)> onPrepare = [](AGTutorialEnvironment &env){ },
+                     std::function<void (AGTutorialEnvironment &env)> onFinalize = [](AGTutorialEnvironment &env){ })
+    : m_parameters(parameters), m_onPrepare(onPrepare), m_onFinalize(onFinalize)
+    { }
+    /** Virtual destructor */
+    virtual ~AGTutorialEntity() { }
     
     /** Prepare the internal state of tutorial step, reading any variables
      necessary from the specified environment.
      */
-    void prepare(AGTutorialEnvironment &environment);
-    
-    /** (Overriden by subclasses) Ascertain if the tutorial step can be continued.
-     */
-    virtual bool canContinue() = 0;
-    
-    /** (Overriden by subclasses) Ascertain if the tutorial step has completed.
-     */
-    virtual bool isComplete() = 0;
+    void prepare(AGTutorialEnvironment &environment)
+    {
+        prepareInternal(environment);
+        m_onPrepare(environment);
+    }
 
     /** Finalize the tutorial step, storing any variables in the environment
      that may be accessed later.
      */
-    void finalize(AGTutorialEnvironment &environment);
+    void finalize(AGTutorialEnvironment &environment)
+    {
+        finalizeInternal(environment);
+        m_onFinalize(environment);
+    }
     
-    bool renderFixed() override { return true; }
-    
-    void activityOccurred(AGActivity *activity) override { }
-
 protected:
+    /** Get parameter for this entity with specified name. */
+    Variant getParameter(const std::string &name, Variant defaultValue = Variant())
+    {
+        if (m_parameters.count(name))
+            return m_parameters[name];
+        else
+            return defaultValue;
+    }
     
+    /** Override to make subclass-specific set up when preparing this entity
+     */
     virtual void prepareInternal(AGTutorialEnvironment &environment) { }
+    /** Override to make subclass-specific set up when finalizing this entity
+     */
     virtual void finalizeInternal(AGTutorialEnvironment &environment) { }
     
-    Variant getParameter(const std::string &name, Variant defaultValue = Variant());
+private:
     
     map<std::string, Variant> m_parameters;
     std::function<void (AGTutorialEnvironment &env)> m_onPrepare;
     std::function<void (AGTutorialEnvironment &env)> m_onFinalize;
 };
 
-
-
-AGTutorialStep::AGTutorialStep(const map<std::string, Variant> &parameters,
-                               std::function<void (AGTutorialEnvironment &env)> onPrepare,
-                               std::function<void (AGTutorialEnvironment &env)> onFinalize)
-: m_parameters(parameters), m_onPrepare(onPrepare), m_onFinalize(onFinalize)
-{ }
-
-Variant AGTutorialStep::getParameter(const std::string &name, Variant defaultValue)
-{
-    if (m_parameters.count(name))
-        return m_parameters[name];
-    else
-        return defaultValue;
-}
-
-void AGTutorialStep::prepare(AGTutorialEnvironment &environment)
-{
-    prepareInternal(environment);
-    m_onPrepare(environment);
-}
-
-void AGTutorialStep::finalize(AGTutorialEnvironment &environment)
-{
-    finalizeInternal(environment);
-    m_onFinalize(environment);
-}
-
-
-/** Represents group of tutorial steps that appear in order and then
- simultaneously go away when the last completes (after a pause).
+/** Tutorial action, e.g. displaying graphics or text, creating a node, etc.
  */
-class AGTutorialStepGroup : public AGTutorialStep
+class AGTutorialAction : public AGTutorialEntity, public AGRenderObject
 {
 public:
-    AGTutorialStepGroup(const std::list<AGTutorialStep *> &steps,
-                        const map<std::string, Variant> &parameters,
+    /** Constructor */
+    AGTutorialAction(const map<std::string, Variant> &parameters,
+                     std::function<void (AGTutorialEnvironment &env)> onPrepare = [](AGTutorialEnvironment &env){ },
+                     std::function<void (AGTutorialEnvironment &env)> onFinalize = [](AGTutorialEnvironment &env){ })
+    : AGTutorialEntity(parameters, onPrepare, onFinalize)
+    { }
+    
+    /** Whether or not the action can be continued from, i.e. execute the next
+     action.
+     */
+    virtual bool canContinue() = 0;
+    
+    /** Whether or not the action is complete, i.e. can be removed from the
+     graphics pipeline.
+     */
+    virtual bool isCompleted() = 0;
+
+    /** Render fixed */
+    bool renderFixed() override { return true; }
+};
+
+/** Tutorial condition. A tutorial condition associated with a tutorial step
+ is checked periodically to see if the step is complete.
+ 
+ E.g. if a certain time has elapsed, continue anyways, or wait for a particular
+ user activity.
+ */
+class AGTutorialCondition : public AGTutorialEntity, public AGActivityListener
+{
+public:
+    /** Constructor */
+    AGTutorialCondition(const map<std::string, Variant> &parameters,
                         std::function<void (AGTutorialEnvironment &env)> onPrepare = [](AGTutorialEnvironment &env){ },
                         std::function<void (AGTutorialEnvironment &env)> onFinalize = [](AGTutorialEnvironment &env){ })
-    : AGTutorialStep(parameters, onPrepare, onFinalize), m_steps(steps)
+    : AGTutorialEntity(parameters, onPrepare, onFinalize)
+    { }
+    
+    // enum of possible condition status
+    enum Status
     {
-        for(auto step : m_steps)
-            step->init();
+        STATUS_INCOMPLETE = 0, // the condition is not yet complete and no action should be taken
+        STATUS_CONTINUE, // the condition is complete, continue to the next tutorial step
+        STATUS_RESTART, // the condition is incomplete and the tutorial step should be restarted
+    };
+    
+    /** */
+    virtual Status getStatus() = 0;
+    /** */
+    void activityOccurred(AGActivity *activity) override { }
+};
+
+/** Base class for a single "step" in a tutorial.
+ Combines zero or more "actions" (e.g., display of text/graphics) with zero or
+ more conditions for proceeding to the next action.
+ 
+ By default, if no condition is provided, the step will continue when all of the
+ actions have finished.
+ */
+class AGTutorialStep : public AGTutorialEntity, public AGRenderObject, public AGActivityListener
+{
+public:
+    AGTutorialStep(const list<AGTutorialAction*> &actions,
+                   const list<AGTutorialCondition*> &conditions,
+                   const map<std::string, Variant> &parameters)
+    : AGTutorialEntity(parameters), m_actions(actions), m_conditions(conditions)
+    {
+        for(auto action : m_actions)
+            action->init();
     }
     
-    ~AGTutorialStepGroup()
+    ~AGTutorialStep()
     {
-        for(auto step : m_steps)
-            delete step;
-        m_steps.clear();
+        for(auto action : m_actions)
+            delete action;
+        m_actions.clear();
+        for(auto condition : m_conditions)
+            delete condition;
+        m_conditions.clear();
+    }
+    
+    bool canContinue()
+    {
+        return m_conditionStatus == AGTutorialCondition::STATUS_CONTINUE;
+    }
+    
+    bool isCompleted()
+    {
+        return m_conditionStatus == AGTutorialCondition::STATUS_CONTINUE;
     }
     
     void update(float t, float dt) override
     {
-        if(!isComplete()) {
-            for(auto step : m_activeSteps)
-                step->update(t, dt);
+        AGRenderObject::update(t, dt);
+        
+        _checkConditions();
+        
+        if(!isCompleted())
+        {
+            for(auto action : m_activeActions)
+                action->update(t, dt);
             
-            if(m_currentStep != m_steps.end() && (*m_currentStep)->canContinue()) {
-                // finalize last step
-                (*m_currentStep)->finalize(*m_environment);
+            if(m_currentAction != m_actions.end() && (*m_currentAction)->canContinue())
+            {
+                (*m_currentAction)->finalize(*m_environment);
                 
-                // advance
-                m_currentStep++;
+                m_currentAction++;
                 
-                if (m_currentStep != m_steps.end()) {
-                    // prepare next step
-                    if(m_currentStep != m_steps.end())
-                    {
-                        (*m_currentStep)->prepare(*m_environment);
-                        (*m_currentStep)->update(t, dt);
-                        m_activeSteps.push_back(*m_currentStep);
-                    }
+                if(m_currentAction != m_actions.end())
+                {
+                    (*m_currentAction)->prepare(*m_environment);
+                    (*m_currentAction)->update(t, dt);
+                    m_activeActions.push_back(*m_currentAction);
                 }
             }
             
-            m_activeSteps.remove_if([](AGTutorialStep *step) { return step->isComplete(); });
+            m_activeActions.remove_if([](AGTutorialAction *action){ return action->isCompleted(); });
         }
-        
-        if (m_currentStep == m_steps.end())
-            m_t += dt;
     }
-
+    
     void render() override
     {
-        if(!isComplete()) {
-            for(auto step : m_activeSteps)
-                step->render();
-        }
+        AGRenderObject::render();
+        
+        for(auto action : m_activeActions)
+            action->render();
     }
-
-    bool isComplete() override { return canContinue(); }
     
-    bool canContinue() override { return m_currentStep == m_steps.end() && m_t >= m_pause; }
-
-    void activityOccurred(AGActivity *activity)
+    void activityOccurred(AGActivity *activity) override
     {
-        if(m_currentStep != m_steps.end()) {
-            (*m_currentStep)->activityOccurred(activity);
-        }
+        for(auto condition : m_conditions)
+            condition->activityOccurred(activity);
+        
+        _checkConditions();
     }
     
 private:
-    std::list<AGTutorialStep *> m_steps;
-    std::list<AGTutorialStep *> m_activeSteps;
-    std::list<AGTutorialStep *>::iterator m_currentStep;
-    AGTutorialEnvironment *m_environment = nullptr;
     
-    float m_t = 0;
-    float m_pause = 0;
+    void _checkConditions()
+    {
+        if(m_conditions.size() == 0)
+        {
+            dbgprint("condition status: continue\n");
+            m_conditionStatus = AGTutorialCondition::STATUS_CONTINUE;
+        }
+        else
+        {
+            for(auto condition : m_conditions)
+            {
+                auto status = condition->getStatus();
+                if (status == AGTutorialCondition::STATUS_CONTINUE)
+                {
+                    dbgprint("condition status: continue\n");
+                    m_conditionStatus = status;
+                    m_completedCondition = condition;
+                    break;
+                }
+            }
+        }
+    }
     
+    /** Override to make subclass-specific set up when preparing this entity
+     */
     void prepareInternal(AGTutorialEnvironment &environment) override
     {
         m_environment = &environment;
-        m_pause = getParameter("pause", 0).getFloat();
         
-        m_t = 0;
+        m_currentAction = m_actions.begin();
+        (*m_currentAction)->prepare(*m_environment);
+        m_activeActions.push_back(*m_currentAction);
         
-        m_currentStep = m_steps.begin();
-        (*m_currentStep)->prepare(*m_environment);
-        m_activeSteps.push_back(*m_currentStep);
+        // if there are no conditions, can continue immediately
+        if(m_conditions.size() == 0)
+            m_conditionStatus = AGTutorialCondition::STATUS_CONTINUE;
     }
+    
+    /** Override to make subclass-specific set up when finalizing this entity
+     */
+    void finalizeInternal(AGTutorialEnvironment &environment) override
+    {
+        
+    }
+    
+    AGTutorialEnvironment *m_environment = nullptr;
+    
+    list<AGTutorialAction*> m_actions;
+    list<AGTutorialAction*>::iterator m_currentAction;
+    list<AGTutorialAction*> m_activeActions;
+
+    list<AGTutorialCondition*> m_conditions;
+    AGTutorialCondition *m_completedCondition = nullptr;
+    AGTutorialCondition::Status m_conditionStatus = AGTutorialCondition::STATUS_INCOMPLETE;
 };
 
 
 /** Tutorial step that simply displays text.
  */
-class AGTextTutorialStep : public AGTutorialStep
+class AGTextTutorialAction : public AGTutorialAction
 {
 public:
-    using AGTutorialStep::AGTutorialStep;
+    using AGTutorialAction::AGTutorialAction;
     
     void update(float t, float dt) override
     {
@@ -241,7 +345,7 @@ public:
             
             // render last letter with fade-in
             float alpha = m_textExtent-floorf(m_textExtent);
-            alpha *= alpha;
+            alpha = powf(alpha, 0.33);
             float x = text->width(m_text.substr(0, i));
             text->render(m_text.substr(i, 1), AGStyle::foregroundColor().withAlpha(alpha), mv.translate(x, 0, 0), projection());
         } else {
@@ -249,7 +353,7 @@ public:
         }
     }
     
-    bool isComplete() override { return false; }
+    bool isCompleted() override { return false; }
     
     bool canContinue() override { return m_t >= m_pause && m_textExtent >= m_text.size(); };
 
@@ -273,12 +377,12 @@ protected:
 };
 
 /** */
-class AGHideUITutorialStep : public AGTutorialStep
+class AGHideUITutorialStep : public AGTutorialAction
 {
 public:
-    using AGTutorialStep::AGTutorialStep;
+    using AGTutorialAction::AGTutorialAction;
     
-    bool isComplete() override { return true; }
+    bool isCompleted() override { return true; }
     bool canContinue() override { return true; }
 
 private:
@@ -294,19 +398,19 @@ private:
 };
 
 
-#include "AGActivity.h"
 #include "GeoGenerator.h"
+#include "Easing/Cubic.h"
 
 /**
  */
-class AGDrawNodeTutorialStep : public AGTextTutorialStep
+class AGDrawNodeTutorialAction : public AGTutorialAction
 {
 public:
-    using AGTextTutorialStep::AGTextTutorialStep;
+    using AGTutorialAction::AGTutorialAction;
     
     void update(float t, float dt) override
     {
-        AGTextTutorialStep::update(t, dt);
+        AGRenderObject::update(t, dt);
         
         m_tFig += dt;
         while (m_tFig > TOTAL_TIME)
@@ -315,9 +419,11 @@ public:
     
     void render() override
     {
-        AGTextTutorialStep::render();
+        AGRenderObject::render();
         
-        int num = min(m_tFig/CYCLE_TIME, 1.0f)*m_figure.size();
+        float t = min(m_tFig/CYCLE_TIME, 1.0f);
+        t = easing::cubic::easeInOut(t, 0, 1, 1);
+        int num = t*m_figure.size();
         
         float alpha = 1;
         if (m_tFig >= CYCLE_PAUSE) {
@@ -330,21 +436,14 @@ public:
     
     bool canContinue() override { return m_canContinue; }
     
-    bool isComplete() override { return m_canContinue; }
-    
-    void activityOccurred(AGActivity *activity) override
-    {
-        if (activity->type() == AGActivity::DrawNodeActivityType) {
-            m_canContinue = true;
-        }
-    }
+    bool isCompleted() override { return m_canContinue; }
     
 protected:
     
-    constexpr static const float CYCLE_TIME = 1;
+    constexpr static const float CYCLE_TIME = 1.5;
     constexpr static const float CYCLE_PAUSE = 0.125;
     constexpr static const float FADE_TIME = 0.5;
-    constexpr static const float FADE_PAUSE = 0.25;
+    constexpr static const float FADE_PAUSE = 0.33;
     constexpr static const float TOTAL_TIME = CYCLE_TIME+CYCLE_PAUSE+FADE_TIME+FADE_PAUSE;
 
     std::vector<GLvertex3f> m_figure;
@@ -354,8 +453,6 @@ protected:
     
     void prepareInternal(AGTutorialEnvironment &environment) override
     {
-        AGTextTutorialStep::prepareInternal(environment);
-        
         GeoGen::makeCircleStroke(m_figure, 64, 62.5);
         // add original point to draw as line strip
         m_figure.push_back(m_figure[0]);
@@ -368,28 +465,54 @@ protected:
     }
 };
 
+#include "AGActivity.h"
+
 /**
  */
-class AGCreateNodeTutorialStep : public AGTextTutorialStep
+class AGDrawNodeTutorialCondition : public AGTutorialCondition
 {
 public:
-    using AGTextTutorialStep::AGTextTutorialStep;
     
+    using AGTutorialCondition::AGTutorialCondition;
     
+    Status getStatus() override
+    {
+        return m_status;
+    }
     
-    virtual bool canContinue() override { return m_canContinue; }
+    void activityOccurred(AGActivity *activity) override
+    {
+        if (activity->type() == AGActivity::DrawNodeActivityType) {
+            m_status = STATUS_CONTINUE;
+        }
+    }
     
-    virtual bool isComplete() override { return m_canContinue; }
+private:
+    Status m_status = STATUS_INCOMPLETE;
+};
+
+
+/**
+ */
+class AGCreateNodeTutorialCondition : public AGTutorialCondition
+{
+public:
+    using AGTutorialCondition::AGTutorialCondition;
+    
+    Status getStatus() override
+    {
+        return m_status;
+    }
     
     void activityOccurred(AGActivity *activity) override
     {
         if (activity->type() == AGActivity::CreateNodeActivityType) {
-            m_canContinue = true;
+            m_status = STATUS_CONTINUE;
         }
     }
     
-protected:
-    bool m_canContinue = false;
+private:
+    Status m_status = STATUS_INCOMPLETE;
 };
 
 AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
@@ -398,77 +521,101 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
     GLvertex3f startPos = viewController->fixedCoordinateForScreenCoordinate(CGPointMake(bounds.origin.x+30, bounds.origin.y+30));
 
     auto steps = (std::list<AGTutorialStep*>){
-        new AGHideUITutorialStep({ { "hide", 1 } }),
-        new AGTutorialStepGroup((std::list<AGTutorialStep*>) {
-            new AGTextTutorialStep({
+        /* hide the UI */
+        new AGTutorialStep((std::list<AGTutorialAction*>) {
+            new AGHideUITutorialStep({ { "hide", 1 } }),
+        }, (std::list<AGTutorialCondition*>) { }, { { "pause", 0.01 } }),
+        
+        /* intro / draw a circle */
+        new AGTutorialStep((std::list<AGTutorialAction*>) {
+            new AGTextTutorialAction({
                 { "text", "welcome to Auraglyph." },
                 { "position", GLvertex3f(startPos.x, startPos.y, 0) },
                 { "pause", 1.0 },
             }),
-            new AGTextTutorialStep({
+            new AGTextTutorialAction({
                 { "text", "an infinite" },
                 { "position", GLvertex3f(startPos.x, startPos.y-40, 0) },
                 { "pause", 0.25 },
             }),
-            new AGTextTutorialStep({
+            new AGTextTutorialAction({
                 { "text", "modular" },
                 { "position", GLvertex3f(startPos.x, startPos.y-70, 0) },
                 { "pause", 0.25 },
             }),
-            new AGTextTutorialStep({
+            new AGTextTutorialAction({
                 { "text", "music" },
                 { "position", GLvertex3f(startPos.x, startPos.y-100, 0) },
                 { "pause", 0.25 },
             }),
-            new AGTextTutorialStep({
+            new AGTextTutorialAction({
                 { "text", "sketchpad." },
                 { "position", GLvertex3f(startPos.x, startPos.y-130, 0) },
                 { "pause", 2 },
             }),
-            new AGDrawNodeTutorialStep({
+            new AGTextTutorialAction({
                 { "text", "to start, draw a circle." },
                 { "position", GLvertex3f(startPos.x, startPos.y-200, 0) },
                 { "pause", 0.01 },
             }),
+            new AGDrawNodeTutorialAction({
+                { "position", GLvertex3f(startPos.x, startPos.y-200, 0) },
+                { "pause", 0.01 },
+            }),
+        }, (std::list<AGTutorialCondition*>) {
+            new AGDrawNodeTutorialCondition((map<std::string, Variant>) { }),
         }, { { "pause", 0.01 } }),
-        new AGTutorialStepGroup((std::list<AGTutorialStep*>) {
-            new AGTextTutorialStep({
+        
+        /* select the sine wave */
+        new AGTutorialStep((std::list<AGTutorialAction*>) {
+            new AGTextTutorialAction({
                 { "text", "awesome! " },
                 { "position", GLvertex3f(startPos.x, startPos.y, 0) },
                 { "pause", 0.25 },
             }),
-            new AGTextTutorialStep({
+            new AGTextTutorialAction({
                 { "text", "you created an audio node." },
                 { "position", GLvertex3f(startPos.x, startPos.y-40, 0) },
-                { "pause", 0.25 },
+                { "pause", 1.0 },
             }),
-            new AGTextTutorialStep({
+            new AGTextTutorialAction({
                 { "text", "audio nodes can create sound" },
                 { "position", GLvertex3f(startPos.x, startPos.y-80, 0) },
                 { "pause", 0 },
             }),
-            new AGTextTutorialStep({
+            new AGTextTutorialAction({
                 { "text", "or process an existing sound." },
                 { "position", GLvertex3f(startPos.x, startPos.y-110, 0) },
-                { "pause", 0.25 },
+                { "pause", 1.0 },
             }),
-            new AGTextTutorialStep({
+            new AGTextTutorialAction({
                 { "text", "here, you can see a menu" },
                 { "position", GLvertex3f(startPos.x, startPos.y-150, 0) },
                 { "pause", 0 },
             }),
-            new AGTextTutorialStep({
-                { "text", "of different audio nodes to choose from." },
+            new AGTextTutorialAction({
+                { "text", "of different audio nodes" },
                 { "position", GLvertex3f(startPos.x, startPos.y-180, 0) },
-                { "pause", 0.25 },
-            }),
-            new AGCreateNodeTutorialStep({
-                { "text", "start by choosing the sine wave." },
-                { "position", GLvertex3f(startPos.x, startPos.y-220, 0) },
                 { "pause", 0 },
             }),
+            new AGTextTutorialAction({
+                { "text", "to choose from." },
+                { "position", GLvertex3f(startPos.x, startPos.y-210, 0) },
+                { "pause", 1.0 },
+            }),
+            new AGTextTutorialAction({
+                { "text", "start by choosing the sine wave." },
+                { "position", GLvertex3f(startPos.x, startPos.y-250, 0) },
+                { "pause", 0 },
+            }),
+        }, (std::list<AGTutorialCondition*>) {
+            new AGCreateNodeTutorialCondition((map<std::string, Variant>) { }),
         }, { { "pause", 0.01 } }),
-        new AGHideUITutorialStep({ { "hide", 0 } }),
+        
+        /* end / unhide the UI */
+        new AGTutorialStep((std::list<AGTutorialAction*>) {
+            new AGHideUITutorialStep({ { "hide", 0 } }),
+        }, (std::list<AGTutorialCondition*>) { }, { { "pause", 0.01 } }),
     };
     for(auto step : steps)
         step->init();
@@ -522,7 +669,7 @@ void AGTutorial::update(float t, float dt)
             }
         }
         
-        m_activeSteps.remove_if([](AGTutorialStep *step) { return step->isComplete(); });
+        m_activeSteps.remove_if([](AGTutorialStep *step) { return step->isCompleted(); });
     }
 }
 

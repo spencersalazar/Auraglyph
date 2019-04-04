@@ -100,6 +100,17 @@
 		0991BA7E1D83A5140080175C /* spdsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0991BA7C1D83A5140080175C /* spdsp.cpp */; };
 		0991BA841D8654C70080175C /* FileRead.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0991BA821D8654C70080175C /* FileRead.cpp */; };
 		0991BA851D8654C70080175C /* FileWvIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0991BA831D8654C70080175C /* FileWvIn.cpp */; };
+		0997E10A224C6B32007D93B7 /* Back.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0997E0F1224C6B32007D93B7 /* Back.cpp */; };
+		0997E10B224C6B32007D93B7 /* Bounce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0997E0F3224C6B32007D93B7 /* Bounce.cpp */; };
+		0997E10C224C6B32007D93B7 /* Circ.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0997E0F5224C6B32007D93B7 /* Circ.cpp */; };
+		0997E10D224C6B32007D93B7 /* Cubic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0997E0F7224C6B32007D93B7 /* Cubic.cpp */; };
+		0997E10F224C6B32007D93B7 /* Elastic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0997E0FA224C6B32007D93B7 /* Elastic.cpp */; };
+		0997E110224C6B32007D93B7 /* Expo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0997E0FC224C6B32007D93B7 /* Expo.cpp */; };
+		0997E111224C6B32007D93B7 /* Linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0997E0FE224C6B32007D93B7 /* Linear.cpp */; };
+		0997E112224C6B32007D93B7 /* Quad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0997E101224C6B32007D93B7 /* Quad.cpp */; };
+		0997E113224C6B32007D93B7 /* Quart.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0997E103224C6B32007D93B7 /* Quart.cpp */; };
+		0997E114224C6B32007D93B7 /* Quint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0997E105224C6B32007D93B7 /* Quint.cpp */; };
+		0997E116224C6B32007D93B7 /* Sine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0997E108224C6B32007D93B7 /* Sine.cpp */; };
 		099AF11317D12DD9000BAB7B /* AGTrainerViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 099AF11117D12DD9000BAB7B /* AGTrainerViewController.mm */; };
 		099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */; };
 		099AF11617D13365000BAB7B /* AGTrainerViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11517D13365000BAB7B /* AGTrainerViewCell.xib */; };
@@ -453,6 +464,30 @@
 		0991BA811D8654B70080175C /* WvIn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WvIn.h; sourceTree = "<group>"; };
 		0991BA821D8654C70080175C /* FileRead.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileRead.cpp; sourceTree = "<group>"; };
 		0991BA831D8654C70080175C /* FileWvIn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileWvIn.cpp; sourceTree = "<group>"; };
+		0997E0F1224C6B32007D93B7 /* Back.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Back.cpp; sourceTree = "<group>"; };
+		0997E0F2224C6B32007D93B7 /* Back.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Back.h; sourceTree = "<group>"; };
+		0997E0F3224C6B32007D93B7 /* Bounce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bounce.cpp; sourceTree = "<group>"; };
+		0997E0F4224C6B32007D93B7 /* Bounce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bounce.h; sourceTree = "<group>"; };
+		0997E0F5224C6B32007D93B7 /* Circ.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Circ.cpp; sourceTree = "<group>"; };
+		0997E0F6224C6B32007D93B7 /* Circ.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Circ.h; sourceTree = "<group>"; };
+		0997E0F7224C6B32007D93B7 /* Cubic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Cubic.cpp; sourceTree = "<group>"; };
+		0997E0F8224C6B32007D93B7 /* Cubic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cubic.h; sourceTree = "<group>"; };
+		0997E0F9224C6B32007D93B7 /* easing_terms_of_use.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = easing_terms_of_use.html; sourceTree = "<group>"; };
+		0997E0FA224C6B32007D93B7 /* Elastic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Elastic.cpp; sourceTree = "<group>"; };
+		0997E0FB224C6B32007D93B7 /* Elastic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Elastic.h; sourceTree = "<group>"; };
+		0997E0FC224C6B32007D93B7 /* Expo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Expo.cpp; sourceTree = "<group>"; };
+		0997E0FD224C6B32007D93B7 /* Expo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Expo.h; sourceTree = "<group>"; };
+		0997E0FE224C6B32007D93B7 /* Linear.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Linear.cpp; sourceTree = "<group>"; };
+		0997E0FF224C6B32007D93B7 /* Linear.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Linear.h; sourceTree = "<group>"; };
+		0997E101224C6B32007D93B7 /* Quad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Quad.cpp; sourceTree = "<group>"; };
+		0997E102224C6B32007D93B7 /* Quad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Quad.h; sourceTree = "<group>"; };
+		0997E103224C6B32007D93B7 /* Quart.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Quart.cpp; sourceTree = "<group>"; };
+		0997E104224C6B32007D93B7 /* Quart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Quart.h; sourceTree = "<group>"; };
+		0997E105224C6B32007D93B7 /* Quint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Quint.cpp; sourceTree = "<group>"; };
+		0997E106224C6B32007D93B7 /* Quint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Quint.h; sourceTree = "<group>"; };
+		0997E107224C6B32007D93B7 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		0997E108224C6B32007D93B7 /* Sine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sine.cpp; sourceTree = "<group>"; };
+		0997E109224C6B32007D93B7 /* Sine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sine.h; sourceTree = "<group>"; };
 		099AF11017D12DD9000BAB7B /* AGTrainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGTrainerViewController.h; sourceTree = "<group>"; };
 		099AF11117D12DD9000BAB7B /* AGTrainerViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGTrainerViewController.mm; sourceTree = "<group>"; };
 		099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AGTrainerViewController.xib; sourceTree = "<group>"; };
@@ -884,6 +919,7 @@
 		095D12C217ACA36C0048A012 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0997E0F0224C6B32007D93B7 /* Easing */,
 				09B019F3208597CA0071C8EC /* WebKit.framework */,
 				498438661F1EF43600FB2914 /* CoreMIDI.framework */,
 				498438591F1EF40B00FB2914 /* PGMidi */,
@@ -1092,6 +1128,38 @@
 				09891311189F6D3A00AB98AD /* trash.png */,
 			);
 			path = Images;
+			sourceTree = "<group>";
+		};
+		0997E0F0224C6B32007D93B7 /* Easing */ = {
+			isa = PBXGroup;
+			children = (
+				0997E0F1224C6B32007D93B7 /* Back.cpp */,
+				0997E0F2224C6B32007D93B7 /* Back.h */,
+				0997E0F3224C6B32007D93B7 /* Bounce.cpp */,
+				0997E0F4224C6B32007D93B7 /* Bounce.h */,
+				0997E0F5224C6B32007D93B7 /* Circ.cpp */,
+				0997E0F6224C6B32007D93B7 /* Circ.h */,
+				0997E0F7224C6B32007D93B7 /* Cubic.cpp */,
+				0997E0F8224C6B32007D93B7 /* Cubic.h */,
+				0997E0F9224C6B32007D93B7 /* easing_terms_of_use.html */,
+				0997E0FA224C6B32007D93B7 /* Elastic.cpp */,
+				0997E0FB224C6B32007D93B7 /* Elastic.h */,
+				0997E0FC224C6B32007D93B7 /* Expo.cpp */,
+				0997E0FD224C6B32007D93B7 /* Expo.h */,
+				0997E0FE224C6B32007D93B7 /* Linear.cpp */,
+				0997E0FF224C6B32007D93B7 /* Linear.h */,
+				0997E101224C6B32007D93B7 /* Quad.cpp */,
+				0997E102224C6B32007D93B7 /* Quad.h */,
+				0997E103224C6B32007D93B7 /* Quart.cpp */,
+				0997E104224C6B32007D93B7 /* Quart.h */,
+				0997E105224C6B32007D93B7 /* Quint.cpp */,
+				0997E106224C6B32007D93B7 /* Quint.h */,
+				0997E107224C6B32007D93B7 /* README.md */,
+				0997E108224C6B32007D93B7 /* Sine.cpp */,
+				0997E109224C6B32007D93B7 /* Sine.h */,
+			);
+			name = Easing;
+			path = libs/Easing;
 			sourceTree = "<group>";
 		};
 		09B674411D6D9D6500F84E09 /* Nodes */ = {
@@ -1383,12 +1451,15 @@
 				09DDE4B92231AA4A008ACF0B /* AGDrawNodeTouchHandler.mm in Sources */,
 				09DDE4BD2231AA4A008ACF0B /* AGEraseFreedrawTouchHandler.mm in Sources */,
 				097519BD218CF35300FF8D1B /* AGAudioDistortionNode.cpp in Sources */,
+				0997E116224C6B32007D93B7 /* Sine.cpp in Sources */,
 				09030CF11EFEFEFB00D4A4F2 /* AGMenu.cpp in Sources */,
 				095786191F031ED800286358 /* AGDashboard.cpp in Sources */,
 				09F29DAF1CCA086200502C01 /* AGSlider.cpp in Sources */,
 				095D12D817ACA36C0048A012 /* AGAppDelegate.mm in Sources */,
+				0997E10F224C6B32007D93B7 /* Elastic.cpp in Sources */,
 				095D12E517ACA36C0048A012 /* AGViewController.mm in Sources */,
 				09E5EC8218A46F7300B21D97 /* AGControl.mm in Sources */,
+				0997E10C224C6B32007D93B7 /* Circ.cpp in Sources */,
 				09230FFA1F41868A00DF06B5 /* AGArrayNode.mm in Sources */,
 				09891316189F70D200AB98AD /* AGTouchHandler.mm in Sources */,
 				09F6E87A1D6A3758006DBC9E /* AGOutputNode.mm in Sources */,
@@ -1413,12 +1484,14 @@
 				0991BA841D8654C70080175C /* FileRead.cpp in Sources */,
 				0991BA7A1D839BB10080175C /* AGCompressorNode.cpp in Sources */,
 				09E5EC8718A5A88100B21D97 /* ADSR.cpp in Sources */,
+				0997E112224C6B32007D93B7 /* Quad.cpp in Sources */,
 				09230FFD1F41868A00DF06B5 /* AGControlSequencerNode.cpp in Sources */,
 				09D9C9D01C98F13A005514A4 /* spRandom.cpp in Sources */,
 				09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */,
 				09030CE71EFEF81300D4A4F2 /* Thread.cpp in Sources */,
 				494019C01F2092FE000F05E8 /* AGControlMidiNoteIn.mm in Sources */,
 				09EE657F1EFB59BE00B4ED62 /* AGAudioRecorder.mm in Sources */,
+				0997E111224C6B32007D93B7 /* Linear.cpp in Sources */,
 				09412E0C1A2112300065598D /* NSString+STLString.mm in Sources */,
 				09B962551DDB1488001DCFB1 /* AGUISaveDialog.cpp in Sources */,
 				09DDE4BE2231AA4A008ACF0B /* AGSelectNodeTouchHandler.mm in Sources */,
@@ -1434,6 +1507,7 @@
 				0987409C17B98D7C0098511A /* AGNode.mm in Sources */,
 				09DDE4BB2231AA4A008ACF0B /* AGDrawFreedrawTouchHandler.mm in Sources */,
 				098740A017BA2AB90098511A /* mo_audio.mm in Sources */,
+				0997E114224C6B32007D93B7 /* Quint.cpp in Sources */,
 				494019CA1F21CC6A000F05E8 /* AGPGMidiContext.mm in Sources */,
 				098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */,
 				0913437E21B6650B00FE275F /* AGTrainerView.mm in Sources */,
@@ -1448,6 +1522,7 @@
 				09FC924B1A153A83005D14A3 /* AGConnection.mm in Sources */,
 				098740B317BC61410098511A /* AGUserInterface.cpp in Sources */,
 				09B019D9208591C30071C8EC /* AGDocumentationViewer.mm in Sources */,
+				0997E10B224C6B32007D93B7 /* Bounce.cpp in Sources */,
 				09B674441D6D9E8700F84E09 /* AGCompositeNode.mm in Sources */,
 				0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */,
 				49C023051F22A01B00963AD9 /* AGPGMidiSourceDelegate.mm in Sources */,
@@ -1459,13 +1534,17 @@
 				09F2D53A1D7EA33400F537C7 /* Delay.cpp in Sources */,
 				494019CD1F21CCF3000F05E8 /* AGPGMidiDelegate.mm in Sources */,
 				09EE65821EFB64C700B4ED62 /* SampleCircularBuffer.cpp in Sources */,
+				0997E113224C6B32007D93B7 /* Quart.cpp in Sources */,
 				0944E8C61DCB325D00EB8087 /* AGAnalytics.mm in Sources */,
 				09230FB31F3D8C9500DF06B5 /* AGAboutBox.cpp in Sources */,
+				0997E110224C6B32007D93B7 /* Expo.cpp in Sources */,
+				0997E10D224C6B32007D93B7 /* Cubic.cpp in Sources */,
 				0991BA851D8654C70080175C /* FileWvIn.cpp in Sources */,
 				0957DF4321D9AFC400D6A69C /* AGModalDialog.cpp in Sources */,
 				09030CEB1EFEF83D00D4A4F2 /* Signal.cpp in Sources */,
 				0934B67B1E223B47009259E2 /* AGFileManager.mm in Sources */,
 				498438621F1EF40B00FB2914 /* PGMidi.mm in Sources */,
+				0997E10A224C6B32007D93B7 /* Back.cpp in Sources */,
 				498438631F1EF40B00FB2914 /* PGMidiAllSources.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1610,6 +1689,7 @@
 				HEADER_SEARCH_PATHS = (
 					"\"$(PROJECT_DIR)/libs/LipiTk/include\"",
 					"\"$(PROJECT_DIR)/Auraglyph\"",
+					"\"$(PROJECT_DIR)/libs/\"",
 				);
 				INFOPLIST_FILE = "Auraglyph/Auraglyph-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -1646,6 +1726,7 @@
 				HEADER_SEARCH_PATHS = (
 					"\"$(PROJECT_DIR)/libs/LipiTk/include\"",
 					"\"$(PROJECT_DIR)/Auraglyph\"",
+					"\"$(PROJECT_DIR)/libs/\"",
 				);
 				INFOPLIST_FILE = "Auraglyph/Auraglyph-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
