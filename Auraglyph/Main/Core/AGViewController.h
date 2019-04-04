@@ -20,6 +20,7 @@ class AGConnection;
 class AGFreeDraw;
 class AGInteractiveObject;
 class AGGraph;
+class AGTutorial;
 #ifdef __OBJC__
 @class AGTouchHandler;
 #endif // __OBJC__
@@ -71,6 +72,8 @@ enum AGDrawMode
 - (void) showDashboard;
 - (void) hideDashboard;
 
+- (void)showTutorial:(AGTutorial *)tutorial;
+
 + (NSString *)styleFontPath;
 
 @end
@@ -115,6 +118,8 @@ public:
     
     void showDashboard();
     void hideDashboard();
+    
+    void showTutorial(AGTutorial *tutorial);
 
 private:
     AGViewController *m_viewController = nil;

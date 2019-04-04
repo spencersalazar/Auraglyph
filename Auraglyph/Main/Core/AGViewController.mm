@@ -584,6 +584,14 @@ static AGViewController * g_instance = nil;
     _uiDashboard->hide();
 }
 
+- (void)showTutorial:(AGTutorial *)tutorial
+{
+    if (tutorial != _currentTutorial)
+        SAFE_DELETE(_currentTutorial);
+    [self _newDocument:NO];
+    _currentTutorial = tutorial;
+}
+
 - (void)addTouchOutsideListener:(AGInteractiveObject *)listener
 {
     assert([NSThread isMainThread]);
@@ -1459,4 +1467,8 @@ void AGViewController_::hideDashboard()
     [m_viewController hideDashboard];
 }
 
+void AGViewController_::showTutorial(AGTutorial *tutorial)
+{
+    [m_viewController showTutorial:tutorial];
+}
 

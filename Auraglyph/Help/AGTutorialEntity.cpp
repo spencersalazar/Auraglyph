@@ -77,11 +77,7 @@ AGTutorialStep::AGTutorialStep(const list<AGTutorialAction*> &actions,
                                const list<AGTutorialCondition*> &conditions,
                                const map<std::string, Variant> &parameters)
 : AGTutorialEntity(parameters), m_actions(actions), m_conditions(conditions)
-{
-    // TODO: need to init these somewhere else
-    for(auto action : m_actions)
-        action->init();
-}
+{ }
 
 AGTutorialStep::AGTutorialStep(AGTutorialAction *action,
                                const std::map<std::string, Variant> &parameters)

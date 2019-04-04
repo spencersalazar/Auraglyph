@@ -16,6 +16,7 @@
 #include "AGUndoManager.h"
 #include "AGDocumentationViewer.h"
 #include "AGModalDialog.h"
+#include "AGTutorial.h"
 
 #include <math.h>
 
@@ -198,6 +199,12 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
         dbgprint("Examples\n");
         // TODO: analytics
         m_viewController->loadExample();
+    });
+    m_settingsMenu->addMenuItem("Tutorial", [this](){
+        dbgprint("Tutorial\n");
+        // TODO: analytics
+        AGTutorial *tutorial = AGTutorial::createInitialTutorial(m_viewController);
+        m_viewController->showTutorial(tutorial);
     });
     m_settingsMenu->addMenuItem("Settings", [this](){
         dbgprint("Settings\n");
