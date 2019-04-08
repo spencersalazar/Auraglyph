@@ -125,6 +125,7 @@ GLKMatrix4 AGRenderObject::s_camera = GLKMatrix4Identity;
 
 AGRenderObject::AGRenderObject() : m_parent(NULL), m_alpha(powcurvef(0, 1, 0.5, 4))
 {
+    m_renderState.alpha = 1;
     m_renderState.projection = GLKMatrix4Identity;
     m_renderState.modelview = GLKMatrix4Identity;
     m_renderState.normal = GLKMatrix3Identity;
