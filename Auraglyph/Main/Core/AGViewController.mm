@@ -71,6 +71,8 @@ using namespace std;
 #define AG_DO_TRAINER 0
 #define AG_RESET_DOCUMENT 0
 
+#define AG_SHOW_TUTORIAL_ON_START 0
+
 #define AG_EXPORT_NODES 1
 #define AG_EXPORT_NODES_FILE @"nodes.json"
 
@@ -227,8 +229,12 @@ static AGViewController * g_instance = nil;
     
     _graph = new AGGraph;
     
+#if AG_SHOW_TUTORIAL_ON_START
     bool doTutorial = true;
-    
+#else // !AG_SHOW_TUTORIAL_ON_START
+    bool doTutorial = false;
+#endif // AG_SHOW_TUTORIAL_ON_STARTs
+
     if (doTutorial) {
         _currentTutorial = AGTutorial::createInitialTutorial(_proxy);
         [self _newDocument:NO];

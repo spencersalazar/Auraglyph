@@ -62,6 +62,45 @@ private:
     void prepareInternal(AGTutorialEnvironment &environment) override;
 };
 
+/** AGPointToTutorialAction
+ */
+class AGPointToTutorialAction : public AGTutorialAction
+{
+public:
+    using AGTutorialAction::AGTutorialAction;
+    
+    void update(float t, float dt) override
+    {
+        
+    }
+    
+    void render() override
+    {
+        
+    }
+    
+    bool canContinue() override
+    {
+        
+    }
+    
+    bool isCompleted() override
+    {
+        
+    }
+    
+protected:
+    std::vector<GLvertex3f> m_figure;
+    bool m_canContinue = false;
+    GLvertex3f m_figurePos;
+    float m_tFig = 0;
+    
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        
+    }
+};
+
 /** AGDrawNodeTutorialAction
  */
 class AGDrawNodeTutorialAction : public AGTutorialAction
@@ -85,6 +124,8 @@ protected:
     
     void prepareInternal(AGTutorialEnvironment &environment) override;
 };
+
+
 
 /** AGDrawNodeTutorialCondition
  */
