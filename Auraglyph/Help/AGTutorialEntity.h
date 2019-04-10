@@ -46,7 +46,7 @@ public:
     void store(const std::string &name, const Variant &variable);
     
     /** Fetch a variable from the environment. */
-    const Variant &fetch(const std::string &name, const Variant &variable);
+    const Variant &fetch(const std::string &name, const Variant &_default=Variant());
     
 private:
     /** */

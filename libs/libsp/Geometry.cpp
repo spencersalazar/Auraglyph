@@ -50,13 +50,13 @@ GLvertex3f operator-(const GLvertex3f &v1, const GLvertex3f &v2)
     return v3;
 }
 
-GLvertex3f operator*(const GLvertex3f &v, const GLfloat &s)
+GLvertex3f operator*(const GLvertex3f &v, const GLfloat s)
 {
     GLvertex3f v2 = GLvertex3f(v.x*s, v.y*s, v.z*s);
     return v2;
 }
 
-GLvertex3f operator/(const GLvertex3f &v, const GLfloat &s)
+GLvertex3f operator/(const GLvertex3f &v, const GLfloat s)
 {
     GLvertex3f v2 = GLvertex3f(v.x/s, v.y/s, v.z/s);
     return v2;

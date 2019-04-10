@@ -110,6 +110,7 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
 {
     CGRect bounds = viewController->bounds();
     GLvertex3f startPos = viewController->fixedCoordinateForScreenCoordinate(CGPointMake(bounds.origin.x+30, bounds.origin.y+30));
+    AGTutorialEnvironment *env = new AGTutorialEnvironment(viewController);
     
     auto steps = (std::list<AGTutorialStep*>){
         /* hide the UI */
@@ -152,7 +153,9 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
                 { "pause", 0.01 },
             }),
         }, (std::list<AGTutorialCondition*>) {
-            AGTutorialConditions::make(AGTutorialConditions::DRAW_NODE),
+            AGTutorialConditions::make(AGTutorialConditions::DRAW_NODE, {
+                { "position=", "node1_pos" } // store position in node1_pos
+            }),
         }, { { "pause", 0.01 } }),
         
         /* select the sine wave */
@@ -192,6 +195,17 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
                 { "position", GLvertex3f(startPos.x, startPos.y-210, 0) },
                 { "pause", 1.0 },
             }),
+            AGTutorialActions::make(AGTutorialActions::POINT_TO, {
+                { "start", Variant([env](){
+                    GLvertex3f node1Pos = env->fetch("node1_pos");
+                    return node1Pos+GLvertex3f(-400, 400, 0);
+                })},
+                { "end", Variant([env]() -> GLvertex3f {
+                    GLvertex3f node1Pos = env->fetch("node1_pos");
+                    return node1Pos+GLvertex3f(-100, 100, 0);
+                })},
+                { "pause", 0 },
+            }),
             AGTutorialActions::make(AGTutorialActions::TEXT, {
                 { "text", "start by choosing the sine wave." },
                 { "position", GLvertex3f(startPos.x, startPos.y-250, 0) },
@@ -209,6 +223,7 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         step->init();
     AGTutorial *tutorial = new AGTutorial(steps, viewController);
     tutorial->init();
+    tutorial->m_environment.reset(env);
     
     return tutorial;
 }

@@ -32,8 +32,8 @@ struct GLvertex3f;
 
 GLvertex3f operator+(const GLvertex3f &v1, const GLvertex3f &v2);
 GLvertex3f operator-(const GLvertex3f &v1, const GLvertex3f &v2);
-GLvertex3f operator*(const GLvertex3f &v, const GLfloat &s);
-GLvertex3f operator/(const GLvertex3f &v, const GLfloat &s);
+GLvertex3f operator*(const GLvertex3f &v, const GLfloat s);
+GLvertex3f operator/(const GLvertex3f &v, const GLfloat s);
 bool operator==(const GLvertex3f &v, const GLvertex3f &v2);
 bool operator!=(const GLvertex3f &v, const GLvertex3f &v2);
 GLvertex3f lerp(float d, const GLvertex3f &a, const GLvertex3f &b);

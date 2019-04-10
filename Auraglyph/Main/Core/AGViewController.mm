@@ -71,7 +71,7 @@ using namespace std;
 #define AG_DO_TRAINER 0
 #define AG_RESET_DOCUMENT 0
 
-#define AG_SHOW_TUTORIAL_ON_START 0
+#define AG_SHOW_TUTORIAL_ON_START 1
 
 #define AG_EXPORT_NODES 1
 #define AG_EXPORT_NODES_FILE @"nodes.json"

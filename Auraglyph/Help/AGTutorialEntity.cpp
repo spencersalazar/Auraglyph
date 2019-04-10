@@ -14,9 +14,18 @@ AGTutorialEnvironment::AGTutorialEnvironment(AGViewController_ *viewController) 
 
 AGViewController_ *AGTutorialEnvironment::viewController() { return m_viewController; }
 
-void AGTutorialEnvironment::store(const std::string &name, const Variant &variable) { m_variables[name] = variable; }
+void AGTutorialEnvironment::store(const std::string &name, const Variant &variable)
+{
+    m_variables[name] = variable;
+}
 
-const Variant &AGTutorialEnvironment::fetch(const std::string &name, const Variant &variable) { return m_variables[name]; }
+const Variant &AGTutorialEnvironment::fetch(const std::string &name, const Variant &_default)
+{
+    if(m_variables.count(name))
+        return m_variables[name];
+    else
+        return _default;
+}
 
 #pragma mark AGTutorialEntity
 

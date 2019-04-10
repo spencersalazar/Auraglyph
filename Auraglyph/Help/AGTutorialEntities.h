@@ -27,6 +27,7 @@ class AGTutorialActions
 public:
     enum Action {
         TEXT,
+        POINT_TO,
         HIDE_UI,
         DRAW_NODE,
     };
