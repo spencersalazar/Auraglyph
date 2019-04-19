@@ -16,6 +16,9 @@
 #include <map>
 
 
+//------------------------------------------------------------------------------
+// ### AGActivity ###
+//------------------------------------------------------------------------------
 class AGActivity
 {
 public:
@@ -56,4 +59,29 @@ private:
     Type m_type;
     std::string m_title;
 };
+
+
+//------------------------------------------------------------------------------
+// ### AGUndoableActivity ###
+//------------------------------------------------------------------------------
+class AGUndoableActivity : public AGActivity
+{
+public:
+    AGUndoableActivity(const std::string &type, const std::string &title,
+                       std::function<void ()> undo, std::function<void ()> redo)
+    : AGActivity(type, title), m_undo(undo), m_redo(redo)
+    { }
+    
+    bool canUndo() const override { return true; }
+    
+    void undo() override { m_undo(); }
+    
+    void redo() override { m_redo(); }
+    
+private:
+    std::function<void ()> m_undo;
+    std::function<void ()> m_redo;
+    std::function<std::string ()> m_serialize;
+};
+
 

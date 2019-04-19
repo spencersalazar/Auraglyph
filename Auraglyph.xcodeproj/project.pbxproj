@@ -117,6 +117,7 @@
 		099AF11417D12DD9000BAB7B /* AGTrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11217D12DD9000BAB7B /* AGTrainerViewController.xib */; };
 		099AF11617D13365000BAB7B /* AGTrainerViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11517D13365000BAB7B /* AGTrainerViewCell.xib */; };
 		099AF11817D157C5000BAB7B /* AGTrainerHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11717D157C5000BAB7B /* AGTrainerHeaderView.xib */; };
+		09ACD5DD225DB67A0047F2AD /* AGActivities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09ACD5DB225DB67A0047F2AD /* AGActivities.cpp */; };
 		09B019D9208591C30071C8EC /* AGDocumentationViewer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B019D7208591C30071C8EC /* AGDocumentationViewer.mm */; };
 		09B019F4208597CA0071C8EC /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09B019F3208597CA0071C8EC /* WebKit.framework */; };
 		09B019F5208597F00071C8EC /* docs in Resources */ = {isa = PBXBuildFile; fileRef = 09B019EE2085923C0071C8EC /* docs */; };
@@ -501,6 +502,8 @@
 		099AF11717D157C5000BAB7B /* AGTrainerHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AGTrainerHeaderView.xib; sourceTree = "<group>"; };
 		099AF12D17D1A892000BAB7B /* projects.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = projects.zip; sourceTree = "<group>"; };
 		09A8BB4019F9E39E00E15BF7 /* spMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spMath.h; sourceTree = "<group>"; };
+		09ACD5DB225DB67A0047F2AD /* AGActivities.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGActivities.cpp; sourceTree = "<group>"; };
+		09ACD5DC225DB67A0047F2AD /* AGActivities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGActivities.h; sourceTree = "<group>"; };
 		09B019D7208591C30071C8EC /* AGDocumentationViewer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AGDocumentationViewer.mm; sourceTree = "<group>"; };
 		09B019D8208591C30071C8EC /* AGDocumentationViewer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGDocumentationViewer.h; sourceTree = "<group>"; };
 		09B019EE2085923C0071C8EC /* docs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = docs; sourceTree = SOURCE_ROOT; };
@@ -835,6 +838,8 @@
 				095D12E617ACA36C0048A012 /* AGViewController.xib */,
 				09635B0121E0202400921309 /* AGActivity.h */,
 				09635B0021E0202400921309 /* AGActivity.cpp */,
+				09ACD5DC225DB67A0047F2AD /* AGActivities.h */,
+				09ACD5DB225DB67A0047F2AD /* AGActivities.cpp */,
 				09635AFE21E01A3000921309 /* AGActivityManager.h */,
 				09635AFD21E01A3000921309 /* AGActivityManager.cpp */,
 				0923100D1F46163200DF06B5 /* AGUndoManager.h */,
@@ -1501,6 +1506,7 @@
 				09E5EC7C18A3484F00B21D97 /* Mutex.cpp in Sources */,
 				09030CE71EFEF81300D4A4F2 /* Thread.cpp in Sources */,
 				494019C01F2092FE000F05E8 /* AGControlMidiNoteIn.mm in Sources */,
+				09ACD5DD225DB67A0047F2AD /* AGActivities.cpp in Sources */,
 				09EE657F1EFB59BE00B4ED62 /* AGAudioRecorder.mm in Sources */,
 				0997E111224C6B32007D93B7 /* Linear.cpp in Sources */,
 				09412E0C1A2112300065598D /* NSString+STLString.mm in Sources */,
