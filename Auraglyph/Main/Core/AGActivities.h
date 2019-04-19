@@ -54,12 +54,13 @@ namespace Activities {
     class DrawNode : public AGActivity
     {
     public:
-        DrawNode(AGHandwritingRecognizerFigure _figure)
+        DrawNode(AGHandwritingRecognizerFigure _figure, const GLvertex3f &_position)
         : AGActivity(AGActivity::DrawNodeActivityType, "Draw Node"),
-        figure(_figure)
+        figure(_figure), position(_position)
         { }
         
         const AGHandwritingRecognizerFigure figure;
+        const GLvertex3f position;
     };
 
     class CreateNode : public AGUndoableActivity

@@ -21,6 +21,7 @@
 
 // for conditions / activity listening
 #include "AGActivity.h"
+#include "AGActivities.h"
 
 #include <vector>
 
@@ -119,6 +120,9 @@ private:
             environment.viewController()->showDashboard();
     }
 };
+
+
+#pragma mark AGPointToTutorialAction
 
 /** AGPointToTutorialAction
  */
@@ -295,15 +299,34 @@ public:
     void activityOccurred(AGActivity *activity) override
     {
         if (activity->type() == AGActivity::DrawNodeActivityType) {
-            // TODO: check that node is the correct type
-            // TODO: set the node position based on the activity
-            m_status = STATUS_CONTINUE;
+            auto drawNodeActivity = dynamic_cast<AG::Activities::DrawNode *>(activity);
+            
+            if(drawNodeActivity != nullptr) {
+                m_nodePosition = drawNodeActivity->position;
+                
+                if(m_matchAnyFigure || drawNodeActivity->figure == m_figure) {
+                    m_status = STATUS_CONTINUE;
+                }
+            }
         }
     }
 
 private:
     Status m_status = STATUS_INCOMPLETE;
     GLvertex3f m_nodePosition = GLvertex3f();
+    
+    bool m_matchAnyFigure = false;
+    AGHandwritingRecognizerFigure m_figure = AG_FIGURE_NONE;
+    
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        if(hasParameter("figure")) {
+            m_figure = (AGHandwritingRecognizerFigure) getParameter("figure", (int) AG_FIGURE_NONE).getInt();
+            m_matchAnyFigure = false;
+        } else {
+            m_matchAnyFigure = true;
+        }
+    }
     
     void finalizeInternal(AGTutorialEnvironment &environment) override
     {
@@ -331,13 +354,29 @@ public:
     void activityOccurred(AGActivity *activity) override
     {
         if (activity->type() == AGActivity::CreateNodeActivityType) {
-            // TODO: check that node is the correct type
-            m_status = STATUS_CONTINUE;
+            auto createNodeActivity = dynamic_cast<AG::Activities::CreateNode *>(activity);
+            
+            if(m_matchAnyType || createNodeActivity->serializedNode.type == m_type) {
+                m_status = STATUS_CONTINUE;
+            }
         }
     }
 
 private:
     Status m_status = STATUS_INCOMPLETE;
+    
+    bool m_matchAnyType = false;
+    std::string m_type = "";
+    
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        if(hasParameter("node_type")) {
+            m_type = getParameter("node_type").getString();
+            m_matchAnyType = false;
+        } else {
+            m_matchAnyType = true;
+        }
+    }
 };
 
 

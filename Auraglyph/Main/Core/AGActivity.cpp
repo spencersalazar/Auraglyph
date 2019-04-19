@@ -29,9 +29,9 @@ AGActivity *AGActivity::editParamActivity(AGNode *node, int port, float oldValue
     return new AG::Activities::EditParam(node, port, oldValue, newValue);
 }
 
-AGActivity *AGActivity::drawNodeActivity(AGHandwritingRecognizerFigure figure)
+AGActivity *AGActivity::drawNodeActivity(AGHandwritingRecognizerFigure figure, const GLvertex3f &position)
 {
-    return new AG::Activities::DrawNode(figure);
+    return new AG::Activities::DrawNode(figure, position);
 }
 
 AGActivity *AGActivity::createNodeActivity(AGNode *node)

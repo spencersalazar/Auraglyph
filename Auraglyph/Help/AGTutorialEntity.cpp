@@ -49,6 +49,11 @@ void AGTutorialEntity::finalize(AGTutorialEnvironment &environment)
     m_onFinalize(environment);
 }
 
+bool AGTutorialEntity::hasParameter(const std::string &name)
+{
+    return m_parameters.count(name) > 0;
+}
+
 Variant AGTutorialEntity::getParameter(const std::string &name, Variant defaultValue)
 {
     if (m_parameters.count(name))
@@ -193,12 +198,19 @@ void AGTutorialStep::prepareInternal(AGTutorialEnvironment &environment)
     m_activeActions.push_back(*m_currentAction);
     
     // if there are no conditions, can continue immediately
-    if(m_conditions.size() == 0)
-    {
+    if(m_conditions.size() == 0) {
         dbgprint("tutorial condition status: continue\n");
         m_conditionStatus = AGTutorialCondition::STATUS_CONTINUE;
+    }
+    
+    for(auto condition : m_conditions) {
+        condition->prepare(environment);
     }
 }
 
 void AGTutorialStep::finalizeInternal(AGTutorialEnvironment &environment)
-{ }
+{
+    for(auto condition : m_conditions) {
+        condition->finalize(environment);
+    }
+}

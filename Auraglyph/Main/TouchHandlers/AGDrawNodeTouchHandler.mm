@@ -125,11 +125,11 @@
 #endif // AG_ENABLE_COMPOSITE
     
     AGHandwritingRecognizerFigure figure = AGHandwritingRecognizer::instance().recognizeShape(_currentTrace);
-    
+    AGActivityManager::instance().addActivity(AGActivity::drawNodeActivity(figure, centroidMVP));
+
     if(figure == AG_FIGURE_CIRCLE)
     {
         AGAnalytics::instance().eventDrawNodeCircle();
-        AGActivityManager::instance().addActivity(AGActivity::drawNodeActivity(figure));
         
         {
             AGUIMetaNodeSelector *nodeSelector = AGUIMetaNodeSelector::audioNodeSelector(centroidMVP);

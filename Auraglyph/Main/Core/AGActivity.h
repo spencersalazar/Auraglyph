@@ -34,7 +34,7 @@ public:
     static const Type DeleteConnectionActivityType;
     
     static AGActivity *editParamActivity(AGNode *node, int port, float oldValue, float newValue);
-    static AGActivity *drawNodeActivity(AGHandwritingRecognizerFigure figure);
+    static AGActivity *drawNodeActivity(AGHandwritingRecognizerFigure figure, const GLvertex3f &position);
     static AGActivity *createNodeActivity(AGNode *node);
     static AGActivity *moveNodeActivity(AGNode *node, const GLvertex3f &oldPos, const GLvertex3f &newPos);
     static AGActivity *deleteNodeActivity(AGNode *node);

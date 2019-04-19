@@ -18,7 +18,7 @@
 enum AGHandwritingRecognizerFigure
 {
     AG_FIGURE_NONE = 0,
-    
+
     AG_FIGURE_0 = '0',
     AG_FIGURE_1 = '1',
     AG_FIGURE_2 = '2',

@@ -106,6 +106,9 @@ static AGTutorialStep *_makeTutorialStep(AGTutorialAction *action,
     return step;
 }
 
+
+#include "AGHandwritingRecognizer.h"
+
 AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
 {
     CGRect bounds = viewController->bounds();
@@ -154,6 +157,7 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
             }),
         }, (std::list<AGTutorialCondition*>) {
             AGTutorialConditions::make(AGTutorialConditions::DRAW_NODE, {
+                { "figure", (int) AG_FIGURE_CIRCLE },
                 { "position=", "node1_pos" } // store position in node1_pos
             }),
         }, { { "pause", 0.01 } }),
@@ -197,12 +201,14 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
             }),
             AGTutorialActions::make(AGTutorialActions::POINT_TO, {
                 { "start", Variant([env](){
+                    // start position is based on env variable
                     GLvertex3f node1Pos = env->fetch("node1_pos");
-                    return node1Pos+GLvertex3f(-400, 400, 0);
+                    return node1Pos+GLvertex3f(-300, 50, 0);
                 })},
                 { "end", Variant([env]() -> GLvertex3f {
+                    // start position is based on env variable
                     GLvertex3f node1Pos = env->fetch("node1_pos");
-                    return node1Pos+GLvertex3f(-100, 100, 0);
+                    return node1Pos+GLvertex3f(-120, 50, 0);
                 })},
                 { "pause", 0 },
             }),
@@ -212,7 +218,9 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
                 { "pause", 0 },
             }),
         }, (std::list<AGTutorialCondition*>) {
-            AGTutorialConditions::make(AGTutorialConditions::CREATE_NODE),
+            AGTutorialConditions::make(AGTutorialConditions::CREATE_NODE, {
+                { "node_type", "SineWave" }
+            }),
         }, { { "pause", 0.01 } }),
         
         /* end / unhide the UI */

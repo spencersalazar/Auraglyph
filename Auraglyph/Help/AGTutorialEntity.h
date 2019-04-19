@@ -96,9 +96,11 @@ public:
     void finalize(AGTutorialEnvironment &environment);
     
 protected:
+    /** Whether this entity has the parameter with specified name. */
+    bool hasParameter(const std::string &name);
     /** Get parameter for this entity with specified name. */
     Variant getParameter(const std::string &name, Variant defaultValue = Variant());
-    
+
     /** Override to make subclass-specific set up when preparing this entity
      */
     virtual void prepareInternal(AGTutorialEnvironment &environment);
