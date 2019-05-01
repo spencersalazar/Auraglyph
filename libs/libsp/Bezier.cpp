@@ -6,4 +6,4 @@
 //  Copyright © 2019 Spencer Salazar. All rights reserved.
 //
 
-#include "Bezier.hpp"
+#include "Bezier.h"
