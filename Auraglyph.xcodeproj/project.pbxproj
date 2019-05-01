@@ -118,6 +118,7 @@
 		099AF11617D13365000BAB7B /* AGTrainerViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11517D13365000BAB7B /* AGTrainerViewCell.xib */; };
 		099AF11817D157C5000BAB7B /* AGTrainerHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 099AF11717D157C5000BAB7B /* AGTrainerHeaderView.xib */; };
 		09ACD5DD225DB67A0047F2AD /* AGActivities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09ACD5DB225DB67A0047F2AD /* AGActivities.cpp */; };
+		09ACD6D02275278C0047F2AD /* Bezier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09ACD6CE2275278C0047F2AD /* Bezier.cpp */; };
 		09B019D9208591C30071C8EC /* AGDocumentationViewer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B019D7208591C30071C8EC /* AGDocumentationViewer.mm */; };
 		09B019F4208597CA0071C8EC /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09B019F3208597CA0071C8EC /* WebKit.framework */; };
 		09B019F5208597F00071C8EC /* docs in Resources */ = {isa = PBXBuildFile; fileRef = 09B019EE2085923C0071C8EC /* docs */; };
@@ -504,6 +505,8 @@
 		09A8BB4019F9E39E00E15BF7 /* spMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spMath.h; sourceTree = "<group>"; };
 		09ACD5DB225DB67A0047F2AD /* AGActivities.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGActivities.cpp; sourceTree = "<group>"; };
 		09ACD5DC225DB67A0047F2AD /* AGActivities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGActivities.h; sourceTree = "<group>"; };
+		09ACD6CE2275278C0047F2AD /* Bezier.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Bezier.cpp; sourceTree = "<group>"; };
+		09ACD6CF2275278C0047F2AD /* Bezier.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bezier.h; sourceTree = "<group>"; };
 		09B019D7208591C30071C8EC /* AGDocumentationViewer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AGDocumentationViewer.mm; sourceTree = "<group>"; };
 		09B019D8208591C30071C8EC /* AGDocumentationViewer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGDocumentationViewer.h; sourceTree = "<group>"; };
 		09B019EE2085923C0071C8EC /* docs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = docs; sourceTree = SOURCE_ROOT; };
@@ -1041,6 +1044,8 @@
 				09030CE51EFEF81300D4A4F2 /* Thread.cpp */,
 				09030CEA1EFEF83D00D4A4F2 /* Signal.h */,
 				09030CE91EFEF83D00D4A4F2 /* Signal.cpp */,
+				09ACD6CF2275278C0047F2AD /* Bezier.h */,
+				09ACD6CE2275278C0047F2AD /* Bezier.cpp */,
 			);
 			name = libsp;
 			path = libs/libsp;
@@ -1532,6 +1537,7 @@
 				092310121F46399800DF06B5 /* AGGraphManager.cpp in Sources */,
 				098740AA17BB99DE0098511A /* TexFont.mm in Sources */,
 				098740AD17BC377E0098511A /* AGAudioNode.mm in Sources */,
+				09ACD6D02275278C0047F2AD /* Bezier.cpp in Sources */,
 				098740B017BC527E0098511A /* ES2Render.mm in Sources */,
 				09230FFB1F41868A00DF06B5 /* AGControlGestureNode.mm in Sources */,
 				49C023011F229E2100963AD9 /* AGMidiConnectionListener.mm in Sources */,

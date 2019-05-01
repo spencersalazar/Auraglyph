@@ -7,12 +7,18 @@
 //
 
 /** Specific actions + conditions for constructing tutorials.
- - AGTextTutorialAction - display text at specified location
- - AGHideUITutorialAction - hide/show UI
- - AGDrawNodeTutorialAction - display a graphic to suggest drawing a node
  
- - AGDrawNodeTutorialCondition - triggered by drawing a node figure
- - AGCreateNodeTutorialCondition - triggered by creating a node, i.e.
+ TODO: note inputs/outputs of each action/condition
+ 
+ - AGTutorialActions::TEXT - display text at specified location
+ - AGTutorialActions::POINT_TO - point from/to specific locations
+ - AGTutorialActions::HIDE_UI - hide/show UI
+ - AGTutorialActions::SUGGEST_DRAW_NODE - display a graphic to suggest drawing a node
+ - AGTutorialActions::CREATE_NODE - create a node
+
+ - AGTutorialConditions::DRAW_NODE - triggered by drawing a node figure
+ - AGTutorialConditions::CREATE_NODE - triggered by creating a node
+ - AGTutorialConditions::CREATE_CONNECTION - triggered by creating a connection
  selecting from the node menu
  */
 
@@ -29,7 +35,8 @@ public:
         TEXT,
         POINT_TO,
         HIDE_UI,
-        DRAW_NODE,
+        SUGGEST_DRAW_NODE,
+        CREATE_NODE,
     };
     
     /** Helper function to create tutorial actions.
@@ -45,6 +52,7 @@ public:
     enum Condition {
         DRAW_NODE,
         CREATE_NODE,
+        CREATE_CONNECTION,
     };
     
     /** Helper function to create tutorial conditions.

@@ -211,12 +211,12 @@ protected:
 };
 
 
-#pragma mark AGDrawNodeTutorialAction
+#pragma mark AGSuggestDrawNodeTutorialAction
 
-/** AGDrawNodeTutorialAction
+/** AGSuggestDrawNodeTutorialAction
  */
 
-class AGDrawNodeTutorialAction : public AGTutorialAction
+class AGSuggestDrawNodeTutorialAction : public AGTutorialAction
 {
 public:
     using AGTutorialAction::AGTutorialAction;
@@ -277,6 +277,56 @@ protected:
 };
 
 
+#pragma mark AGCreateNodeTutorialAction
+
+/** AGCreateNodeTutorialAction
+ */
+
+class AGCreateNodeTutorialAction : public AGTutorialAction
+{
+public:
+    using AGTutorialAction::AGTutorialAction;
+    
+    void update(float t, float dt) override
+    {
+        if (m_t < m_pause)
+            m_canContinue = true;
+        else
+            m_t += dt;
+    }
+    
+    bool canContinue() override { return m_canContinue; }
+    
+    bool isCompleted() override { return m_canContinue; }
+    
+protected:
+    
+    bool m_canContinue = false;
+    GLvertex3f m_figurePos;
+    float m_t = 0;
+    float m_pause = 0;
+
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        m_pause = getParameter("pause", 0);
+        
+        // create the node
+        AGDocument::Node::Class nodeClass = (AGDocument::Node::Class) getParameter("class", AGDocument::Node::AUDIO).getInt();
+        std::string type = getParameter("type", "Output").getString();
+        GLvertex3f position = getParameter("position", GLvertex3f()).getVertex3();
+
+        AGNode *node = AGNodeManager::nodeManagerForClass(nodeClass).createNodeOfType(type, position);
+        AGGraphManager::instance().addNodeToTopLevel(node);
+        
+        // store the uuid if desired
+        std::string saveUUID = getParameter("uuid>");
+        if(saveUUID.length())
+            environment.store(saveUUID, node->uuid());
+    }
+};
+
+
+
 //-----------------------------------------------------------------------------
 // CONDITIONS
 //-----------------------------------------------------------------------------
@@ -330,7 +380,7 @@ private:
     
     void finalizeInternal(AGTutorialEnvironment &environment) override
     {
-        std::string savePosition = getParameter("position=");
+        std::string savePosition = getParameter("position>");
         if(savePosition.length())
             environment.store(savePosition, m_nodePosition);
     }
@@ -358,20 +408,76 @@ public:
             
             if(m_matchAnyType || createNodeActivity->serializedNode.type == m_type) {
                 m_status = STATUS_CONTINUE;
+                m_nodeUUID = createNodeActivity->serializedNode.uuid;
             }
         }
     }
-
+    
 private:
     Status m_status = STATUS_INCOMPLETE;
     
     bool m_matchAnyType = false;
     std::string m_type = "";
+    std::string m_nodeUUID = "";
     
     void prepareInternal(AGTutorialEnvironment &environment) override
     {
         if(hasParameter("node_type")) {
             m_type = getParameter("node_type").getString();
+            m_matchAnyType = false;
+        } else {
+            m_matchAnyType = true;
+        }
+    }
+    
+    void finalizeInternal(AGTutorialEnvironment &environment) override
+    {
+        if(m_status == STATUS_CONTINUE) {
+            std::string saveUUID = getParameter("uuid>");
+            if(saveUUID.length())
+                environment.store(saveUUID, m_nodeUUID);
+        }
+    }
+};
+
+
+/** AGCreateConnectionTutorialCondition
+ */
+class AGCreateConnectionTutorialCondition : public AGTutorialCondition
+{
+public:
+    using AGTutorialCondition::AGTutorialCondition;
+    
+    AGTutorialCondition::Status getStatus() override
+    {
+        return m_status;
+    }
+    
+    void activityOccurred(AGActivity *activity) override
+    {
+        if (activity->type() == AGActivity::CreateConnectionActivityType) {
+            auto createConnectionActivity = dynamic_cast<AG::Activities::CreateConnection *>(activity);
+            
+            if(m_matchAnyType ||
+               (createConnectionActivity->serializedConnection.srcUuid == m_srcUUID &&
+                createConnectionActivity->serializedConnection.srcUuid == m_dstUUID)) {
+                m_status = STATUS_CONTINUE;
+            }
+        }
+    }
+    
+private:
+    Status m_status = STATUS_INCOMPLETE;
+    
+    bool m_matchAnyType = false;
+    std::string m_srcUUID = "";
+    std::string m_dstUUID = "";
+
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        if(hasParameter("src_uuid") && hasParameter("dst_uuid")) {
+            m_srcUUID = getParameter("src_uuid").getString();
+            m_dstUUID = getParameter("dst_uuid").getString();
             m_matchAnyType = false;
         } else {
             m_matchAnyType = true;
@@ -393,7 +499,9 @@ AGTutorialAction *AGTutorialActions::make(AGTutorialActions::Action type, const 
             break;
         case AGTutorialActions::HIDE_UI: action = new AGHideUITutorialAction(parameters);
             break;
-        case AGTutorialActions::DRAW_NODE: action = new AGDrawNodeTutorialAction(parameters);
+        case AGTutorialActions::SUGGEST_DRAW_NODE: action = new AGSuggestDrawNodeTutorialAction(parameters);
+            break;
+        case AGTutorialActions::CREATE_NODE: action = new AGCreateNodeTutorialAction(parameters);
             break;
         default:
             assert(0);
@@ -417,6 +525,9 @@ AGTutorialCondition *AGTutorialConditions::make(AGTutorialConditions::Condition 
             break;
         case AGTutorialConditions::CREATE_NODE:
             condition = new AGCreateNodeTutorialCondition(parameters);
+            break;
+        case AGTutorialConditions::CREATE_CONNECTION:
+            condition = new AGCreateConnectionTutorialCondition(parameters);
             break;
         default:
             assert(0);
