@@ -312,16 +312,22 @@ protected:
         
         // create the node
         AGDocument::Node::Class nodeClass = (AGDocument::Node::Class) getParameter("class", AGDocument::Node::AUDIO).getInt();
-        std::string type = getParameter("type", "Output").getString();
+        std::string type = getParameter("type", "").getString();
         GLvertex3f position = getParameter("position", GLvertex3f()).getVertex3();
 
-        AGNode *node = AGNodeManager::nodeManagerForClass(nodeClass).createNodeOfType(type, position);
-        AGGraphManager::instance().addNodeToTopLevel(node);
-        
-        // store the uuid if desired
-        std::string saveUUID = getParameter("uuid>");
-        if(saveUUID.length())
-            environment.store(saveUUID, node->uuid());
+        if(type.length()) {
+            AGNode *node = AGNodeManager::nodeManagerForClass(nodeClass).createNodeOfType(type, position);
+            AGGraphManager::instance().addNodeToTopLevel(node);
+            if(type == "Output") {
+                AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
+                outputNode->setOutputDestination(AGAudioManager_::instance().masterOut());
+            }
+            
+            // store the uuid if desired
+            std::string saveUUID = getParameter("uuid>");
+            if(saveUUID.length())
+                environment.store(saveUUID, node->uuid());
+        }
     }
 };
 

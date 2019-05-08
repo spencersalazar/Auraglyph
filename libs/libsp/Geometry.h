@@ -86,6 +86,12 @@ struct GLvertex3f
     
 #endif // ENABLE_GLKIT
     
+    GLvertex3f& operator += (GLvertex3f operand)
+    {
+        *this = *this + operand;
+        return *this;
+    }
+    
 } __attribute__((aligned(4),packed));
 
 

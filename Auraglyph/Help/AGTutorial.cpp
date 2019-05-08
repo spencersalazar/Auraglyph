@@ -115,188 +115,223 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
     GLvertex3f startPos = viewController->fixedCoordinateForScreenCoordinate(CGPointMake(bounds.origin.x+30, bounds.origin.y+30));
     AGTutorialEnvironment *env = new AGTutorialEnvironment(viewController);
     
-    auto steps = (std::list<AGTutorialStep*>){
+    std::list<AGTutorialStep*> steps;
+    GLvertex3f textStartPos = startPos;
+    GLvertex3f normalLineSpace = GLvertex3f(0, -30, 0);
+    GLvertex3f mediumLineSpace = GLvertex3f(0, -40, 0);
+    GLvertex3f largeLineSpace = GLvertex3f(0, -70, 0);
+
+    {
         /* hide the UI */
-        _makeTutorialStep(AGTutorialActions::make(AGTutorialActions::HIDE_UI, { { "hide", 1 } })),
-
+        steps.push_back(_makeTutorialStep(AGTutorialActions::make(AGTutorialActions::HIDE_UI, {
+            { "hide", 1 }
+        })));
+    }
+    
+    {
         /* intro / draw a circle */
-        _makeTutorialStep((std::list<AGTutorialAction*>) {
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "welcome to Auraglyph." },
-                { "position", GLvertex3f(startPos.x, startPos.y, 0) },
-                { "pause", 1.0 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "an infinite" },
-                { "position", GLvertex3f(startPos.x, startPos.y-40, 0) },
-                { "pause", 0.25 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "modular" },
-                { "position", GLvertex3f(startPos.x, startPos.y-70, 0) },
-                { "pause", 0.25 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "music" },
-                { "position", GLvertex3f(startPos.x, startPos.y-100, 0) },
-                { "pause", 0.25 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "sketchpad." },
-                { "position", GLvertex3f(startPos.x, startPos.y-130, 0) },
-                { "pause", 2 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "to start, draw a circle." },
-                { "position", GLvertex3f(startPos.x, startPos.y-200, 0) },
-                { "pause", 0.01 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::SUGGEST_DRAW_NODE, {
-                { "position", GLvertex3f(startPos.x, startPos.y-200, 0) },
-                { "pause", 0.01 },
-            }),
-        }, (std::list<AGTutorialCondition*>) {
-            AGTutorialConditions::make(AGTutorialConditions::DRAW_NODE, {
-                { "figure", (int) AG_FIGURE_CIRCLE },
-                { "position>", "node1_pos" } // store position in node1_pos
-            }),
-        }, { { "pause", 0.01 } }),
+        std::list<AGTutorialAction*> actions;
+        std::list<AGTutorialCondition*> conditions;
+        GLvertex3f currentTextPos = textStartPos;
         
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "welcome to Auraglyph." },
+            { "position", currentTextPos },
+            { "pause", 1.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "an infinite" },
+            { "position", (currentTextPos += mediumLineSpace) },
+            { "pause", 0.25 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "modular" },
+            { "position", (currentTextPos += normalLineSpace) },
+            { "pause", 0.25 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "music" },
+            { "position", (currentTextPos += normalLineSpace) },
+            { "pause", 0.25 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "sketchpad." },
+            { "position", (currentTextPos += normalLineSpace) },
+            { "pause", 2 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "to start, draw a circle." },
+            { "position", (currentTextPos += largeLineSpace) },
+            { "pause", 0.01 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::SUGGEST_DRAW_NODE, {
+            { "position", GLvertex3f(0, 0, 0) },
+            { "pause", 0.01 },
+        }));
+        
+        conditions.push_back(AGTutorialConditions::make(AGTutorialConditions::DRAW_NODE, {
+            { "figure", (int) AG_FIGURE_CIRCLE },
+            { "position>", "node1_pos" } // store position in node1_pos
+        }));
+        
+        steps.push_back(_makeTutorialStep(actions, conditions, {
+            { "pause", 0.01 }
+        }));
+    }
+    
+    {
         /* select the sine wave */
-        _makeTutorialStep((std::list<AGTutorialAction*>) {
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "awesome! " },
-                { "position", GLvertex3f(startPos.x, startPos.y, 0) },
-                { "pause", 0.25 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "you created an audio node." },
-                { "position", GLvertex3f(startPos.x, startPos.y-40, 0) },
-                { "pause", 1.0 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "audio nodes can create sound" },
-                { "position", GLvertex3f(startPos.x, startPos.y-80, 0) },
-                { "pause", 0 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "or process an existing sound." },
-                { "position", GLvertex3f(startPos.x, startPos.y-110, 0) },
-                { "pause", 1.0 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "here, you can see a menu" },
-                { "position", GLvertex3f(startPos.x, startPos.y-150, 0) },
-                { "pause", 0 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "of different audio nodes" },
-                { "position", GLvertex3f(startPos.x, startPos.y-180, 0) },
-                { "pause", 0 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "to choose from." },
-                { "position", GLvertex3f(startPos.x, startPos.y-210, 0) },
-                { "pause", 1.0 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::POINT_TO, {
-                { "start", Variant([env](){
-                    // start position is based on env variable
-                    GLvertex3f node1Pos = env->fetch("node1_pos");
-                    return node1Pos+GLvertex3f(-300, 50, 0);
-                })},
-                { "end", Variant([env](){
-                    // start position is based on env variable
-                    GLvertex3f node1Pos = env->fetch("node1_pos");
-                    return node1Pos+GLvertex3f(-120, 50, 0);
-                })},
-                { "pause", 0 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "start by choosing the sine wave." },
-                { "position", GLvertex3f(startPos.x, startPos.y-250, 0) },
-                { "pause", 0 },
-            }),
-        }, (std::list<AGTutorialCondition*>) {
-            AGTutorialConditions::make(AGTutorialConditions::CREATE_NODE, {
-                { "node_type", "SineWave" },
-                { "uuid>", "node1_uuid" }
-            }),
-        }, { { "pause", 0.01 } }),
+        std::list<AGTutorialAction*> actions;
+        std::list<AGTutorialCondition*> conditions;
+        GLvertex3f currentTextPos = textStartPos;
         
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "awesome!" },
+            { "position", currentTextPos },
+            { "pause", 0.25 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "you created an audio node." },
+            { "position", (currentTextPos += mediumLineSpace) },
+            { "pause", 1.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "audio nodes can create sound" },
+            { "position", (currentTextPos += mediumLineSpace) },
+            { "pause", 0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "or process an existing sound." },
+            { "position", (currentTextPos += normalLineSpace) },
+            { "pause", 1.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "here, you can see a menu" },
+            { "position", (currentTextPos += mediumLineSpace) },
+            { "pause", 0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "of different audio nodes" },
+            { "position", (currentTextPos += normalLineSpace) },
+            { "pause", 0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "to choose from." },
+            { "position", (currentTextPos += normalLineSpace) },
+            { "pause", 1.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::POINT_TO, {
+            { "start", Variant([env](){
+                // start position is based on env variable node1_pos
+                GLvertex3f node1Pos = env->fetch("node1_pos");
+                return node1Pos+GLvertex3f(-300, 50, 0);
+            })},
+            { "end", Variant([env](){
+                // start position is based on env variable node1_pos
+                GLvertex3f node1Pos = env->fetch("node1_pos");
+                return node1Pos+GLvertex3f(-120, 50, 0);
+            })},
+            { "pause", 0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "start by choosing the sine wave." },
+            { "position", (currentTextPos += mediumLineSpace) },
+            { "pause", 0 },
+        }));
+        
+        conditions.push_back(AGTutorialConditions::make(AGTutorialConditions::CREATE_NODE, {
+            { "node_type", "SineWave" },
+            { "uuid>", "node1_uuid" } // store uuid of created node in env variable
+        }));
+        
+        steps.push_back(_makeTutorialStep(actions, conditions, {
+            { "pause", 0.01 }
+        }));
+    }
+    
+    {
         /* connect to the output */
-        _makeTutorialStep((std::list<AGTutorialAction*>) {
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "sick!" },
-                { "position", GLvertex3f(startPos.x, startPos.y, 0) },
-                { "pause", 0.25 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "to hear the sine wave," },
-                { "position", GLvertex3f(startPos.x, startPos.y-40, 0) },
-                { "pause", 0.0 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "we have to connect it" },
-                { "position", GLvertex3f(startPos.x, startPos.y-70, 0) },
-                { "pause", 0.0 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "to an output node." },
-                { "position", GLvertex3f(startPos.x, startPos.y-100, 0) },
-                { "pause", 0.5 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::CREATE_NODE, {
-                { "class", AGDocument::Node::AUDIO },
-                { "type", "Output" },
-                { "position", Variant([env](){
-                    // start position is based on env variable
-                    GLvertex3f node1Pos = env->fetch("node1_pos");
-                    GLvertex3f outputNodePos = node1Pos+GLvertex3f(350, 0, 0);
-                    env->store("output_pos", outputNodePos);
-                    return outputNodePos;
-                })},
-                { "pause", 1.0 },
-                { "uuid>", "output_uuid" },
-            }),
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "drag from the output" },
-                { "position", GLvertex3f(startPos.x, startPos.y-140, 0) },
-                { "pause", 0 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "of the sine wave" },
-                { "position", GLvertex3f(startPos.x, startPos.y-170, 0) },
-                { "pause", 0 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::POINT_TO, {
-                { "start", Variant([env](){
-                    // start position is based on env variable
-                    GLvertex3f node1Pos = env->fetch("node1_pos");
-                    return node1Pos+GLvertex3f(70, 0, 0);
-                })},
-                { "end", Variant([env](){
-                    GLvertex3f outputNodePos = env->fetch("output_pos");
-                    return outputNodePos+GLvertex3f(-70, 0, 0);
-                })},
-                { "pause", 0 },
-            }),
-            AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "to the output node." },
-                { "position", GLvertex3f(startPos.x, startPos.y-200, 0) },
-                { "pause", 1.0 },
-            }),
-        }, (std::list<AGTutorialCondition*>) {
-            AGTutorialConditions::make(AGTutorialConditions::CREATE_CONNECTION, {
-                { "src_uuid", Variant([env]() { return env->fetch("node1_uuid").getString(); })},
-                { "dst_uuid", Variant([env]() { return env->fetch("output_uuid").getString(); })},
-            }),
-        }, { { "pause", 0.01 } }),
-
+        std::list<AGTutorialAction*> actions;
+        std::list<AGTutorialCondition*> conditions;
+        GLvertex3f currentTextPos = textStartPos;
         
-        /* end / unhide the UI */
-        _makeTutorialStep(AGTutorialActions::make(AGTutorialActions::HIDE_UI, { { "hide", 0 } })),
-    };
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "nice!" },
+            { "position", currentTextPos },
+            { "pause", 0.25 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "to hear the sine wave," },
+            { "position", currentTextPos += mediumLineSpace },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "we have to connect it" },
+            { "position", currentTextPos += normalLineSpace },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "to an output node." },
+            { "position", currentTextPos += normalLineSpace },
+            { "pause", 0.5 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::CREATE_NODE, {
+            { "class", AGDocument::Node::AUDIO },
+            { "type", "Output" },
+            { "position", Variant([env](){
+                // start position is based on env variable
+                GLvertex3f node1Pos = env->fetch("node1_pos");
+                GLvertex3f outputNodePos = node1Pos+GLvertex3f(350, 0, 0);
+                env->store("output_pos", outputNodePos);
+                return outputNodePos;
+            })},
+            { "pause", 1.0 },
+            { "uuid>", "output_uuid" },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "drag from the output" },
+            { "position", currentTextPos += mediumLineSpace },
+            { "pause", 0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "of the sine wave" },
+            { "position", currentTextPos += normalLineSpace },
+            { "pause", 0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::POINT_TO, {
+            { "start", Variant([env](){
+                // start position is based on env variable
+                GLvertex3f node1Pos = env->fetch("node1_pos");
+                return node1Pos+GLvertex3f(70, 0, 0);
+            })},
+            { "end", Variant([env](){
+                GLvertex3f outputNodePos = env->fetch("output_pos");
+                return outputNodePos+GLvertex3f(-70, 0, 0);
+            })},
+            { "pause", 0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "to the output node." },
+            { "position", currentTextPos += normalLineSpace },
+            { "pause", 1.0 },
+        }));
+        
+        conditions.push_back(AGTutorialConditions::make(AGTutorialConditions::CREATE_CONNECTION, {
+            { "src_uuid", Variant([env]() { return env->fetch("node1_uuid").getString(); })},
+            { "dst_uuid", Variant([env]() { return env->fetch("output_uuid").getString(); })},
+        }));
+        
+        steps.push_back(_makeTutorialStep(actions, conditions, {
+            { "pause", 0.01 }
+        }));
+    }
+    
+    {
+        /* show the UI */
+        steps.push_back(_makeTutorialStep(AGTutorialActions::make(AGTutorialActions::HIDE_UI, {
+            { "hide", 0 }
+        })));
+    }
     
     for(auto step : steps)
         step->init();
