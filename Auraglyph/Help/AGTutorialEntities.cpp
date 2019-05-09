@@ -465,8 +465,8 @@ public:
             auto createConnectionActivity = dynamic_cast<AG::Activities::CreateConnection *>(activity);
             
             if(m_matchAnyType ||
-               (createConnectionActivity->serializedConnection.srcUuid == m_srcUUID &&
-                createConnectionActivity->serializedConnection.srcUuid == m_dstUUID)) {
+               (createConnectionActivity->serializedConnection.srcUuid == getParameter("src_uuid") &&
+                createConnectionActivity->serializedConnection.dstUuid == getParameter("dst_uuid"))) {
                 m_status = STATUS_CONTINUE;
             }
         }
@@ -476,14 +476,10 @@ private:
     Status m_status = STATUS_INCOMPLETE;
     
     bool m_matchAnyType = false;
-    std::string m_srcUUID = "";
-    std::string m_dstUUID = "";
 
     void prepareInternal(AGTutorialEnvironment &environment) override
     {
         if(hasParameter("src_uuid") && hasParameter("dst_uuid")) {
-            m_srcUUID = getParameter("src_uuid").getString();
-            m_dstUUID = getParameter("dst_uuid").getString();
             m_matchAnyType = false;
         } else {
             m_matchAnyType = true;

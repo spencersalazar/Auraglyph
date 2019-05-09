@@ -47,7 +47,7 @@ public:
     operator std::string() const { return getString(); }
     operator GLvertex2f() const { return getVertex2(); }
     operator GLvertex3f() const { return getVertex3(); }
-
+    
 private:
     
     int m_i = 0;
@@ -66,5 +66,14 @@ private:
     bool m_dynamic = false;
 };
 
+template<typename T>
+bool operator==(const Variant& a, const T &b)
+{
+    return (T)a == b;
+}
 
-
+template<typename T>
+bool operator!=(const Variant& a, const T &b)
+{
+    return (T)a != b;
+}
