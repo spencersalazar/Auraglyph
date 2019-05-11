@@ -327,6 +327,47 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
     }
     
     {
+        /* tap to open the editor */
+        std::list<AGTutorialAction*> actions;
+        std::list<AGTutorialCondition*> conditions;
+        GLvertex3f currentTextPos = textStartPos;
+        
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "you can change the" },
+            { "position", currentTextPos += normalLineSpace },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "parameters of a node" },
+            { "position", currentTextPos += normalLineSpace },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "using the node editor." },
+            { "position", currentTextPos += normalLineSpace },
+            { "pause", 0.5 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "tap the sine wave node" },
+            { "position", currentTextPos += mediumLineSpace },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "to open its editor." },
+            { "position", currentTextPos += mediumLineSpace },
+            { "pause", 0.5 },
+        }));
+        
+        conditions.push_back(AGTutorialConditions::make(AGTutorialConditions::OPEN_NODE_EDITOR, {
+            { "uuid", Variant([env]() { return env->fetch("node1_uuid").getString(); })},
+        }));
+        
+        steps.push_back(_makeTutorialStep(actions, conditions, {
+            { "pause", 0.01 }
+        }));
+    }
+    
+    {
         /* show the UI */
         steps.push_back(_makeTutorialStep(AGTutorialActions::make(AGTutorialActions::HIDE_UI, {
             { "hide", 0 }

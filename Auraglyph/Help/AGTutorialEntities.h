@@ -53,6 +53,7 @@ public:
         DRAW_NODE,
         CREATE_NODE,
         CREATE_CONNECTION,
+        OPEN_NODE_EDITOR,
     };
     
     /** Helper function to create tutorial conditions.

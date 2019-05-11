@@ -137,7 +137,6 @@
 		09D9C9D01C98F13A005514A4 /* spRandom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09D9C9CE1C98F13A005514A4 /* spRandom.cpp */; };
 		09DC3D521FBD3729008B960F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */; };
 		09DC3D541FBD393C008B960F /* LaunchPortrait.png in Resources */ = {isa = PBXBuildFile; fileRef = 09DC3D531FBD393C008B960F /* LaunchPortrait.png */; };
-		09DDE4B82231AA4A008ACF0B /* AGEditTouchHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09DDE4AA2231AA48008ACF0B /* AGEditTouchHandler.mm */; };
 		09DDE4B92231AA4A008ACF0B /* AGDrawNodeTouchHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09DDE4AB2231AA48008ACF0B /* AGDrawNodeTouchHandler.mm */; };
 		09DDE4BA2231AA4A008ACF0B /* AGMoveNodeTouchHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09DDE4AF2231AA48008ACF0B /* AGMoveNodeTouchHandler.mm */; };
 		09DDE4BB2231AA4A008ACF0B /* AGDrawFreedrawTouchHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09DDE4B12231AA49008ACF0B /* AGDrawFreedrawTouchHandler.mm */; };
@@ -536,7 +535,6 @@
 		09DC3D4C1FBD363A008B960F /* Auraglyph.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Auraglyph.entitlements; sourceTree = "<group>"; };
 		09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		09DC3D531FBD393C008B960F /* LaunchPortrait.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LaunchPortrait.png; sourceTree = "<group>"; };
-		09DDE4AA2231AA48008ACF0B /* AGEditTouchHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGEditTouchHandler.mm; sourceTree = "<group>"; };
 		09DDE4AB2231AA48008ACF0B /* AGDrawNodeTouchHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGDrawNodeTouchHandler.mm; sourceTree = "<group>"; };
 		09DDE4AC2231AA48008ACF0B /* AGSelectNodeTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGSelectNodeTouchHandler.h; sourceTree = "<group>"; };
 		09DDE4AD2231AA48008ACF0B /* AGDrawNodeTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGDrawNodeTouchHandler.h; sourceTree = "<group>"; };
@@ -544,7 +542,6 @@
 		09DDE4AF2231AA48008ACF0B /* AGMoveNodeTouchHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGMoveNodeTouchHandler.mm; sourceTree = "<group>"; };
 		09DDE4B02231AA49008ACF0B /* AGConnectTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGConnectTouchHandler.h; sourceTree = "<group>"; };
 		09DDE4B12231AA49008ACF0B /* AGDrawFreedrawTouchHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGDrawFreedrawTouchHandler.mm; sourceTree = "<group>"; };
-		09DDE4B22231AA49008ACF0B /* AGEditTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGEditTouchHandler.h; sourceTree = "<group>"; };
 		09DDE4B32231AA49008ACF0B /* AGMoveNodeTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGMoveNodeTouchHandler.h; sourceTree = "<group>"; };
 		09DDE4B42231AA49008ACF0B /* AGConnectTouchHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGConnectTouchHandler.mm; sourceTree = "<group>"; };
 		09DDE4B52231AA49008ACF0B /* AGEraseFreedrawTouchHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGEraseFreedrawTouchHandler.mm; sourceTree = "<group>"; };
@@ -1203,8 +1200,6 @@
 				09DDE4B12231AA49008ACF0B /* AGDrawFreedrawTouchHandler.mm */,
 				09DDE4AD2231AA48008ACF0B /* AGDrawNodeTouchHandler.h */,
 				09DDE4AB2231AA48008ACF0B /* AGDrawNodeTouchHandler.mm */,
-				09DDE4B22231AA49008ACF0B /* AGEditTouchHandler.h */,
-				09DDE4AA2231AA48008ACF0B /* AGEditTouchHandler.mm */,
 				09DDE4AE2231AA48008ACF0B /* AGEraseFreedrawTouchHandler.h */,
 				09DDE4B52231AA49008ACF0B /* AGEraseFreedrawTouchHandler.mm */,
 				09DDE4B32231AA49008ACF0B /* AGMoveNodeTouchHandler.h */,
@@ -1523,7 +1518,6 @@
 				095D12FF17ACAB7B0048A012 /* ShaderHelper.mm in Sources */,
 				095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */,
 				492B3D601F3740C800E5E7F0 /* AGControlMidiCCIn.mm in Sources */,
-				09DDE4B82231AA4A008ACF0B /* AGEditTouchHandler.mm in Sources */,
 				09B01A042085DA9C0071C8EC /* AGUILoadDialog.cpp in Sources */,
 				09412E091A210B630065598D /* sputil.cpp in Sources */,
 				0987409C17B98D7C0098511A /* AGNode.mm in Sources */,

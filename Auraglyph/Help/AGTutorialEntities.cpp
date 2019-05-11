@@ -467,6 +467,45 @@ public:
             if(m_matchAnyType ||
                (createConnectionActivity->serializedConnection.srcUuid == getParameter("src_uuid") &&
                 createConnectionActivity->serializedConnection.dstUuid == getParameter("dst_uuid"))) {
+                   m_status = STATUS_CONTINUE;
+               }
+        }
+    }
+    
+private:
+    Status m_status = STATUS_INCOMPLETE;
+    
+    bool m_matchAnyType = false;
+    
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        if(hasParameter("src_uuid") && hasParameter("dst_uuid")) {
+            m_matchAnyType = false;
+        } else {
+            m_matchAnyType = true;
+        }
+    }
+};
+
+
+/** AGCreateConnectionTutorialCondition
+ */
+class AGOpenNodeEditorTutorialCondition : public AGTutorialCondition
+{
+public:
+    using AGTutorialCondition::AGTutorialCondition;
+    
+    AGTutorialCondition::Status getStatus() override
+    {
+        return m_status;
+    }
+    
+    void activityOccurred(AGActivity *activity) override
+    {
+        if (activity->type() == AGActivity::OpenNodeEditorActivityType) {
+            auto openNodeEditorActivity = dynamic_cast<AG::Activities::OpenNodeEditor *>(activity);
+            
+            if(m_matchAny || openNodeEditorActivity->nodeUUID == getParameter("uuid")) {
                 m_status = STATUS_CONTINUE;
             }
         }
@@ -475,15 +514,11 @@ public:
 private:
     Status m_status = STATUS_INCOMPLETE;
     
-    bool m_matchAnyType = false;
-
+    bool m_matchAny = false;
+    
     void prepareInternal(AGTutorialEnvironment &environment) override
     {
-        if(hasParameter("src_uuid") && hasParameter("dst_uuid")) {
-            m_matchAnyType = false;
-        } else {
-            m_matchAnyType = true;
-        }
+        m_matchAny = !hasParameter("uuid");
     }
 };
 
@@ -530,6 +565,9 @@ AGTutorialCondition *AGTutorialConditions::make(AGTutorialConditions::Condition 
             break;
         case AGTutorialConditions::CREATE_CONNECTION:
             condition = new AGCreateConnectionTutorialCondition(parameters);
+            break;
+        case AGTutorialConditions::OPEN_NODE_EDITOR:
+            condition = new AGOpenNodeEditorTutorialCondition(parameters);
             break;
         default:
             assert(0);

@@ -33,6 +33,10 @@ public:
     static const Type CreateConnectionActivityType;
     static const Type DeleteConnectionActivityType;
     
+    static const Type OpenNodeEditorActivityType;
+    static const Type CloseNodeEditorActivityType;
+
+    
     static AGActivity *editParamActivity(AGNode *node, int port, float oldValue, float newValue);
     static AGActivity *drawNodeActivity(AGHandwritingRecognizerFigure figure, const GLvertex3f &position);
     static AGActivity *createNodeActivity(AGNode *node);

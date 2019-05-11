@@ -17,6 +17,7 @@
 #import "AGUINodeEditor.h"
 #import "AGActivity.h"
 #import "AGAnalytics.h"
+#import "AGActivities.h"
 
 
 //------------------------------------------------------------------------------
@@ -81,6 +82,7 @@
     if(_moveNode && _maxTouchTravel < 2*2)
     {
         AGAnalytics::instance().eventOpenNodeEditor(_moveNode->type());
+        AGActivityManager::instance().addActivity(new AG::Activities::OpenNodeEditor(_moveNode));
         
         _moveNode->activate(0);
         // _nextHandler = [[AGEditTouchHandler alloc] initWithViewController:_viewController node:_moveNode];

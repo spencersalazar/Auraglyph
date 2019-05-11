@@ -210,6 +210,27 @@ namespace Activities {
         const std::string uuid;
     };
     
+    class OpenNodeEditor : public AGActivity
+    {
+    public:
+        OpenNodeEditor(AGNode *node)
+        : AGActivity(AGActivity::OpenNodeEditorActivityType, "Open Node Editor"),
+        nodeUUID(node->uuid())
+        { }
+        
+        const std::string nodeUUID;
+    };
+    
+    class CloseNodeEditor : public AGActivity
+    {
+    public:
+        CloseNodeEditor(AGNode *node)
+        : AGActivity(AGActivity::CloseNodeEditorActivityType, "Close Node Editor"),
+        nodeUUID(node->uuid())
+        { }
+        
+        const std::string nodeUUID;
+    };
 } // namespace Activities
     
 } // namespace AG

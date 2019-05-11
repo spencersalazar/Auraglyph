@@ -17,6 +17,8 @@ const AGActivity::Type AGActivity::MoveNodeActivityType = "MoveNode";
 const AGActivity::Type AGActivity::DeleteNodeActivityType = "DeleteNode";
 const AGActivity::Type AGActivity::CreateConnectionActivityType = "CreateConnection";
 const AGActivity::Type AGActivity::DeleteConnectionActivityType = "DeleteConnection";
+const AGActivity::Type AGActivity::OpenNodeEditorActivityType = "OpenNodeEditorActivityType";
+const AGActivity::Type AGActivity::CloseNodeEditorActivityType = "CloseNodeEditorActivityType";
 
 
 //------------------------------------------------------------------------------

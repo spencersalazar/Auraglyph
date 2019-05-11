@@ -48,6 +48,22 @@ public:
     operator GLvertex2f() const { return getVertex2(); }
     operator GLvertex3f() const { return getVertex3(); }
     
+    bool operator==(const Variant &b)
+    {
+        if(m_type == b.m_type) {
+            switch (m_type) {
+                case NONE: return true;
+                case INT: return getInt() == b.getInt();
+                case FLOAT: return getFloat() == b.getFloat();
+                case STRING: return getString() == b.getString();
+                case VERTEX2: return getVertex2() == b.getVertex2();
+                case VERTEX3: return getVertex3() == b.getVertex3();
+            }
+        } else {
+            return false;
+        }
+    }
+    
 private:
     
     int m_i = 0;
@@ -65,6 +81,7 @@ private:
     Type m_type = NONE;
     bool m_dynamic = false;
 };
+
 
 template<typename T>
 bool operator==(const Variant& a, const T &b)
