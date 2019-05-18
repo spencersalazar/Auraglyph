@@ -146,6 +146,11 @@ public:
     
     virtual void update(float t, float dt) override
     {
+        /* can't call main update() function because modelview state needs to
+         be set before updateChildren().
+         TODO: break general update() into updateInternal(), make update() for
+         subclass-specific model transformations.
+         */
         // AGRenderObject::update(t, dt);
         
         m_alpha.update(dt);
