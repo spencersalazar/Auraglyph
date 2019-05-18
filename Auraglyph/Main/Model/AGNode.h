@@ -184,7 +184,6 @@ public:
     void activateOutputPort(int type) { m_outputActivation = type; }
     void activate(int type) { m_activation = type; }
     
-    
     virtual int numInputPorts() const { if(m_manifest) return (int) m_manifest->inputPortInfo().size(); else return 0; }
     virtual int numEditPorts() const { if(m_manifest) return (int) m_manifest->editPortInfo().size(); else return 0; }
     virtual int numOutputPorts() const { if(m_manifest) return (int) m_manifest->outputPortInfo().size(); else return 0; }

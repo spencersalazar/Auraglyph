@@ -148,6 +148,8 @@ public:
     {
         // AGRenderObject::update(t, dt);
         
+        m_alpha.update(dt);
+        
         m_renderState.alpha = m_alpha;
         m_renderState.modelview = globalModelViewMatrix();
         m_renderState.projection = projectionMatrix();
