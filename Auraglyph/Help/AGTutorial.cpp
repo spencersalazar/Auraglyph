@@ -111,12 +111,15 @@ static AGTutorialStep *_makeTutorialStep(AGTutorialAction *action,
 
 AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
 {
-    CGRect bounds = viewController->bounds();
-    GLvertex3f startPos = viewController->fixedCoordinateForScreenCoordinate(CGPointMake(bounds.origin.x+30, bounds.origin.y+30));
+    // GLvertex3f startPos = viewController->fixedCoordinateForScreenCoordinate(CGPointMake(bounds.origin.x+30, bounds.origin.y+30));
+    Variant startPos = Variant([viewController] () {
+        CGRect bounds = viewController->bounds();
+        return viewController->fixedCoordinateForScreenCoordinate(CGPointMake(bounds.origin.x+100, bounds.origin.y+75));
+    });
     AGTutorialEnvironment *env = new AGTutorialEnvironment(viewController);
     
     std::list<AGTutorialStep*> steps;
-    GLvertex3f textStartPos = startPos;
+    Variant textStartPos = startPos;
     GLvertex3f normalLineSpace = GLvertex3f(0, -30, 0);
     GLvertex3f mediumLineSpace = GLvertex3f(0, -40, 0);
     GLvertex3f largeLineSpace = GLvertex3f(0, -70, 0);
@@ -132,36 +135,36 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         /* intro / draw a circle */
         std::list<AGTutorialAction*> actions;
         std::list<AGTutorialCondition*> conditions;
-        GLvertex3f currentTextPos = textStartPos;
+        GLvertex3f currentTextPos = GLvertex3f();
         
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "welcome to Auraglyph." },
-            { "position", currentTextPos },
+            { "position", startPos+Variant(currentTextPos) },
             { "pause", 1.0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "an infinite" },
-            { "position", (currentTextPos += mediumLineSpace) },
+            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
             { "pause", 0.25 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "modular" },
-            { "position", (currentTextPos += normalLineSpace) },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 0.25 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "music" },
-            { "position", (currentTextPos += normalLineSpace) },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 0.25 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "sketchpad." },
-            { "position", (currentTextPos += normalLineSpace) },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 2 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "to start, draw a circle." },
-            { "position", (currentTextPos += largeLineSpace) },
+            { "position", startPos+Variant(currentTextPos += largeLineSpace) },
             { "pause", 0.01 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::SUGGEST_DRAW_NODE, {
@@ -183,41 +186,41 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         /* select the sine wave */
         std::list<AGTutorialAction*> actions;
         std::list<AGTutorialCondition*> conditions;
-        GLvertex3f currentTextPos = textStartPos;
-        
+        GLvertex3f currentTextPos = GLvertex3f();
+
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "awesome!" },
-            { "position", currentTextPos },
+            { "position", startPos+Variant(currentTextPos) },
             { "pause", 0.25 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "you created an audio node." },
-            { "position", (currentTextPos += mediumLineSpace) },
+            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
             { "pause", 1.0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "audio nodes can create sound" },
-            { "position", (currentTextPos += mediumLineSpace) },
+            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
             { "pause", 0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "or process an existing sound." },
-            { "position", (currentTextPos += normalLineSpace) },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 1.0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "here, you can see a menu" },
-            { "position", (currentTextPos += mediumLineSpace) },
+            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
             { "pause", 0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "of different audio nodes" },
-            { "position", (currentTextPos += normalLineSpace) },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "to choose from." },
-            { "position", (currentTextPos += normalLineSpace) },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 1.0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::POINT_TO, {
@@ -235,7 +238,7 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "start by choosing the sine wave." },
-            { "position", (currentTextPos += mediumLineSpace) },
+            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
             { "pause", 0 },
         }));
         
@@ -253,26 +256,26 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         /* connect to the output */
         std::list<AGTutorialAction*> actions;
         std::list<AGTutorialCondition*> conditions;
-        GLvertex3f currentTextPos = textStartPos;
-        
+        GLvertex3f currentTextPos = GLvertex3f();
+
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "nice!" },
-            { "position", currentTextPos },
+            { "position", startPos+Variant(currentTextPos) },
             { "pause", 0.25 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "to hear the sine wave," },
-            { "position", currentTextPos += mediumLineSpace },
+            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
             { "pause", 0.0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "we have to connect it" },
-            { "position", currentTextPos += normalLineSpace },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 0.0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "to an output node." },
-            { "position", currentTextPos += normalLineSpace },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 0.5 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::CREATE_NODE, {
@@ -290,12 +293,12 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "drag from the output" },
-            { "position", currentTextPos += mediumLineSpace },
+            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
             { "pause", 0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "of the sine wave" },
-            { "position", currentTextPos += normalLineSpace },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::POINT_TO, {
@@ -312,7 +315,7 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "to the output node." },
-            { "position", currentTextPos += normalLineSpace },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 1.0 },
         }));
         
@@ -330,57 +333,81 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         /* tap to open the editor */
         std::list<AGTutorialAction*> actions;
         std::list<AGTutorialCondition*> conditions;
-        GLvertex3f currentTextPos = textStartPos;
-        
+        GLvertex3f currentTextPos = GLvertex3f();
+
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "you can change the" },
-            { "position", currentTextPos += normalLineSpace },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 0.0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "parameters of a node" },
-            { "position", currentTextPos += normalLineSpace },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 0.0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "using the node editor." },
-            { "position", currentTextPos += normalLineSpace },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 0.5 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "tap the sine wave node" },
-            { "position", currentTextPos += mediumLineSpace },
+            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
             { "pause", 0.0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "to open its editor." },
-            { "position", currentTextPos += mediumLineSpace },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 0.5 },
         }));
         
-        {
-            /* try changing the frequency or gain */
-            std::list<AGTutorialAction*> actions;
-            std::list<AGTutorialCondition*> conditions;
-            GLvertex3f currentTextPos = textStartPos;
-            
-            actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "try changing the" },
-                { "position", currentTextPos += normalLineSpace },
-                { "pause", 0.0 },
-            }));
-            actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "frequency or gain" },
-                { "position", currentTextPos += normalLineSpace },
-                { "pause", 0.0 },
-            }));
-            actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
-                { "text", "of the sine wave." },
-                { "position", currentTextPos += normalLineSpace },
-                { "pause", 0.5 },
-            }));
-            
         conditions.push_back(AGTutorialConditions::make(AGTutorialConditions::OPEN_NODE_EDITOR, {
+            { "uuid", Variant([env]() { return env->fetch("node1_uuid").getString(); })},
+        }));
+        
+        steps.push_back(_makeTutorialStep(actions, conditions, {
+            { "pause", 0.01 }
+        }));
+    }
+    
+    {
+        /* try changing the frequency or gain */
+        std::list<AGTutorialAction*> actions;
+        std::list<AGTutorialCondition*> conditions;
+        GLvertex3f currentTextPos = GLvertex3f();
+
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "tap and drag the" },
+            { "position", startPos+Variant(currentTextPos) },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "value of a parameter" },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "to adjust it." },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "try changing the" },
+            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "frequency or gain" },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "of the sine wave." },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 0.5 },
+        }));
+        
+        conditions.push_back(AGTutorialConditions::make(AGTutorialConditions::EDIT_NODE, {
             { "uuid", Variant([env]() { return env->fetch("node1_uuid").getString(); })},
         }));
         

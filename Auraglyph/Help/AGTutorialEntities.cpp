@@ -52,7 +52,7 @@ public:
     {
         TexFont *text = AGStyle::standardFont64();
         
-        Matrix4 mv = Matrix4(modelview()).translate(m_pos);
+        Matrix4 mv = Matrix4(modelview()).translate(m_position);
         
         int i = (int) m_textExtent;
         
@@ -78,6 +78,7 @@ public:
 
 protected:
     string m_text;
+    Variant m_position;
     float m_t = 0;
     float m_pause = 0;
     float m_textExtent = 0;
@@ -85,7 +86,7 @@ protected:
     void prepareInternal(AGTutorialEnvironment &environment) override
     {
         m_text = getParameter("text", "").getString();
-        m_pos = getParameter("position", GLvertex3f()).getVertex3();
+        m_position = getParameter("position", Variant(GLvertex3f()));
         m_pause = getParameter("pause", 0).getFloat();
         
         m_t = 0;
@@ -488,7 +489,7 @@ private:
 };
 
 
-/** AGCreateConnectionTutorialCondition
+/** AGOpenNodeEditorTutorialCondition
  */
 class AGOpenNodeEditorTutorialCondition : public AGTutorialCondition
 {
@@ -504,6 +505,41 @@ public:
     {
         if (activity->type() == AGActivity::OpenNodeEditorActivityType) {
             auto openNodeEditorActivity = dynamic_cast<AG::Activities::OpenNodeEditor *>(activity);
+            
+            if(m_matchAny || openNodeEditorActivity->nodeUUID == getParameter("uuid")) {
+                m_status = STATUS_CONTINUE;
+            }
+        }
+    }
+    
+private:
+    Status m_status = STATUS_INCOMPLETE;
+    
+    bool m_matchAny = false;
+    
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        m_matchAny = !hasParameter("uuid");
+    }
+};
+
+
+/** AGEditNodeTutorialCondition
+ */
+class AGEditNodeTutorialCondition : public AGTutorialCondition
+{
+public:
+    using AGTutorialCondition::AGTutorialCondition;
+    
+    AGTutorialCondition::Status getStatus() override
+    {
+        return m_status;
+    }
+    
+    void activityOccurred(AGActivity *activity) override
+    {
+        if (activity->type() == AGActivity::EditParamActivityType) {
+            auto openNodeEditorActivity = dynamic_cast<AG::Activities::EditParam *>(activity);
             
             if(m_matchAny || openNodeEditorActivity->nodeUUID == getParameter("uuid")) {
                 m_status = STATUS_CONTINUE;
@@ -568,6 +604,9 @@ AGTutorialCondition *AGTutorialConditions::make(AGTutorialConditions::Condition 
             break;
         case AGTutorialConditions::OPEN_NODE_EDITOR:
             condition = new AGOpenNodeEditorTutorialCondition(parameters);
+            break;
+        case AGTutorialConditions::EDIT_NODE:
+            condition = new AGEditNodeTutorialCondition(parameters);
             break;
         default:
             assert(0);
