@@ -43,7 +43,7 @@ m_done(false)
         "",
         "",
         "",
-        "Copyright 2018",
+        "Copyright 2019",
         "All rights reserved",
         "https://auragly.ph/",
     };
