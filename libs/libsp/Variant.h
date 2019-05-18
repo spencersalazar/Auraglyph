@@ -52,15 +52,39 @@ public:
     {
         if(m_type == b.m_type) {
             switch (m_type) {
-                case NONE: return true;
-                case INT: return getInt() == b.getInt();
-                case FLOAT: return getFloat() == b.getFloat();
-                case STRING: return getString() == b.getString();
+                case NONE:    return true;
+                case INT:     return getInt() == b.getInt();
+                case FLOAT:   return getFloat() == b.getFloat();
+                case STRING:  return getString() == b.getString();
                 case VERTEX2: return getVertex2() == b.getVertex2();
                 case VERTEX3: return getVertex3() == b.getVertex3();
             }
         } else {
             return false;
+        }
+    }
+    
+    Variant operator+(const Variant& b)
+    {
+        if(m_dynamic || b.m_dynamic) {
+            Variant a = *this;
+            switch (m_type) {
+                case NONE:    return *this;
+                case INT:     return Variant((std::function<int ()>) ([a, b] () { return a.getInt() + b.getInt(); }));
+                case FLOAT:   return Variant((std::function<float ()>) ([a, b] () { return a.getFloat() + b.getFloat(); }));
+                case STRING:  return Variant([a, b] () { return a.getString() + b.getString(); });
+                case VERTEX2: return Variant((std::function<GLvertex2f ()>) ([a, b] () { return a.getVertex2() + b.getVertex2(); }));
+                case VERTEX3: return Variant([a, b] () { return a.getVertex3() + b.getVertex3(); });
+            }
+        } else {
+            switch (m_type) {
+                case NONE:    return *this;
+                case INT:     return getInt() + b.getInt();
+                case FLOAT:   return getFloat() + b.getFloat();
+                case STRING:  return getString() + b.getString();
+                case VERTEX2: return getVertex2() + b.getVertex2();
+                case VERTEX3: return getVertex3() + b.getVertex3();
+            }
         }
     }
     
