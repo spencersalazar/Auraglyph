@@ -358,6 +358,28 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
             { "pause", 0.5 },
         }));
         
+        {
+            /* try changing the frequency or gain */
+            std::list<AGTutorialAction*> actions;
+            std::list<AGTutorialCondition*> conditions;
+            GLvertex3f currentTextPos = textStartPos;
+            
+            actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+                { "text", "try changing the" },
+                { "position", currentTextPos += normalLineSpace },
+                { "pause", 0.0 },
+            }));
+            actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+                { "text", "frequency or gain" },
+                { "position", currentTextPos += normalLineSpace },
+                { "pause", 0.0 },
+            }));
+            actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+                { "text", "of the sine wave." },
+                { "position", currentTextPos += normalLineSpace },
+                { "pause", 0.5 },
+            }));
+            
         conditions.push_back(AGTutorialConditions::make(AGTutorialConditions::OPEN_NODE_EDITOR, {
             { "uuid", Variant([env]() { return env->fetch("node1_uuid").getString(); })},
         }));
