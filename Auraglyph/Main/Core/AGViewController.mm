@@ -15,6 +15,7 @@
 #import "spstl.h"
 #import "TexFont.h"
 #import "NSString+STLString.h"
+#import "AGUtility.h"
 
 // Data model
 #import "AGInteractiveObject.h"
@@ -251,6 +252,10 @@ static AGViewController * g_instance = nil;
         {
             [self _newDocument:YES];
         }
+        
+        AGUtility::after(0.8, [self](){
+            _uiDashboard->unhide();
+        });
     }
     
     g_instance = self;
@@ -335,6 +340,9 @@ static AGViewController * g_instance = nil;
     /* modal dialog */
     _modalOverlay.init();
     AGModalDialog::setGlobalModalOverlay(&_modalOverlay);
+    
+    /* fade in */
+    _uiDashboard->hide(false);
 }
 
 - (void)_updateFixedUIPosition
