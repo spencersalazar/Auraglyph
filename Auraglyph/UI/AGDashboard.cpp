@@ -195,6 +195,8 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
         // TODO: analytics
         AGDocumentationViewer::show();
     });
+    
+#ifndef AG_BETA
     m_settingsMenu->addMenuItem("Examples", [this](){
         dbgprint("Examples\n");
         // TODO: analytics
@@ -210,6 +212,8 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
         dbgprint("Settings\n");
         // TODO: analytics
     });
+#endif // AG_BETA
+    
     m_settingsMenu->addMenuItem("Trainer", [this](){
         dbgprint("Trainer\n");
         AGAnalytics::instance().eventTrainer();

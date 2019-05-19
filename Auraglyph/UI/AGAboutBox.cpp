@@ -9,6 +9,7 @@
 #include "AGAboutBox.h"
 #include "AGStyle.h"
 #include "AGGenericShader.h"
+#include "AGUtility.h"
 
 static const float AGABOUTBOX_RADIUS = 0.066*AGStyle::oldGlobalScale;
 
@@ -42,7 +43,7 @@ m_done(false)
         "by Spencer Salazar",
         "",
         "",
-        "",
+        "v"+AGUtility::getVersionString(),
         "Copyright 2019",
         "All rights reserved",
         "https://auragly.ph/",

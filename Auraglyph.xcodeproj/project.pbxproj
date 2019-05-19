@@ -124,6 +124,7 @@
 		09B01A012085B6F20071C8EC /* Nunito-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 09B019FC2085AF410071C8EC /* Nunito-Bold.ttf */; };
 		09B01A042085DA9C0071C8EC /* AGUILoadDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09B01A022085DA9C0071C8EC /* AGUILoadDialog.cpp */; };
 		09B01A062085DB790071C8EC /* examples in Resources */ = {isa = PBXBuildFile; fileRef = 09B01A052085DB790071C8EC /* examples */; };
+		09B189EC2291039F00B38FFF /* AGUtility.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B189EA2291039F00B38FFF /* AGUtility.mm */; };
 		09B674441D6D9E8700F84E09 /* AGCompositeNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */; };
 		09B962521DD872C0001DCFB1 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09B962511DD872C0001DCFB1 /* CoreMotion.framework */; };
 		09B962551DDB1488001DCFB1 /* AGUISaveDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09B962531DDB1488001DCFB1 /* AGUISaveDialog.cpp */; };
@@ -510,6 +511,8 @@
 		09B01A022085DA9C0071C8EC /* AGUILoadDialog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGUILoadDialog.cpp; sourceTree = "<group>"; };
 		09B01A032085DA9C0071C8EC /* AGUILoadDialog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGUILoadDialog.h; sourceTree = "<group>"; };
 		09B01A052085DB790071C8EC /* examples */ = {isa = PBXFileReference; lastKnownFileType = folder; path = examples; sourceTree = SOURCE_ROOT; };
+		09B189EA2291039F00B38FFF /* AGUtility.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AGUtility.mm; sourceTree = "<group>"; };
+		09B189EB2291039F00B38FFF /* AGUtility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGUtility.h; sourceTree = "<group>"; };
 		09B674421D6D9E8700F84E09 /* AGCompositeNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = AGCompositeNode.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		09B674431D6D9E8700F84E09 /* AGCompositeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AGCompositeNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		09B674461D6DA2B200F84E09 /* AGAudioCapturer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAudioCapturer.h; sourceTree = "<group>"; };
@@ -828,6 +831,8 @@
 			isa = PBXGroup;
 			children = (
 				09077FD117C0BFFA00DFE42F /* AGDef.h */,
+				09B189EB2291039F00B38FFF /* AGUtility.h */,
+				09B189EA2291039F00B38FFF /* AGUtility.mm */,
 				095D12D617ACA36C0048A012 /* AGAppDelegate.h */,
 				095D12D717ACA36C0048A012 /* AGAppDelegate.mm */,
 				095D12E317ACA36C0048A012 /* AGViewController.h */,
@@ -1457,6 +1462,7 @@
 				095D12D417ACA36C0048A012 /* main.m in Sources */,
 				0933956E1A08799A009E4802 /* AGFormulaNode.mm in Sources */,
 				09635AFF21E01A3000921309 /* AGActivityManager.cpp in Sources */,
+				09B189EC2291039F00B38FFF /* AGUtility.mm in Sources */,
 				0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */,
 				09DDE4B92231AA4A008ACF0B /* AGDrawNodeTouchHandler.mm in Sources */,
 				09DDE4BD2231AA4A008ACF0B /* AGEraseFreedrawTouchHandler.mm in Sources */,
@@ -1770,6 +1776,91 @@
 			};
 			name = Release;
 		};
+		09B189E6229101D100B38FFF /* Beta */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 2;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Beta;
+		};
+		09B189E7229101D100B38FFF /* Beta */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LIBRARY = "libc++";
+				CODE_SIGN_ENTITLEMENTS = Auraglyph/Auraglyph.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = 9GU9FHJ3JC;
+				ENABLE_BITCODE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Auraglyph/Auraglyph-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = AG_BETA;
+				HEADER_SEARCH_PATHS = (
+					"\"$(PROJECT_DIR)/libs/LipiTk/include\"",
+					"\"$(PROJECT_DIR)/Auraglyph\"",
+					"\"$(PROJECT_DIR)/libs/\"",
+				);
+				INFOPLIST_FILE = "Auraglyph/Auraglyph-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				KEEP_PRIVATE_EXTERNS = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/libs/LipiTk/lib",
+					"$(PROJECT_DIR)/libs/GoogleAnalytics",
+				);
+				OTHER_LDFLAGS = "-all_load";
+				PRODUCT_BUNDLE_IDENTIFIER = io.auraglyph.auraglyph;
+				PRODUCT_NAME = Auraglyph;
+				PROVISIONING_PROFILE = "";
+				STRIP_INSTALLED_PRODUCT = NO;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Beta;
+		};
+		09B189E8229101D100B38FFF /* Beta */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Beta;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1778,6 +1869,7 @@
 			buildConfigurations = (
 				095D12E917ACA36C0048A012 /* Debug */,
 				095D12EA17ACA36C0048A012 /* Release */,
+				09B189E6229101D100B38FFF /* Beta */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1787,6 +1879,7 @@
 			buildConfigurations = (
 				095D12EC17ACA36C0048A012 /* Debug */,
 				095D12ED17ACA36C0048A012 /* Release */,
+				09B189E7229101D100B38FFF /* Beta */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1796,6 +1889,7 @@
 			buildConfigurations = (
 				09B019F1208592730071C8EC /* Debug */,
 				09B019F2208592730071C8EC /* Release */,
+				09B189E8229101D100B38FFF /* Beta */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
