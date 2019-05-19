@@ -270,14 +270,20 @@ bool AGRenderObject::finishedRenderingOut()
     return m_renderingOut && m_alpha < 0.01;
 }
 
-void AGRenderObject::hide()
+void AGRenderObject::hide(bool animate)
 {
-    m_alpha.reset(1, 0);
+    if(animate)
+        m_alpha.reset(1, 0);
+    else
+        m_alpha.forceTo(0);
 }
 
-void AGRenderObject::unhide()
+void AGRenderObject::unhide(bool animate)
 {
-    m_alpha.reset(0, 1);
+    if(animate)
+        m_alpha.reset(0, 1);
+    else
+        m_alpha.forceTo(1);
 }
 
 void AGRenderObject::debug_renderBounds()

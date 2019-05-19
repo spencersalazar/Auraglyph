@@ -9,10 +9,12 @@
 #pragma once
 
 #include <string>
+#include <functional>
 
 namespace AGUtility {
     
     std::string getVersionString();
     
+    void after(float timeInSeconds, std::function<void ()> func);
 }
 

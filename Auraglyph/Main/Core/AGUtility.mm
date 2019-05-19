@@ -24,3 +24,10 @@ std::string AGUtility::getVersionString()
     
     return v;
 }
+
+void AGUtility::after(float timeInSeconds, std::function<void ()> func)
+{
+    [NSTimer scheduledTimerWithTimeInterval:timeInSeconds repeats:NO block:^(NSTimer * _Nonnull timer) {
+        func();
+    }];
+}

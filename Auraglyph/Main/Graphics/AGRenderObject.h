@@ -93,8 +93,8 @@ public:
     virtual void renderOut();
     virtual bool finishedRenderingOut();
     
-    virtual void hide();
-    virtual void unhide();
+    virtual void hide(bool animate = true);
+    virtual void unhide(bool animate = true);
     
     void addChild(AGRenderObject *child);
     void addChildToTop(AGRenderObject *child);
