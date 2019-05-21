@@ -130,7 +130,7 @@ void AGAudioNode::render()
     // draw base outline
     glBindVertexArrayOES(s_vertexArray);
     
-    color.a = m_fadeOut;
+    color.a = m_fadeOut*m_renderState.alpha;
     glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
     glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
     

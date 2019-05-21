@@ -299,6 +299,8 @@ void AGNode::_renderConnections()
 
 void AGNode::update(float t, float dt)
 {
+    AGRenderObject::update(t, dt);
+    
     if(!m_active)
     {
         m_fadeOut.update(dt);
@@ -323,6 +325,8 @@ void AGNode::render()
     shader.setMVPMatrix(m_modelViewProjectionMatrix);
     shader.setNormalMatrix(m_normalMatrix);
     
+    float alpha = m_fadeOut*m_renderState.alpha;
+    
     int numOut = numOutputPorts();
     for(int port = 0; port < numOut; port++)
     {
@@ -339,7 +343,7 @@ void AGNode::render()
         if(m_outputActivation == 1+port)       color = AGStyle::proceedColor();
         else if(m_outputActivation == -1-port) color = AGStyle::errorColor();
         else                                   color = AGStyle::foregroundColor();
-        color.a = m_fadeOut;
+        color.a = alpha;
         glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
         
         glLineWidth(2.0f);
@@ -362,7 +366,7 @@ void AGNode::render()
         if(m_inputActivation == 1+port)       color = AGStyle::proceedColor();
         else if(m_inputActivation == -1-port) color = AGStyle::errorColor();
         else                                  color = AGStyle::foregroundColor();
-        color.a = m_fadeOut;
+        color.a = alpha;
         glVertexAttrib4fv(AGVertexAttribColor, (const float *) &color);
         
         glLineWidth(2.0f);
@@ -375,6 +379,8 @@ void AGNode::render()
 
 void AGNode::_renderIcon()
 {
+    float alpha = m_fadeOut*m_renderState.alpha;
+
     if(m_manifest)
     {
         AGGenericShader &shader = AGGenericShader::instance();
@@ -383,7 +389,7 @@ void AGNode::_renderIcon()
         shader.setMVPMatrix(m_modelViewProjectionMatrix);
         shader.setNormalMatrix(m_normalMatrix);
         
-        AGStyle::foregroundColor().withAlpha(m_fadeOut).set();
+        AGStyle::foregroundColor().withAlpha(alpha).set();
         glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
         
         m_manifest->renderIcon();
