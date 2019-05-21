@@ -318,6 +318,8 @@ protected:
 
         if(type.length()) {
             AGNode *node = AGNodeManager::nodeManagerForClass(nodeClass).createNodeOfType(type, position);
+            // animate in
+            node->unhide();
             AGGraphManager::instance().addNodeToTopLevel(node);
             if(type == "Output") {
                 AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
@@ -448,6 +450,8 @@ private:
 };
 
 
+#pragma mark AGCreateConnectionTutorialCondition
+
 /** AGCreateConnectionTutorialCondition
  */
 class AGCreateConnectionTutorialCondition : public AGTutorialCondition
@@ -489,6 +493,8 @@ private:
 };
 
 
+#pragma mark AGOpenNodeEditorTutorialCondition
+
 /** AGOpenNodeEditorTutorialCondition
  */
 class AGOpenNodeEditorTutorialCondition : public AGTutorialCondition
@@ -523,6 +529,7 @@ private:
     }
 };
 
+#pragma mark AGEditNodeTutorialCondition
 
 /** AGEditNodeTutorialCondition
  */

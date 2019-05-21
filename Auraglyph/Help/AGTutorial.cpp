@@ -273,11 +273,6 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
             { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 0.0 },
         }));
-        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
-            { "text", "to an output node." },
-            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
-            { "pause", 0.5 },
-        }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::CREATE_NODE, {
             { "class", AGDocument::Node::AUDIO },
             { "type", "Output" },
@@ -290,6 +285,11 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
             })},
             { "pause", 1.0 },
             { "uuid>", "output_uuid" },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "to an output node." },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 0.5 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "drag from the output" },
@@ -395,6 +395,34 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
             { "text", "try changing the" },
             { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
             { "pause", 0.0 },
+        }));
+        // point to freq
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::POINT_TO, {
+            { "start", Variant([env](){
+                // start position is based on env variable node1_pos
+                GLvertex3f node1Pos = env->fetch("node1_pos");
+                return node1Pos+GLvertex3f(250, 32, 0);
+            })},
+            { "end", Variant([env](){
+                // start position is based on env variable node1_pos
+                GLvertex3f node1Pos = env->fetch("node1_pos");
+                return node1Pos+GLvertex3f(85, 32, 0);
+            })},
+            { "pause", 0 },
+        }));
+        // point to gain
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::POINT_TO, {
+            { "start", Variant([env](){
+                // start position is based on env variable node1_pos
+                GLvertex3f node1Pos = env->fetch("node1_pos");
+                return node1Pos+GLvertex3f(250, -5, 0);
+            })},
+            { "end", Variant([env](){
+                // start position is based on env variable node1_pos
+                GLvertex3f node1Pos = env->fetch("node1_pos");
+                return node1Pos+GLvertex3f(85, -5, 0);
+            })},
+            { "pause", 0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "frequency or gain" },
