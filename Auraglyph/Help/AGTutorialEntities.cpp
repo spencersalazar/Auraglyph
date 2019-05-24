@@ -23,7 +23,12 @@
 #include "AGActivity.h"
 #include "AGActivities.h"
 
+#include "AGTimer.h"
+
 #include <vector>
+#include <memory>
+
+
 
 
 //-----------------------------------------------------------------------------
@@ -568,7 +573,22 @@ public:
             auto openNodeEditorActivity = dynamic_cast<AG::Activities::EditParam *>(activity);
             
             if(m_matchAny || openNodeEditorActivity->nodeUUID == getParameter("uuid")) {
-                m_status = STATUS_CONTINUE;
+                float hangTime = getParameter("hang_time", 0);
+                if (hangTime > 0) {
+                    // allow interaction for period of time after initial interaction
+                    if (m_timer) {
+                        // reset the timer if it exists
+                        m_timer->reset();
+                    } else {
+                        // create new timer
+                        m_timer.reset(new AGTimer(hangTime, ^(AGTimer *timer){
+                            m_status = STATUS_CONTINUE;
+                        }));
+                    }
+                } else {
+                    // don't hang, just continue
+                    m_status = STATUS_CONTINUE;
+                }
             }
         }
     }
@@ -577,6 +597,7 @@ private:
     Status m_status = STATUS_INCOMPLETE;
     
     bool m_matchAny = false;
+    std::unique_ptr<AGTimer> m_timer;
     
     void prepareInternal(AGTutorialEnvironment &environment) override
     {

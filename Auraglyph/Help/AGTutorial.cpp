@@ -437,6 +437,7 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         
         conditions.push_back(AGTutorialConditions::make(AGTutorialConditions::EDIT_NODE, {
             { "uuid", Variant([env]() { return env->fetch("node1_uuid").getString(); })},
+            { "hang_time", 4.0f }
         }));
         
         steps.push_back(_makeTutorialStep(actions, conditions, {
