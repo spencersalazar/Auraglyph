@@ -144,29 +144,46 @@ public:
     {
         AGRenderObject::render();
         
+        // determine overall alpha
         float alpha = 1;
         if (m_t > ANIM_TIME)
+            // clamp
             alpha = std::max(0.0f, 1.0f-(m_t-ANIM_TIME)/FADE_TIME);
         AGStyle::foregroundColor().withAlpha(alpha).set();
         
+        // draw line part
+        // fraction of line that is visible
         float t_line = std::min(m_t/ANIM_TIME, 1.0f);
+        // ease
         t_line = easing::cubic::easeInOut(t_line, 0, 1, 1);
+        // draw
         drawLineLoop((GLvertex3f[]){
             m_start, m_start + (m_end-m_start)*t_line
         }, 2);
         
+        // draw arrow part
+        // overall length of line
         float lineLength = (m_end-m_start).magnitude();
+        // length of projection of arrow onto line
         float arrowProj = cosf(ARROW_ANGLE)*ARROW_LENGTH;
+        // fraction of line occupied by the arrow projection
         float arrowFract = (lineLength-arrowProj)/lineLength;
+        // fraction [0,1] of arrow that is visible
         float t_arrow = (t_line-arrowFract)/(1-arrowFract);
         if(t_arrow > 0)
         {
             //fprintf(stderr, "%f\n", t_line);
+            // angle of line at endpoint
             float lineAngle = atan2f(m_start.y-m_end.y, m_start.x-m_end.x);
+            // angle of left arrow flank
             float angleL = lineAngle+ARROW_ANGLE;
+            // position of left arrow end
             GLvertex3f posL = m_end+GLvertex3f(cosf(angleL), sinf(angleL), 0)*ARROW_LENGTH;
+            // angle of right arrow flank
             float angleR = lineAngle-ARROW_ANGLE;
+            // position of right arrow end
             GLvertex3f posR = m_end+GLvertex3f(cosf(angleR), sinf(angleR), 0)*ARROW_LENGTH;
+            // draw
             drawLineLoop((GLvertex3f[]){
                 posL, posL+(m_end-posL)*t_arrow
             }, 2);
@@ -208,6 +225,8 @@ protected:
 
         m_figure.push_back(m_start);
         m_figure.push_back(m_end);
+        
+        
     }
 };
 
