@@ -15,7 +15,7 @@ class AGTimer
 {
 public:
     AGTimer();
-    AGTimer(float interval, void (^action)(AGTimer *timer));
+    AGTimer(float interval, void (^action)(AGTimer *timer), bool repeat = true);
     ~AGTimer();
     
     void setInterval(float interval) { m_interval = interval; }
@@ -23,9 +23,13 @@ public:
 
     void checkTimer(float t, float dt);
     
+    void reset();
+    
 private:
     float m_lastFire;
     float m_interval;
+    bool m_repeat;
+    bool m_done = false;
     void (^m_action)(AGTimer *timer);
 };
 

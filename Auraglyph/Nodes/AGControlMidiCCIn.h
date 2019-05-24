@@ -12,7 +12,6 @@
 #define AGControlMidiCCIn_h
 
 #include "AGControlNode.h"
-#include "AGTimer.h"
 #include "AGStyle.h"
 
 #include "AGControlMidiInput.h"

@@ -9,7 +9,6 @@
 #pragma once
 
 #include "AGControlNode.h"
-#include "AGTimer.h"
 
 #ifdef __OBJC__
 @class CMMotionManager;
