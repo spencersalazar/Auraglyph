@@ -268,7 +268,8 @@ struct GLvrectf
     GLvertex3f ul; // upper left
 } __attribute__((packed));
 
-
+/** Determine whether point is within threshold of given line.
+ */
 static inline bool pointOnLine(const GLvertex2f &point, const GLvertex2f &line0, const GLvertex2f &line1, float thres)
 {
     GLvertex2f normal = GLvertex2f(line1.y - line0.y, line0.x - line1.x).normalize();
@@ -283,6 +284,8 @@ static inline bool pointOnLine(const GLvertex2f &point, const GLvertex2f &line0,
     return false;
 }
 
+/** Determine the distsance of a given point to the specified line.
+ */
 static inline float distanceToLine(const GLvertex2f &point, const GLvertex2f &line0, const GLvertex2f &line1)
 {
     GLvertex2f normal = GLvertex2f(line1.y - line0.y, line0.x - line1.x).normalize();
@@ -325,6 +328,15 @@ static inline float area(const GLvertex3f *points, int N)
     area /= 2;
     
     return fabsf(area);
+}
+
+static inline GLvertex2f normalToLine(const GLvertex2f &a, const GLvertex2f &b)
+{
+    // https://stackoverflow.com/a/1243676
+    // dx=x2-x1 and dy=y2-y1, then the normals are (-dy, dx) and (dy, -dx).
+    float dx = b.x-a.x;
+    float dy = b.y-a.y;
+    return GLvertex2f(-dy, dx).normalize();
 }
 
 // point in polygon methods

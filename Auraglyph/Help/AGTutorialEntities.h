@@ -55,6 +55,7 @@ public:
         CREATE_CONNECTION,
         OPEN_NODE_EDITOR,
         EDIT_NODE,
+        DELETE_CONNECTION,
     };
     
     /** Helper function to create tutorial conditions.

@@ -320,8 +320,9 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
         
         conditions.push_back(AGTutorialConditions::make(AGTutorialConditions::CREATE_CONNECTION, {
-            { "src_uuid", Variant([env]() { return env->fetch("node1_uuid").getString(); })},
-            { "dst_uuid", Variant([env]() { return env->fetch("output_uuid").getString(); })},
+            { "src_uuid", Variant([env]() { return env->fetch("node1_uuid").getString(); }) },
+            { "dst_uuid", Variant([env]() { return env->fetch("output_uuid").getString(); }) },
+            { "uuid>", "conn1_uuid" },
         }));
         
         steps.push_back(_makeTutorialStep(actions, conditions, {
@@ -438,6 +439,58 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         conditions.push_back(AGTutorialConditions::make(AGTutorialConditions::EDIT_NODE, {
             { "uuid", Variant([env]() { return env->fetch("node1_uuid").getString(); })},
             { "hang_time", 4.0f }
+        }));
+        
+        steps.push_back(_makeTutorialStep(actions, conditions, {
+            { "pause", 0.01 }
+        }));
+    }
+    
+    {
+        /* disconnect the sine wave */
+        std::list<AGTutorialAction*> actions;
+        std::list<AGTutorialCondition*> conditions;
+        GLvertex3f currentTextPos = GLvertex3f();
+        
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "you can disconnect" },
+            { "position", startPos+Variant(currentTextPos) },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "the sine wave by" },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "tapping the connection" },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::POINT_TO, {
+            { "start", Variant([env](){
+                GLvertex3f node1Pos = env->fetch("node1_pos");
+                GLvertex3f outputNodePos = env->fetch("output_pos");
+                GLvertex3f midpoint = node1Pos+(outputNodePos-node1Pos)*0.5f;
+                GLvertex2f normal = normalToLine(node1Pos.xy(), outputNodePos.xy());
+                return midpoint+normal*20;
+            })},
+            { "end", Variant([env](){
+                GLvertex3f node1Pos = env->fetch("node1_pos");
+                GLvertex3f outputNodePos = env->fetch("output_pos");
+                GLvertex3f midpoint = node1Pos+(outputNodePos-node1Pos)*0.5f;
+                GLvertex2f normal = normalToLine(node1Pos.xy(), outputNodePos.xy());
+                return midpoint+normal*95;
+            })},
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "and dragging it out." },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 0.0 },
+        }));
+
+        conditions.push_back(AGTutorialConditions::make(AGTutorialConditions::DELETE_CONNECTION, {
+            { "uuid", Variant([env]() { return env->fetch("conn1_uuid").getString(); })},
         }));
         
         steps.push_back(_makeTutorialStep(actions, conditions, {

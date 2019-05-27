@@ -141,6 +141,9 @@ public:
     {
         AGRenderObject::update(t, dt);
         
+        m_start = getParameter("start", GLvertex3f()).getVertex3();
+        m_end = getParameter("end", GLvertex3f()).getVertex3();
+        
         m_t += dt*m_speed;
         m_t = fmodf(m_t, ANIM_TIME+FADE_TIME+PAUSE_TIME);
     }
@@ -230,8 +233,6 @@ protected:
 
         m_figure.push_back(m_start);
         m_figure.push_back(m_end);
-        
-        
     }
 };
 
@@ -496,6 +497,7 @@ public:
             if(m_matchAnyType ||
                (createConnectionActivity->serializedConnection.srcUuid == getParameter("src_uuid") &&
                 createConnectionActivity->serializedConnection.dstUuid == getParameter("dst_uuid"))) {
+                   m_uuid = createConnectionActivity->uuid;
                    m_status = STATUS_CONTINUE;
                }
         }
@@ -503,6 +505,7 @@ public:
     
 private:
     Status m_status = STATUS_INCOMPLETE;
+    std::string m_uuid = "";
     
     bool m_matchAnyType = false;
     
@@ -512,6 +515,15 @@ private:
             m_matchAnyType = false;
         } else {
             m_matchAnyType = true;
+        }
+    }
+    
+    void finalizeInternal(AGTutorialEnvironment &environment) override
+    {
+        if(m_status == STATUS_CONTINUE) {
+            std::string saveUUID = getParameter("uuid>");
+            if(saveUUID.length())
+                environment.store(saveUUID, m_uuid);
         }
     }
 };
@@ -553,6 +565,7 @@ private:
     }
 };
 
+
 #pragma mark AGEditNodeTutorialCondition
 
 /** AGEditNodeTutorialCondition
@@ -589,6 +602,44 @@ public:
                     // don't hang, just continue
                     m_status = STATUS_CONTINUE;
                 }
+            }
+        }
+    }
+    
+private:
+    Status m_status = STATUS_INCOMPLETE;
+    
+    bool m_matchAny = false;
+    std::unique_ptr<AGTimer> m_timer;
+    
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        m_matchAny = !hasParameter("uuid");
+    }
+};
+
+
+#pragma mark AGDeleteConnectionTutorialCondition
+
+/** AGDeleteConnectionTutorialCondition
+ */
+class AGDeleteConnectionTutorialCondition : public AGTutorialCondition
+{
+public:
+    using AGTutorialCondition::AGTutorialCondition;
+    
+    AGTutorialCondition::Status getStatus() override
+    {
+        return m_status;
+    }
+    
+    void activityOccurred(AGActivity *activity) override
+    {
+        if (activity->type() == AGActivity::DeleteConnectionActivityType) {
+            auto deleteConnEditorActivity = dynamic_cast<AG::Activities::DeleteConnection *>(activity);
+            
+            if(m_matchAny || deleteConnEditorActivity->uuid == getParameter("uuid")) {
+                m_status = STATUS_CONTINUE;
             }
         }
     }
@@ -654,6 +705,9 @@ AGTutorialCondition *AGTutorialConditions::make(AGTutorialConditions::Condition 
             break;
         case AGTutorialConditions::EDIT_NODE:
             condition = new AGEditNodeTutorialCondition(parameters);
+            break;
+        case AGTutorialConditions::DELETE_CONNECTION:
+            condition = new AGDeleteConnectionTutorialCondition(parameters);
             break;
         default:
             assert(0);
