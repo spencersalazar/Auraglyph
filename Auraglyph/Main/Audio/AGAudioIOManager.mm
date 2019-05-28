@@ -10,6 +10,7 @@
 
 #import "TheAmazingAudioEngine/TheAmazingAudioEngine.h"
 #import "Modules/AEPlaythroughChannel.h"
+#import <AVFoundation/AVFoundation.h>
 
 AGAudioIOManager::AGAudioIOManager(int sampleRate, int bufferSize,
                                    bool inputEnabled, AGAudioIORenderer *renderer)
@@ -60,7 +61,42 @@ bool AGAudioIOManager::stopAudio()
 
 bool AGAudioIOManager::enableInput(bool enable)
 {
+    if (enable != m_inputEnabled) {
+        NSError *error = nil;
+        [m_audioController setInputEnabled:enable error:&error];
+        if (error != nil) {
+            NSLog(@"AGAudioIOManager::enableInput: error: %@", [error description]);
+            return false;
+        }
+        
+        m_inputEnabled = enable;
+        _updateAudioChannel();
+    }
+    
     return true;
+}
+
+enum InputPermission
+{
+    INPUT_PERMISSION_UNKNOWN = -1,
+    INPUT_PERMISSION_DENIED = 0,
+    INPUT_PERMISSION_ALLOWED = 1,
+};
+
+AGAudioIOManager::InputPermission AGAudioIOManager::inputPermission()
+{
+    AVAudioSession *session = [AVAudioSession sharedInstance];
+    auto permission = session.recordPermission;
+    switch(permission) {
+        case AVAudioSessionRecordPermissionUndetermined:
+            return INPUT_PERMISSION_UNKNOWN;
+        case AVAudioSessionRecordPermissionDenied:
+            return INPUT_PERMISSION_DENIED;
+        case AVAudioSessionRecordPermissionGranted:
+            return INPUT_PERMISSION_ALLOWED;
+    }
+    // this shouldnt happen
+    return INPUT_PERMISSION_UNKNOWN;
 }
 
 void AGAudioIOManager::_render(int numFrames, Buffer<float> &frames)
@@ -78,15 +114,12 @@ void AGAudioIOManager::_updateAudioChannel()
     [m_audioController removeFilter:m_inputOutputFilter];
     
     // add channel according to output or input+output
-    if(m_inputEnabled)
-    {
+    if(m_inputEnabled) {
         [m_audioController addFilter:m_inputOutputFilter];
         m_playthroughChannel.channelIsMuted = YES; // start muted to avoid feedback
         [m_audioController addInputReceiver:m_playthroughChannel];
         [m_audioController addChannels:@[m_playthroughChannel]];
-    }
-    else
-    {
+    } else {
         [m_audioController addChannels:@[m_outputChannel]];
     }
 }

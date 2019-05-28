@@ -108,8 +108,11 @@ static AGAudioManager *g_audioManager;
         _renderer.reset(new AGAudioManagerRenderer);
         _renderer->m_audioManager = self;
         
+        auto inputPermission = AGAudioIOManager::inputPermission();
+        // enable audio input if recording permission is already granted
+        bool enableInput = (inputPermission == AGAudioIOManager::INPUT_PERMISSION_ALLOWED);
         _audioIO.reset(new AGAudioIOManager(AGAudioNode::sampleRate(), AGAudioNode::bufferSize(),
-                                            true, _renderer.get()));
+                                            enableInput, _renderer.get()));
         _audioIO->startAudio();
     }
     
@@ -138,6 +141,12 @@ static AGAudioManager *g_audioManager;
 - (void)addCapturer:(AGAudioCapturer *)capturer
 {
     _capturersMutex.lock();
+    if (_capturers.size() == 0 &&
+        !_audioIO->inputEnabled() &&
+        _audioIO->inputPermission() != AGAudioIOManager::INPUT_PERMISSION_DENIED) {
+        // enable input if not already / attempt to get record permission
+        _audioIO->enableInput(true);
+    }
     _capturers.push_back(capturer);
     _capturersMutex.unlock();
 }

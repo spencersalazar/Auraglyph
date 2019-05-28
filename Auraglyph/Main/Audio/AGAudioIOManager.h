@@ -38,7 +38,17 @@ public:
     bool startAudio();
     bool stopAudio();
     
+    bool inputEnabled() { return m_inputEnabled; }
     bool enableInput(bool enable);
+
+    enum InputPermission
+    {
+        INPUT_PERMISSION_UNKNOWN = -1,
+        INPUT_PERMISSION_DENIED = 0,
+        INPUT_PERMISSION_ALLOWED = 1,
+    };
+    
+    static InputPermission inputPermission();
     
 private:
     
