@@ -76,13 +76,6 @@ bool AGAudioIOManager::enableInput(bool enable)
     return true;
 }
 
-enum InputPermission
-{
-    INPUT_PERMISSION_UNKNOWN = -1,
-    INPUT_PERMISSION_DENIED = 0,
-    INPUT_PERMISSION_ALLOWED = 1,
-};
-
 AGAudioIOManager::InputPermission AGAudioIOManager::inputPermission()
 {
     AVAudioSession *session = [AVAudioSession sharedInstance];
