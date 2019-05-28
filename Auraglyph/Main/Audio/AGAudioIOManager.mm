@@ -12,6 +12,8 @@
 #import "Modules/AEPlaythroughChannel.h"
 #import <AVFoundation/AVFoundation.h>
 
+#include "AGInterAppAudioManager.h"
+
 AGAudioIOManager::AGAudioIOManager(int sampleRate, int bufferSize,
                                    bool inputEnabled, AGAudioIORenderer *renderer)
 : m_sampleRate(sampleRate), m_bufferSize(bufferSize),
@@ -36,7 +38,16 @@ m_inputEnabled(inputEnabled), m_renderer(renderer)
     m_outputChannel = _createOutputChannel();
     m_inputOutputFilter = _createInputOutputFilter();
     m_playthroughChannel = [AEPlaythroughChannel new];
+    
+    m_interAppAudio.reset(new AGInterAppAudioManager(m_audioController.audioUnit, [this](bool iaaEnabled) {
+        startAudio();
+    }));
+    m_interAppAudio->publishInterAppAudioUnit(kAudioUnitType_RemoteInstrument, 'Aura', "Auraglyph");
+    m_interAppAudio->publishInterAppAudioUnit(kAudioUnitType_RemoteGenerator, 'Aura', "Auraglyph");
 }
+
+AGAudioIOManager::~AGAudioIOManager()
+{ }
 
 bool AGAudioIOManager::startAudio()
 {

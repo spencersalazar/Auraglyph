@@ -9,6 +9,7 @@
 #pragma once
 
 #include "Buffers.h"
+#include <memory>
 
 /** Interface for audio renderer.
  */
@@ -21,19 +22,20 @@ public:
 };
 
 
-/** Forward declare Objective-C classes */
 FORWARD_DECLARE_OBJC_CLASS(AEAudioController);
 FORWARD_DECLARE_OBJC_CLASS(AEBlockChannel);
 FORWARD_DECLARE_OBJC_CLASS(AEBlockFilter);
 FORWARD_DECLARE_OBJC_CLASS(AEPlaythroughChannel);
+class AGInterAppAudioManager;
 
 
 /** Manager class for dealing with audio IO
  */
-class AGAudioIOManager
+class AGAudioIOManager final
 {
 public:
     AGAudioIOManager(int sampleRate, int bufferSize, bool inputEnabled, AGAudioIORenderer *renderer);
+    ~AGAudioIOManager();
     
     bool startAudio();
     bool stopAudio();
@@ -70,4 +72,6 @@ private:
     AEBlockChannel *m_outputChannel = nullptr;
     AEBlockFilter *m_inputOutputFilter = nullptr;
     AEPlaythroughChannel *m_playthroughChannel = nullptr;
+    
+    std::unique_ptr<AGInterAppAudioManager> m_interAppAudio;
 };

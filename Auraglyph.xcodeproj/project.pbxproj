@@ -35,6 +35,7 @@
 		09412E061A205A070065598D /* AGDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09412E041A205A070065598D /* AGDocument.mm */; };
 		09439747229CE2910083999B /* EZAudioiOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09CA678A229CC6C90017B93B /* EZAudioiOS.framework */; };
 		09439748229CE2910083999B /* EZAudioiOS.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 09CA678A229CC6C90017B93B /* EZAudioiOS.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		09439750229D164A0083999B /* AGInterAppAudioManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0943974E229D164A0083999B /* AGInterAppAudioManager.mm */; };
 		0944E8AB1DC40EDB00EB8087 /* projects in Resources */ = {isa = PBXBuildFile; fileRef = 0944E8AA1DC40EDB00EB8087 /* projects */; };
 		0944E8BB1DCB31EA00EB8087 /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0944E8BA1DCB31EA00EB8087 /* libGoogleAnalyticsServices.a */; };
 		0944E8BD1DCB321B00EB8087 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0944E8BC1DCB321B00EB8087 /* CoreData.framework */; };
@@ -337,6 +338,8 @@
 		0939D360206D693200EB3C1B /* AGGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGGraph.cpp; sourceTree = "<group>"; };
 		09412E041A205A070065598D /* AGDocument.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGDocument.mm; sourceTree = "<group>"; };
 		09412E051A205A070065598D /* AGDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGDocument.h; sourceTree = "<group>"; };
+		0943974E229D164A0083999B /* AGInterAppAudioManager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AGInterAppAudioManager.mm; sourceTree = "<group>"; };
+		0943974F229D164A0083999B /* AGInterAppAudioManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGInterAppAudioManager.h; sourceTree = "<group>"; };
 		0944E8AA1DC40EDB00EB8087 /* projects */ = {isa = PBXFileReference; lastKnownFileType = folder; path = projects; sourceTree = "<group>"; };
 		0944E8B01DCB31EA00EB8087 /* GAI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAI.h; sourceTree = "<group>"; };
 		0944E8B11DCB31EA00EB8087 /* GAIDictionaryBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIDictionaryBuilder.h; sourceTree = "<group>"; };
@@ -801,6 +804,8 @@
 				09F700B41D6FA75900294BDD /* AGAudioOutputDestination.h */,
 				09EE657E1EFB59BE00B4ED62 /* AGAudioRecorder.h */,
 				09EE657D1EFB59BE00B4ED62 /* AGAudioRecorder.mm */,
+				0943974F229D164A0083999B /* AGInterAppAudioManager.h */,
+				0943974E229D164A0083999B /* AGInterAppAudioManager.mm */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -1596,6 +1601,7 @@
 				09F3C50818A5A8C300E499AF /* Stk.cpp in Sources */,
 				09CA6752229CC6B40017B93B /* NSString+STLString.mm in Sources */,
 				09CA6779229CC6BB0017B93B /* Back.cpp in Sources */,
+				09439750229D164A0083999B /* AGInterAppAudioManager.mm in Sources */,
 				09CA675C229CC6B40017B93B /* SPFilter.cpp in Sources */,
 				0991BA841D8654C70080175C /* FileRead.cpp in Sources */,
 				0991BA7A1D839BB10080175C /* AGCompressorNode.cpp in Sources */,
