@@ -26,6 +26,7 @@ FORWARD_DECLARE_OBJC_CLASS(AEAudioController);
 FORWARD_DECLARE_OBJC_CLASS(AEBlockChannel);
 FORWARD_DECLARE_OBJC_CLASS(AEBlockFilter);
 FORWARD_DECLARE_OBJC_CLASS(AEPlaythroughChannel);
+FORWARD_DECLARE_OBJC_CLASS(AGAudioIOManagerProxy);
 class AGInterAppAudioManager;
 
 
@@ -52,6 +53,9 @@ public:
     
     static InputPermission inputPermission();
     
+    void applicationWillResignActive();
+    void applicationDidBecomeActive();
+
 private:
     
     void _updateAudioChannel();
@@ -74,4 +78,5 @@ private:
     AEPlaythroughChannel *m_playthroughChannel = nullptr;
     
     std::unique_ptr<AGInterAppAudioManager> m_interAppAudio;
+    AGAudioIOManagerProxy *m_proxy = nullptr;
 };

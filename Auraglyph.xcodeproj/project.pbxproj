@@ -1415,6 +1415,9 @@
 					095D12BF17ACA36C0048A012 = {
 						DevelopmentTeam = 9GU9FHJ3JC;
 						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
 							com.apple.GameCenter = {
 								enabled = 0;
 							};

@@ -48,18 +48,18 @@ bool AGInterAppAudioManager::isInterAppAudio()
 
 void AGInterAppAudioManager::launchInterAppAudioHost()
 {
-    if(isInterAppAudio())
-    {
+    if(isInterAppAudio()) {
         CFURLRef hostURL;
         UInt32 dataSize = sizeof(CFURLRef);
         OSStatus result = AudioUnitGetProperty(m_au, kAudioUnitProperty_PeerURL,
                                                kAudioUnitScope_Global, 0,
                                                &hostURL, &dataSize);
-        if (result == noErr)
+        if (result == noErr) {
             [[UIApplication sharedApplication] openURL:(__bridge_transfer NSURL *) hostURL];
-        else
+        } else {
             // uhh
             NSLog(@"warning: unable to retrieve peer url");
+        }
     }
 }
 

@@ -14,6 +14,47 @@
 
 #include "AGInterAppAudioManager.h"
 
+@interface AGAudioIOManagerProxy : NSObject
+
+@property AGAudioIOManager *audioIOManager;
+
+- (void)applicationWillResignActive:(NSNotification *)n;
+- (void)applicationDidBecomeActive:(NSNotification *)n;
+
+@end
+
+@implementation AGAudioIOManagerProxy
+
+- (id)initWithAudioIOManager:(AGAudioIOManager *)audioIOManager
+{
+    if (self = [super init]) {
+        self.audioIOManager = audioIOManager;
+    }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillResignActive:)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:[UIApplication sharedApplication]];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidBecomeActive:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:[UIApplication sharedApplication]];
+
+    return self;
+}
+
+- (void)applicationWillResignActive:(NSNotification *)n
+{
+    self.audioIOManager->applicationWillResignActive();
+}
+
+- (void)applicationDidBecomeActive:(NSNotification *)n
+{
+    self.audioIOManager->applicationDidBecomeActive();
+}
+
+@end
+
 AGAudioIOManager::AGAudioIOManager(int sampleRate, int bufferSize,
                                    bool inputEnabled, AGAudioIORenderer *renderer)
 : m_sampleRate(sampleRate), m_bufferSize(bufferSize),
@@ -31,28 +72,40 @@ m_inputEnabled(inputEnabled), m_renderer(renderer)
     audioDescription.mSampleRate        = m_sampleRate;
     
     m_audioController = [[AEAudioController alloc] initWithAudioDescription:audioDescription inputEnabled:m_inputEnabled];
-    m_audioController.allowMixingWithOtherApps = NO;
+    m_audioController.allowMixingWithOtherApps = YES;
     
     m_audioController.preferredBufferDuration = m_bufferSize/((float) m_sampleRate);
+    
+    int actualBufferSize = (int) (m_audioController.currentBufferDuration*m_sampleRate);
+    m_ioBuffer.resize(actualBufferSize*m_numOutputChannels);
     
     m_outputChannel = _createOutputChannel();
     m_inputOutputFilter = _createInputOutputFilter();
     m_playthroughChannel = [AEPlaythroughChannel new];
     
+    _updateAudioChannel();
+    
     m_interAppAudio.reset(new AGInterAppAudioManager(m_audioController.audioUnit, [this](bool iaaEnabled) {
+        enableInput(false);
         startAudio();
     }));
     m_interAppAudio->publishInterAppAudioUnit(kAudioUnitType_RemoteInstrument, 'Aura', "Auraglyph");
     m_interAppAudio->publishInterAppAudioUnit(kAudioUnitType_RemoteGenerator, 'Aura', "Auraglyph");
+    
+    m_proxy = [[AGAudioIOManagerProxy alloc] initWithAudioIOManager:this];
 }
 
 AGAudioIOManager::~AGAudioIOManager()
-{ }
+{
+    m_audioController = nil;
+    m_outputChannel = nil;
+    m_inputOutputFilter = nil;
+    m_playthroughChannel = nil;
+    m_proxy = nil;
+}
 
 bool AGAudioIOManager::startAudio()
 {
-    _updateAudioChannel();
-    
     NSError *error;
     [m_audioController start:&error];
     if(error != nil) {
@@ -103,6 +156,18 @@ AGAudioIOManager::InputPermission AGAudioIOManager::inputPermission()
     return INPUT_PERMISSION_UNKNOWN;
 }
 
+void AGAudioIOManager::applicationWillResignActive()
+{
+    if(!m_interAppAudio->isInterAppAudio()) {
+        stopAudio();
+    }
+}
+
+void AGAudioIOManager::applicationDidBecomeActive()
+{
+    startAudio();
+}
+
 void AGAudioIOManager::_render(int numFrames, Buffer<float> &frames)
 {
     if(m_renderer) {
@@ -134,8 +199,8 @@ AEBlockChannel *AGAudioIOManager::_createOutputChannel()
                                                                        UInt32 frames,
                                                                        AudioBufferList *audio) {
         if(m_ioBuffer.size < frames*m_numOutputChannels) {
-            NSLog(@"warning: IO buffer resized from %li to %i in audio I/O process",
-                  m_ioBuffer.size, frames*m_numOutputChannels);
+            NSLog(@"warning: IO buffer resized from %li to %u in audio I/O process",
+                  m_ioBuffer.size, (unsigned int) frames*m_numOutputChannels);
             m_ioBuffer.resize(frames*m_numOutputChannels);
         }
         
@@ -165,8 +230,8 @@ AEBlockFilter *AGAudioIOManager::_createInputOutputFilter()
             m_playthroughChannel.channelIsMuted = NO;  // unmute now that there will not be feedback
         
         if(m_ioBuffer.size < frames*m_numOutputChannels) {
-            NSLog(@"warning: IO buffer resized from %li to %i in audio I/O process",
-                  m_ioBuffer.size, frames*m_numOutputChannels);
+            NSLog(@"warning: IO buffer resized from %li to %u in audio I/O process",
+                  m_ioBuffer.size, (unsigned int) frames*m_numOutputChannels);
             m_ioBuffer.resize(frames*m_numOutputChannels);
         }
         
