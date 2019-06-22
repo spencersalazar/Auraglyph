@@ -70,18 +70,18 @@ AGDocument AGDocumentManager::load(const AGFile &file)
     doc.loadFromPath(filepath);
     
     // set name, if needed
-    if(doc.name().size() == 0)
-    {
-        // find this doc in listing
-        for(auto listing : list())
-        {
-            if(listing.filename == file)
-            {
-                doc.setName(listing.name);
-                break;
-            }
-        }
-    }
+    //    if(doc.name().size() == 0)
+    //    {
+    //        // find this doc in listing
+    //        for(auto listing : list())
+    //        {
+    //            if(listing.filename == file)
+    //            {
+    //                doc.setName(listing.name);
+    //                break;
+    //            }
+    //        }
+    //    }
     
     return doc;
 }
