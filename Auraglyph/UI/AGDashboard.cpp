@@ -246,29 +246,29 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
     
     TexFont *font = AGStyle::standardFont96();
 
-    float recordButtonWidth = font->width("  Save  ")*1.05;
-    float recordButtonHeight = font->height()*1.05;
-    m_recordButton = new AGUIButton("Record",
-                                    m_viewController->fixedCoordinateForScreenCoordinate(CGPointMake(m_viewController->bounds().size.width-recordButtonWidth-20, 20+recordButtonHeight/2)),
-                                    GLvertex2f(recordButtonWidth, recordButtonHeight));
-    m_recordButton->init();
-    m_recordButton->setRenderFixed(true);
-    m_recordButton->setAction(^{
-        // AGAnalytics::instance().eventTrainer();
-        // TODO: analytics
-        // flip toggle
-        if((m_isRecording = !m_isRecording))
-        {
-            m_viewController->startRecording();
-            m_recordButton->setTitle("Stop");
-        }
-        else
-        {
-            m_viewController->stopRecording();
-            m_recordButton->setTitle("Record");
-        }
-    });
-    addChild(m_recordButton);
+//    float recordButtonWidth = font->width("  Save  ")*1.05;
+//    float recordButtonHeight = font->height()*1.05;
+//    m_recordButton = new AGUIButton("Record",
+//                                    m_viewController->fixedCoordinateForScreenCoordinate(CGPointMake(m_viewController->bounds().size.width-recordButtonWidth-20, 20+recordButtonHeight/2)),
+//                                    GLvertex2f(recordButtonWidth, recordButtonHeight));
+//    m_recordButton->init();
+//    m_recordButton->setRenderFixed(true);
+//    m_recordButton->setAction(^{
+//        // AGAnalytics::instance().eventTrainer();
+//        // TODO: analytics
+//        // flip toggle
+//        if((m_isRecording = !m_isRecording))
+//        {
+//            m_viewController->startRecording();
+//            m_recordButton->setTitle("Stop");
+//        }
+//        else
+//        {
+//            m_viewController->stopRecording();
+//            m_recordButton->setTitle("Record");
+//        }
+//    });
+//    addChild(m_recordButton);
     
     AGUIButtonGroup *modeButtonGroup = new AGUIButtonGroup();
     modeButtonGroup->init();
@@ -382,8 +382,8 @@ void AGDashboard::onInterfaceOrientationChange()
 //    CGPoint helpMenuPos = CGPointMake(10+m_fileMenu->size().x*3*1.2+m_fileMenu->size().x/2, 10+m_fileMenu->size().y/2);
 //    m_helpMenu->setPosition(m_viewController->fixedCoordinateForScreenCoordinate(helpMenuPos));
     
-    CGPoint recordPos = CGPointMake(m_viewController->bounds().size.width-m_recordButton->size().x-20, 20+m_recordButton->size().y/2);
-    m_recordButton->setPosition(m_viewController->fixedCoordinateForScreenCoordinate(recordPos));
+    //    CGPoint recordPos = CGPointMake(m_viewController->bounds().size.width-m_recordButton->size().x-20, 20+m_recordButton->size().y/2);
+    //    m_recordButton->setPosition(m_viewController->fixedCoordinateForScreenCoordinate(recordPos));
     
     GLvertex3f modeButtonStartPos = m_viewController->fixedCoordinateForScreenCoordinate(CGPointMake(27.5, m_viewController->bounds().size.height-7.5-m_freedrawButton->size().y/2));
     m_freedrawButton->setPosition(modeButtonStartPos);
