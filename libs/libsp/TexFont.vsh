@@ -11,13 +11,20 @@ attribute vec3 normal;
 attribute vec2 texcoord0;
 attribute vec4 color;
 
-varying lowp vec4 colorVarying;
-varying lowp vec2 texcoord;
+varying lowp vec4 vColor;
+varying lowp vec2 vTexcoord;
+varying mediump vec2 vClipOrigin;
+varying mediump vec2 vClipSize;
+varying mediump vec2 vClipPos;
 
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
 uniform mat3 normalMatrix;
 uniform vec4 texpos;
+
+uniform mat4 clipMatrix;
+uniform vec2 clipOrigin;
+uniform vec2 clipSize;
 
 void main()
 {
@@ -27,10 +34,13 @@ void main()
     
     float nDotVP = max(0.0, dot(eyeNormal, normalize(lightPosition)));
                  
-    colorVarying = diffuseColor * nDotVP * color;
+    vColor = diffuseColor * nDotVP * color;
     
-    texcoord.x = texpos.x + texcoord0.x*texpos.z;
-    texcoord.y = texpos.y + texcoord0.y*texpos.w;
+    vTexcoord.xy = texpos.xy + texcoord0.xy*texpos.zw;
+    
+    vClipOrigin = (projectionMatrix * clipMatrix*vec4(clipOrigin.xy, 0, 1)).xy;
+    vClipSize = (projectionMatrix * clipMatrix*vec4(clipSize.xy, 0, 1)).xy;
+    vClipPos = (projectionMatrix * modelViewMatrix * position).xy;
 
     gl_Position = projectionMatrix * modelViewMatrix * position;
 }

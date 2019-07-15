@@ -19,7 +19,10 @@ public:
     TexFont(const std::string &filepath, int size);
     
     void render(const std::string &text, const GLcolor4f &color,
-                const GLKMatrix4 &modelView, const GLKMatrix4 &proj);
+                const GLKMatrix4 &modelView, const GLKMatrix4 &proj,
+                bool doClip = false,
+                const GLKMatrix4 &clipMatrix = GLKMatrix4Identity,
+                const GLvrectf &clip = GLvrectf());
     
     // for debugging
     void renderTexmap(const GLcolor4f &color, const GLKMatrix4 &modelView, const GLKMatrix4 &proj);
@@ -41,8 +44,8 @@ private:
     static GLint s_uniformTexture;
     static GLint s_uniformTexpos;
 
-    static GLuint s_geoSize;
-    static GLgeoprimf *s_geo;
+    constexpr static const GLuint s_geoSize = 4;
+    static GLgeoprimf s_geo[s_geoSize];
     static float s_radius;
 
     static void initalizeTexFont();
