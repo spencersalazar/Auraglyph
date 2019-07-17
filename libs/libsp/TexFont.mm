@@ -50,10 +50,10 @@ void TexFont::initalizeTexFont()
         s_uniformNormalMatrix = glGetUniformLocation(s_program, "normalMatrix");
         s_uniformTexture = glGetUniformLocation(s_program, "texture");
         s_uniformTexpos = glGetUniformLocation(s_program, "texpos");
-        g_uniformEnableClip = glGetUniformLocation(s_program, "enableClip");
-        g_uniformClipMatrix = glGetUniformLocation(s_program, "clipMatrix");
-        g_uniformClipOrigin = glGetUniformLocation(s_program, "clipOrigin");
-        g_uniformClipSize = glGetUniformLocation(s_program, "clipSize");
+        g_uniformEnableClip = glGetUniformLocation(s_program, "uEnableClip");
+        g_uniformClipMatrix = glGetUniformLocation(s_program, "uClipMatrix");
+        g_uniformClipOrigin = glGetUniformLocation(s_program, "uClipOrigin");
+        g_uniformClipSize = glGetUniformLocation(s_program, "uClipSize");
         
         s_radius = 0.005*AGStyle::oldGlobalScale;
         
@@ -233,7 +233,7 @@ void TexFont::render(const std::string &text, const GLcolor4f &color,
     glUniform1i(g_uniformEnableClip, doClip ? 1 : 0);
     glUniformMatrix4fv(g_uniformClipMatrix, 1, 0, clipMatrix.m);
     glUniform2f(g_uniformClipOrigin, clip.bl.x, clip.bl.y);
-    glUniform2f(g_uniformClipSize, clip.ur.x, clip.ur.y);
+    glUniform2f(g_uniformClipSize, clip.ur.x-clip.bl.x, clip.ur.y-clip.bl.y);
     
     GLKMatrix4 modelView = GLKMatrix4Scale(_modelView, 1, m_height/m_width, 1);
     GLKMatrix4 scaledMV;

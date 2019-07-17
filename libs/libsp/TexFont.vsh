@@ -13,8 +13,8 @@ attribute vec4 color;
 
 varying lowp vec4 vColor;
 varying lowp vec2 vTexcoord;
-varying mediump vec2 vClipOrigin;
-varying mediump vec2 vClipSize;
+varying mediump vec2 vClipBottomLeft;
+varying mediump vec2 vClipTopRight;
 varying mediump vec2 vClipPos;
 
 uniform mat4 modelViewMatrix;
@@ -22,9 +22,9 @@ uniform mat4 projectionMatrix;
 uniform mat3 normalMatrix;
 uniform vec4 texpos;
 
-uniform mat4 clipMatrix;
-uniform vec2 clipOrigin;
-uniform vec2 clipSize;
+uniform mat4 uClipMatrix;
+uniform vec2 uClipOrigin;
+uniform vec2 uClipSize;
 
 void main()
 {
@@ -38,8 +38,9 @@ void main()
     
     vTexcoord.xy = texpos.xy + texcoord0.xy*texpos.zw;
     
-    vClipOrigin = (projectionMatrix * clipMatrix*vec4(clipOrigin.xy, 0, 1)).xy;
-    vClipSize = (projectionMatrix * clipMatrix*vec4(clipSize.xy, 0, 1)).xy;
+    vClipBottomLeft = (projectionMatrix * uClipMatrix*vec4(uClipOrigin.xy, 0, 1)).xy;
+    mediump vec2 clipTopRight = uClipOrigin.xy+uClipSize.xy;
+    vClipTopRight = (projectionMatrix * uClipMatrix*vec4(clipTopRight.xy, 0, 1)).xy;
     vClipPos = (projectionMatrix * modelViewMatrix * position).xy;
 
     gl_Position = projectionMatrix * modelViewMatrix * position;
