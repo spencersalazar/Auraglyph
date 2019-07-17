@@ -124,6 +124,8 @@ void AGNode::_initBase()
     {
         const AGPortInfo &info = editPortInfo(i);
         m_param2EditPort[info.portId] = i;
+        if (info.editorMode == AGPortInfo::EDITOR_AUDIOFILES)
+            fprintf(stderr, "audio files mode\n");
         m_params[info.portId] = getDefaultParamValue(info.portId);
     }
     

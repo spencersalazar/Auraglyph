@@ -46,7 +46,7 @@ public:
         vector<AGPortInfo> _editPortInfo() const override
         {
             return {
-                { PARAM_FILE, "file", ._default = AGControl(""),
+                { PARAM_FILE, "file", ._default = AGParamValue(""),
                     .type = AGControl::TYPE_STRING,
                     .editorMode = AGPortInfo::EDITOR_AUDIOFILES },
                 { PARAM_RATE, "rate", ._default = 1 },

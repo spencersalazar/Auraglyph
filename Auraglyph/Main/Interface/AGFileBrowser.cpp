@@ -166,7 +166,7 @@ void AGFileBrowser::render()
         // no files
         vector<string> msg = {
             "no files found.",
-            "add files using",
+            "try adding files using",
             "iTunes file sharing.",
         };
         
