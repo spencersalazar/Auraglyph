@@ -13,7 +13,7 @@
 #include "AGGenericShader.h"
 
 
-#define USE_TEST_PATHS 1
+#define USE_TEST_PATHS 0
 
 
 AGFileBrowser::AGFileBrowser(const GLvertex3f &position)
@@ -160,6 +160,28 @@ void AGFileBrowser::render()
                      true, clipMatrix, clipRect);
         
         i++;
+    }
+    
+    if (m_paths.size() == 0) {
+        // no files
+        vector<string> msg = {
+            "no files found.",
+            "add files using",
+            "iTunes file sharing.",
+        };
+        
+        Matrix4 modelView = m_renderState.modelview;
+        float lineHeight = textHeight*1.2f;
+        float yPos = msg.size()*lineHeight/2-textHeight;
+        
+        for (auto& line : msg) {
+            float lineWidth = font->width(line)*m_fontScale;
+            float xPos = -lineWidth/2;
+            font->render(line, AGStyle::foregroundColor(),
+                         modelView.translate(xPos, yPos, 0).scale(m_fontScale),
+                         m_renderState.projection);
+            yPos -= lineHeight;
+        }
     }
     
     AGInteractiveObject::render();
