@@ -92,7 +92,7 @@ public:
                 { PARAM_SCALE, "scale", 0, 0, 2, AGPortInfo::LIN, .type = AGControl::TYPE_INT,
                     .editorMode = AGPortInfo::EDITOR_ENUM,
                     .enumInfo = {
-                        { SCALE_CHROMATIC, "chromatic" },
+                        { SCALE_CHROMATIC, "chrom" },
                         { SCALE_MAJOR, "major" },
                         { SCALE_MINOR, "minor" },
                     },
