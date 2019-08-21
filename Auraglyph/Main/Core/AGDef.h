@@ -31,4 +31,10 @@
 typedef long long sampletime;
 #define AUDIO_BUFFER_MAX (1024)
 
+#ifdef __OBJC__
+#define FORWARD_DECLARE_OBJC_CLASS(cls) @class cls;
+#else
+#define FORWARD_DECLARE_OBJC_CLASS(cls) typedef void cls;
+#endif // __OBJC__
+
 #endif

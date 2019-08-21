@@ -11,11 +11,12 @@
 #import "AGAudioNode.h"
 #import "AGTimer.h"
 
-#import "mo_audio.h"
-
 #import "Mutex.h"
 #import "spstl.h"
 #import "AGAudioRecorder.h"
+#include "AGAudioIOManager.h"
+
+#include <memory>
 
 
 
@@ -42,6 +43,15 @@ private:
 };
 
 
+class AGAudioManagerRenderer : public AGAudioIORenderer
+{
+public:
+    void render(int numFrames, Buffer<float> &frames) override;
+    
+    AGAudioManager *m_audioManager = nil;
+};
+
+
 @interface AGAudioManager ()
 {
     sampletime t;
@@ -60,17 +70,15 @@ private:
     
     Mutex _sessionRecorderMutex;
     AGAudioRecorder *_sessionRecorder;
+    
+    std::unique_ptr<AGAudioIOManager> _audioIO;
+    std::unique_ptr<AGAudioManagerRenderer> _renderer;
 }
 
 - (void)renderAudio:(Float32 *)buffer numFrames:(UInt32)numFrames;
 
 @end
 
-
-void audio_cb( Float32 * buffer, UInt32 numFrames, void * userData )
-{
-    [(__bridge AGAudioManager *)userData renderAudio:buffer numFrames:numFrames];
-}
 
 static AGAudioManager *g_audioManager;
 
@@ -97,8 +105,15 @@ static AGAudioManager *g_audioManager;
         
         memset(_inputBuffer, 0, sizeof(float)*1024);
         
-        MoAudio::init(AGAudioNode::sampleRate(), AGAudioNode::bufferSize(), 2);
-        MoAudio::start(audio_cb, (__bridge void *) self);
+        _renderer.reset(new AGAudioManagerRenderer);
+        _renderer->m_audioManager = self;
+        
+        auto inputPermission = AGAudioIOManager::inputPermission();
+        // enable audio input if recording permission is already granted
+        bool enableInput = (inputPermission == AGAudioIOManager::INPUT_PERMISSION_ALLOWED);
+        _audioIO.reset(new AGAudioIOManager(AGAudioNode::sampleRate(), AGAudioNode::bufferSize(),
+                                            enableInput, _renderer.get()));
+        _audioIO->startAudio();
     }
     
     return self;
@@ -126,6 +141,12 @@ static AGAudioManager *g_audioManager;
 - (void)addCapturer:(AGAudioCapturer *)capturer
 {
     _capturersMutex.lock();
+    if (_capturers.size() == 0 &&
+        !_audioIO->inputEnabled() &&
+        _audioIO->inputPermission() != AGAudioIOManager::INPUT_PERMISSION_DENIED) {
+        // enable input if not already / attempt to get record permission
+        _audioIO->enableInput(true);
+    }
     _capturers.push_back(capturer);
     _capturersMutex.unlock();
 }
@@ -247,6 +268,12 @@ static AGAudioManager *g_audioManager;
 
 
 @end
+
+
+void AGAudioManagerRenderer::render(int numFrames, Buffer<float> &frames)
+{
+    [m_audioManager renderAudio:frames.buffer numFrames:numFrames];
+}
 
 
 AGAudioManager_ &AGAudioManager_::instance()

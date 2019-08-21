@@ -28,84 +28,6 @@ const static float AGInt_Max = INT_MAX;
 class AGControl
 {
 public:
-    AGControl() : type(TYPE_NONE) { }
-    AGControl(AGBit b) : type(TYPE_BIT), vbit(b) { }
-    AGControl(AGInt i) : type(TYPE_INT), vint(i) { }
-    AGControl(AGFloat f) : type(TYPE_FLOAT), vfloat(f) { }
-    AGControl(const AGString &s) : type(TYPE_STRING), vstring(s) { }
-
-    AGControl(const AGControl &ctl) : type(ctl.type)
-    {
-        switch(type)
-        {
-            case TYPE_NONE:
-                break;
-            case TYPE_BIT:
-                vbit = ctl.vbit;
-                break;
-            case TYPE_INT:
-                vint = ctl.vint;
-                break;
-            case TYPE_FLOAT:
-                vfloat = ctl.vfloat;
-                break;
-            case TYPE_STRING:
-                vstring = ctl.vstring;
-                break;
-        }
-    }
-    
-    AGControl operator=(const AGControl &ctl)
-    {
-        if(&ctl != this)
-        {
-            type = ctl.type;
-            
-            switch(type)
-            {
-                case TYPE_NONE:
-                    break;
-                case TYPE_BIT:
-                    vbit = ctl.vbit;
-                    break;
-                case TYPE_INT:
-                    vint = ctl.vint;
-                    break;
-                case TYPE_FLOAT:
-                    vfloat = ctl.vfloat;
-                    break;
-                case TYPE_STRING:
-                    vstring = ctl.vstring;
-                    break;
-            }
-        }
-        
-        return *this;
-    }
-    
-    AGControl(AGControl && ctl) : type(ctl.type)
-    {
-        switch(type)
-        {
-            case TYPE_NONE:
-                break;
-            case TYPE_BIT:
-                vbit = ctl.vbit;
-                break;
-            case TYPE_INT:
-                vint = ctl.vint;
-                break;
-            case TYPE_FLOAT:
-                vfloat = ctl.vfloat;
-                break;
-            case TYPE_STRING:
-                vstring = ctl.vstring;
-                break;
-        }
-    }
-    
-    ~AGControl() { }
-    
     enum Type
     {
         TYPE_NONE,
@@ -114,6 +36,22 @@ public:
         TYPE_FLOAT,
         TYPE_STRING,
     };
+    
+    AGControl() : type(TYPE_NONE) { }
+    AGControl(AGBit b) : type(TYPE_BIT), vbit(b) { }
+    AGControl(AGInt i) : type(TYPE_INT), vint(i) { }
+    AGControl(AGFloat f) : type(TYPE_FLOAT), vfloat(f) { }
+    AGControl(double f) : type(TYPE_FLOAT), vfloat(f) { }
+    AGControl(const AGString &s) : type(TYPE_STRING), vstring(s) { }
+    AGControl(const char *s) : type(TYPE_STRING), vstring(s) { }
+
+    AGControl(const AGControl &ctl);
+    
+    AGControl operator=(const AGControl &ctl);
+    
+    AGControl(AGControl && ctl);
+    
+    ~AGControl() { }
     
     Type type;
     
@@ -126,102 +64,21 @@ public:
     
     AGString vstring;
     
-    
-    AGFloat getFloat() const
-    {
-        switch(type)
-        {
-            case TYPE_NONE:
-            case TYPE_STRING:
-                return 0;
-            case TYPE_BIT:
-                return vbit ? 1.0f : 0.0f;
-            case TYPE_INT:
-                return (float) vint;
-            case TYPE_FLOAT:
-                return vfloat;
-        }
-        
-        return 0;
-    }
-    
-    void mapTo(AGFloat &v) const
-    {
-        v = getFloat();
-    }
-    
-    operator AGFloat() const { return getFloat(); }
-    
-    operator double() const { return getFloat(); }
-    
-    AGInt getInt() const
-    {
-        switch(type)
-        {
-            case TYPE_NONE:   return 0;
-            case TYPE_STRING: return 0;
-            case TYPE_BIT:    return vbit ? 1 : 0;
-            case TYPE_INT:    return vint;
-            case TYPE_FLOAT:  return (int) vfloat;
-        }
-    }
-    
-    void mapTo(AGInt &v) const { v = getInt(); }
-    
-    operator AGInt() const { return getInt(); }
-    
-    AGBit getBit() const
-    {
-        switch(type)
-        {
-            case TYPE_NONE:   return 0;
-            case TYPE_STRING: return vstring.size() ? 1 : 0;
-            case TYPE_BIT:    return vbit;
-            case TYPE_INT:    return vint ? 1 : 0;
-            case TYPE_FLOAT:  return vfloat ? 1 : 0;
-        }
-    }
+    AGBit getBit() const;
+    AGInt getInt() const;
+    AGFloat getFloat() const;
+    AGString getString() const;
     
     void mapTo(AGBit &v) const { v = getBit(); }
-    
-    // operator AGBit() const { return getBit(); }
-    
-    AGString getString() const
-    {
-        switch(type)
-        {
-            case TYPE_NONE:   return "";
-            case TYPE_STRING: return vstring;
-            case TYPE_BIT:    return vbit ? "1" : "0";
-            case TYPE_INT:
-            {
-                stringstream str;
-                str << vint;
-                return str.str();
-            }
-            case TYPE_FLOAT:
-            {
-                stringstream str;
-                str << vfloat;
-                return str.str();
-            }
-        }
-    }
-    
-    void mapTo(AGString &v) const
-    {
-        v = getString();
-    }
-    
-    operator AGString() const
-    {
-        return getString();
-    }
-    
-    operator bool() const
-    {
-        return type != TYPE_NONE;
-    }
+    void mapTo(AGFloat &v) const {v = getFloat(); }
+    void mapTo(AGInt &v) const { v = getInt(); }
+    void mapTo(AGString &v) const { v = getString(); }
+
+    operator bool() const { return getBit(); }
+    operator AGInt() const { return getInt(); }
+    operator AGFloat() const { return getFloat(); }
+    operator double() const { return getFloat(); }
+    operator AGString() const { return getString(); }
 };
 
 #endif /* defined(__Auragraph__AGControl__) */

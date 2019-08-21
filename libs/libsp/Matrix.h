@@ -35,12 +35,14 @@ public:
     Matrix4 translate(float tx, float ty, float tz) const;
     Matrix4 translate(const GLvertex3f &vec) const;
     Matrix4 scale(float sx, float sy, float sz) const;
+    Matrix4 scale(float s) const;
     Matrix4 rotate(float radians, float rx, float ry, float rz) const;
     Matrix4 multiply(const Matrix4 &mat) const;
     
     Matrix4 &translateInPlace(float tx, float ty, float tz);
     Matrix4 &translateInPlace(const GLvertex3f &vec);
     Matrix4 &scaleInPlace(float sx, float sy, float sz);
+    Matrix4 &scaleInPlace(float s);
     Matrix4 &rotateInPlace(float radians, float rx, float ry, float rz);
     Matrix4 &multiplyInPlace(const Matrix4 &mat);
     

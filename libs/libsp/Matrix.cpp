@@ -52,6 +52,11 @@ Matrix4 Matrix4::scale(float sx, float sy, float sz) const
     return Matrix4(GLKMatrix4Scale(m_mat, sx, sy, sz));
 }
 
+Matrix4 Matrix4::scale(float s) const
+{
+    return Matrix4(GLKMatrix4Scale(m_mat, s, s, s));
+}
+
 Matrix4 Matrix4::rotate(float radians, float rx, float ry, float rz) const
 {
     return Matrix4(GLKMatrix4Rotate(m_mat, radians, rx, ry, rz));
@@ -77,6 +82,12 @@ Matrix4 &Matrix4::translateInPlace(const GLvertex3f &vec)
 Matrix4 &Matrix4::scaleInPlace(float sx, float sy, float sz)
 {
     m_mat = GLKMatrix4Scale(m_mat, sx, sy, sz);
+    return *this;
+}
+
+Matrix4 &Matrix4::scaleInPlace(float s)
+{
+    m_mat = GLKMatrix4Scale(m_mat, s, s, s);
     return *this;
 }
 

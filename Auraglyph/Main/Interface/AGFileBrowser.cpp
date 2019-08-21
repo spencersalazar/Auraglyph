@@ -10,6 +10,11 @@
 #include "AGStyle.h"
 #include "Animation.h"
 #include "AGFileManager.h"
+#include "AGGenericShader.h"
+
+
+#define USE_TEST_PATHS 0
+
 
 AGFileBrowser::AGFileBrowser(const GLvertex3f &position)
 {
@@ -25,6 +30,43 @@ AGFileBrowser::AGFileBrowser(const GLvertex3f &position)
     m_fontScale = AGStyle::standardFontScale*0.8f;
     
     m_verticalScrollPos.clampTo(0, 0);
+    
+#if USE_TEST_PATHS
+    m_paths = {
+        "SF_BeatC100-01.wav SF_BeatC100-01.wav SF_BeatC100-01.wav SF_BeatC100-01.wav",
+        "SF_BeatC100-02.wav SF_BeatC100-01.wav SF_BeatC100-01.wav SF_BeatC100-01.wav",
+        "SF_BeatC100-03.wav SF_BeatC100-01.wav SF_BeatC100-01.wav SF_BeatC100-01.wav",
+        "SF_BeatC100-04.wav SF_BeatC100-01.wav SF_BeatC100-01.wav SF_BeatC100-01.wav",
+        "SF_BeatC100-05.wav",
+        "SF_BeatC100-06.wav",
+        "SF_BeatC100-07.wav",
+        "SF_BeatC100-08.wav",
+        "SF_BeatCfx100-01.wav",
+        "SF_BeatCfx100-02.wav",
+        "SF_BeatCfx100-03.wav",
+        "SF_BeatCfx100-04.wav",
+        "SF_BeatCfx100-05.wav",
+        "SF_BeatCfx100-06.wav",
+        "SF_BeatCfx100-07.wav",
+        "SF_BeatCfx100-08.wav",
+        "SF_BeatD100-01.wav",
+        "SF_BeatD100-02.wav",
+        "SF_BeatD100-03.wav",
+        "SF_BeatD100-04.wav",
+        "SF_BeatD100-05.wav",
+        "SF_BeatD100-06.wav",
+        "SF_BeatD100-07.wav",
+        "SF_BeatD100-08.wav",
+        "SF_BeatDfx100-01.wav",
+        "SF_BeatDfx100-02.wav",
+        "SF_BeatDfx100-03.wav",
+        "SF_BeatDfx100-04.wav",
+        "SF_BeatDfx100-05.wav",
+        "SF_BeatDfx100-06.wav",
+        "SF_BeatDfx100-07.wav",
+        "SF_BeatDfx100-08.wav",
+    };
+#endif // USE_TEST_PATHS
 }
 
 AGFileBrowser::~AGFileBrowser()
@@ -60,7 +102,7 @@ void AGFileBrowser::update(float t, float dt)
 void AGFileBrowser::render()
 {
     // draw inner box
-    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::frameBackgroundColor());
+    AGStyle::frameBackgroundColor().set();
     drawTriangleFan((GLvertex3f[]){
         { -m_size.x/2, -m_size.y/2, 0 },
         {  m_size.x/2, -m_size.y/2, 0 },
@@ -69,7 +111,7 @@ void AGFileBrowser::render()
     }, 4);
     
     // draw outer frame
-    glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::foregroundColor());
+    AGStyle::foregroundColor().set();
     glLineWidth(4.0f);
     drawLineLoop((GLvertex3f[]){
         { -m_size.x/2, -m_size.y/2, 0 },
@@ -78,20 +120,21 @@ void AGFileBrowser::render()
         { -m_size.x/2,  m_size.y/2, 0 },
     }, 4);
     
-    // TODO: clip all of this
-    
+    GLKMatrix4 clipMatrix = m_renderState.modelview;
+    GLvrectf clipRect;
+    clipRect.bl = GLvertex3f(-m_size.x/2, -m_size.y/2, 0);
+    clipRect.ur = GLvertex3f(m_size.x/2, m_size.y/2, 0);
+
     TexFont *font = AGStyle::standardFont64();
     float textHeight = font->height()*m_fontScale;
     int i = 0;
-    for(string path : m_paths)
-    {
+    for(string path : m_paths) {
         GLKMatrix4 modelView = m_renderState.modelview;
         float yPos = m_verticalScrollPos + m_size.y/2*0.95-m_itemHeight*(i+1)+m_itemHeight/2.0;
         
         GLcolor4f textColor;
         
-        if(i == m_selection)
-        {
+        if(i == m_selection) {
             GLKMatrix4 xform = GLKMatrix4MakeTranslation(0, yPos, 0);
             float margin = 0.975f;
             // draw selection box
@@ -105,9 +148,7 @@ void AGFileBrowser::render()
             }, 4, xform);
             
             textColor = AGStyle::frameBackgroundColor();
-        }
-        else
-        {
+        } else {
             textColor = AGStyle::foregroundColor();
         }
         
@@ -115,9 +156,32 @@ void AGFileBrowser::render()
         modelView = GLKMatrix4Translate(modelView, -m_size.x/2*0.9f, yPos-textHeight*2.0/3.0f, 0);
         modelView = GLKMatrix4Scale(modelView, m_fontScale, m_fontScale, 1);
         
-        font->render(path, textColor, modelView, m_renderState.projection);
+        font->render(path, textColor, modelView, m_renderState.projection,
+                     true, clipMatrix, clipRect);
         
         i++;
+    }
+    
+    if (m_paths.size() == 0) {
+        // no files
+        vector<string> msg = {
+            "no files found.",
+            "try adding files using",
+            "iTunes file sharing.",
+        };
+        
+        Matrix4 modelView = m_renderState.modelview;
+        float lineHeight = textHeight*1.2f;
+        float yPos = msg.size()*lineHeight/2-textHeight;
+        
+        for (auto& line : msg) {
+            float lineWidth = font->width(line)*m_fontScale;
+            float xPos = -lineWidth/2;
+            font->render(line, AGStyle::foregroundColor(),
+                         modelView.translate(xPos, yPos, 0).scale(m_fontScale),
+                         m_renderState.projection);
+            yPos -= lineHeight;
+        }
     }
     
     AGInteractiveObject::render();
@@ -203,12 +267,14 @@ GLvertex2f AGFileBrowser::size()
 
 void AGFileBrowser::setDirectoryPath(const string &directoryPath)
 {
+#if !USE_TEST_PATHS
     vector<string> paths = AGFileManager::instance().listDirectory(directoryPath);
     for(string path : paths)
     {
         if(m_filter(path))
             m_paths.push_back(path);
     }
+#endif // !USE_TEST_PATHS
     
     m_verticalScrollPos.clampTo(0, max(0.0f, m_paths.size()*m_itemHeight-m_size.y*0.95f));
 }

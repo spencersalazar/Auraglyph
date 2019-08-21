@@ -46,7 +46,7 @@ m_done(false)
         "v"+AGUtility::getVersionString(),
         "Copyright 2019",
         "All rights reserved",
-        "https://auragly.ph/",
+        "https://auraglyph.io/",
     };
 }
 

@@ -10,6 +10,7 @@
 #import "ShaderHelper.h"
 #import "ES2Render.h"
 #include "AGStyle.h"
+#include "Matrix.h"
 #import <CoreText/CoreText.h>
 
 bool TexFont::s_init = false;
@@ -19,8 +20,11 @@ GLint TexFont::s_uniformProjMatrix = 0;
 GLint TexFont::s_uniformNormalMatrix = 0;
 GLint TexFont::s_uniformTexture = 0;
 GLint TexFont::s_uniformTexpos = 0;
-GLuint TexFont::s_geoSize = 0;
-GLgeoprimf *TexFont::s_geo = NULL;
+static GLuint g_uniformEnableClip = 0;
+static GLuint g_uniformClipMatrix = 0;
+static GLuint g_uniformClipOrigin = 0;
+static GLuint g_uniformClipSize = 0;
+GLgeoprimf TexFont::s_geo[];
 float TexFont::s_radius = 0;
 
 static UniChar *g_chars = NULL;
@@ -46,13 +50,16 @@ void TexFont::initalizeTexFont()
         s_uniformNormalMatrix = glGetUniformLocation(s_program, "normalMatrix");
         s_uniformTexture = glGetUniformLocation(s_program, "texture");
         s_uniformTexpos = glGetUniformLocation(s_program, "texpos");
-        
-        s_geoSize = 4;
-        s_geo = new GLgeoprimf[s_geoSize];
+        g_uniformEnableClip = glGetUniformLocation(s_program, "uEnableClip");
+        g_uniformClipMatrix = glGetUniformLocation(s_program, "uClipMatrix");
+        g_uniformClipOrigin = glGetUniformLocation(s_program, "uClipOrigin");
+        g_uniformClipSize = glGetUniformLocation(s_program, "uClipSize");
         
         s_radius = 0.005*AGStyle::oldGlobalScale;
         
         // fill GL_TRIANGLE_STRIP S-shape
+        // 2 3
+        // 0 1
         s_geo[0].vertex = GLvertex3f(0, 0, 0);
         s_geo[1].vertex = GLvertex3f(s_radius, 0, 0);
         s_geo[2].vertex = GLvertex3f(0, s_radius, 0);
@@ -190,7 +197,8 @@ m_tex(0)
 }
 
 void TexFont::render(const std::string &text, const GLcolor4f &color,
-                     const GLKMatrix4 &_modelView, const GLKMatrix4 &proj)
+                     const GLKMatrix4 &_modelView, const GLKMatrix4 &proj,
+                     bool doClip, const GLKMatrix4 &clipMatrix, const GLvrectf &clip)
 {
     glEnable(GL_TEXTURE_2D);
     
@@ -216,9 +224,16 @@ void TexFont::render(const std::string &text, const GLcolor4f &color,
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_tex);
     
+    // set up uniforms
     glUniformMatrix4fv(s_uniformProjMatrix, 1, 0, proj.m);
     glUniformMatrix3fv(s_uniformNormalMatrix, 1, 0, normal.m);
+    
     glUniform1i(s_uniformTexture, 0);
+    
+    glUniform1i(g_uniformEnableClip, doClip ? 1 : 0);
+    glUniformMatrix4fv(g_uniformClipMatrix, 1, 0, clipMatrix.m);
+    glUniform2f(g_uniformClipOrigin, clip.bl.x, clip.bl.y);
+    glUniform2f(g_uniformClipSize, clip.ur.x-clip.bl.x, clip.ur.y-clip.bl.y);
     
     GLKMatrix4 modelView = GLKMatrix4Scale(_modelView, 1, m_height/m_width, 1);
     GLKMatrix4 scaledMV;

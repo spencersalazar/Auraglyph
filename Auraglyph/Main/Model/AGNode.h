@@ -46,7 +46,7 @@ struct AGPortInfo
     
     string name;
     
-    float _default;
+    AGParamValue _default;
     float min;
     float max;
     
