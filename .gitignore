@@ -1,7 +1,7 @@
 .DS_Store
 
-Auragraph.xcodeproj/project.xcworkspace/
-Auragraph.xcodeproj/xcuserdata/
+project.xcworkspace
+xcuserdata
 
 nime2014/*.aux
 nime2014/*.bbl

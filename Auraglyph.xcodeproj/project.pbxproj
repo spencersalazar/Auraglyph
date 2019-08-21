@@ -1820,7 +1820,7 @@
 					"$(PROJECT_DIR)/libs/TheAmazingAudioEngine/TheAmazingAudioEngine",
 				);
 				INFOPLIST_FILE = "Auraglyph/Auraglyph-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				KEEP_PRIVATE_EXTERNS = YES;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
@@ -1833,6 +1833,7 @@
 				PRODUCT_NAME = Auraglyph;
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1859,7 +1860,7 @@
 					"$(PROJECT_DIR)/libs/TheAmazingAudioEngine/TheAmazingAudioEngine",
 				);
 				INFOPLIST_FILE = "Auraglyph/Auraglyph-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				KEEP_PRIVATE_EXTERNS = YES;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
@@ -1872,6 +1873,7 @@
 				PRODUCT_NAME = Auraglyph;
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -1952,7 +1954,7 @@
 					"$(PROJECT_DIR)/libs/TheAmazingAudioEngine/TheAmazingAudioEngine",
 				);
 				INFOPLIST_FILE = "Auraglyph/Auraglyph-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				KEEP_PRIVATE_EXTERNS = YES;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
@@ -1965,6 +1967,7 @@
 				PRODUCT_NAME = Auraglyph;
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Beta;
