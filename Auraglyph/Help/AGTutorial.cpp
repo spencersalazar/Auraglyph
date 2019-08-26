@@ -124,15 +124,15 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
     GLvertex3f mediumLineSpace = GLvertex3f(0, -40, 0);
     GLvertex3f largeLineSpace = GLvertex3f(0, -70, 0);
 
+    /* hide the UI */
     {
-        /* hide the UI */
         steps.push_back(_makeTutorialStep(AGTutorialActions::make(AGTutorialActions::HIDE_UI, {
             { "hide", 1 }
         })));
     }
     
+    /* intro / draw a circle */
     {
-        /* intro / draw a circle */
         std::list<AGTutorialAction*> actions;
         std::list<AGTutorialCondition*> conditions;
         GLvertex3f currentTextPos = GLvertex3f();
@@ -182,8 +182,8 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
     }
     
+    /* select the sine wave */
     {
-        /* select the sine wave */
         std::list<AGTutorialAction*> actions;
         std::list<AGTutorialCondition*> conditions;
         GLvertex3f currentTextPos = GLvertex3f();
@@ -252,8 +252,8 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
     }
     
+    /* connect to the output */
     {
-        /* connect to the output */
         std::list<AGTutorialAction*> actions;
         std::list<AGTutorialCondition*> conditions;
         GLvertex3f currentTextPos = GLvertex3f();
@@ -330,8 +330,8 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
     }
     
+    /* tap to open the editor */
     {
-        /* tap to open the editor */
         std::list<AGTutorialAction*> actions;
         std::list<AGTutorialCondition*> conditions;
         GLvertex3f currentTextPos = GLvertex3f();
@@ -371,8 +371,8 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
     }
     
+    /* try changing the frequency or gain */
     {
-        /* try changing the frequency or gain */
         std::list<AGTutorialAction*> actions;
         std::list<AGTutorialCondition*> conditions;
         GLvertex3f currentTextPos = GLvertex3f();
@@ -446,8 +446,8 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
     }
     
+    /* disconnect the sine wave */
     {
-        /* disconnect the sine wave */
         std::list<AGTutorialAction*> actions;
         std::list<AGTutorialCondition*> conditions;
         GLvertex3f currentTextPos = GLvertex3f();
@@ -498,8 +498,55 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
     }
     
+    /* thats all for now folks */
     {
-        /* show the UI */
+        std::list<AGTutorialAction*> actions;
+        std::list<AGTutorialCondition*> conditions;
+        GLvertex3f currentTextPos = GLvertex3f();
+        
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "woohoo!" },
+            { "position", startPos+Variant(currentTextPos) },
+            { "pause", 0.3 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "thats all for now," },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "folks." },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 0.3 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "check out" },
+            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "forum.auraglyph.io" },
+            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
+            { "pause", 0.5 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "for more tips" },
+            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "and tutorials." },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 3.0 },
+        }));
+
+        steps.push_back(_makeTutorialStep(actions, conditions, {
+            { "pause", 3.0 }
+        }));
+    }
+    
+    /* show the UI */
+    {
         steps.push_back(_makeTutorialStep(AGTutorialActions::make(AGTutorialActions::HIDE_UI, {
             { "hide", 0 }
         })));

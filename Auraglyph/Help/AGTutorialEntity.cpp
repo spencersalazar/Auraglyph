@@ -117,7 +117,8 @@ bool AGTutorialStep::canContinue()
 
 bool AGTutorialStep::isCompleted()
 {
-    return m_conditionStatus == AGTutorialCondition::STATUS_CONTINUE;
+    return (m_conditionStatus == AGTutorialCondition::STATUS_CONTINUE &&
+            m_pauseTime >= m_pauseDuration.getFloat());
 }
 
 void AGTutorialStep::update(float t, float dt) 
@@ -126,26 +127,28 @@ void AGTutorialStep::update(float t, float dt)
     
     _checkConditions();
     
-    if(!isCompleted())
-    {
-        for(auto action : m_activeActions)
+    if(m_conditionStatus == AGTutorialCondition::STATUS_INCOMPLETE) {
+        for(auto action : m_activeActions) {
             action->update(t, dt);
+        }
+        
+        if(m_currentAction != m_actions.end() && (*m_currentAction)->canContinue()) {
+            (*m_currentAction)->finalize(*m_environment);
             
-            if(m_currentAction != m_actions.end() && (*m_currentAction)->canContinue())
-            {
-                (*m_currentAction)->finalize(*m_environment);
-                
-                m_currentAction++;
-                
-                if(m_currentAction != m_actions.end())
-                {
-                    (*m_currentAction)->prepare(*m_environment);
-                    (*m_currentAction)->update(t, dt);
-                    m_activeActions.push_back(*m_currentAction);
-                }
+            m_currentAction++;
+            
+            if(m_currentAction != m_actions.end()) {
+                (*m_currentAction)->prepare(*m_environment);
+                (*m_currentAction)->update(t, dt);
+                m_activeActions.push_back(*m_currentAction);
             }
+        }
         
         m_activeActions.remove_if([](AGTutorialAction *action){ return action->isCompleted(); });
+    } else {
+        if (m_pauseTime < m_pauseDuration.getFloat()) {
+            m_pauseTime += dt;
+        }
     }
 }
 
@@ -167,23 +170,21 @@ void AGTutorialStep::activityOccurred(AGActivity *activity)
 
 void AGTutorialStep::_checkConditions()
 {
-    if(m_conditions.size() == 0)
-    {
-        // if there are no conditions, can continue immediately
-        dbgprint("tutorial condition status: continue\n");
-        m_conditionStatus = AGTutorialCondition::STATUS_CONTINUE;
-    }
-    else
-    {
-        for(auto condition : m_conditions)
-        {
-            auto status = condition->getStatus();
-            if (status == AGTutorialCondition::STATUS_CONTINUE)
-            {
-                dbgprint("tutorial condition status: continue\n");
-                m_conditionStatus = status;
-                m_completedCondition = condition;
-                break;
+    if(m_conditionStatus == AGTutorialCondition::STATUS_INCOMPLETE) {
+        if(m_conditions.size() == 0 && m_currentAction == m_actions.end()) {
+            // if there are no conditions, can continue immediately after actions complete
+            dbgprint("tutorial condition status: continue (no conditions and actions complete)\n");
+            m_conditionStatus = AGTutorialCondition::STATUS_CONTINUE;
+        } else {
+            // check each condition
+            for(auto condition : m_conditions) {
+                auto status = condition->getStatus();
+                if (status == AGTutorialCondition::STATUS_CONTINUE) {
+                    dbgprint("tutorial condition status: continue (condition completed)\n");
+                    m_conditionStatus = status;
+                    m_completedCondition = condition;
+                    break;
+                }
             }
         }
     }
@@ -193,19 +194,17 @@ void AGTutorialStep::prepareInternal(AGTutorialEnvironment &environment)
 {
     m_environment = &environment;
     
-    m_currentAction = m_actions.begin();
-    (*m_currentAction)->prepare(*m_environment);
-    m_activeActions.push_back(*m_currentAction);
-    
-    // if there are no conditions, can continue immediately
-    if(m_conditions.size() == 0) {
-        dbgprint("tutorial condition status: continue\n");
-        m_conditionStatus = AGTutorialCondition::STATUS_CONTINUE;
+    if(m_actions.size()) {
+        m_currentAction = m_actions.begin();
+        (*m_currentAction)->prepare(*m_environment);
+        m_activeActions.push_back(*m_currentAction);
     }
     
     for(auto condition : m_conditions) {
         condition->prepare(environment);
     }
+    
+    m_pauseDuration = getParameter("pause");
 }
 
 void AGTutorialStep::finalizeInternal(AGTutorialEnvironment &environment)

@@ -273,7 +273,7 @@ bool AGRenderObject::finishedRenderingOut()
 void AGRenderObject::hide(bool animate)
 {
     if(animate)
-        m_alpha.reset(1, 0);
+        m_alpha.reset(m_alpha, 0);
     else
         m_alpha.forceTo(0);
 }
@@ -281,7 +281,7 @@ void AGRenderObject::hide(bool animate)
 void AGRenderObject::unhide(bool animate)
 {
     if(animate)
-        m_alpha.reset(0, 1);
+        m_alpha.reset(m_alpha, 1);
     else
         m_alpha.forceTo(1);
 }

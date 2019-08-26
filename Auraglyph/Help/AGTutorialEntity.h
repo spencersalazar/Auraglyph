@@ -226,5 +226,8 @@ private:
     list<AGTutorialCondition*> m_conditions;
     AGTutorialCondition *m_completedCondition = nullptr;
     AGTutorialCondition::Status m_conditionStatus = AGTutorialCondition::STATUS_INCOMPLETE;
+    
+    Variant m_pauseDuration = 0.0f;
+    float m_pauseTime = 0.0f;
 };
 
