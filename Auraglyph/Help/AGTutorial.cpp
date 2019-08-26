@@ -510,17 +510,12 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
             { "pause", 0.3 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
-            { "text", "thats all for now," },
-            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
-            { "pause", 0.0 },
-        }));
-        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
-            { "text", "folks." },
+            { "text", "thats all for now." },
             { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 0.3 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
-            { "text", "check out" },
+            { "text", "but check out" },
             { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
             { "pause", 0.0 },
         }));
