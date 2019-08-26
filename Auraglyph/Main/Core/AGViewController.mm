@@ -16,6 +16,7 @@
 #import "TexFont.h"
 #import "NSString+STLString.h"
 #import "AGUtility.h"
+#import "AGSettings.h"
 
 // Data model
 #import "AGInteractiveObject.h"
@@ -52,7 +53,7 @@
 #import "AGAboutBox.h"
 #import "AGUISaveDialog.h"
 #import "AGUILoadDialog.h"
-#import "AGPreferences.h"
+#import "AGSettings.h"
 #import "AGTutorial.h"
 #import "AGModalDialog.h"
 
@@ -229,19 +230,13 @@ static AGViewController * g_instance = nil;
     [self initUI];
     
     _graph = new AGGraph;
-    
-#if AG_SHOW_TUTORIAL_ON_START
-    bool doTutorial = true;
-#else // !AG_SHOW_TUTORIAL_ON_START
-    bool doTutorial = false;
-#endif // AG_SHOW_TUTORIAL_ON_STARTs
 
-    if (doTutorial) {
+    if (AGSettings::instance().showTutorialOnLaunch()) {
         _currentTutorial = AGTutorial::createInitialTutorial(_proxy);
         [self _newDocument:NO];
     } else {
         /* load default program */
-        AGFile _lastOpened = AGPreferences::instance().lastOpenedDocument();
+        AGFile _lastOpened = AGSettings::instance().lastOpenedDocument();
         if(_lastOpened.m_filename.size() != 0 && AGFileManager::instance().fileExists(_lastOpened))
         {
             _currentDocumentFile = _lastOpened;
@@ -1258,7 +1253,7 @@ static AGViewController * g_instance = nil;
         saveDialog->onSave([self](const AGFile &file, const vector<vector<GLvertex2f>> &name) {
             _currentDocumentFile = file;
             _currentDocName = name;
-            AGPreferences::instance().setLastOpenedDocument(_currentDocumentFile);
+            AGSettings::instance().setLastOpenedDocument(_currentDocumentFile);
         });
         
         _dashboard.push_back(saveDialog);
@@ -1327,7 +1322,7 @@ static AGViewController * g_instance = nil;
     [self _clearDocument];
     
     _currentDocName = doc.name();
-    AGPreferences::instance().setLastOpenedDocument(_currentDocumentFile);
+    AGSettings::instance().setLastOpenedDocument(_currentDocumentFile);
     
     __block map<string, AGNode *> uuid2node;
     

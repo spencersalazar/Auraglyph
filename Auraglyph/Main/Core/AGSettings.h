@@ -1,33 +1,40 @@
 //
-//  AGPreferences.hpp
+//  AGSettings.hpp
 //  Auragraph
 //
 //  Created by Spencer Salazar on 11/21/16.
 //  Copyright © 2016 Spencer Salazar. All rights reserved.
 //
 
-#ifndef AGPreferences_h
-#define AGPreferences_h
+#pragma once
 
+#include "AGDef.h"
 #include <string>
 #include "AGDocumentManager.h"
 
+
+FORWARD_DECLARE_OBJC_CLASS(NSUserDefaults);
+
+
 //------------------------------------------------------------------------------
-// ### AGPreferences ###
+// ### AGSettings ###
 // Abstraction for preferences management
 //------------------------------------------------------------------------------
-#pragma mark - AGPreferences
+#pragma mark - AGSettings
 
-class AGPreferences
+class AGSettings
 {
 public:
-    static AGPreferences &instance();
+    static AGSettings &instance();
     
-    AGPreferences();
+    AGSettings();
     
     void setLastOpenedDocument(const AGFile &file);
     AGFile lastOpenedDocument();
+    
+    bool showTutorialOnLaunch();
+    
+private:
+    NSUserDefaults* m_defaults = nullptr;
+    bool m_firstLaunch = false;
 };
-
-
-#endif /* AGPreferences_h */
