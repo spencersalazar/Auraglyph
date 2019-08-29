@@ -362,10 +362,10 @@ public:
         if(p != m_selectedPort && m_selectedPort >= 0)
             m_ports[m_selectedPort]->activate(false);
         
-        if(p >= 0)
+        if(p >= 0 && p < m_ports.size()) {
             m_ports[p]->activate(true);
-        
-        m_selectedPort = p;
+            m_selectedPort = p;
+        }
     }
     
 private:
