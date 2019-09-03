@@ -114,7 +114,7 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
     // GLvertex3f startPos = viewController->fixedCoordinateForScreenCoordinate(CGPointMake(bounds.origin.x+30, bounds.origin.y+30));
     Variant startPos = Variant([viewController] () {
         CGRect bounds = viewController->bounds();
-        return viewController->fixedCoordinateForScreenCoordinate(CGPointMake(bounds.origin.x+100, bounds.origin.y+75));
+        return viewController->fixedCoordinateForScreenCoordinate(CGPointMake(bounds.origin.x+100, bounds.origin.y+100));
     });
     AGTutorialEnvironment *env = new AGTutorialEnvironment(viewController);
     
@@ -498,6 +498,65 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
     }
     
+    /* show the UI */
+    {
+        steps.push_back(_makeTutorialStep(AGTutorialActions::make(AGTutorialActions::HIDE_UI, {
+            { "hide", 0 }
+        })));
+    }
+    
+    /* ui buttons */
+    {
+        std::list<AGTutorialAction*> actions;
+        std::list<AGTutorialCondition*> conditions;
+        GLvertex3f currentTextPos = GLvertex3f();
+        
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "the file menu includes" },
+            { "position", startPos+Variant(currentTextPos) },
+            { "pause", 0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "functions to save, load" },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "create new patches." },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 0.3 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "undo and redo are" },
+            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "in the tools menu." },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 0.3 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "you can access the tutorial" },
+            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "and configure Auraglyph" },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "through the settings menu." },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 3.0 },
+        }));
+
+        steps.push_back(_makeTutorialStep(actions, conditions, {
+            { "pause", 0.01 }
+        }));
+    }
+    
     /* thats all for now folks */
     {
         std::list<AGTutorialAction*> actions;
@@ -538,13 +597,6 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         steps.push_back(_makeTutorialStep(actions, conditions, {
             { "pause", 3.0 }
         }));
-    }
-    
-    /* show the UI */
-    {
-        steps.push_back(_makeTutorialStep(AGTutorialActions::make(AGTutorialActions::HIDE_UI, {
-            { "hide", 0 }
-        })));
     }
     
     for(auto step : steps)
