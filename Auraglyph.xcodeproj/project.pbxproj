@@ -167,6 +167,7 @@
 		09F2D53C1D7EA33400F537C7 /* DelayL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F2D5391D7EA33400F537C7 /* DelayL.cpp */; };
 		09F3C50818A5A8C300E499AF /* Stk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F3C50718A5A8C300E499AF /* Stk.cpp */; };
 		09F6E87A1D6A3758006DBC9E /* AGOutputNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09F6E8781D6A3758006DBC9E /* AGOutputNode.mm */; };
+		09F8F1A42386B1E800BA5995 /* Animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F8F1A32386B1E800BA5995 /* Animation.cpp */; };
 		09FC92471A14F55D005D14A3 /* AGTimer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09FC92451A14F55D005D14A3 /* AGTimer.mm */; };
 		09FC924B1A153A83005D14A3 /* AGConnection.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09FC92491A153A83005D14A3 /* AGConnection.mm */; };
 		09FC924D1A153C0A005D14A3 /* flare.png in Resources */ = {isa = PBXBuildFile; fileRef = 09FC924C1A153C0A005D14A3 /* flare.png */; };
@@ -627,6 +628,7 @@
 		09F6E8791D6A3758006DBC9E /* AGOutputNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGOutputNode.h; sourceTree = "<group>"; };
 		09F700B41D6FA75900294BDD /* AGAudioOutputDestination.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGAudioOutputDestination.h; sourceTree = "<group>"; };
 		09F700B51D6FA79B00294BDD /* AGAudioRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGAudioRenderer.h; sourceTree = "<group>"; };
+		09F8F1A32386B1E800BA5995 /* Animation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Animation.cpp; sourceTree = "<group>"; };
 		09FC92451A14F55D005D14A3 /* AGTimer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGTimer.mm; sourceTree = "<group>"; };
 		09FC92461A14F55D005D14A3 /* AGTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGTimer.h; sourceTree = "<group>"; };
 		09FC92491A153A83005D14A3 /* AGConnection.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGConnection.mm; sourceTree = "<group>"; };
@@ -1181,6 +1183,7 @@
 			isa = PBXGroup;
 			children = (
 				09CA6721229CC6B30017B93B /* Animation.h */,
+				09F8F1A32386B1E800BA5995 /* Animation.cpp */,
 				092F5EA9230DEFB600D12BB3 /* Bezier.cpp */,
 				092F5EAA230DEFB600D12BB3 /* Bezier.h */,
 				09CA6742229CC6B30017B93B /* Buffers.h */,
@@ -1567,6 +1570,7 @@
 				09CA6750229CC6B40017B93B /* Thread.cpp in Sources */,
 				095D12D417ACA36C0048A012 /* main.m in Sources */,
 				0933956E1A08799A009E4802 /* AGFormulaNode.mm in Sources */,
+				09F8F1A42386B1E800BA5995 /* Animation.cpp in Sources */,
 				09635AFF21E01A3000921309 /* AGActivityManager.cpp in Sources */,
 				09B189EC2291039F00B38FFF /* AGUtility.mm in Sources */,
 				0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */,

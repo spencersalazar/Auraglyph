@@ -9,6 +9,62 @@
 #ifndef Auragraph_Animation_h
 #define Auragraph_Animation_h
 
+#include <math.h>
+
+struct second;
+struct rate;
+
+struct second
+{
+    float value = 0;
+    
+    second(float _value = 0) : value(_value) { }
+    
+    rate operator ()() const;
+};
+
+struct rate
+{
+    float value = 0;
+    
+    rate(float _value = 0) : value(_value) { }
+
+    second operator ()() const;
+};
+
+inline rate second::operator ()() const
+{
+    return rate { 1/value };
+}
+
+inline second rate::operator ()() const
+{
+    return second { 1/value };
+}
+
+
+
+/**
+ map value in input range to output range, with optional scaling - full version
+ */
+template<typename Type>
+Type rescale(Type v, Type minIn, Type maxIn, Type minOut, Type maxOut, Type power = 1)
+{
+    Type unit = (v-minIn)/(maxIn-minIn);
+    if(power != 1.0f)
+        unit = powf(unit, power);;
+    return minOut+(unit*(maxOut-maxIn));
+}
+
+/**
+ map value in input range to output range, with optional scaling - unit input version
+ */
+template<typename Type>
+Type rescale(Type v, Type minOut, Type maxOut, Type power = 1)
+{
+    return rescale<Type>(v, 0, 1, minOut, maxOut, power);
+}
+
 /*------------------------------------------------------------------------------
  slew/slewf
  Gradually ease data type to target value. "Getting" the value returns the
@@ -197,6 +253,7 @@ public:
     inline void reset(float _start, float _end) { t = 0; start = _start; end = _end; }
     inline void finish() { t = 1; }
     inline void forceTo(float val) { t = 1; start = val; end = val; }
+    inline bool isFinished() { return t >= 1; }
     
     inline operator const float () const
     {
@@ -217,6 +274,34 @@ public:
     }
         
     float t, start, end, rate;
+};
+
+/*------------------------------------------------------------------------------
+ ### compoundf ###
+ -----------------------------------------------------------------------------*/
+#pragma mark - compoundf
+
+#include <vector>
+#include <memory>
+
+class compoundf : public curvef
+{
+public:
+    template<typename CurveType>
+    compoundf(CurveType c)
+    {
+        m_curves.push_back(std::unique_ptr<CurveType>(c));
+    }
+    
+    template<typename CurveType, typename... Curves>
+    compoundf(CurveType c, Curves... curves)
+    {
+        m_curves.push_back(std::unique_ptr<CurveType>(c));
+        compoundf(curves...);
+    }
+
+private:
+    std::vector<std::unique_ptr<curvef>> m_curves;
 };
 
 /*------------------------------------------------------------------------------

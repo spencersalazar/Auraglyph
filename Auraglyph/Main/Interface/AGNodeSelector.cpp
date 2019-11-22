@@ -17,6 +17,7 @@
 
 static const float AGNODESELECTOR_RADIUS = 0.02*AGStyle::oldGlobalScale;
 
+std::list<AGUIMetaNodeSelector*> AGUIMetaNodeSelector::s_nodeSelectors;
 
 template<class NodeType, class ManagerType>
 class AGUINodeSelector : public AGUIMetaNodeSelector
@@ -40,6 +41,16 @@ public:
     GLvrectf effectiveBounds() override
     {
         return GLvrectf(m_pos-GLvertex2f(m_radius, m_radius), m_pos+GLvertex2f(m_radius, m_radius));
+    }
+    
+    virtual void blink(bool enable, int item = -1) override
+    {
+        if (enable) {
+            m_blinkItem = item;
+            m_itemBlink.reset();
+        } else {
+            m_blinkItem = -1;
+        }
     }
     
     virtual void renderOut() override;
@@ -66,6 +77,9 @@ private:
     GLvertex3f m_touchStart;
     GLvertex3f m_lastTouch;
     bool m_done;
+    
+    powcurvef m_itemBlink;
+    int m_blinkItem = -1;
 };
 
 
@@ -109,7 +123,8 @@ AGUIMetaNodeSelector(pos),
 m_node(new NodeType(AGNodeManifest::defaultManifest(), pos)),
 m_hit(-1),
 m_done(false),
-m_manager(manager)
+m_manager(manager),
+m_itemBlink(powcurvef(1, 0, 0.5, 0.75))
 {
     m_node->init();
     
@@ -133,6 +148,8 @@ m_manager(manager)
     m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
     m_yScale = lincurvef(AGStyle::open_animTimeY, AGStyle::open_squeezeHeight, 1);
     //    NSLog(@"scrollMax: %f", m_verticalScrollPos.max);
+    
+    s_nodeSelectors.push_back(this);
 }
 
 template<class NodeType, class ManagerType>
@@ -140,12 +157,19 @@ AGUINodeSelector<NodeType, ManagerType>::~AGUINodeSelector()
 {
     dbgprint_off("AGUINodeSelector::~AGUINodeSelector()");
     SAFE_DELETE(m_node);
+    
+    s_nodeSelectors.remove(this);
 }
 
 template<class NodeType, class ManagerType>
 void AGUINodeSelector<NodeType, ManagerType>::update(float t, float dt)
 {
     m_verticalScrollPos.update(t, dt);
+    
+    m_itemBlink.update(dt);
+    if (m_itemBlink.isFinished()) {
+        m_itemBlink.reset();
+    }
     
     m_modelView = AGNode::globalModelViewMatrix();
     GLKMatrix4 projection = AGNode::projectionMatrix();
@@ -165,6 +189,11 @@ void AGUINodeSelector<NodeType, ManagerType>::update(float t, float dt)
     m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, m_modelView);
     
     m_node->update(t, dt);
+    
+    // todo: fix this
+    // for AGRenderObject functions
+    m_renderState.modelview = m_modelView;
+    m_renderState.projection = projection;
 }
 
 template<class NodeType, class ManagerType>
@@ -254,8 +283,23 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
         GLKMatrix3 normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
         GLKMatrix4 mvp = GLKMatrix4Multiply(projection, modelView);
         
-        if(i == m_hit)
-        {
+        if(i == m_blinkItem) {
+            float blink = m_itemBlink;
+            
+            Matrix4 hitModelView = Matrix4::makeTranslation(iconPos.x, iconPos.y, iconPos.z).scale(0.5, 0.5, 0.5);
+            clipShader.setLocalMatrix(hitModelView);
+            
+            AGStyle::foregroundColor().withAlpha(blink).set();
+            
+            drawTriangleFan(clipShader, m_geo, m_geoSize, hitModelView);
+            
+            if (blink > 0.5f) {
+                AGStyle::frameBackgroundColor().set();
+            } else {
+                AGStyle::foregroundColor().set();
+            }
+            
+        } else if(i == m_hit) {
             // draw highlight background
             GLKMatrix4 hitModelView = GLKMatrix4Scale(modelView, 0.5, 0.5, 0.5);
             clipShader.setLocalMatrix(GLKMatrix4Scale(GLKMatrix4MakeTranslation(iconPos.x, iconPos.y, iconPos.z), 0.5, 0.5, 0.5));
@@ -271,9 +315,7 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
             glDrawArrays(GL_TRIANGLE_FAN, 0, m_geoSize);
             
             AGStyle::frameBackgroundColor().set();
-        }
-        else
-        {
+        } else {
             AGStyle::foregroundColor().set();
         }
         

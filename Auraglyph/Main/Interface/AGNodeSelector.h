@@ -13,6 +13,7 @@
 #include "Animation.h"
 #include "AGRenderObject.h"
 #include "AGAudioNode.h"
+#include <list>
 
 class AGUIMetaNodeSelector : public AGInteractiveObject
 {
@@ -21,6 +22,8 @@ public:
     static AGUIMetaNodeSelector *controlNodeSelector(const GLvertex3f &pos);
     static AGUIMetaNodeSelector *inputNodeSelector(const GLvertex3f &pos);
     static AGUIMetaNodeSelector *outputNodeSelector(const GLvertex3f &pos);
+    
+    static const std::list<AGUIMetaNodeSelector*>& nodeSelectors() { return s_nodeSelectors; }
 
     AGUIMetaNodeSelector(const GLvertex3f &pos) { }
     virtual ~AGUIMetaNodeSelector() { }
@@ -38,6 +41,11 @@ public:
     
     virtual void renderOut() = 0;
     virtual bool finishedRenderingOut() = 0;
+    
+    virtual void blink(bool enable, int item = -1) = 0;
+    
+protected:
+    static std::list<AGUIMetaNodeSelector*> s_nodeSelectors;
 };
 
 

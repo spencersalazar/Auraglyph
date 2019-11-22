@@ -29,11 +29,13 @@
 #include <memory>
 
 
+constexpr static const float DEBUG_TEXT_SPEED_FACTOR = 4;
 
 
 //-----------------------------------------------------------------------------
 // ACTIONS
 //-----------------------------------------------------------------------------
+#pragma mark - ---ACTIONS---
 
 #pragma mark AGTextTutorialAction
 
@@ -47,6 +49,8 @@ public:
     void update(float t, float dt) override
     {
         AGRenderObject::update(t, dt);
+        
+        dt *= DEBUG_TEXT_SPEED_FACTOR;
         
         m_textExtent += dt*20;
         if (m_textExtent >= m_text.size())
@@ -303,6 +307,56 @@ protected:
 };
 
 
+#pragma mark AGBlinkNodeSelectorTutorialAction
+
+/** AGBlinkNodeSelectorTutorialAction
+ */
+
+#include "AGNodeSelector.h"
+
+class AGBlinkNodeSelectorTutorialAction : public AGTutorialAction
+{
+public:
+    using AGTutorialAction::AGTutorialAction;
+    
+    void update(float t, float dt) override
+    {
+        if (m_t < m_pause)
+            m_canContinue = true;
+        else
+            m_t += dt;
+    }
+    
+    bool canContinue() override { return false; }
+    
+    bool isCompleted() override { return false; }
+    
+protected:
+    
+    bool m_canContinue = false;
+    float m_t = 0;
+    float m_pause = 0;
+    
+    AGUIMetaNodeSelector* m_nodeSelector = nullptr;
+    
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        m_pause = getParameter("pause", 0);
+        int item = getParameter("item", 0);
+        
+        m_nodeSelector = *(AGUIMetaNodeSelector::nodeSelectors().begin());
+        
+        m_nodeSelector->blink(true, item);
+    }
+    
+    void finalizeInternal(AGTutorialEnvironment &environment) override
+    {
+        m_nodeSelector->blink(false);
+    }
+};
+
+
+
 #pragma mark AGCreateNodeTutorialAction
 
 /** AGCreateNodeTutorialAction
@@ -331,7 +385,7 @@ protected:
     GLvertex3f m_figurePos;
     float m_t = 0;
     float m_pause = 0;
-
+    
     void prepareInternal(AGTutorialEnvironment &environment) override
     {
         m_pause = getParameter("pause", 0);
@@ -340,7 +394,7 @@ protected:
         AGDocument::Node::Class nodeClass = (AGDocument::Node::Class) getParameter("class", AGDocument::Node::AUDIO).getInt();
         std::string type = getParameter("type", "").getString();
         GLvertex3f position = getParameter("position", GLvertex3f()).getVertex3();
-
+        
         if(type.length()) {
             AGNode *node = AGNodeManager::nodeManagerForClass(nodeClass).createNodeOfType(type, position);
             // animate in
@@ -364,6 +418,7 @@ protected:
 //-----------------------------------------------------------------------------
 // CONDITIONS
 //-----------------------------------------------------------------------------
+#pragma mark - ---CONDITIONS---
 
 #pragma mark AGDrawNodeTutorialCondition
 
@@ -657,22 +712,30 @@ private:
 };
 
 
-#pragma mark - Helpers
+#pragma mark - ---Helpers---
 
 AGTutorialAction *AGTutorialActions::make(AGTutorialActions::Action type, const map<std::string, Variant> &parameters)
 {
     AGTutorialAction *action = nullptr;
     
     switch (type) {
-        case AGTutorialActions::TEXT: action = new AGTextTutorialAction(parameters);
+        case AGTutorialActions::TEXT:
+            action = new AGTextTutorialAction(parameters);
             break;
-        case AGTutorialActions::POINT_TO: action = new AGPointToTutorialAction(parameters);
+        case AGTutorialActions::POINT_TO:
+            action = new AGPointToTutorialAction(parameters);
             break;
-        case AGTutorialActions::HIDE_UI: action = new AGHideUITutorialAction(parameters);
+        case AGTutorialActions::HIDE_UI:
+            action = new AGHideUITutorialAction(parameters);
             break;
-        case AGTutorialActions::SUGGEST_DRAW_NODE: action = new AGSuggestDrawNodeTutorialAction(parameters);
+        case AGTutorialActions::SUGGEST_DRAW_NODE:
+            action = new AGSuggestDrawNodeTutorialAction(parameters);
             break;
-        case AGTutorialActions::CREATE_NODE: action = new AGCreateNodeTutorialAction(parameters);
+        case AGTutorialActions::CREATE_NODE:
+            action = new AGCreateNodeTutorialAction(parameters);
+            break;
+        case AGTutorialActions::BLINK_NODE_SELECTOR:
+            action = new AGBlinkNodeSelectorTutorialAction(parameters);
             break;
         default:
             assert(0);

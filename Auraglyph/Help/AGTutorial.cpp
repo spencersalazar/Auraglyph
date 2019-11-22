@@ -223,22 +223,26 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
             { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 1.0 },
         }));
-        actions.push_back(AGTutorialActions::make(AGTutorialActions::POINT_TO, {
-            { "start", Variant([env](){
-                // start position is based on env variable node1_pos
-                GLvertex3f node1Pos = env->fetch("node1_pos");
-                return node1Pos+GLvertex3f(-300, 50, 0);
-            })},
-            { "end", Variant([env](){
-                // start position is based on env variable node1_pos
-                GLvertex3f node1Pos = env->fetch("node1_pos");
-                return node1Pos+GLvertex3f(-120, 50, 0);
-            })},
-            { "pause", 0 },
-        }));
+        //        actions.push_back(AGTutorialActions::make(AGTutorialActions::POINT_TO, {
+        //            { "start", Variant([env](){
+        //                // start position is based on env variable node1_pos
+        //                GLvertex3f node1Pos = env->fetch("node1_pos");
+        //                return node1Pos+GLvertex3f(-300, 50, 0);
+        //            })},
+        //            { "end", Variant([env](){
+        //                // start position is based on env variable node1_pos
+        //                GLvertex3f node1Pos = env->fetch("node1_pos");
+        //                return node1Pos+GLvertex3f(-120, 50, 0);
+        //            })},
+        //            { "pause", 0 },
+        //        }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "start by choosing the sine wave." },
             { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
+            { "pause", 0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_NODE_SELECTOR, {
+            { "item", 0 },
             { "pause", 0 },
         }));
         

@@ -146,6 +146,16 @@ struct GLcolor4f
         return GLcolor4f(r*_r, g*_g, b*_b, a*_a);
     }
     
+    inline GLcolor4f blend(float _w, float _a = 1) const
+    {
+        return blend(_w, _w, _w, _a);
+    }
+
+    inline GLcolor4f blend(const GLcolor4f& c) const
+    {
+        return blend(c.r, c.g, c.b, c.a);
+    }
+
     static const GLcolor4f white;
     static const GLcolor4f red;
     static const GLcolor4f green;
