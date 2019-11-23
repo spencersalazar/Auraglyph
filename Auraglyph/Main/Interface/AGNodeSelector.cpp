@@ -67,10 +67,6 @@ private:
     lincurvef m_xScale;
     lincurvef m_yScale;
     
-    GLKMatrix4 m_modelViewProjectionMatrix;
-    GLKMatrix4 m_modelView;
-    GLKMatrix3 m_normalMatrix;
-    
     NodeType *m_node;
     
     int m_hit;
@@ -171,28 +167,23 @@ void AGUINodeSelector<NodeType, ManagerType>::update(float t, float dt)
         m_itemBlink.reset();
     }
     
-    m_modelView = AGNode::globalModelViewMatrix();
-    GLKMatrix4 projection = AGNode::projectionMatrix();
+    Matrix4 modelview = AGNode::globalModelViewMatrix();
+    Matrix4 projection = AGNode::projectionMatrix();
     
-    m_modelView = GLKMatrix4Translate(m_modelView, m_pos.x, m_pos.y, m_pos.z);
+    modelview = modelview.translate(m_pos.x, m_pos.y, m_pos.z);
     
     if(m_yScale <= AGStyle::open_squeezeHeight) m_xScale.update(dt);
     if(m_xScale >= 0.99f) m_yScale.update(dt);
     
-    m_modelView = GLKMatrix4Scale(m_modelView,
-                                  m_yScale <= AGStyle::open_squeezeHeight ? (float)m_xScale : 1.0f,
-                                  m_xScale >= 0.99f ? (float)m_yScale : AGStyle::open_squeezeHeight,
-                                  1);
-    
-    m_normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_modelView), NULL);
-    
-    m_modelViewProjectionMatrix = GLKMatrix4Multiply(projection, m_modelView);
+    modelview = modelview.scale(m_yScale <= AGStyle::open_squeezeHeight ? (float)m_xScale : 1.0f,
+                                m_xScale >= 0.99f ? (float)m_yScale : AGStyle::open_squeezeHeight,
+                                1);
     
     m_node->update(t, dt);
     
     // todo: fix this
     // for AGRenderObject functions
-    m_renderState.modelview = m_modelView;
+    m_renderState.modelview = modelview;
     m_renderState.projection = projection;
 }
 
@@ -212,8 +203,8 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
     
     shader.useProgram();
     
-    shader.setMVPMatrix(m_modelViewProjectionMatrix);
-    shader.setNormalMatrix(m_normalMatrix);
+    shader.setModelViewMatrix(m_renderState.modelview);
+    shader.setProjectionMatrix(m_renderState.projection);
     
     glDisableVertexAttribArray(AGVertexAttribColor);
     glDisableVertexAttribArray(AGVertexAttribNormal);
@@ -263,8 +254,8 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
     
     clipShader.useProgram();
     
-    clipShader.setMVPMatrix(m_modelViewProjectionMatrix);
-    clipShader.setNormalMatrix(m_normalMatrix);
+    clipShader.setModelViewMatrix(m_renderState.modelview);
+    clipShader.setProjectionMatrix(m_renderState.projection);
     clipShader.setClip(GLvertex2f(-m_radius, -m_radius), GLvertex2f(m_radius*2, m_radius*2));
     clipShader.setLocalMatrix(Matrix4::identity);
     
@@ -273,43 +264,33 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
     GLvertex3f xInc(m_radius, 0, 0);
     GLvertex3f yInc(0, -m_radius, 0);
     
-    GLKMatrix4 projection = AGNode::projectionMatrix();
-    
     for(int i = 0; i < m_manager.nodeTypes().size(); i++)
     {
         GLvertex3f iconPos = startPos + (xInc*(i%2)) + (yInc*(i/2));
         
-        GLKMatrix4 modelView = GLKMatrix4Translate(m_modelView, iconPos.x, iconPos.y, iconPos.z);
-        GLKMatrix3 normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
-        GLKMatrix4 mvp = GLKMatrix4Multiply(projection, modelView);
+        Matrix4 modelView = m_renderState.modelview;
+        modelView = modelView.translate(iconPos.x, iconPos.y, iconPos.z);
         
         if(i == m_hit) {
             // draw highlight background
-            GLKMatrix4 hitModelView = GLKMatrix4Scale(modelView, 0.5, 0.5, 0.5);
-            clipShader.setLocalMatrix(GLKMatrix4Scale(GLKMatrix4MakeTranslation(iconPos.x, iconPos.y, iconPos.z), 0.5, 0.5, 0.5));
-            GLKMatrix3 hitNormal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
-            GLKMatrix4 hitMvp = GLKMatrix4Multiply(projection, hitModelView);
+            Matrix4 hitMat = Matrix4::makeTranslation(iconPos.x, iconPos.y, iconPos.z).scale(0.5f);
+            clipShader.setLocalMatrix(hitMat);
+            AGStyle::foregroundColor().withAlpha(0.75f).set();
             
-            clipShader.setMVPMatrix(hitMvp);
-            clipShader.setNormalMatrix(hitNormal);
-            AGStyle::foregroundColor().withAlpha(0.75).set();
-            
-            glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, m_geo);
-            
-            glDrawArrays(GL_TRIANGLE_FAN, 0, m_geoSize);
+            drawTriangleFan(clipShader, m_geo, 4, hitMat);
             
             AGStyle::frameBackgroundColor().set();
         } else if(i == m_blinkItem) {
             float blink = m_itemBlink;
             
-            Matrix4 mv = Matrix4::makeTranslation(iconPos.x, iconPos.y, iconPos.z).scale(0.45f);
-            clipShader.setLocalMatrix(mv);
+            Matrix4 blinkMat = Matrix4::makeTranslation(iconPos.x, iconPos.y, iconPos.z).scale(0.45f);
+            clipShader.setLocalMatrix(blinkMat);
             
             AGStyle::foregroundColor().withAlpha(blink).set();
             
-            drawTriangleFan(clipShader, m_geo, m_geoSize, mv);
+            drawTriangleFan(clipShader, m_geo, m_geoSize, blinkMat);
             
-            float alpha = easeInOut(blink, 3.25, 0.3);
+            float alpha = easeInOut(blink, 3.25f, 0.3f);
             auto fgColor = AGStyle::foregroundColor();
             auto bgColor = AGStyle::frameBackgroundColor();
             fgColor.alphaBlend(bgColor, alpha).set();
@@ -318,8 +299,7 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
             AGStyle::foregroundColor().set();
         }
         
-        clipShader.setMVPMatrix(mvp);
-        clipShader.setNormalMatrix(normal);
+        clipShader.setModelViewMatrix(modelView);
         clipShader.setLocalMatrix(Matrix4::makeTranslation(iconPos.x, iconPos.y, iconPos.z));
         
         glLineWidth(4.0f);
