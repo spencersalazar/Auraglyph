@@ -42,6 +42,18 @@ inline second rate::operator ()() const
     return second { 1/value };
 }
 
+/** Ease in/out function with settable power and midpoint.
+ Use p parameter to adjust speed at endpoints (cubic: p=3, quartic: p=4)
+ Midpoint is point at which speed is fastest and uneased. 
+ */
+inline float easeInOut(float t, float p = 3.f, float mid = 0.5f)
+{
+    if (t < mid) {
+        return powf(t/mid, p)*mid;
+    } else {
+        return 1.f-powf((1.f-t)/(1-mid), p)*(1-mid);
+    }
+}
 
 
 /**

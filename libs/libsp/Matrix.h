@@ -10,6 +10,7 @@
 
 #include "Geometry.h"
 
+
 #if defined(__APPLE__)
 #define ENABLE_GLKIT (1)
 #else
@@ -46,6 +47,10 @@ public:
     Matrix4 &rotateInPlace(float radians, float rx, float ry, float rz);
     Matrix4 &multiplyInPlace(const Matrix4 &mat);
     
+    GLvertex2f apply(const GLvertex2f& v) const;
+    GLvertex3f apply(const GLvertex3f& v) const;
+    GLvrectf apply(const GLvrectf& v) const;
+
     const float *data() const;
     
     operator GLKMatrix4 () const;

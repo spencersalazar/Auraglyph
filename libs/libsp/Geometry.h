@@ -156,6 +156,26 @@ struct GLcolor4f
         return blend(c.r, c.g, c.b, c.a);
     }
 
+    inline GLcolor4f alphaBlend(const GLcolor4f& c) const
+    {
+        return {
+            r*a + c.r*c.a,
+            g*a + c.g*c.a,
+            b*a + c.b*c.a,
+            1,
+        };
+    }
+
+    inline GLcolor4f alphaBlend(const GLcolor4f& c, float _alpha) const
+    {
+        return {
+            r*(1-_alpha) + c.r*_alpha,
+            g*(1-_alpha) + c.g*_alpha,
+            b*(1-_alpha) + c.b*_alpha,
+            1,
+        };
+    }
+
     static const GLcolor4f white;
     static const GLcolor4f red;
     static const GLcolor4f green;
@@ -262,16 +282,30 @@ struct GLtrif
 // fill directly as GL_TRIANGLE_FAN or stroke as GL_LINE_LOOP
 struct GLvrectf
 {
+    /** Default constructor */
     GLvrectf() :
     bl(GLvertex3f(0, 0, 0)), br(GLvertex3f(0, 0, 0)), ul(GLvertex3f(0, 0, 0)), ur(GLvertex3f(0, 0, 0))
     { }
     
+    /** Constructor with bottom left and upper right specified; bottom right
+     and upper left are inferred assuming a rectangle. */
     GLvrectf(const GLvertex3f &_bl, const GLvertex3f &_ur) :
     bl(_bl), ur(_ur), br(GLvertex3f(_ur.x, _bl.y, 0.5*(_ur.z+_bl.z))), ul(GLvertex3f(_bl.x, _ur.y, 0.5*(_ur.z+_bl.z)))
     { }
     
+    /** Constructor with all points specified. */
+    GLvrectf(const GLvertex3f &_bl, const GLvertex3f &_br,
+             const GLvertex3f &_ul, const GLvertex3f &_ur) :
+    bl(_bl), br(_br), ur(_ur), ul(_ul)
+    { }
+
+    /** Whether given point lies within this rect. */
     bool contains(const GLvertex3f &p);
-    
+    /** Whether given rect overlaps this one. */
+    bool overlaps(const GLvrectf &r);
+    /** Whether given rect is entirely contained within this one. */
+    bool contains(const GLvrectf &r);
+
     GLvertex3f bl; // bottom left
     GLvertex3f br; // bottom right
     GLvertex3f ur; // upper right
@@ -446,6 +480,30 @@ static inline GLvertex3f operator*(GLKMatrix4 m, GLvertex3f v)
 }
 
 #endif // ENABLE_GLKIT
+
+
+template<typename Bool>
+bool _or(Bool b) { return b; }
+
+template<typename Bool, typename... Args>
+bool _or(Bool b, Args... args) { return b || _or(args...); }
+
+template<typename Bool>
+bool _and(Bool b) { return b; }
+
+template<typename Bool, typename... Args>
+bool _and(Bool b, Args... args) { return b && _and(args...); }
+
+
+inline bool GLvrectf::overlaps(const GLvrectf &r)
+{
+    return _or(contains(r.bl), contains(r.br), contains(r.ur), contains(r.ul));
+}
+
+inline bool GLvrectf::contains(const GLvrectf &r)
+{
+    return _and(contains(r.bl), contains(r.br), contains(r.ur), contains(r.ul));
+}
 
 
 #endif

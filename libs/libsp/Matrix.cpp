@@ -7,6 +7,7 @@
 //
 
 #include "Matrix.h"
+#include "Geometry.h"
 
 #include <string.h>
 
@@ -101,6 +102,31 @@ Matrix4 &Matrix4::multiplyInPlace(const Matrix4 &mat)
 {
     m_mat = GLKMatrix4Multiply(m_mat, mat.m_mat);
     return *this;
+}
+
+GLvertex2f Matrix4::apply(const GLvertex2f& v) const
+{
+    GLKVector3 v_ = GLKMatrix4MultiplyVector3(m_mat, ((GLvertex3f)v).asGLKVector3());
+    return GLvertex3f(v_).xy();
+}
+
+GLvertex3f Matrix4::apply(const GLvertex3f& v) const
+{
+    return GLKMatrix4MultiplyVector3(m_mat, v.asGLKVector3());
+}
+
+GLvrectf Matrix4::apply(const GLvrectf& v) const
+{
+    GLvertex3f bl; // bottom left
+    GLvertex3f br; // bottom right
+    GLvertex3f ur; // upper right
+    GLvertex3f ul; // upper left
+    return {
+        apply(v.bl), // bl
+        apply(v.br), // br
+        apply(v.ur), // ur
+        apply(v.ul), // ul
+    };
 }
 
 const float *Matrix4::data() const

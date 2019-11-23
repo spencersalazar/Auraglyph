@@ -266,7 +266,7 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
     clipShader.setMVPMatrix(m_modelViewProjectionMatrix);
     clipShader.setNormalMatrix(m_normalMatrix);
     clipShader.setClip(GLvertex2f(-m_radius, -m_radius), GLvertex2f(m_radius*2, m_radius*2));
-    clipShader.setLocalMatrix(GLKMatrix4Identity);
+    clipShader.setLocalMatrix(Matrix4::identity);
     
     //    GLvertex3f startPos(-m_radius/2, -m_radius/2, 0);
     GLvertex3f startPos(-m_radius/2, m_radius/2 + m_verticalScrollPos, 0);
@@ -283,23 +283,7 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
         GLKMatrix3 normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelView), NULL);
         GLKMatrix4 mvp = GLKMatrix4Multiply(projection, modelView);
         
-        if(i == m_blinkItem) {
-            float blink = m_itemBlink;
-            
-            Matrix4 hitModelView = Matrix4::makeTranslation(iconPos.x, iconPos.y, iconPos.z).scale(0.5, 0.5, 0.5);
-            clipShader.setLocalMatrix(hitModelView);
-            
-            AGStyle::foregroundColor().withAlpha(blink).set();
-            
-            drawTriangleFan(clipShader, m_geo, m_geoSize, hitModelView);
-            
-            if (blink > 0.5f) {
-                AGStyle::frameBackgroundColor().set();
-            } else {
-                AGStyle::foregroundColor().set();
-            }
-            
-        } else if(i == m_hit) {
+        if(i == m_hit) {
             // draw highlight background
             GLKMatrix4 hitModelView = GLKMatrix4Scale(modelView, 0.5, 0.5, 0.5);
             clipShader.setLocalMatrix(GLKMatrix4Scale(GLKMatrix4MakeTranslation(iconPos.x, iconPos.y, iconPos.z), 0.5, 0.5, 0.5));
@@ -315,16 +299,63 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
             glDrawArrays(GL_TRIANGLE_FAN, 0, m_geoSize);
             
             AGStyle::frameBackgroundColor().set();
+        } else if(i == m_blinkItem) {
+            float blink = m_itemBlink;
+            
+            Matrix4 mv = Matrix4::makeTranslation(iconPos.x, iconPos.y, iconPos.z).scale(0.45f);
+            clipShader.setLocalMatrix(mv);
+            
+            AGStyle::foregroundColor().withAlpha(blink).set();
+            
+            drawTriangleFan(clipShader, m_geo, m_geoSize, mv);
+            
+            float alpha = easeInOut(blink, 3.25, 0.3);
+            auto fgColor = AGStyle::foregroundColor();
+            auto bgColor = AGStyle::frameBackgroundColor();
+            fgColor.alphaBlend(bgColor, alpha).set();
+            
         } else {
             AGStyle::foregroundColor().set();
         }
         
         clipShader.setMVPMatrix(mvp);
         clipShader.setNormalMatrix(normal);
-        clipShader.setLocalMatrix(GLKMatrix4MakeTranslation(iconPos.x, iconPos.y, iconPos.z));
+        clipShader.setLocalMatrix(Matrix4::makeTranslation(iconPos.x, iconPos.y, iconPos.z));
         
         glLineWidth(4.0f);
         m_manager.renderNodeTypeIcon(m_manager.nodeTypes()[i]);
+    }
+    
+    if (m_blinkItem >= 0) {
+        // check if blink item is off screen
+        GLvertex3f iconPos = startPos + (xInc*(m_blinkItem%2)) + (yInc*(m_blinkItem/2));
+        bool blinkTop = false, blinkBottom = false;
+        if (iconPos.y-m_radius/2*0.9 > m_radius) {
+            blinkTop = true;
+        } else if (iconPos.y+m_radius/2*0.9 < -m_radius) {
+            blinkBottom = true;
+        }
+        
+        if (blinkTop || blinkBottom) {
+            float marginY = 0.9f;
+            float marginX = 0.95f;
+            GLvertex2f blinkStart {
+                m_blinkItem%2 == 0 ? -m_radius*marginX : m_radius*(1-marginX),
+                blinkTop ? m_radius*marginY : -m_radius*marginY,
+            };
+            GLvertex2f blinkStop {
+                m_blinkItem%2 == 0 ? -m_radius*(1-marginX) : m_radius*marginX,
+                blinkTop ? m_radius : -m_radius,
+            };
+            
+            GLvrectf blinkBox { blinkStart, blinkStop };
+
+            AGStyle::foregroundColor().withAlpha(m_itemBlink).set();
+            
+            glLineWidth(4.0f);
+            clipShader.setLocalMatrix(Matrix4::identity);
+            drawTriangleFan(clipShader, (GLvertex3f*) &blinkBox, 4, Matrix4::identity);
+        }
     }
 }
 
@@ -370,6 +401,12 @@ void AGUINodeSelector<NodeType, ManagerType>::touchMove(const GLvertex3f &t)
         // start scrolling
         m_verticalScrollPos += (t.y - m_lastTouch.y);
         m_hit = -1;
+        
+        if (m_hit == m_blinkItem) {
+            // reset blink curve
+            m_itemBlink.reset();
+        }
+        
         m_done = false;
     }
     
