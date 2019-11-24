@@ -55,7 +55,9 @@ void AGInterAppAudioManager::launchInterAppAudioHost()
                                                kAudioUnitScope_Global, 0,
                                                &hostURL, &dataSize);
         if (result == noErr) {
-            [[UIApplication sharedApplication] openURL:(__bridge_transfer NSURL *) hostURL];
+            [[UIApplication sharedApplication] openURL:(__bridge_transfer NSURL *) hostURL
+                                               options:[NSDictionary new]
+                                     completionHandler:^(BOOL){}];
         } else {
             // uhh
             NSLog(@"warning: unable to retrieve peer url");

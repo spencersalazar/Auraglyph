@@ -12,14 +12,13 @@
 #include "gfx.h"
 #include "Geometry.h"
 #include "Animation.h"
+#include "AGRendering.h"
 
 #include <list>
 using namespace std;
 
-//------------------------------------------------------------------------------
-// ### AGRenderable ###
-// Basic pure virtual class for things that can be drawn.
-//------------------------------------------------------------------------------
+/** Basic pure virtual class for things that can be drawn.
+ */
 class AGRenderable
 {
 public:
@@ -37,8 +36,8 @@ class AGGenericShader;
 //------------------------------------------------------------------------------
 struct AGRenderState
 {
-    GLKMatrix4 projection;
-    GLKMatrix4 modelview;
+    Matrix4 projection;
+    Matrix4 modelview;
     GLKMatrix3 normal;
     float alpha;
 };
@@ -66,7 +65,7 @@ public:
 // ### AGRenderObject ###
 // Base class for objects that are rendered on screen.
 //------------------------------------------------------------------------------
-class AGRenderObject : public AGRenderable
+class AGRenderObject : public AGRenderable, public AGRendering
 {
 public:
     static void setProjectionMatrix(const GLKMatrix4 &proj) { s_projectionMatrix = proj; }
@@ -104,8 +103,8 @@ public:
     list<AGRenderInfo *> m_renderList;
     AGRenderState m_renderState;
     
-    const GLKMatrix4 &modelview() const { return m_renderState.modelview; }
-    const GLKMatrix4 &projection() const { return m_renderState.projection; }
+    const Matrix4 &modelview() const override { return m_renderState.modelview; }
+    const Matrix4 &projection() const override { return m_renderState.projection; }
     
     // override to force fixed-position rendering (e.g. ignores camera movement)
     virtual bool renderFixed() { return false; }
@@ -126,34 +125,6 @@ public:
 
     GLvertex3f globalToLocalCoordinateSpace(const GLvertex3f &position);
     GLvertex3f parentToLocalCoordinateSpace(const GLvertex3f &position);
-    
-    // draw functions
-    void drawGeometry(GLvertex3f geo[], unsigned long size, int kind);
-    
-    void drawTriangleFan(GLvertex2f geo[], unsigned long size);
-    void drawTriangleFan(GLvertex3f geo[], unsigned long size);
-    void drawTriangleFan(GLvertex3f geo[], unsigned long size, const GLKMatrix4 &xform);
-    void drawTriangleFan(AGGenericShader &shader, GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform);
-    void drawTriangleFan(AGGenericShader &shader, GLvertex3f geo[], unsigned long size, const GLKMatrix4 &xform);
-
-    void drawLineLoop(GLvertex2f geo[], unsigned long size);
-    void drawLineLoop(GLvertex3f geo[], unsigned long size);
-    void drawLineLoop(GLvertex3f geo[], unsigned long size, const GLKMatrix4 &xform);
-    void drawLineLoop(AGGenericShader &shader, GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform);
-    void drawLineLoop(AGGenericShader &shader, GLvertex3f geo[], unsigned long size, const GLKMatrix4 &xform);
-
-    void drawLineStrip(GLvertex2f geo[], unsigned long size);
-    void drawLineStrip(GLvertex3f geo[], unsigned long size);
-    void drawLineStrip(GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform);
-    void drawLineStrip(AGGenericShader &shader, GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform);
-    
-    void fillCenteredRect(float width, float height);
-    void fillCenteredRect(AGGenericShader &shader, float width, float height, const GLKMatrix4 &xform);
-    
-    void strokeCenteredRect(float width, float height, float weight);
-    void strokeCenteredRect(AGGenericShader &shader, float width, float height, float weight, const GLKMatrix4 &xform);
-
-    void drawWaveform(float waveform[], unsigned long size, GLvertex2f from, GLvertex2f to, float gain = 1.0f, float yScale = 1.0f);
     
 protected:
     static GLKMatrix4 s_projectionMatrix;

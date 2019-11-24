@@ -120,7 +120,7 @@ m_node(new NodeType(AGNodeManifest::defaultManifest(), pos)),
 m_hit(-1),
 m_done(false),
 m_manager(manager),
-m_itemBlink(powcurvef(1, 0, 0.5, 0.75))
+m_itemBlink(powcurvef(1, 0, 1.1, 0.75))
 {
     m_node->init();
     
