@@ -65,11 +65,14 @@ public:
     void onStartStopUpdating(const std::function<void (float start)> &start,
                              const std::function<void (float start, float stop)> &stop);
     
-    /* 
+    /**
      Validator function takes two arguments (old and new value) and returns
      validated value. 
      */
     void setValidator(const std::function<float (float, float)> &validator);
+    
+    /** */
+    void blink(bool enableBlink = true);
     
 private:
     
@@ -99,6 +102,9 @@ private:
     std::function<void (float)> m_start;
     std::function<void (float, float)> m_stop;
     std::function<float (float, float)> m_validator;
+    
+    bool m_enableBlink;
+    powcurvef m_blink;
 };
 
 

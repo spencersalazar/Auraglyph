@@ -281,16 +281,15 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
             
             AGStyle::frameBackgroundColor().set();
         } else if(i == m_blinkItem) {
-            float blink = m_itemBlink;
             
             Matrix4 blinkMat = Matrix4::makeTranslation(iconPos.x, iconPos.y, iconPos.z).scale(0.45f);
             clipShader.setLocalMatrix(blinkMat);
             
-            AGStyle::foregroundColor().withAlpha(blink).set();
+            AGStyle::foregroundColor().withAlpha(m_itemBlink).set();
             
             drawTriangleFan(clipShader, m_geo, m_geoSize, blinkMat);
             
-            float alpha = easeInOut(blink, 3.25f, 0.3f);
+            float alpha = easeInOut(m_itemBlink, 3.25f, 0.3f);
             auto fgColor = AGStyle::foregroundColor();
             auto bgColor = AGStyle::frameBackgroundColor();
             fgColor.alphaBlend(bgColor, alpha).set();

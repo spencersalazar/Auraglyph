@@ -20,6 +20,8 @@
 #include "LTKTrace.h"
 
 #include <sstream>
+#include <vector>
+#include <map>
 
 
 class AGNode;
@@ -81,6 +83,10 @@ public:
     void renderOut();
     bool finishedRenderingOut();
     
+    /** Blink specified item. Pass item = -1 to refer to all items.
+     */
+    void blink(int item, bool enableBlink = true);
+    
 protected:
     
     virtual GLvrectf effectiveBounds();
@@ -139,6 +145,8 @@ private:
     
     float m_t;
     
+    std::map<int, powcurvef> m_blinks;
+
     int hitTestX(const GLvertex3f &t, bool *inBbox);
 };
 

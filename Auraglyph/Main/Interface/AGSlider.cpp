@@ -12,6 +12,8 @@
 #include "AGStyle.h"
 #include "AGGenericShader.h"
 #include "GeoGenerator.h"
+#include "Animation.h"
+
 #include <sstream>
 
 #define AGSlider_TextScale (0.61f)
@@ -21,72 +23,62 @@
 AGSlider::AGSlider(const GLvertex3f &position, float value)
 : m_value(value),
 m_update([](float){}), m_start([](float){}), m_stop([](float, float){}),
-m_validator([](float _old, float _new) { return _new; })
+m_validator([](float _old, float _new) { return _new; }),
+m_enableBlink(false),
+m_blink(powcurvef(1, 0, 1.1, 0.75))
 {
     setPosition(position);
     _updateValue(value);
 }
 
 AGSlider::~AGSlider()
-{
-    
-}
+{ }
 
 void AGSlider::update(float t, float dt)
 {
     AGRenderObject::update(t, dt);
+    
+    if (m_enableBlink) {
+        m_blink.update(dt);
+    }
 }
 
 void AGSlider::render()
 {
     TexFont *text = AGStyle::standardFont64();
     
-    GLKMatrix4 modelView;
-    GLKMatrix4 proj;
-
-    if(parent())
-    {
-        modelView = parent()->m_renderState.modelview;
-        proj = parent()->m_renderState.projection;
+    GLcolor4f valueColor;
+    
+    if (!m_active && m_enableBlink) {
+        // handle blink
+        AGStyle::foregroundColor().withAlpha(m_blink).set();
+        
+        fillRect(m_pos.x, m_pos.y, m_size.x, m_size.y);
+        
+        float alpha = easeInOut(m_blink, 3.25f, 0.3f);
+        auto fgColor = AGStyle::foregroundColor();
+        auto bgColor = AGStyle::frameBackgroundColor();
+        
+        valueColor = fgColor.alphaBlend(bgColor, alpha).withAlpha(m_renderState.alpha);
+    } else {
+        valueColor = AGStyle::foregroundColor().withAlpha(m_renderState.alpha);
     }
-    else
-    {
-        modelView = globalModelViewMatrix();
-        proj = projectionMatrix();
+    
+    Matrix4 valueMV = modelview().translate(m_pos.x, m_pos.y, m_pos.z);
+    if (m_alignment == ALIGN_CENTER) {
+        valueMV.translateInPlace(-m_textSize.x/2, -m_textSize.y/2, 0);
+    } else if (m_alignment == ALIGN_RIGHT) {
+        valueMV.translateInPlace(m_size.x/2-m_textSize.x/2-AGSlider_TextMargin, -m_textSize.y/2, 0);
+    } else if (m_alignment == ALIGN_LEFT) {
+        valueMV.translateInPlace(-m_size.x/2+AGSlider_TextMargin, -m_textSize.y/2, 0);
     }
+    valueMV.scaleInPlace(AGSlider_TextScale, AGSlider_TextScale, AGSlider_TextScale);
+    text->render(m_str, valueColor, valueMV, projection());
     
-    GLcolor4f valueColor = AGStyle::foregroundColor().withAlpha(m_renderState.alpha);
-    
-    GLKMatrix4 valueMV = modelView;
-    valueMV = GLKMatrix4Translate(valueMV, m_pos.x, m_pos.y, m_pos.z);
-    if(m_alignment == ALIGN_CENTER)
-        valueMV = GLKMatrix4Translate(valueMV, -m_textSize.x/2, -m_textSize.y/2, 0);
-    else if(m_alignment == ALIGN_RIGHT)
-        valueMV = GLKMatrix4Translate(valueMV, m_size.x/2-m_textSize.x/2-AGSlider_TextMargin, -m_textSize.y/2, 0);
-    else if(m_alignment == ALIGN_LEFT)
-        valueMV = GLKMatrix4Translate(valueMV, -m_size.x/2+AGSlider_TextMargin, -m_textSize.y/2, 0);
-    valueMV = GLKMatrix4Scale(valueMV, AGSlider_TextScale, AGSlider_TextScale, AGSlider_TextScale);
-    text->render(m_str, valueColor, valueMV, proj);
-    
-    if(m_active)
-    {
+    if (m_active) {
         // shade bounding box
-        
-        AGGenericShader &shader = AGGenericShader::instance();
-        shader.useProgram();
-        
-        shader.setModelViewMatrix(modelView);
-        shader.setProjectionMatrix(proj);
-        
-        GLvertex3f geo[4];
-        GeoGen::makeRect(geo, m_pos.x, m_pos.y, m_size.x, m_size.y);
-        glVertexAttribPointer(AGVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, geo);
-        glEnableVertexAttribArray(AGVertexAttribPosition);
-        
-        glVertexAttrib4f(AGVertexAttribColor, 1, 1, 1, 0.25);
-        glDisableVertexAttribArray(AGVertexAttribColor);
-        
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        AGStyle::foregroundColor().withAlpha(0.25).set();
+        fillRect(m_pos.x, m_pos.y, m_size.x, m_size.y);
     }
 }
 
@@ -219,4 +211,12 @@ void AGSlider::_updateValue(float value)
 //    for(char c : m_valueStream.str())
 //        dbgprint("%02X ", c);
 //    dbgprint("]");
+}
+
+void AGSlider::blink(bool enableBlink)
+{
+    m_enableBlink = enableBlink;
+    if (enableBlink) {
+        m_blink.reset();
+    }
 }

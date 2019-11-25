@@ -1090,3 +1090,16 @@ bool AGUIStandardNodeEditor::finishedRenderingOut()
     return m_xScale <= AGStyle::open_squeezeHeight;
 }
 
+void AGUIStandardNodeEditor::blink(int item, bool enableBlink)
+{
+    if (item >= 0) {
+        if (m_editSliders.count(item)) {
+            m_editSliders[item]->blink(enableBlink);
+        }
+    } else if (item == -1) {
+        for (auto keyValue : m_editSliders) {
+            keyValue.second->blink(enableBlink);
+        }
+    }
+}
+

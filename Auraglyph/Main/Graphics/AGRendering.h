@@ -44,8 +44,16 @@ public:
     void drawLineStrip(GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform);
     void drawLineStrip(AGGenericShader &shader, GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform);
     
+    void fillRect(float x, float y, float width, float height);
+    void fillRect(AGGenericShader &shader, float x, float y, float width, float height);
+    void fillRect(AGGenericShader &shader, float x, float y, float width, float height, const Matrix4& xform);
+
     void fillCenteredRect(float width, float height);
     void fillCenteredRect(AGGenericShader &shader, float width, float height, const GLKMatrix4 &xform);
+    
+    void strokeRect(float x, float y, float width, float height, float weight);
+    void strokeRect(AGGenericShader &shader, float x, float y, float width, float height, float weight);
+    void strokeRect(AGGenericShader &shader, float x, float y, float width, float height, float weight, const Matrix4& xform);
     
     void strokeCenteredRect(float width, float height, float weight);
     void strokeCenteredRect(AGGenericShader &shader, float width, float height, float weight, const GLKMatrix4 &xform);

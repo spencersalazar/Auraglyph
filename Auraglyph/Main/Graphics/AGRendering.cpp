@@ -310,3 +310,68 @@ void AGRendering::drawWaveform(float waveform[], unsigned long size, GLvertex2f 
     glEnableVertexAttribArray(AGVertexAttribPosition);
 }
 
+void AGRendering::fillRect(float x, float y, float width, float height)
+{
+    drawTriangleFan((GLvertex2f[]){
+        { x-width/2, y-height/2 },
+        { x+width/2, y-height/2 },
+        { x+width/2, y+height/2 },
+        { x-width/2, y+height/2 },
+    }, 4);
+}
+
+void AGRendering::fillRect(AGGenericShader &shader, float x, float y, float width, float height)
+{
+    drawTriangleFan(shader, (GLvertex2f[]){
+        { x-width/2, y-height/2 },
+        { x+width/2, y-height/2 },
+        { x+width/2, y+height/2 },
+        { x-width/2, y+height/2 },
+    }, 4, Matrix4::identity);
+}
+
+void AGRendering::fillRect(AGGenericShader &shader, float x, float y, float width, float height, const Matrix4& xform)
+{
+    drawTriangleFan(shader, (GLvertex2f[]){
+        { x-width/2, y-height/2 },
+        { x+width/2, y-height/2 },
+        { x+width/2, y+height/2 },
+        { x-width/2, y+height/2 },
+    }, 4, xform);
+}
+
+void AGRendering::strokeRect(float x, float y, float width, float height, float weight)
+{
+    glLineWidth(weight);
+    
+    drawLineLoop((GLvertex2f[]){
+        { x-width/2, y-height/2 },
+        { x+width/2, y-height/2 },
+        { x+width/2, y+height/2 },
+        { x-width/2, y+height/2 },
+    }, 4);
+}
+
+void AGRendering::strokeRect(AGGenericShader &shader, float x, float y, float width, float height, float weight)
+{
+    glLineWidth(weight);
+    
+    drawLineLoop(shader, (GLvertex2f[]){
+        { x-width/2, y-height/2 },
+        { x+width/2, y-height/2 },
+        { x+width/2, y+height/2 },
+        { x-width/2, y+height/2 },
+    }, 4, Matrix4::identity);
+}
+
+void AGRendering::strokeRect(AGGenericShader &shader, float x, float y, float width, float height, float weight, const Matrix4& xform)
+{
+    glLineWidth(weight);
+    
+    drawLineLoop(shader, (GLvertex2f[]){
+        { x-width/2, y-height/2 },
+        { x+width/2, y-height/2 },
+        { x+width/2, y+height/2 },
+        { x-width/2, y+height/2 },
+    }, 4, xform);
+}
