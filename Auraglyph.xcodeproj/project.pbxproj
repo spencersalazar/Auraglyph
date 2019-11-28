@@ -22,6 +22,7 @@
 		09230FFD1F41868A00DF06B5 /* AGControlSequencerNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09230FF81F41868A00DF06B5 /* AGControlSequencerNode.cpp */; };
 		0923100E1F46163200DF06B5 /* AGUndoManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0923100C1F46163200DF06B5 /* AGUndoManager.cpp */; };
 		092310121F46399800DF06B5 /* AGGraphManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 092310101F46399800DF06B5 /* AGGraphManager.cpp */; };
+		092773B1239013E4009E007D /* AGNodeInfoExporter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 092773AF239013E4009E007D /* AGNodeInfoExporter.mm */; };
 		0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */; };
 		092F5EAB230DEFB600D12BB3 /* Bezier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 092F5EA9230DEFB600D12BB3 /* Bezier.cpp */; };
 		093395691A019D43009E4802 /* Orbitron-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 093395681A019D43009E4802 /* Orbitron-Regular.ttf */; };
@@ -319,6 +320,8 @@
 		0923100D1F46163200DF06B5 /* AGUndoManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGUndoManager.h; sourceTree = "<group>"; };
 		092310101F46399800DF06B5 /* AGGraphManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGGraphManager.cpp; sourceTree = "<group>"; };
 		092310111F46399800DF06B5 /* AGGraphManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGGraphManager.h; sourceTree = "<group>"; };
+		092773AF239013E4009E007D /* AGNodeInfoExporter.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AGNodeInfoExporter.mm; sourceTree = "<group>"; };
+		092773B0239013E4009E007D /* AGNodeInfoExporter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGNodeInfoExporter.h; sourceTree = "<group>"; };
 		0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGInputNode.mm; sourceTree = "<group>"; };
 		0927D7DF1ADCE4E000AD8AE5 /* AGInputNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGInputNode.h; sourceTree = "<group>"; };
 		092F5EA9230DEFB600D12BB3 /* Bezier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bezier.cpp; sourceTree = "<group>"; };
@@ -924,6 +927,8 @@
 				09B962851DE2ED38001DCFB1 /* AGSettings.mm */,
 				0944E8C51DCB325D00EB8087 /* AGAnalytics.h */,
 				0944E8C41DCB325D00EB8087 /* AGAnalytics.mm */,
+				092773B0239013E4009E007D /* AGNodeInfoExporter.h */,
+				092773AF239013E4009E007D /* AGNodeInfoExporter.mm */,
 				09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */,
 			);
 			path = Core;
@@ -1614,6 +1619,7 @@
 				09CA677B229CC6BB0017B93B /* Quad.cpp in Sources */,
 				09CA674F229CC6B40017B93B /* ES2Render.mm in Sources */,
 				0923100E1F46163200DF06B5 /* AGUndoManager.cpp in Sources */,
+				092773B1239013E4009E007D /* AGNodeInfoExporter.mm in Sources */,
 				093395741A088849009E4802 /* AGControlNode.mm in Sources */,
 				09F3C50818A5A8C300E499AF /* Stk.cpp in Sources */,
 				09CA6752229CC6B40017B93B /* NSString+STLString.mm in Sources */,
