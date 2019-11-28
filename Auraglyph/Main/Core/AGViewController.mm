@@ -90,19 +90,13 @@ enum InterfaceMode
 
 @interface AGViewController ()
 {
+    AGGraph *_graph;
+    
     GLKMatrix4 _modelView;
     GLKMatrix4 _fixedModelView;
     GLKMatrix4 _projection;
-    GLKMatrix4 _modelViewProjectionMatrix;
-    GLKMatrix3 _normalMatrix;
-    float _rotation;
     
     float _t;
-    float _osc;
-    
-    GLuint _screenTexture;
-    GLuint _screenFBO;
-    GLuint _screenProgram;
     
     GLvertex3f _camera;
     slewf _cameraZ;
@@ -116,8 +110,6 @@ enum InterfaceMode
     map<UITouch *, AGInteractiveObject *> _touchCaptures;
     AGTouchHandler *_touchHandlerQueue;
     
-    AGGraph *_graph;
-    
     std::list<AGFreeDraw *> _freedraws;
     std::list<AGInteractiveObject *> _dashboard;
     std::list<AGInteractiveObject *> _objects;
@@ -126,8 +118,6 @@ enum InterfaceMode
     
     list<AGInteractiveObject *> _touchOutsideListeners;
     list<AGTouchHandler *> _touchOutsideHandlers;
-    
-    map<AGFreeDraw *, string> _freedrawUUID;
     
     AGPGMidiContext *midiManager;
     
@@ -623,9 +613,6 @@ static AGViewController * g_instance = nil;
     GLKMatrix4 modelViewMatrix = GLKMatrix4Identity;
     modelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, modelViewMatrix);
     
-    _normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
-    
-    _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
     _modelView = modelViewMatrix;
     _projection = projectionMatrix;
     
@@ -687,7 +674,6 @@ static AGViewController * g_instance = nil;
     
     [self updateMatrices];
     
-    _osc += self.timeSinceLastUpdate * 1.0f;
     float dt = self.timeSinceLastUpdate;
     _t += dt;
     
@@ -780,8 +766,8 @@ static AGViewController * g_instance = nil;
     
     AGGenericShader &shader = AGGenericShader::instance();
     shader.useProgram();
-    shader.setMVPMatrix(_modelViewProjectionMatrix);
-    shader.setNormalMatrix(_normalMatrix);
+    shader.setProjectionMatrix(_projection);
+    shader.setModelViewMatrix(_modelView);
     
     glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
     glDisableVertexAttribArray(AGVertexAttribPosition);
