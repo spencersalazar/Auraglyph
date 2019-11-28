@@ -155,7 +155,7 @@ void AGModalDialog::renderOut()
     m_squeeze.close();
 }
 
-bool AGModalDialog::finishedRenderingOut()
+bool AGModalDialog::finishedRenderingOut() const
 {
     return AGRenderObject::finishedRenderingOut() && m_squeeze.finishedClosing();
 }

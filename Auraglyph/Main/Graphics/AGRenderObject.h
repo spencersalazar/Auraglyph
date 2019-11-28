@@ -90,7 +90,7 @@ public:
     virtual void render() override;
     
     virtual void renderOut();
-    virtual bool finishedRenderingOut();
+    virtual bool finishedRenderingOut() const;
     
     virtual void hide(bool animate = true);
     virtual void unhide(bool animate = true);

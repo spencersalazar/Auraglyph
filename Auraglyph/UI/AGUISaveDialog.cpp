@@ -155,7 +155,7 @@ public:
         m_squeeze.close();
     }
     
-    virtual bool finishedRenderingOut() override
+    virtual bool finishedRenderingOut() const override
     {
         return m_squeeze.finishedClosing();
     }

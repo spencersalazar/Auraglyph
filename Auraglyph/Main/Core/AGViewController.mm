@@ -147,7 +147,6 @@ enum InterfaceMode
 - (void)_updateFixedUIPosition;
 - (void)updateMatrices;
 - (void)renderEdit;
-- (void)renderUser;
 
 - (void)_save:(BOOL)saveAs;
 - (void)_openLoad;
@@ -654,21 +653,9 @@ static AGViewController * g_instance = nil;
 
 - (void)update
 {
-    if(_fadingOut.size() > 0)
-    {
-        for(std::list<AGInteractiveObject *>::iterator i = _fadingOut.begin(); i != _fadingOut.end(); )
-        {
-            std::list<AGInteractiveObject *>::iterator j = i++; // copy iterator to allow removal
-            
-            AGInteractiveObject *obj = *j;
-            assert(obj);
-            if(obj->finishedRenderingOut())
-            {
-                delete *j;
-                _fadingOut.erase(j);
-            }
-        }
-    }
+    filter_and_delete(_fadingOut, [](AGInteractiveObject *const &object)->bool {
+        return object->finishedRenderingOut();
+    });
     
     _cameraZ.interp();
     
@@ -712,9 +699,6 @@ static AGViewController * g_instance = nil;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     [self renderEdit];
-    
-    if(_interfaceMode == INTERFACEMODE_USER)
-        [self renderUser];
 }
 
 - (void)renderEdit
@@ -752,36 +736,6 @@ static AGViewController * g_instance = nil;
     
     _modalOverlay.render();
 }
-
-- (void)renderUser
-{
-    CGSize size = self.view.bounds.size;
-    GLvertex3f overlayGeo[4];
-    overlayGeo[0] = [self worldCoordinateForScreenCoordinate:CGPointMake(size.width*0.1, size.width*0.1)];
-    overlayGeo[1] = [self worldCoordinateForScreenCoordinate:CGPointMake(size.width*0.9, size.width*0.1)];
-    overlayGeo[2] = [self worldCoordinateForScreenCoordinate:CGPointMake(size.width*0.1, size.height-size.width*0.1)];
-    overlayGeo[3] = [self worldCoordinateForScreenCoordinate:CGPointMake(size.width*0.9, size.height-size.width*0.1)];
-    GLcolor4f overlayColor = GLcolor4f(12.0f/255.0f, 16.0f/255.0f, 33.0f/255.0f, 0.45);
-//    GLcolor4f overlayColor = GLcolor4f(1.0, 1.0, 1.0, 0.45);
-    
-    AGGenericShader &shader = AGGenericShader::instance();
-    shader.useProgram();
-    shader.setProjectionMatrix(_projection);
-    shader.setModelViewMatrix(_modelView);
-    
-    glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
-    glDisableVertexAttribArray(AGVertexAttribPosition);
-    glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &overlayColor);
-    glDisableVertexAttribArray(AGVertexAttribPosition);
-    glVertexAttribPointer(0, 3, GL_FLOAT, FALSE, 0, &overlayGeo);
-    glEnableVertexAttribArray(AGVertexAttribPosition);
-    
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    
-    for(std::list<AGInteractiveObject *>::iterator i = _interfaceObjects.begin(); i != _interfaceObjects.end(); i++)
-        (*i)->render();
-}
-
 
 - (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)hitNode port:(int *)port
 {

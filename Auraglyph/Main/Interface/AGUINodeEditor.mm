@@ -1085,7 +1085,7 @@ void AGUIStandardNodeEditor::renderOut()
         removeChild(m_customItemEditor);
 }
 
-bool AGUIStandardNodeEditor::finishedRenderingOut()
+bool AGUIStandardNodeEditor::finishedRenderingOut() const
 {
     return m_xScale <= AGStyle::open_squeezeHeight;
 }

@@ -105,7 +105,7 @@ public:
         m_yScale = lincurvef(AGStyle::open_animTimeY/2, 1, AGStyle::open_squeezeHeight);
     }
     
-    bool finishedClosing() { return m_xScale <= AGStyle::open_squeezeHeight; }
+    bool finishedClosing() const { return m_xScale <= AGStyle::open_squeezeHeight; }
     
     bool isHorzOpen() { return m_xScale >= 0.99; }
     

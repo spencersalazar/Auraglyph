@@ -237,7 +237,7 @@ public:
     /* overridden by final or direct subclass */
     virtual void fadeOutAndRemove();
     virtual void renderOut();
-    bool finishedRenderingOut();
+    bool finishedRenderingOut() const;
 
     virtual AGDocument::Node serialize();
     

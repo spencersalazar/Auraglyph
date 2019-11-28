@@ -29,7 +29,7 @@ public:
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t) override;
 
     virtual void renderOut() override;
-    virtual bool finishedRenderingOut() override;
+    virtual bool finishedRenderingOut() const override;
     
     bool renderFixed() override { return true; }
     

@@ -265,7 +265,7 @@ void AGRenderObject::renderOut()
         (*i)->renderOut();
 }
 
-bool AGRenderObject::finishedRenderingOut()
+bool AGRenderObject::finishedRenderingOut() const
 {
     return m_renderingOut && m_alpha < 0.01;
 }

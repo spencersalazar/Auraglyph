@@ -313,7 +313,7 @@ void AGNode::update(float t, float dt)
     _updateConnections(t, dt);
 }
 
-bool AGNode::finishedRenderingOut()
+bool AGNode::finishedRenderingOut() const
 {
     return m_fadeOut < 0.01;
 }

@@ -193,7 +193,7 @@ void AGFileBrowser::renderOut()
     m_yScale = lincurvef(AGStyle::open_animTimeY/2, 1, AGStyle::open_squeezeHeight);
 }
 
-bool AGFileBrowser::finishedRenderingOut()
+bool AGFileBrowser::finishedRenderingOut() const
 {
     return m_xScale <= AGStyle::open_squeezeHeight;
 }

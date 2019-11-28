@@ -144,7 +144,7 @@ void AGAboutBox::renderOut()
     m_squeeze.close();
 }
 
-bool AGAboutBox::finishedRenderingOut()
+bool AGAboutBox::finishedRenderingOut() const
 {
     return m_squeeze.finishedClosing();
 }

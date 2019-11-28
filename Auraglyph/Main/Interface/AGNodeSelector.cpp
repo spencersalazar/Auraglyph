@@ -54,7 +54,7 @@ public:
     }
     
     virtual void renderOut() override;
-    virtual bool finishedRenderingOut() override;
+    virtual bool finishedRenderingOut() const override;
     
 private:
     const ManagerType &m_manager;
@@ -430,7 +430,7 @@ void AGUINodeSelector<NodeType, ManagerType>::renderOut()
 }
 
 template<class NodeType, class ManagerType>
-bool AGUINodeSelector<NodeType, ManagerType>::finishedRenderingOut()
+bool AGUINodeSelector<NodeType, ManagerType>::finishedRenderingOut() const
 {
     return m_xScale <= AGStyle::open_squeezeHeight;
 //    return true;

@@ -60,30 +60,29 @@ public:
     AGUIStandardNodeEditor(AGNode *node);
     ~AGUIStandardNodeEditor();
     
-    virtual void update(float t, float dt);
-    virtual void render();
+    virtual void update(float t, float dt) override;
+    virtual void render() override;
     
     void touchDown(const GLvertex3f &t, const CGPoint &screen);
     void touchMove(const GLvertex3f &t, const CGPoint &screen);
     void touchUp(const GLvertex3f &t, const CGPoint &screen);
     
-    virtual void touchDown(const AGTouchInfo &t);
-    virtual void touchMove(const AGTouchInfo &t);
-    virtual void touchUp(const AGTouchInfo &t);
+    virtual void touchDown(const AGTouchInfo &t) override;
+    virtual void touchMove(const AGTouchInfo &t) override;
+    virtual void touchUp(const AGTouchInfo &t) override;
     
-    virtual AGInteractiveObject *hitTest(const GLvertex3f &t);
+    virtual AGInteractiveObject *hitTest(const GLvertex3f &t) override;
     
-    virtual bool doneEditing() { return m_doneEditing; }
-    bool shouldRenderDrawline() { return false; }
+    virtual bool doneEditing() override { return m_doneEditing; }
     
-    virtual GLvertex3f position();
+    virtual GLvertex3f position() override;
     
-    void renderOut();
-    bool finishedRenderingOut();
+    void renderOut() override;
+    bool finishedRenderingOut() const override;
     
 protected:
     
-    virtual GLvrectf effectiveBounds();
+    virtual GLvrectf effectiveBounds() override;
     
 private:    
     void initializeNodeEditor();
@@ -102,10 +101,6 @@ private:
     string m_title;
     
     bool m_doneEditing;
-    
-//    GLKMatrix4 m_modelViewProjectionMatrix;
-//    GLKMatrix4 m_modelView;
-//    GLKMatrix3 m_normalMatrix;
     
     lincurvef m_xScale;
     lincurvef m_yScale;

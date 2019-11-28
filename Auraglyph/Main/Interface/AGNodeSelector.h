@@ -28,19 +28,19 @@ public:
     AGUIMetaNodeSelector(const GLvertex3f &pos) { }
     virtual ~AGUIMetaNodeSelector() { }
     
-    virtual void update(float t, float dt) = 0;
-    virtual void render() = 0;
+    virtual void update(float t, float dt) override = 0;
+    virtual void render() override = 0;
     
-    virtual void touchDown(const GLvertex3f &t) = 0;
-    virtual void touchMove(const GLvertex3f &t) = 0;
-    virtual void touchUp(const GLvertex3f &t) = 0;
+    virtual void touchDown(const GLvertex3f &t) override = 0;
+    virtual void touchMove(const GLvertex3f &t) override = 0;
+    virtual void touchUp(const GLvertex3f &t) override = 0;
     
     virtual AGNode *createNode() = 0;
     
     virtual bool done() = 0;
     
-    virtual void renderOut() = 0;
-    virtual bool finishedRenderingOut() = 0;
+    virtual void renderOut() override = 0;
+    virtual bool finishedRenderingOut() const override = 0;
     
     virtual void blink(bool enable, int item = -1) = 0;
     

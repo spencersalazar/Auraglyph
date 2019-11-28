@@ -136,7 +136,7 @@ public:
         AGInteractiveObject::renderOut();
     }
     
-    bool finishedRenderingOut() override
+    bool finishedRenderingOut() const override
     {
         return m_squeeze.finishedClosing();
     }

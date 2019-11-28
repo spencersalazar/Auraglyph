@@ -72,7 +72,7 @@ public:
     void render() override;
     
     void renderOut() override;
-    bool finishedRenderingOut() override;
+    bool finishedRenderingOut() const override;
 
 private:
     

@@ -26,7 +26,7 @@ public:
     void render() override;
     
     void renderOut() override;
-    bool finishedRenderingOut() override;
+    bool finishedRenderingOut() const override;
 
     void touchDown(const AGTouchInfo &t) override;
     void touchMove(const AGTouchInfo &t) override;

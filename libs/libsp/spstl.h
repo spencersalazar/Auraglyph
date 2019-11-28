@@ -97,6 +97,23 @@ void itfilter(T &container, bool (^func)(typename T::reference v))
     }
 }
 
+/** Use a lambda to remove/filter and delete elements from a C++/STL iterable container
+*/
+template<class T>
+void filter_and_delete(T &container, std::function<bool (const typename T::reference v)> filt)
+{
+    for(typename T::iterator i = container.begin(); i != container.end(); ) {
+        if(filt(*i)) {
+            typename T::iterator d = i;
+            i++;
+            container.erase(d);
+            delete *d;
+        } else {
+            i++;
+        }
+    }
+}
+
 /*------------------------------------------------------------------------------
  removevalues()
  Remove all keys from a map with the specified value
