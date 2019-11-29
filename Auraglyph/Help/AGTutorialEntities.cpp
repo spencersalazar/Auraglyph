@@ -17,7 +17,7 @@
 #include "Easing/Cubic.h"
 
 // for hide/show UI
-#include "AGViewController.h"
+#include "AGViewControllerProxy.h"
 
 // for conditions / activity listening
 #include "AGActivity.h"

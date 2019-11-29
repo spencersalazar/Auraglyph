@@ -8,7 +8,7 @@
 
 #include "AGGraphManager.h"
 #include "AGNode.h"
-#include "AGViewController.h"
+#include "AGViewControllerProxy.h"
 
 AGGraphManager &AGGraphManager::instance()
 {

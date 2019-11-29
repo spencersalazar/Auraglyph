@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Spencer Salazar. All rights reserved.
 //
 
+#pragma once
+
 #ifdef __OBJC__
 #import <UIKit/UIKit.h>
 #import <GLKit/GLKit.h>
@@ -83,45 +85,4 @@ enum AGDrawMode
 typedef void AGViewController;
 
 #endif // __OBJC__
-
-// bridge for C++-only code
-class AGViewController_
-{
-public:
-    AGViewController_(AGViewController *viewController);
-    ~AGViewController_();
-    
-    void createNew();
-    void save();
-    void saveAs();
-    void load();
-    void loadExample();
-
-    void showTrainer();
-    void showAbout();
-    
-    void startRecording();
-    void stopRecording();
-    
-    void setDrawMode(AGDrawMode mode);
-    
-    GLvertex3f worldCoordinateForScreenCoordinate(CGPoint p);
-    GLvertex3f fixedCoordinateForScreenCoordinate(CGPoint p);
-    
-    CGRect bounds();
-    
-    void addTopLevelObject(AGInteractiveObject *object);
-    void fadeOutAndDelete(AGInteractiveObject *object);
-
-    void addNodeToTopLevel(AGNode *node);
-    AGGraph *graph();
-    
-    void showDashboard();
-    void hideDashboard();
-    
-    void showTutorial(AGTutorial *tutorial);
-
-private:
-    AGViewController *m_viewController = nil;
-};
 

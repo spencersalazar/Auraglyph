@@ -12,7 +12,7 @@
 #include "AGStyle.h"
 #include "AGGraphManager.h"
 #include "Matrix.h"
-#include "AGViewController.h"
+#include "AGViewControllerProxy.h"
 #include "AGTutorialEntity.h"
 #include "AGTutorialEntities.h"
 

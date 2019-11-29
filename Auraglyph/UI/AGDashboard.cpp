@@ -17,6 +17,7 @@
 #include "AGDocumentationViewer.h"
 #include "AGModalDialog.h"
 #include "AGTutorial.h"
+#include "AGViewControllerProxy.h"
 
 #include <math.h>
 

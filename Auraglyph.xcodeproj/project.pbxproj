@@ -23,6 +23,7 @@
 		0923100E1F46163200DF06B5 /* AGUndoManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0923100C1F46163200DF06B5 /* AGUndoManager.cpp */; };
 		092310121F46399800DF06B5 /* AGGraphManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 092310101F46399800DF06B5 /* AGGraphManager.cpp */; };
 		092773B1239013E4009E007D /* AGNodeInfoExporter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 092773AF239013E4009E007D /* AGNodeInfoExporter.mm */; };
+		092773B7239021BE009E007D /* AGViewControllerProxy.mm in Sources */ = {isa = PBXBuildFile; fileRef = 092773B5239021BE009E007D /* AGViewControllerProxy.mm */; };
 		0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */; };
 		092F5EAB230DEFB600D12BB3 /* Bezier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 092F5EA9230DEFB600D12BB3 /* Bezier.cpp */; };
 		093395691A019D43009E4802 /* Orbitron-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 093395681A019D43009E4802 /* Orbitron-Regular.ttf */; };
@@ -322,6 +323,9 @@
 		092310111F46399800DF06B5 /* AGGraphManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGGraphManager.h; sourceTree = "<group>"; };
 		092773AF239013E4009E007D /* AGNodeInfoExporter.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AGNodeInfoExporter.mm; sourceTree = "<group>"; };
 		092773B0239013E4009E007D /* AGNodeInfoExporter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGNodeInfoExporter.h; sourceTree = "<group>"; };
+		092773B5239021BE009E007D /* AGViewControllerProxy.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AGViewControllerProxy.mm; sourceTree = "<group>"; };
+		092773B6239021BE009E007D /* AGViewControllerProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGViewControllerProxy.h; sourceTree = "<group>"; };
+		092773B823915E89009E007D /* AGViewController-Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AGViewController-Private.h"; sourceTree = "<group>"; };
 		0927D7DE1ADCE4E000AD8AE5 /* AGInputNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGInputNode.mm; sourceTree = "<group>"; };
 		0927D7DF1ADCE4E000AD8AE5 /* AGInputNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGInputNode.h; sourceTree = "<group>"; };
 		092F5EA9230DEFB600D12BB3 /* Bezier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bezier.cpp; sourceTree = "<group>"; };
@@ -902,6 +906,9 @@
 				095D12D717ACA36C0048A012 /* AGAppDelegate.mm */,
 				095D12E317ACA36C0048A012 /* AGViewController.h */,
 				095D12E417ACA36C0048A012 /* AGViewController.mm */,
+				092773B823915E89009E007D /* AGViewController-Private.h */,
+				092773B6239021BE009E007D /* AGViewControllerProxy.h */,
+				092773B5239021BE009E007D /* AGViewControllerProxy.mm */,
 				095D12E617ACA36C0048A012 /* AGViewController.xib */,
 				09635B0121E0202400921309 /* AGActivity.h */,
 				09635B0021E0202400921309 /* AGActivity.cpp */,
@@ -1584,6 +1591,7 @@
 				09635AFF21E01A3000921309 /* AGActivityManager.cpp in Sources */,
 				09B189EC2291039F00B38FFF /* AGUtility.mm in Sources */,
 				0927D7E01ADCE4E000AD8AE5 /* AGInputNode.mm in Sources */,
+				092773B7239021BE009E007D /* AGViewControllerProxy.mm in Sources */,
 				09DDE4B92231AA4A008ACF0B /* AGDrawNodeTouchHandler.mm in Sources */,
 				09CA675E229CC6B40017B93B /* Buffers.cpp in Sources */,
 				09DDE4BD2231AA4A008ACF0B /* AGEraseFreedrawTouchHandler.mm in Sources */,
