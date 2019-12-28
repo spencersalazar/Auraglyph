@@ -103,11 +103,11 @@ using namespace std;
     AGGraph *_graph;
     
     std::list<AGFreeDraw *> _freedraws;
-    std::list<AGInteractiveObject *> _dashboard;
-    std::list<AGInteractiveObject *> _objects;
-    std::list<AGInteractiveObject *> _fadingOut;
+    AGInteractiveObjectList _dashboard;
+    AGInteractiveObjectList _objects;
+    AGInteractiveObjectList _fadingOut;
     
-    list<AGInteractiveObject *> _touchOutsideListeners;
+    AGInteractiveObjectList _touchOutsideListeners;
     list<AGTouchHandler *> _touchOutsideHandlers;
     
     map<AGFreeDraw *, string> _freedrawUUID;
@@ -139,7 +139,6 @@ using namespace std;
 - (void)_updateFixedUIPosition;
 - (void)updateMatrices;
 - (void)renderEdit;
-- (void)renderUser;
 
 - (void)_save:(BOOL)saveAs;
 - (void)_openLoad;
@@ -434,7 +433,7 @@ static AGViewController * g_instance = nil;
     assert([NSThread isMainThread]);
     assert(object);
     
-    list<AGInteractiveObject *>::iterator ov = find(_objects.begin(), _objects.end(), over);
+    AGInteractiveObjectList::iterator ov = find(_objects.begin(), _objects.end(), over);
     if(ov != _objects.end())
         _objects.insert(++ov, object);
     else
@@ -446,7 +445,7 @@ static AGViewController * g_instance = nil;
     assert([NSThread isMainThread]);
     assert(object);
     
-    list<AGInteractiveObject *>::iterator un = find(_objects.begin(), _objects.end(), under);
+    AGInteractiveObjectList::iterator un = find(_objects.begin(), _objects.end(), under);
     if(un != _objects.end())
         _objects.insert(un, object);
     else
@@ -675,9 +674,9 @@ static AGViewController * g_instance = nil;
 {
     if(_fadingOut.size() > 0)
     {
-        for(std::list<AGInteractiveObject *>::iterator i = _fadingOut.begin(); i != _fadingOut.end(); )
+        for(AGInteractiveObjectList::iterator i = _fadingOut.begin(); i != _fadingOut.end(); )
         {
-            std::list<AGInteractiveObject *>::iterator j = i++; // copy iterator to allow removal
+            AGInteractiveObjectList::iterator j = i++; // copy iterator to allow removal
             
             AGInteractiveObject *obj = *j;
             assert(obj);
