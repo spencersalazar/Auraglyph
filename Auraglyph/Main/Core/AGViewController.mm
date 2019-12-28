@@ -433,11 +433,7 @@ static AGViewController * g_instance = nil;
     assert([NSThread isMainThread]);
     assert(object);
     
-    AGInteractiveObjectList::iterator ov = find(_objects.begin(), _objects.end(), over);
-    if(ov != _objects.end())
-        _objects.insert(++ov, object);
-    else
-        _objects.push_back(object);
+    insert_after(_objects, object, over);
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object under:(AGInteractiveObject *)under
@@ -445,11 +441,7 @@ static AGViewController * g_instance = nil;
     assert([NSThread isMainThread]);
     assert(object);
     
-    AGInteractiveObjectList::iterator un = find(_objects.begin(), _objects.end(), under);
-    if(un != _objects.end())
-        _objects.insert(un, object);
-    else
-        _objects.push_front(object);
+    insert_before(_objects, object, under);
 }
 
 - (void)fadeOutAndDelete:(AGInteractiveObject *)object
@@ -462,9 +454,8 @@ static AGViewController * g_instance = nil;
     
     [self removeFromTouchCapture:object];
     
-    assert(find(_fadingOut.begin(), _fadingOut.end(), object) == _fadingOut.end());
-    if(find(_fadingOut.begin(), _fadingOut.end(), object) == _fadingOut.end())
-    {
+    assert(!contains(_fadingOut, object));
+    if(!contains(_fadingOut, object)) {
         object->renderOut();
         _fadingOut.push_back(object);
     }
@@ -502,18 +493,6 @@ static AGViewController * g_instance = nil;
     _freedraws.push_back(freedraw);
     _objects.push_back(freedraw);
 }
-
-//- (void)replaceFreeDraw:(AGFreeDraw *)freedrawOld freedrawNew:(AGFreeDraw *)freedrawNew
-//{
-//    assert([NSThread isMainThread]);
-//    assert(freedrawOld);
-//    
-//    _freedraws.remove(freedrawOld);
-//    _objects.remove(freedrawOld);
-//    
-//    _freedraws.push_back(freedrawNew);
-//    _objects.push_back(freedrawNew);
-//}
 
 - (void)resignFreeDraw:(AGFreeDraw *)freedraw
 {
@@ -597,18 +576,9 @@ static AGViewController * g_instance = nil;
 - (void)updateMatrices
 {
     GLKMatrix4 projectionMatrix;
-//    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
-//    if(UIInterfaceOrientationIsLandscape(self.interfaceOrientation))
-//        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
-//    else
-//        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f)/aspect, aspect, 0.1f, 100.0f);
-//    if(UIInterfaceOrientationIsLandscape(self.interfaceOrientation))
-//    NSLog(@"width %f height %f", self.view.bounds.size.width, self.view.bounds.size.height);
     projectionMatrix = GLKMatrix4MakeFrustum(-self.view.bounds.size.width/2, self.view.bounds.size.width/2,
                                              -self.view.bounds.size.height/2, self.view.bounds.size.height/2,
                                              10.0f, 10000.0f);
-//    else
-//        projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f)/aspect, aspect, 0.1f, 100.0f);
     
     _fixedModelView = GLKMatrix4MakeTranslation(0, 0, -10.1f);
     
@@ -621,8 +591,6 @@ static AGViewController * g_instance = nil;
         _cameraZ.reset(-160);
     if(_cameraZ <= 0)
         _camera.z = -0.1-(-1+powf(2, -_cameraZ*0.045));
-//    else
-//        cameraScale = _cameraZ*0.045;
     
     GLKMatrix4 baseModelViewMatrix = GLKMatrix4Translate(_fixedModelView, _camera.x, _camera.y, _camera.z);
     if(cameraScale > 1.0f)
