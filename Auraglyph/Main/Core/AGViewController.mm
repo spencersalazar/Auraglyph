@@ -72,13 +72,6 @@ using namespace std;
 
 #define AG_ZOOM_DEADZONE (15)
 
-enum InterfaceMode
-{
-    INTERFACEMODE_EDIT,
-    INTERFACEMODE_USER,
-};
-
-
 @interface AGViewController ()
 {
     GLKMatrix4 _modelView;
@@ -112,7 +105,6 @@ enum InterfaceMode
     std::list<AGFreeDraw *> _freedraws;
     std::list<AGInteractiveObject *> _dashboard;
     std::list<AGInteractiveObject *> _objects;
-    std::list<AGInteractiveObject *> _interfaceObjects;
     std::list<AGInteractiveObject *> _fadingOut;
     
     list<AGInteractiveObject *> _touchOutsideListeners;
@@ -123,7 +115,6 @@ enum InterfaceMode
     AGPGMidiContext *midiManager;
     
     AGDrawMode _drawMode;
-    InterfaceMode _interfaceMode;
     
     AGDashboard *_uiDashboard;
     AGModalOverlay _modalOverlay;
@@ -321,9 +312,6 @@ static AGViewController * g_instance = nil;
     
     _drawMode = DRAWMODE_NODE;
     
-//    _interfaceMode = INTERFACEMODE_USER;
-    _interfaceMode = INTERFACEMODE_EDIT;
-    
     /* modal dialog */
     _modalOverlay.init();
     AGModalDialog::setGlobalModalOverlay(&_modalOverlay);
@@ -405,10 +393,6 @@ static AGViewController * g_instance = nil;
     
     _graph->addNode(node);
     _objects.push_back(node);
-    
-    AGInteractiveObject * ui = node->userInterface();
-    if(ui)
-        _interfaceObjects.push_back(ui);
 }
 
 - (void)removeNode:(AGNode *)node
@@ -427,10 +411,6 @@ static AGViewController * g_instance = nil;
     {
         [self removeFromTouchCapture:node];
         
-        AGInteractiveObject * ui = node->userInterface();
-        if(ui)
-            _interfaceObjects.remove(ui);
-        
         _graph->removeNode(node);
         _objects.remove(node);
     }
@@ -447,10 +427,6 @@ static AGViewController * g_instance = nil;
     assert(object);
     
     _objects.push_back(object);
-    
-    AGInteractiveObject * ui = object->userInterface();
-    if(ui)
-        _interfaceObjects.push_back(ui);
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object over:(AGInteractiveObject *)over
@@ -463,10 +439,6 @@ static AGViewController * g_instance = nil;
         _objects.insert(++ov, object);
     else
         _objects.push_back(object);
-    
-    AGInteractiveObject * ui = object->userInterface();
-    if(ui)
-        _interfaceObjects.push_back(ui);
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object under:(AGInteractiveObject *)under
@@ -479,10 +451,6 @@ static AGViewController * g_instance = nil;
         _objects.insert(un, object);
     else
         _objects.push_front(object);
-    
-    AGInteractiveObject * ui = object->userInterface();
-    if(ui)
-        _interfaceObjects.push_back(ui);
 }
 
 - (void)fadeOutAndDelete:(AGInteractiveObject *)object
@@ -494,10 +462,6 @@ static AGViewController * g_instance = nil;
     dbgprint("fadeOutAndDelete: %s 0x%08lx\n", typeid(*object).name(), (unsigned long) object);
     
     [self removeFromTouchCapture:object];
-    
-    AGInteractiveObject * ui = object->userInterface();
-    if(ui)
-        _interfaceObjects.remove(ui);
     
     assert(find(_fadingOut.begin(), _fadingOut.end(), object) == _fadingOut.end());
     if(find(_fadingOut.begin(), _fadingOut.end(), object) == _fadingOut.end())
@@ -662,8 +626,6 @@ static AGViewController * g_instance = nil;
 //        cameraScale = _cameraZ*0.045;
     
     GLKMatrix4 baseModelViewMatrix = GLKMatrix4Translate(_fixedModelView, _camera.x, _camera.y, _camera.z);
-    if(_interfaceMode == INTERFACEMODE_USER)
-        baseModelViewMatrix = GLKMatrix4Translate(baseModelViewMatrix, 0, 0, -(G_RATIO-1));
     if(cameraScale > 1.0f)
         baseModelViewMatrix = GLKMatrix4Scale(baseModelViewMatrix, cameraScale, cameraScale, 1.0f);
     
@@ -695,8 +657,6 @@ static AGViewController * g_instance = nil;
     GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, probe.z),
                                       _modelView, _projection, viewport, &success);
     
-//    vec = GLKMatrix4MultiplyVector3(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z), vec);
-    
     return GLvertex3f(vec.x, vec.y, 0);
 }
 
@@ -707,8 +667,6 @@ static AGViewController * g_instance = nil;
     bool success;
     GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, 0.0f),
                                       _fixedModelView, _projection, viewport, &success);
-    
-    //    vec = GLKMatrix4MultiplyVector3(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z), vec);
     
     return GLvertex3f(vec.x, vec.y, 0);
 }
@@ -752,9 +710,6 @@ static AGViewController * g_instance = nil;
     itmap_safe(_fadingOut, ^(AGInteractiveObject *&object){
         object->update(_t, dt);
     });
-    itmap_safe(_interfaceObjects, ^(AGInteractiveObject *&object){
-        object->update(_t, dt);
-    });
     
     for(auto kv : _touchHandlers)
         [_touchHandlers[kv.first] update:_t dt:dt];
@@ -774,9 +729,6 @@ static AGViewController * g_instance = nil;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     [self renderEdit];
-    
-    if(_interfaceMode == INTERFACEMODE_USER)
-        [self renderUser];
 }
 
 - (void)renderEdit
@@ -814,36 +766,6 @@ static AGViewController * g_instance = nil;
     
     _modalOverlay.render();
 }
-
-- (void)renderUser
-{
-    CGSize size = self.view.bounds.size;
-    GLvertex3f overlayGeo[4];
-    overlayGeo[0] = [self worldCoordinateForScreenCoordinate:CGPointMake(size.width*0.1, size.width*0.1)];
-    overlayGeo[1] = [self worldCoordinateForScreenCoordinate:CGPointMake(size.width*0.9, size.width*0.1)];
-    overlayGeo[2] = [self worldCoordinateForScreenCoordinate:CGPointMake(size.width*0.1, size.height-size.width*0.1)];
-    overlayGeo[3] = [self worldCoordinateForScreenCoordinate:CGPointMake(size.width*0.9, size.height-size.width*0.1)];
-    GLcolor4f overlayColor = GLcolor4f(12.0f/255.0f, 16.0f/255.0f, 33.0f/255.0f, 0.45);
-//    GLcolor4f overlayColor = GLcolor4f(1.0, 1.0, 1.0, 0.45);
-    
-    AGGenericShader &shader = AGGenericShader::instance();
-    shader.useProgram();
-    shader.setMVPMatrix(_modelViewProjectionMatrix);
-    shader.setNormalMatrix(_normalMatrix);
-    
-    glVertexAttrib3f(AGVertexAttribNormal, 0, 0, 1);
-    glDisableVertexAttribArray(AGVertexAttribPosition);
-    glVertexAttrib4fv(AGVertexAttribColor, (const GLfloat *) &overlayColor);
-    glDisableVertexAttribArray(AGVertexAttribPosition);
-    glVertexAttribPointer(0, 3, GL_FLOAT, FALSE, 0, &overlayGeo);
-    glEnableVertexAttribArray(AGVertexAttribPosition);
-    
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    
-    for(std::list<AGInteractiveObject *>::iterator i = _interfaceObjects.begin(); i != _interfaceObjects.end(); i++)
-        (*i)->render();
-}
-
 
 - (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)hitNode port:(int *)port
 {
