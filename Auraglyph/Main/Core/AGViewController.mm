@@ -640,20 +640,11 @@ static AGViewController * g_instance = nil;
 
 - (void)update
 {
-    if(_fadingOut.size() > 0)
-    {
-        for(AGInteractiveObjectList::iterator i = _fadingOut.begin(); i != _fadingOut.end(); )
-        {
-            AGInteractiveObjectList::iterator j = i++; // copy iterator to allow removal
-            
-            AGInteractiveObject *obj = *j;
+    if(_fadingOut.size() > 0) {
+        filter_delete(_fadingOut, [](AGInteractiveObject *&obj){
             assert(obj);
-            if(obj->finishedRenderingOut())
-            {
-                delete *j;
-                _fadingOut.erase(j);
-            }
-        }
+            return obj->finishedRenderingOut();
+        });
     }
     
     _cameraZ.interp();

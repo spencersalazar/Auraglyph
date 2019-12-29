@@ -73,17 +73,36 @@ void itmap_safe(T &container, void (^func)(typename T::reference v))
     }
 }
 
-/*------------------------------------------------------------------------------
- itfilter()
- Use a block to remove/filter elements from a C++/STL iterable container
- -----------------------------------------------------------------------------*/
+/**
+ Use a lambda to remove/filter elements from an iterable collection, with
+ optional postprocess lambda for removed elements.
+ */
 template<class T>
 void itfilter(T &container, bool (^filt)(typename T::reference v))
 {
     for(typename T::iterator i = container.begin(); i != container.end(); ) {
         if(filt(*i)) {
-            typename T::iterator d = i;
+            // copy iterator to allow removal in loop
+            typename T::iterator d = i++;
+            container.erase(d);
+        } else {
             i++;
+        }
+    }
+}
+
+/**
+ Use a lambda to remove/filter elements from an iterable collection, and delete
+ any filtered elements.
+ */
+template<class T>
+void filter_delete(T &container, bool (^filt)(typename T::reference v))
+{
+    for(typename T::iterator i = container.begin(); i != container.end(); ) {
+        if(filt(*i)) {
+            // copy iterator to allow removal in loop
+            typename T::iterator d = i++;
+            delete *d;
             container.erase(d);
         } else {
             i++;
