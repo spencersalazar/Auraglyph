@@ -14,6 +14,7 @@
 		090F71812255905400C415C4 /* AGTutorialEntities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 090F717F2255905400C415C4 /* AGTutorialEntities.cpp */; };
 		091081801A0B63DB0063028B /* AGStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0910817E1A0B63DB0063028B /* AGStyle.mm */; };
 		0913437E21B6650B00FE275F /* AGTrainerView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0913437D21B6650B00FE275F /* AGTrainerView.mm */; };
+		091C6DD423B852A900C0002C /* AGNodeExporter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 091C6DD223B852A900C0002C /* AGNodeExporter.mm */; };
 		091C70CC1C48A9A600B513C2 /* AGUINodeEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */; };
 		09230FB31F3D8C9500DF06B5 /* AGAboutBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 093395781A0A3785009E4802 /* AGAboutBox.cpp */; };
 		09230FFA1F41868A00DF06B5 /* AGArrayNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09230FF31F41868A00DF06B5 /* AGArrayNode.mm */; };
@@ -281,6 +282,8 @@
 		0910817F1A0B63DB0063028B /* AGStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGStyle.h; sourceTree = "<group>"; };
 		0913437C21B6650B00FE275F /* AGTrainerView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGTrainerView.h; sourceTree = "<group>"; };
 		0913437D21B6650B00FE275F /* AGTrainerView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AGTrainerView.mm; sourceTree = "<group>"; };
+		091C6DD223B852A900C0002C /* AGNodeExporter.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AGNodeExporter.mm; sourceTree = "<group>"; };
+		091C6DD323B852A900C0002C /* AGNodeExporter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGNodeExporter.h; sourceTree = "<group>"; };
 		091C70CA1C48A9A600B513C2 /* AGUINodeEditor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGUINodeEditor.mm; sourceTree = "<group>"; };
 		091C70CB1C48A9A600B513C2 /* AGUINodeEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGUINodeEditor.h; sourceTree = "<group>"; };
 		09230FBD1F3FEC5700DF06B5 /* AGAudioAddNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioAddNode.cpp; sourceTree = "<group>"; };
@@ -1152,6 +1155,8 @@
 		09B674411D6D9D6500F84E09 /* Nodes */ = {
 			isa = PBXGroup;
 			children = (
+				091C6DD323B852A900C0002C /* AGNodeExporter.h */,
+				091C6DD223B852A900C0002C /* AGNodeExporter.mm */,
 				09230FB91F3FDE3700DF06B5 /* Audio */,
 				09230FF11F41868A00DF06B5 /* Control */,
 				49942E561F30515A00914E75 /* MIDI */,
@@ -1648,6 +1653,7 @@
 				0913437E21B6650B00FE275F /* AGTrainerView.mm in Sources */,
 				092310121F46399800DF06B5 /* AGGraphManager.cpp in Sources */,
 				098740AD17BC377E0098511A /* AGAudioNode.mm in Sources */,
+				091C6DD423B852A900C0002C /* AGNodeExporter.mm in Sources */,
 				092F5EAB230DEFB600D12BB3 /* Bezier.cpp in Sources */,
 				09230FFB1F41868A00DF06B5 /* AGControlGestureNode.mm in Sources */,
 				49C023011F229E2100963AD9 /* AGMidiConnectionListener.mm in Sources */,
