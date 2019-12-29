@@ -73,6 +73,16 @@ using namespace std;
 
 #define AG_ZOOM_DEADZONE (15)
 
+
+class AGModel
+{
+public:
+    
+    AGGraph graph;
+    std::list<AGFreeDraw *> freedraws;
+};
+
+
 @interface AGViewController ()
 {
     GLKMatrix4 _modelView;
@@ -93,9 +103,8 @@ using namespace std;
     map<UITouch *, AGInteractiveObject *> _touchCaptures;
     AGTouchHandler *_touchHandlerQueue;
     
-    AGGraph *_graph;
+    AGModel _model;
     
-    std::list<AGFreeDraw *> _freedraws;
     AGInteractiveObjectList _dashboard;
     AGInteractiveObjectList _objects;
     AGInteractiveObjectList _fadingOut;
@@ -202,8 +211,6 @@ static AGViewController * g_instance = nil;
     
     [self initUI];
     
-    _graph = new AGGraph;
-
     if (AGSettings::instance().showTutorialOnLaunch()) {
         _currentTutorial = AGTutorial::createInitialTutorial(_proxy);
         [self _newDocument:NO];
@@ -272,7 +279,6 @@ static AGViewController * g_instance = nil;
     }
     
     SAFE_DELETE(_proxy);
-    SAFE_DELETE(_graph);
 }
 
 - (void)didReceiveMemoryWarning
@@ -324,7 +330,7 @@ static AGViewController * g_instance = nil;
 {
     assert([NSThread isMainThread]);
     
-    _graph->addNode(node);
+    _model.graph.addNode(node);
     _objects.push_back(node);
 }
 
@@ -340,18 +346,18 @@ static AGViewController * g_instance = nil;
     // remove without fading out or destroying
     
     // only process for removal if it is part of the node list in the first place
-    if(_graph->hasNode(node))
+    if(_model.graph.hasNode(node))
     {
         [self removeFromTouchCapture:node];
         
-        _graph->removeNode(node);
+        _model.graph.removeNode(node);
         _objects.remove(node);
     }
 }
 
 - (AGGraph *)graph
 {
-    return _graph;
+    return &_model.graph;
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object
@@ -397,12 +403,12 @@ static AGViewController * g_instance = nil;
     _objects.remove(object);
     AGNode *node = dynamic_cast<AGNode *>(object);
     if(node)
-        _graph->removeNode(node);
+        _model.graph.removeNode(node);
     _dashboard.remove(object);
     
     AGFreeDraw *draw = dynamic_cast<AGFreeDraw *>(object);
     if(draw)
-        _freedraws.remove(draw);
+        _model.freedraws.remove(draw);
 }
 
 - (void)removeFromTouchCapture:(AGInteractiveObject *)object
@@ -424,7 +430,7 @@ static AGViewController * g_instance = nil;
 {
     assert([NSThread isMainThread]);
     
-    _freedraws.push_back(freedraw);
+    _model.freedraws.push_back(freedraw);
     _objects.push_back(freedraw);
 }
 
@@ -433,7 +439,7 @@ static AGViewController * g_instance = nil;
     assert([NSThread isMainThread]);
     assert(freedraw);
     
-    _freedraws.remove(freedraw);
+    _model.freedraws.remove(freedraw);
     _objects.remove(freedraw);
 }
 
@@ -442,13 +448,13 @@ static AGViewController * g_instance = nil;
     assert([NSThread isMainThread]);
     assert(freedraw);
     
-    _freedraws.remove(freedraw);
+    _model.freedraws.remove(freedraw);
     _fadingOut.push_back(freedraw);
 }
 
 - (const list<AGFreeDraw *> &)freedraws
 {
-    return _freedraws;
+    return _model.freedraws;
 }
 
 - (void) showDashboard
@@ -659,7 +665,7 @@ static AGViewController * g_instance = nil;
 {
     AGNode::HitTestResult hit;
     
-    for(AGNode *node : _graph->nodes())
+    for(AGNode *node : _model.graph.nodes())
     {
         hit = node->hit(pos, port);
         if(hit != AGNode::HIT_NONE)
@@ -783,7 +789,7 @@ static AGViewController * g_instance = nil;
         // search node connections
         if(touchCapture == NULL && handler == nil)
         {
-            for(AGNode *node : _graph->nodes())
+            for(AGNode *node : _model.graph.nodes())
             {
                 for(AGConnection *connection : node->outbound())
                 {
@@ -1032,20 +1038,15 @@ static AGViewController * g_instance = nil;
 {
     __block AGDocument doc;
     
-    for(AGNode *node : _graph->nodes())
+    for(AGNode *node : _model.graph.nodes())
     {
         AGDocument::Node docNode = node->serialize();
         doc.addNode(docNode);
     }
     
-    itmap(_objects, ^(AGInteractiveObject *&obj){
-        AGFreeDraw *freedraw;
-        
-        if((freedraw = dynamic_cast<AGFreeDraw *>(obj)) != NULL)
-        {
-            AGDocument::Freedraw docFreedraw = freedraw->serialize();
-            doc.addFreedraw(docFreedraw);
-        }
+    itmap(_model.freedraws, ^(AGFreeDraw *&freedraw) {
+        AGDocument::Freedraw docFreedraw = freedraw->serialize();
+        doc.addFreedraw(docFreedraw);
     });
     
     if(_currentDocumentFile.m_filename.size() == 0 || saveAs)
