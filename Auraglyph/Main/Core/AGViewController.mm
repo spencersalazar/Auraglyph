@@ -83,11 +83,6 @@ using namespace std;
     float _rotation;
     
     float _t;
-    float _osc;
-    
-    GLuint _screenTexture;
-    GLuint _screenFBO;
-    GLuint _screenProgram;
     
     GLvertex3f _camera;
     slewf _cameraZ;
@@ -110,8 +105,6 @@ using namespace std;
     
     AGInteractiveObjectList _touchOutsideListeners;
     list<AGTouchHandler *> _touchOutsideHandlers;
-    
-    map<AGFreeDraw *, string> _freedrawUUID;
     
     AGPGMidiContext *midiManager;
     
@@ -595,7 +588,6 @@ static AGViewController * g_instance = nil;
     
     [self updateMatrices];
     
-    _osc += self.timeSinceLastUpdate * 1.0f;
     float dt = self.timeSinceLastUpdate;
     _t += dt;
     
