@@ -78,9 +78,6 @@ using namespace std;
     GLKMatrix4 _modelView;
     GLKMatrix4 _fixedModelView;
     GLKMatrix4 _projection;
-    GLKMatrix4 _modelViewProjectionMatrix;
-    GLKMatrix3 _normalMatrix;
-    float _rotation;
     
     float _t;
     
@@ -537,9 +534,6 @@ static AGViewController * g_instance = nil;
     GLKMatrix4 modelViewMatrix = GLKMatrix4Identity;
     modelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, modelViewMatrix);
     
-    _normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
-    
-    _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
     _modelView = modelViewMatrix;
     _projection = projectionMatrix;
     
