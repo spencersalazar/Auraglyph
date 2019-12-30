@@ -67,6 +67,9 @@
 		095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 095E854117B5E1D30065EF8E /* AGHandwritingRecognizer.mm */; };
 		09635AFF21E01A3000921309 /* AGActivityManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09635AFD21E01A3000921309 /* AGActivityManager.cpp */; };
 		09635B0221E0202400921309 /* AGActivity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09635B0021E0202400921309 /* AGActivity.cpp */; };
+		096E3B2823B9D17B00FE3BE1 /* AGBaseTouchHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 096E3B2623B9D17B00FE3BE1 /* AGBaseTouchHandler.mm */; };
+		096E3B2E23B9D3A700FE3BE1 /* AGModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096E3B2C23B9D3A700FE3BE1 /* AGModel.cpp */; };
+		096E3B3123B9D3EC00FE3BE1 /* AGRenderModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096E3B2F23B9D3EC00FE3BE1 /* AGRenderModel.cpp */; };
 		096F42051D9CF04600600717 /* AGWaveformAudioNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096F42031D9CF04600600717 /* AGWaveformAudioNode.cpp */; };
 		0973FB9C1FC10815004CC25A /* agoutput-nobg.png in Resources */ = {isa = PBXBuildFile; fileRef = 0973FB991FC10815004CC25A /* agoutput-nobg.png */; };
 		0973FB9D1FC10815004CC25A /* auraglyph-title.png in Resources */ = {isa = PBXBuildFile; fileRef = 0973FB9B1FC10815004CC25A /* auraglyph-title.png */; };
@@ -455,6 +458,12 @@
 		09635AFE21E01A3000921309 /* AGActivityManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGActivityManager.h; sourceTree = "<group>"; };
 		09635B0021E0202400921309 /* AGActivity.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGActivity.cpp; sourceTree = "<group>"; };
 		09635B0121E0202400921309 /* AGActivity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGActivity.h; sourceTree = "<group>"; };
+		096E3B2623B9D17B00FE3BE1 /* AGBaseTouchHandler.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AGBaseTouchHandler.mm; sourceTree = "<group>"; };
+		096E3B2723B9D17B00FE3BE1 /* AGBaseTouchHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGBaseTouchHandler.h; sourceTree = "<group>"; };
+		096E3B2C23B9D3A700FE3BE1 /* AGModel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGModel.cpp; sourceTree = "<group>"; };
+		096E3B2D23B9D3A700FE3BE1 /* AGModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGModel.h; sourceTree = "<group>"; };
+		096E3B2F23B9D3EC00FE3BE1 /* AGRenderModel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGRenderModel.cpp; sourceTree = "<group>"; };
+		096E3B3023B9D3EC00FE3BE1 /* AGRenderModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGRenderModel.h; sourceTree = "<group>"; };
 		096F42031D9CF04600600717 /* AGWaveformAudioNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = AGWaveformAudioNode.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		096F42041D9CF04600600717 /* AGWaveformAudioNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AGWaveformAudioNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		0973FB991FC10815004CC25A /* agoutput-nobg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "agoutput-nobg.png"; sourceTree = "<group>"; };
@@ -857,6 +866,10 @@
 		092CF2672239F11C002C523D /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				096E3B2D23B9D3A700FE3BE1 /* AGModel.h */,
+				096E3B2C23B9D3A700FE3BE1 /* AGModel.cpp */,
+				096E3B3023B9D3EC00FE3BE1 /* AGRenderModel.h */,
+				096E3B2F23B9D3EC00FE3BE1 /* AGRenderModel.cpp */,
 				0987409B17B98D7C0098511A /* AGNode.h */,
 				0987409A17B98D7C0098511A /* AGNode.mm */,
 				098740AC17BC377E0098511A /* AGAudioNode.h */,
@@ -1285,6 +1298,8 @@
 		09DDE4A82231A993008ACF0B /* TouchHandlers */ = {
 			isa = PBXGroup;
 			children = (
+				096E3B2723B9D17B00FE3BE1 /* AGBaseTouchHandler.h */,
+				096E3B2623B9D17B00FE3BE1 /* AGBaseTouchHandler.mm */,
 				09891314189F70D200AB98AD /* AGTouchHandler.h */,
 				09891315189F70D200AB98AD /* AGTouchHandler.mm */,
 				09DDE4B02231AA49008ACF0B /* AGConnectTouchHandler.h */,
@@ -1640,6 +1655,7 @@
 				095E854217B5E1D30065EF8E /* AGHandwritingRecognizer.mm in Sources */,
 				09CA675B229CC6B40017B93B /* SampleCircularBuffer.cpp in Sources */,
 				09CA677E229CC6BB0017B93B /* Bounce.cpp in Sources */,
+				096E3B2823B9D17B00FE3BE1 /* AGBaseTouchHandler.mm in Sources */,
 				492B3D601F3740C800E5E7F0 /* AGControlMidiCCIn.mm in Sources */,
 				09CA6780229CC6BB0017B93B /* Quint.cpp in Sources */,
 				09B01A042085DA9C0071C8EC /* AGUILoadDialog.cpp in Sources */,
@@ -1663,6 +1679,7 @@
 				09CA675D229CC6B40017B93B /* sputil.cpp in Sources */,
 				098740B317BC61410098511A /* AGUserInterface.cpp in Sources */,
 				09B019D9208591C30071C8EC /* AGDocumentationViewer.mm in Sources */,
+				096E3B3123B9D3EC00FE3BE1 /* AGRenderModel.cpp in Sources */,
 				09B674441D6D9E8700F84E09 /* AGCompositeNode.mm in Sources */,
 				0901C1BC17BE2F970032904B /* AGGenericShader.mm in Sources */,
 				09CA670B229CBF530017B93B /* AGAudioIOManager.mm in Sources */,
@@ -1677,6 +1694,7 @@
 				494019CD1F21CCF3000F05E8 /* AGPGMidiDelegate.mm in Sources */,
 				0944E8C61DCB325D00EB8087 /* AGAnalytics.mm in Sources */,
 				09CA6757229CC6B40017B93B /* Matrix.cpp in Sources */,
+				096E3B2E23B9D3A700FE3BE1 /* AGModel.cpp in Sources */,
 				09230FB31F3D8C9500DF06B5 /* AGAboutBox.cpp in Sources */,
 				0991BA851D8654C70080175C /* FileWvIn.cpp in Sources */,
 				0957DF4321D9AFC400D6A69C /* AGModalDialog.cpp in Sources */,
