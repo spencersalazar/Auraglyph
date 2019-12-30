@@ -13,6 +13,8 @@
 #include "AGInteractiveObject.h"
 #include "AGModalDialog.h"
 
+#include <CoreGraphics/CGGeometry.h>
+
 class AGDashboard;
 class AGTutorial;
 
@@ -36,6 +38,14 @@ public:
     AGDashboard *uiDashboard = nullptr;
     AGModalOverlay modalOverlay;
     AGTutorial *currentTutorial = nullptr;
+    
+    void setScreenBounds(CGRect bounds);
+    
+    void update(float dt);
+    void updateMatrices();
+    
+private:
+    CGRect m_screenBounds;
 };
 
 

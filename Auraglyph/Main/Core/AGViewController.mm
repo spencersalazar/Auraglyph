@@ -91,7 +91,6 @@ using namespace std;
 - (void)tearDownGL;
 - (void)initUI;
 - (void)_updateFixedUIPosition;
-- (void)updateMatrices;
 - (void)renderEdit;
 
 - (void)_save:(BOOL)saveAs;
@@ -156,7 +155,7 @@ static AGViewController * g_instance = nil;
     
     self.audioManager = [AGAudioManager new];
     // update matrices so that worldCoordinateForScreenCoordinate works
-    [self updateMatrices];
+    _renderModel.updateMatrices();
     
     /* preload hw recognizer */
     (void) AGHandwritingRecognizer::instance();
@@ -197,8 +196,8 @@ static AGViewController * g_instance = nil;
 - (void)initUI
 {
     // needed for worldCoordinateForScreenCoordinate to work
-    [self updateMatrices];
-    
+    _renderModel.updateMatrices();
+
     _renderModel.uiDashboard = new AGDashboard(_proxy);
     _renderModel.uiDashboard->init();
      
@@ -215,11 +214,9 @@ static AGViewController * g_instance = nil;
 - (void)_updateFixedUIPosition
 {
     // needed for worldCoordinateForScreenCoordinate to work
-    [self updateMatrices];
+    _renderModel.setScreenBounds(self.view.bounds);
     
     _renderModel.uiDashboard->onInterfaceOrientationChange();
-    
-    _renderModel.modalOverlay.setScreenSize(GLvertex2f(self.view.bounds.size.width, self.view.bounds.size.height));
 }
 
 - (void)dealloc
@@ -442,42 +439,6 @@ static AGViewController * g_instance = nil;
 
 #pragma mark - GLKView and GLKViewController delegate methods
 
-- (void)updateMatrices
-{
-    GLKMatrix4 projectionMatrix;
-    projectionMatrix = GLKMatrix4MakeFrustum(-self.view.bounds.size.width/2, self.view.bounds.size.width/2,
-                                             -self.view.bounds.size.height/2, self.view.bounds.size.height/2,
-                                             10.0f, 10000.0f);
-    
-    _renderModel.fixedModelView = GLKMatrix4MakeTranslation(0, 0, -10.1f);
-    
-    dbgprint_off("cameraZ: %f\n", (float) _renderModel.cameraZ);
-    
-    float cameraScale = 1.0;
-    if(_renderModel.cameraZ > 0)
-        _renderModel.cameraZ.reset(0);
-    if(_renderModel.cameraZ < -160)
-        _renderModel.cameraZ.reset(-160);
-    if(_renderModel.cameraZ <= 0)
-        _renderModel.camera.z = -0.1-(-1+powf(2, -_renderModel.cameraZ*0.045));
-    
-    GLKMatrix4 baseModelViewMatrix = GLKMatrix4Translate(_renderModel.fixedModelView, _renderModel.camera.x, _renderModel.camera.y, _renderModel.camera.z);
-    if(cameraScale > 1.0f)
-        baseModelViewMatrix = GLKMatrix4Scale(baseModelViewMatrix, cameraScale, cameraScale, 1.0f);
-    
-    // Compute the model view matrix for the object rendered with GLKit
-    GLKMatrix4 modelViewMatrix = GLKMatrix4Identity;
-    modelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, modelViewMatrix);
-    
-    _renderModel.modelView = modelViewMatrix;
-    _renderModel.projection = projectionMatrix;
-    
-    AGRenderObject::setProjectionMatrix(projectionMatrix);
-    AGRenderObject::setGlobalModelViewMatrix(modelViewMatrix);
-    AGRenderObject::setFixedModelViewMatrix(_renderModel.fixedModelView);
-    AGRenderObject::setCameraMatrix(GLKMatrix4MakeTranslation(_renderModel.camera.x, _renderModel.camera.y, _renderModel.camera.z));
-}
-
 - (GLvertex3f)worldCoordinateForScreenCoordinate:(CGPoint)p
 {
     int viewport[] = { (int)self.view.bounds.origin.x, (int)(self.view.bounds.origin.y),
@@ -515,12 +476,8 @@ static AGViewController * g_instance = nil;
         });
     }
     
-    _renderModel.cameraZ.interp();
-    
-    [self updateMatrices];
-    
     float dt = self.timeSinceLastUpdate;
-    _renderModel.t += dt;
+    _renderModel.update(dt);
     
     _renderModel.uiDashboard->update(_renderModel.t, dt);
     
