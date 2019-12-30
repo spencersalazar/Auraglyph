@@ -9,6 +9,7 @@
 #pragma once
 
 #include "Geometry.h"
+#include "Matrix.h"
 #include "Animation.h"
 #include "AGInteractiveObject.h"
 #include "AGModalDialog.h"
@@ -23,9 +24,9 @@ class AGTutorial;
 class AGRenderModel
 {
 public:
-    GLKMatrix4 modelView;
-    GLKMatrix4 fixedModelView;
-    GLKMatrix4 projection;
+    Matrix4 modelView;
+    Matrix4 fixedModelView;
+    Matrix4 projection;
     
     float t = 0;
     GLvertex3f camera;
