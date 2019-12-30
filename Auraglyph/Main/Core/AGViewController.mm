@@ -106,19 +106,56 @@ public:
     AGTutorial *currentTutorial;
 };
 
-
+/** Top level touch handler - process touch input
+ */
 class AGBaseTouchHandler
 {
 public:
-    AGBaseTouchHandler(const AGModel& model);
+    AGBaseTouchHandler(AGViewController* viewController, AGModel& model, AGRenderModel& renderModel);
     
     void touchesBegan(NSSet<UITouch *> *touches, UIEvent *event);
     void touchesMoved(NSSet<UITouch *> *touches, UIEvent *event);
     void touchesEnded(NSSet<UITouch *> *touches, UIEvent *event);
     void touchesCancelled(NSSet<UITouch *> *touches, UIEvent *event);
     
-private:
+    void addTouchOutsideHandler(AGTouchHandler* handler);
+    void removeTouchOutsideHandler(AGTouchHandler* handler);
+    void addTouchOutsideListener(AGInteractiveObject* object);
+    void removeTouchOutsideListener(AGInteractiveObject* object);
+
+    void resignTouchHandler(AGTouchHandler* handler);
+    void objectRemovedFromSketchModel(AGInteractiveObject* object);
+    void objectRemovedFromRenderModel(AGInteractiveObject* object);
     
+    void setDrawMode(AGDrawMode mode) { m_drawMode = mode; }
+    AGDrawMode drawMode() { return m_drawMode; }
+
+    AGNode::HitTestResult hitTest(const GLvertex3f& pos, AGNode **hitNode, int* port);
+    
+    void update(float t, float dt);
+    void render();
+    
+private:
+    void _removeFromTouchCapture(AGInteractiveObject *object);
+    
+    AGViewController* m_viewController = nil;
+    AGModel& m_model;
+    AGRenderModel& m_renderModel;
+    
+    AGDrawMode m_drawMode = DRAWMODE_NODE;
+    
+    float _initialZoomDist = 0;
+    bool _passedZoomDeadzone = false;
+    
+    map<UITouch *, UITouch *> _touches;
+    map<UITouch *, UITouch *> _freeTouches;
+    UITouch *_scrollZoomTouches[2];
+    map<UITouch *, AGTouchHandler *> _touchHandlers;
+    map<UITouch *, AGInteractiveObject *> _touchCaptures;
+    AGTouchHandler *_touchHandlerQueue = nil;
+            
+    AGInteractiveObjectList _touchOutsideListeners;
+    list<AGTouchHandler *> _touchOutsideHandlers;
 };
 
 
@@ -126,23 +163,9 @@ private:
 {
     AGModel _model;
     AGRenderModel _renderModel;
-    
-    float _initialZoomDist;
-    BOOL _passedZoomDeadzone;
-    
-    map<UITouch *, UITouch *> _touches;
-    map<UITouch *, UITouch *> _freeTouches;
-    UITouch *_scrollZoomTouches[2];
-    map<UITouch *, AGTouchHandler *> _touchHandlers;
-    map<UITouch *, AGInteractiveObject *> _touchCaptures;
-    AGTouchHandler *_touchHandlerQueue;
-            
-    AGInteractiveObjectList _touchOutsideListeners;
-    list<AGTouchHandler *> _touchOutsideHandlers;
+    std::unique_ptr<AGBaseTouchHandler> _baseTouchHandler;
     
     AGPGMidiContext *midiManager;
-    
-    AGDrawMode _drawMode;
     
     AGFile _currentDocumentFile;
     std::vector<std::vector<GLvertex2f>> _currentDocName;
@@ -156,7 +179,6 @@ private:
 
 @property (strong) IBOutlet AGTrainerViewController *trainer;
 
-- (void)removeFromTouchCapture:(AGInteractiveObject *)object;
 - (void)setupGL;
 - (void)tearDownGL;
 - (void)initUI;
@@ -190,6 +212,9 @@ static AGViewController * g_instance = nil;
 - (GLKMatrix4)fixedModelViewMatrix { return _renderModel.fixedModelView; }
 - (GLKMatrix4)projectionMatrix { return _renderModel.projection; }
 
+- (AGDrawMode)drawMode{ return _baseTouchHandler->drawMode(); }
+- (void)setDrawMode:(AGDrawMode)mode { _baseTouchHandler->setDrawMode(mode); }
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -199,6 +224,7 @@ static AGViewController * g_instance = nil;
     _renderModel.t = 0;
     
     _proxy = new AGViewController_(self);
+    _baseTouchHandler.reset(new AGBaseTouchHandler(self, _model, _renderModel));
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 
@@ -273,8 +299,8 @@ static AGViewController * g_instance = nil;
     
     _renderModel.uiDashboard = new AGDashboard(_proxy);
     _renderModel.uiDashboard->init();
-    
-    _drawMode = DRAWMODE_NODE;
+     
+    self.drawMode = DRAWMODE_NODE;
     
     /* modal dialog */
     _renderModel.modalOverlay.init();
@@ -372,10 +398,10 @@ static AGViewController * g_instance = nil;
     // only process for removal if it is part of the node list in the first place
     if(_model.graph.hasNode(node))
     {
-        [self removeFromTouchCapture:node];
-        
         _model.graph.removeNode(node);
         _renderModel.objects.remove(node);
+        
+        _baseTouchHandler->objectRemovedFromSketchModel(node);
     }
 }
 
@@ -416,7 +442,7 @@ static AGViewController * g_instance = nil;
     
     dbgprint("fadeOutAndDelete: %s 0x%08lx\n", typeid(*object).name(), (unsigned long) object);
     
-    [self removeFromTouchCapture:object];
+    _baseTouchHandler->objectRemovedFromRenderModel(object);
     
     assert(!contains(_renderModel.fadingOut, object));
     if(!contains(_renderModel.fadingOut, object)) {
@@ -433,21 +459,6 @@ static AGViewController * g_instance = nil;
     AGFreeDraw *draw = dynamic_cast<AGFreeDraw *>(object);
     if(draw)
         _model.freedraws.remove(draw);
-}
-
-- (void)removeFromTouchCapture:(AGInteractiveObject *)object
-{
-    // remove object and all children from touch capture
-    std::function<void (AGRenderObject *obj)> removeAll = [&removeAll, object, self] (AGRenderObject *obj)
-    {
-        AGInteractiveObject *intObj = dynamic_cast<AGInteractiveObject *>(obj);
-        if(intObj)
-            removevalues(_touchCaptures, intObj);
-        for(auto child : obj->children())
-            removeAll(child);
-    };
-    
-    removeAll(object);
 }
 
 - (void)addFreeDraw:(AGFreeDraw *)freedraw
@@ -502,37 +513,33 @@ static AGViewController * g_instance = nil;
 - (void)addTouchOutsideListener:(AGInteractiveObject *)listener
 {
     assert([NSThread isMainThread]);
-    
-    _touchOutsideListeners.push_back(listener);
+    _baseTouchHandler->addTouchOutsideListener(listener);
 }
 
 - (void)removeTouchOutsideListener:(AGInteractiveObject *)listener
 {
     assert([NSThread isMainThread]);
     
-    _touchOutsideListeners.remove(listener);
+    _baseTouchHandler->removeTouchOutsideListener(listener);
 }
 
 - (void)addTouchOutsideHandler:(AGTouchHandler *)listener
 {
     dbgprint("addTouchOutsideHandler: %s 0x%08lx\n", [NSStringFromClass([listener class]) UTF8String], (unsigned long) listener);
     
-    _touchOutsideHandlers.push_back(listener);
+    _baseTouchHandler->addTouchOutsideHandler(listener);
 }
 
 - (void)removeTouchOutsideHandler:(AGTouchHandler *)listener
 {
     dbgprint("removeTouchOutsideHandler: %s 0x%08lx\n", [NSStringFromClass([listener class]) UTF8String], (unsigned long) listener);
 
-    _touchOutsideHandlers.remove(listener);
+    _baseTouchHandler->removeTouchOutsideHandler(listener);
 }
 
 - (void)resignTouchHandler:(AGTouchHandler *)handler
 {
-    removevalues(_touchHandlers, handler);
-    _touchOutsideHandlers.remove(handler);
-    if(handler == _touchHandlerQueue)
-        _touchHandlerQueue = nil;
+    _baseTouchHandler->resignTouchHandler(handler);
 }
 
 #pragma mark - GLKView and GLKViewController delegate methods
@@ -631,9 +638,7 @@ static AGViewController * g_instance = nil;
         object->update(_renderModel.t, dt);
     });
     
-    for(auto kv : _touchHandlers)
-        [_touchHandlers[kv.first] update:_renderModel.t dt:dt];
-    [_touchHandlerQueue update:_renderModel.t dt:dt];
+    _baseTouchHandler->update(_renderModel.t, dt);
     
     if(_renderModel.currentTutorial)
     {
@@ -677,9 +682,7 @@ static AGViewController * g_instance = nil;
     for(AGInteractiveObject *object : _renderModel.dashboard)
         object->render();
     
-    for(auto kv : _touchHandlers)
-        [_touchHandlers[kv.first] render];
-    [_touchHandlerQueue render];
+    _baseTouchHandler->render();
     
     if(_renderModel.currentTutorial)
         _renderModel.currentTutorial->render();
@@ -687,378 +690,32 @@ static AGViewController * g_instance = nil;
     _renderModel.modalOverlay.render();
 }
 
+#pragma Touch handling
+
 - (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)hitNode port:(int *)port
 {
-    AGNode::HitTestResult hit;
-    
-    for(AGNode *node : _model.graph.nodes())
-    {
-        hit = node->hit(pos, port);
-        if(hit != AGNode::HIT_NONE)
-        {
-            if(node)
-                *hitNode = node;
-            return hit;
-        }
-    }
-    
-    if(hitNode)
-        *hitNode = NULL;
-    return AGNode::HIT_NONE;
+    return _baseTouchHandler->hitTest(pos, hitNode, port);
 }
-
-
-#pragma Touch handling
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    dbgprint_off("touchesBegan, count = %lu\n", (unsigned long)[touches count]);
-    
-    // hit test each touch
-    for(UITouch *touch in touches)
-    {
-        CGPoint p = [touch locationInView:self.view];
-        GLvertex3f pos = [self worldCoordinateForScreenCoordinate:p];
-        GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:p];
-        AGTouchHandler *handler = nil;
-        AGInteractiveObject *touchCapture = NULL;
-        AGInteractiveObject *touchCaptureTopLevelObject = NULL;
-        
-        // check modal overlay
-        touchCapture = _renderModel.modalOverlay.hitTest(fixedPos);
-        if(touchCapture)
-        {
-            touchCaptureTopLevelObject = &_renderModel.modalOverlay;
-        }
-        
-        if(touchCapture == NULL)
-        {
-            // search dashboard items
-            // search in reverse order
-            for(auto i = _renderModel.dashboard.rbegin(); i != _renderModel.dashboard.rend(); i++)
-            {
-                AGInteractiveObject *object = *i;
-                
-                // check regular interactive object
-                if(object->renderFixed())
-                    touchCapture = object->hitTest(fixedPos);
-                else
-                    touchCapture = object->hitTest(pos);
-                
-                if(touchCapture)
-                {
-                    touchCaptureTopLevelObject = object;
-                    break;
-                }
-            }
-        }
-        
-        if(touchCapture == NULL)
-        {
-            touchCapture = _renderModel.uiDashboard->hitTest(fixedPos);
-            if(touchCapture)
-                touchCaptureTopLevelObject = _renderModel.uiDashboard;
-        }
-
-        // search pending handlers
-        if(touchCapture == NULL)
-        {
-            if(_touchHandlerQueue && [_touchHandlerQueue hitTest:pos])
-            {
-                handler = _touchHandlerQueue;
-                _touchHandlerQueue = nil;
-            }
-        }
-        
-        // search the rest of the objects
-        if(touchCapture == NULL && handler == nil)
-        {
-            // search in reverse order
-            for(auto i = _renderModel.objects.rbegin(); i != _renderModel.objects.rend(); i++)
-            {
-                AGInteractiveObject *object = *i;
-                
-                // check if its a node
-                // todo: check node ports first
-                AGNode *node = dynamic_cast<AGNode *>(object);
-                if(node)
-                {
-                    // nodes require special hit testing
-                    // in addition to regular hit testing
-                    int port;
-                    AGNode::HitTestResult result = node->hit(pos, &port);
-                    if(result != AGNode::HIT_NONE)
-                    {
-                        if(result == AGNode::HIT_INPUT_NODE || result == AGNode::HIT_OUTPUT_NODE)
-                            handler = [[AGConnectTouchHandler alloc] initWithViewController:self];
-                        else if(result == AGNode::HIT_MAIN_NODE)
-                            handler = [[AGMoveNodeTouchHandler alloc] initWithViewController:self node:node];
-                        
-                        break;
-                    }
-                }
-                
-                // check regular interactive object
-                if(object->renderFixed())
-                    touchCapture = object->hitTest(fixedPos);
-                else
-                    touchCapture = object->hitTest(pos);
-                
-                if(touchCapture)
-                {
-                    touchCaptureTopLevelObject = object;
-                    break;
-                }
-            }
-        }
-        
-        // search node connections
-        if(touchCapture == NULL && handler == nil)
-        {
-            for(AGNode *node : _model.graph.nodes())
-            {
-                for(AGConnection *connection : node->outbound())
-                {
-                    touchCapture = connection->hitTest(pos);
-                    if(touchCapture)
-                        break;
-                }
-                
-                if(touchCapture)
-                    break;
-            }
-        }
-        
-        // deal with drawing
-        if(touchCapture == NULL && handler == nil)
-        {
-            if(_freeTouches.size() == 1)
-            {
-                // zoom gesture
-                UITouch *firstTouch = _freeTouches.begin()->first;
-                UITouch *secondTouch = touch;
-                
-                _scrollZoomTouches[0] = firstTouch;
-                _freeTouches.erase(firstTouch);
-                if(_touchHandlers.count(firstTouch))
-                {
-                    [_touchHandlers[firstTouch] touchesCancelled:[NSSet setWithObject:secondTouch] withEvent:event];
-                    _touchHandlers.erase(firstTouch);
-                }
-                
-                _scrollZoomTouches[1] = secondTouch;
-                
-                CGPoint p1 = [_scrollZoomTouches[0] locationInView:self.view];
-                CGPoint p2 = [_scrollZoomTouches[1] locationInView:self.view];
-                _initialZoomDist = GLvertex2f(p1).distanceTo(GLvertex2f(p2));
-                _passedZoomDeadzone = NO;
-            }
-            else
-            {
-                switch (_drawMode)
-                {
-                    case DRAWMODE_NODE:
-                        handler = [[AGDrawNodeTouchHandler alloc] initWithViewController:self];
-                        break;
-                    case DRAWMODE_FREEDRAW:
-                        handler = [[AGDrawFreedrawTouchHandler alloc] initWithViewController:self];
-                        break;
-                    case DRAWMODE_FREEDRAW_ERASE:
-                        handler = [[AGEraseFreedrawTouchHandler alloc] initWithViewController:self];
-                        break;
-                }
-                
-                [handler touchesBegan:touches withEvent:event];
-                
-                _freeTouches[touch] = touch;
-            }
-        }
-        
-        // record touch
-        _touches[touch] = touch;
-        
-        // process handler (if any)
-        if(handler)
-        {
-            _touchHandlers[touch] = handler;
-            [handler touchesBegan:[NSSet setWithObject:touch] withEvent:event];
-        }
-        // process capture (if any)
-        else if(touchCapture)
-        {
-            _touchCaptures[touch] = touchCapture;
-            if(touchCapture->renderFixed())
-                touchCapture->touchDown(AGTouchInfo(fixedPos, p, (TouchID) touch, touch));
-            else
-            {
-                GLvertex3f localPos = pos;
-                if(touchCapture->parent())
-                    // touchDown/Move/Up events treat the position as if it were in the parent coordinate space
-                    localPos = touchCapture->parent()->globalToLocalCoordinateSpace(localPos);
-                touchCapture->touchDown(AGTouchInfo(localPos, p, (TouchID) touch, touch));
-            }
-        }
-        
-        // has
-        // is obj or one of its N-children equal to test?
-        std::function<bool (AGRenderObject *obj, AGRenderObject *test)> has = [&has] (AGRenderObject *obj, AGRenderObject *test)
-        {
-            if(obj == test) return true;
-            for(auto child : obj->children())
-                if(has(child, test))
-                    return true;
-            return false;
-        };
-        
-        itmap_safe(_touchOutsideListeners, ^(AGInteractiveObject *&touchOutsideListener){
-            if(!has(touchOutsideListener, touchCapture))
-                touchOutsideListener->touchOutside();
-        });
-        
-        // TODO: what does __strong here really mean
-        // TODO: convert AGTouchHandler to C++ class
-        itmap_safe(_touchOutsideHandlers, ^(__strong AGTouchHandler *&outsideHandler){
-            if(handler != outsideHandler)
-                [outsideHandler touchOutside];
-        });
-    }
+    _baseTouchHandler->touchesBegan(touches, event);
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    dbgprint_off("touchesMoved, count = %lu\n", (unsigned long)[touches count]);
-    
-    BOOL didScroll = NO;
-    for(UITouch *touch in touches)
-    {
-        if(_touchCaptures.count(touch))
-        {
-            AGInteractiveObject *touchCapture = _touchCaptures[touch];
-            if(touchCapture != NULL)
-            {
-                CGPoint screenPos = [touch locationInView:self.view];
-                
-                if(touchCapture->renderFixed())
-                {
-                    GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:screenPos];
-                    touchCapture->touchMove(AGTouchInfo(fixedPos, screenPos, (TouchID) touch, touch));
-                }
-                else
-                {
-                    GLvertex3f localPos = [self worldCoordinateForScreenCoordinate:screenPos];
-                    if(touchCapture->parent())
-                        // touchDown/Move/Up events treat the position as if it were in the parent coordinate space
-                        localPos = touchCapture->parent()->globalToLocalCoordinateSpace(localPos);
-                    touchCapture->touchMove(AGTouchInfo(localPos, screenPos, (TouchID) touch, touch));
-                }
-            }
-        }
-        else if(_touchHandlers.count(touch))
-        {
-            AGTouchHandler *touchHandler = _touchHandlers[touch];
-            [touchHandler touchesMoved:[NSSet setWithObject:touch] withEvent:event];
-        }
-        else if(_scrollZoomTouches[0] == touch || _scrollZoomTouches[1] == touch)
-        {
-            if(!didScroll)
-            {
-                didScroll = YES;
-                CGPoint p1 = [_scrollZoomTouches[0] locationInView:self.view];
-                CGPoint p1_1 = [_scrollZoomTouches[0] previousLocationInView:self.view];
-                CGPoint p2 = [_scrollZoomTouches[1] locationInView:self.view];
-                CGPoint p2_1 = [_scrollZoomTouches[1] previousLocationInView:self.view];
-                
-                CGPoint centroid = CGPointMake((p1.x+p2.x)/2, (p1.y+p2.y)/2);
-                CGPoint centroid_1 = CGPointMake((p1_1.x+p2_1.x)/2, (p1_1.y+p2_1.y)/2);
-                
-                GLvertex3f pos = [self worldCoordinateForScreenCoordinate:centroid];
-                GLvertex3f pos_1 = [self worldCoordinateForScreenCoordinate:centroid_1];
-                
-                _renderModel.camera = _renderModel.camera + (pos.xy() - pos_1.xy());
-                dbgprint_off("camera: %f, %f, %f\n", _renderModel.camera.x, _renderModel.camera.y, _renderModel.camera.z);
-                
-                float dist = GLvertex2f(p1).distanceTo(GLvertex2f(p2));
-                float dist_1 = GLvertex2f(p1_1).distanceTo(GLvertex2f(p2_1));
-                if(!_passedZoomDeadzone &&
-                   (dist_1 > _initialZoomDist+AG_ZOOM_DEADZONE ||
-                    dist_1 < _initialZoomDist-AG_ZOOM_DEADZONE))
-                {
-                    dbgprint("passed zoom deadzone\n");
-                    _passedZoomDeadzone = YES;
-                }
-                if(_passedZoomDeadzone)
-                {
-                    float zoom = (dist - dist_1);
-                    _renderModel.cameraZ += zoom;
-                }
-            }
-        }
-    }
+    _baseTouchHandler->touchesMoved(touches, event);
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    dbgprint_off("touchEnded, count = %lu\n", (unsigned long)[touches count]);
-    
-    for(UITouch *touch in touches)
-    {
-        if(_touchCaptures.count(touch))
-        {
-            AGInteractiveObject *touchCapture = _touchCaptures[touch];
-            if(touchCapture != NULL)
-            {
-                CGPoint screenPos = [touch locationInView:self.view];
-
-                if(touchCapture->renderFixed())
-                {
-                    GLvertex3f fixedPos = [self fixedCoordinateForScreenCoordinate:screenPos];
-                    touchCapture->touchUp(AGTouchInfo(fixedPos, screenPos, (TouchID) touch, touch));
-                }
-                else
-                {
-                    GLvertex3f localPos = [self worldCoordinateForScreenCoordinate:screenPos];
-                    if(touchCapture->parent())
-                        // touchDown/Move/Up events treat the position as if it were in the parent coordinate space
-                        localPos = touchCapture->parent()->globalToLocalCoordinateSpace(localPos);
-                    touchCapture->touchUp(AGTouchInfo(localPos, screenPos, (TouchID) touch, touch));
-                }
-
-                _touchCaptures.erase(touch);
-            }
-        }
-        else if(_touchHandlers.count(touch))
-        {
-            AGTouchHandler *touchHandler = _touchHandlers[touch];
-            [touchHandler touchesEnded:[NSSet setWithObject:touch] withEvent:event];
-            AGTouchHandler *nextHandler = [touchHandler nextHandler];
-            if(nextHandler)
-            {
-                dbgprint("queuing touchHandler: %s 0x%08lx\n", [NSStringFromClass([nextHandler class]) UTF8String], (unsigned long) nextHandler);
-                _touchHandlerQueue = nextHandler;
-            }
-            _touchHandlers.erase(touch);
-        }
-        else if(touch == _scrollZoomTouches[0] || touch == _scrollZoomTouches[1])
-        {
-            // return remaining touch to freetouches
-            if(touch == _scrollZoomTouches[0])
-                _freeTouches[_scrollZoomTouches[1]] = _scrollZoomTouches[1];
-            else
-                _freeTouches[_scrollZoomTouches[0]] = _scrollZoomTouches[0];
-            _scrollZoomTouches[0] = _scrollZoomTouches[1] = NULL;
-        }
-        
-        _freeTouches.erase(touch);
-        _touches.erase(touch);
-    }
+    _baseTouchHandler->touchesEnded(touches, event);
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    [self touchesEnded:touches withEvent:event];
+    _baseTouchHandler->touchesCancelled(touches, event);
 }
-
-
 
 - (void)_save:(BOOL)saveAs
 {
@@ -1194,9 +851,447 @@ static AGViewController * g_instance = nil;
     });
 }
 
-
-
 @end
+
+
+AGBaseTouchHandler::AGBaseTouchHandler(AGViewController* viewController, AGModel& model, AGRenderModel& renderModel)
+: m_viewController(viewController), m_model(model), m_renderModel(renderModel)
+{ }
+
+AGNode::HitTestResult AGBaseTouchHandler::hitTest(const GLvertex3f& pos, AGNode **hitNode, int* port)
+{
+    AGNode::HitTestResult hit;
+    
+    for(AGNode *node : m_model.graph.nodes())
+    {
+        hit = node->hit(pos, port);
+        if(hit != AGNode::HIT_NONE)
+        {
+            if(node)
+                *hitNode = node;
+            return hit;
+        }
+    }
+    
+    if(hitNode)
+        *hitNode = NULL;
+    return AGNode::HIT_NONE;
+}
+
+void AGBaseTouchHandler::touchesBegan(NSSet<UITouch *> *touches, UIEvent *event)
+{
+    dbgprint_off("touchesBegan, count = %lu\n", (unsigned long)[touches count]);
+    
+    // hit test each touch
+    for(UITouch *touch in touches)
+    {
+        CGPoint p = [touch locationInView:m_viewController.view];
+        GLvertex3f pos = [m_viewController worldCoordinateForScreenCoordinate:p];
+        GLvertex3f fixedPos = [m_viewController fixedCoordinateForScreenCoordinate:p];
+        AGTouchHandler *handler = nil;
+        AGInteractiveObject *touchCapture = NULL;
+        AGInteractiveObject *touchCaptureTopLevelObject = NULL;
+        
+        // check modal overlay
+        touchCapture = m_renderModel.modalOverlay.hitTest(fixedPos);
+        if(touchCapture)
+        {
+            touchCaptureTopLevelObject = &m_renderModel.modalOverlay;
+        }
+        
+        if(touchCapture == NULL)
+        {
+            // search dashboard items
+            // search in reverse order
+            for(auto i = m_renderModel.dashboard.rbegin(); i != m_renderModel.dashboard.rend(); i++)
+            {
+                AGInteractiveObject *object = *i;
+                
+                // check regular interactive object
+                if(object->renderFixed())
+                    touchCapture = object->hitTest(fixedPos);
+                else
+                    touchCapture = object->hitTest(pos);
+                
+                if(touchCapture)
+                {
+                    touchCaptureTopLevelObject = object;
+                    break;
+                }
+            }
+        }
+        
+        if(touchCapture == NULL)
+        {
+            touchCapture = m_renderModel.uiDashboard->hitTest(fixedPos);
+            if(touchCapture)
+                touchCaptureTopLevelObject = m_renderModel.uiDashboard;
+        }
+
+        // search pending handlers
+        if(touchCapture == NULL)
+        {
+            if(_touchHandlerQueue && [_touchHandlerQueue hitTest:pos])
+            {
+                handler = _touchHandlerQueue;
+                _touchHandlerQueue = nil;
+            }
+        }
+        
+        // search the rest of the objects
+        if(touchCapture == NULL && handler == nil)
+        {
+            // search in reverse order
+            for(auto i = m_renderModel.objects.rbegin(); i != m_renderModel.objects.rend(); i++)
+            {
+                AGInteractiveObject *object = *i;
+                
+                // check if its a node
+                // todo: check node ports first
+                AGNode *node = dynamic_cast<AGNode *>(object);
+                if(node)
+                {
+                    // nodes require special hit testing
+                    // in addition to regular hit testing
+                    int port;
+                    AGNode::HitTestResult result = node->hit(pos, &port);
+                    if(result != AGNode::HIT_NONE)
+                    {
+                        if(result == AGNode::HIT_INPUT_NODE || result == AGNode::HIT_OUTPUT_NODE)
+                            handler = [[AGConnectTouchHandler alloc] initWithViewController:m_viewController];
+                        else if(result == AGNode::HIT_MAIN_NODE)
+                            handler = [[AGMoveNodeTouchHandler alloc] initWithViewController:m_viewController node:node];
+                        
+                        break;
+                    }
+                }
+                
+                // check regular interactive object
+                if(object->renderFixed())
+                    touchCapture = object->hitTest(fixedPos);
+                else
+                    touchCapture = object->hitTest(pos);
+                
+                if(touchCapture)
+                {
+                    touchCaptureTopLevelObject = object;
+                    break;
+                }
+            }
+        }
+        
+        // search node connections
+        if(touchCapture == NULL && handler == nil)
+        {
+            for(AGNode *node : m_model.graph.nodes())
+            {
+                for(AGConnection *connection : node->outbound())
+                {
+                    touchCapture = connection->hitTest(pos);
+                    if(touchCapture)
+                        break;
+                }
+                
+                if(touchCapture)
+                    break;
+            }
+        }
+        
+        // deal with drawing
+        if(touchCapture == NULL && handler == nil)
+        {
+            if(_freeTouches.size() == 1)
+            {
+                // zoom gesture
+                UITouch *firstTouch = _freeTouches.begin()->first;
+                UITouch *secondTouch = touch;
+                
+                _scrollZoomTouches[0] = firstTouch;
+                _freeTouches.erase(firstTouch);
+                if(_touchHandlers.count(firstTouch))
+                {
+                    [_touchHandlers[firstTouch] touchesCancelled:[NSSet setWithObject:secondTouch] withEvent:event];
+                    _touchHandlers.erase(firstTouch);
+                }
+                
+                _scrollZoomTouches[1] = secondTouch;
+                
+                CGPoint p1 = [_scrollZoomTouches[0] locationInView:m_viewController.view];
+                CGPoint p2 = [_scrollZoomTouches[1] locationInView:m_viewController.view];
+                _initialZoomDist = GLvertex2f(p1).distanceTo(GLvertex2f(p2));
+                _passedZoomDeadzone = NO;
+            }
+            else
+            {
+                switch (m_drawMode)
+                {
+                    case DRAWMODE_NODE:
+                        handler = [[AGDrawNodeTouchHandler alloc] initWithViewController:m_viewController];
+                        break;
+                    case DRAWMODE_FREEDRAW:
+                        handler = [[AGDrawFreedrawTouchHandler alloc] initWithViewController:m_viewController];
+                        break;
+                    case DRAWMODE_FREEDRAW_ERASE:
+                        handler = [[AGEraseFreedrawTouchHandler alloc] initWithViewController:m_viewController];
+                        break;
+                }
+                
+                [handler touchesBegan:touches withEvent:event];
+                
+                _freeTouches[touch] = touch;
+            }
+        }
+        
+        // record touch
+        _touches[touch] = touch;
+        
+        // process handler (if any)
+        if(handler)
+        {
+            _touchHandlers[touch] = handler;
+            [handler touchesBegan:[NSSet setWithObject:touch] withEvent:event];
+        }
+        // process capture (if any)
+        else if(touchCapture)
+        {
+            _touchCaptures[touch] = touchCapture;
+            if(touchCapture->renderFixed())
+                touchCapture->touchDown(AGTouchInfo(fixedPos, p, (TouchID) touch, touch));
+            else
+            {
+                GLvertex3f localPos = pos;
+                if(touchCapture->parent())
+                    // touchDown/Move/Up events treat the position as if it were in the parent coordinate space
+                    localPos = touchCapture->parent()->globalToLocalCoordinateSpace(localPos);
+                touchCapture->touchDown(AGTouchInfo(localPos, p, (TouchID) touch, touch));
+            }
+        }
+        
+        // has
+        // is obj or one of its N-children equal to test?
+        std::function<bool (AGRenderObject *obj, AGRenderObject *test)> has = [&has] (AGRenderObject *obj, AGRenderObject *test)
+        {
+            if(obj == test) return true;
+            for(auto child : obj->children())
+                if(has(child, test))
+                    return true;
+            return false;
+        };
+        
+        itmap_safe(_touchOutsideListeners, ^(AGInteractiveObject *&touchOutsideListener){
+            if(!has(touchOutsideListener, touchCapture))
+                touchOutsideListener->touchOutside();
+        });
+        
+        // TODO: what does __strong here really mean
+        // TODO: convert AGTouchHandler to C++ class
+        itmap_safe(_touchOutsideHandlers, ^(__strong AGTouchHandler *&outsideHandler){
+            if(handler != outsideHandler)
+                [outsideHandler touchOutside];
+        });
+    }
+}
+
+void AGBaseTouchHandler::touchesMoved(NSSet<UITouch *> *touches, UIEvent *event)
+{
+    dbgprint_off("touchesMoved, count = %lu\n", (unsigned long)[touches count]);
+    
+    BOOL didScroll = NO;
+    for(UITouch *touch in touches)
+    {
+        if(_touchCaptures.count(touch))
+        {
+            AGInteractiveObject *touchCapture = _touchCaptures[touch];
+            if(touchCapture != NULL)
+            {
+                CGPoint screenPos = [touch locationInView:m_viewController.view];
+                
+                if(touchCapture->renderFixed())
+                {
+                    GLvertex3f fixedPos = [m_viewController fixedCoordinateForScreenCoordinate:screenPos];
+                    touchCapture->touchMove(AGTouchInfo(fixedPos, screenPos, (TouchID) touch, touch));
+                }
+                else
+                {
+                    GLvertex3f localPos = [m_viewController worldCoordinateForScreenCoordinate:screenPos];
+                    if(touchCapture->parent())
+                        // touchDown/Move/Up events treat the position as if it were in the parent coordinate space
+                        localPos = touchCapture->parent()->globalToLocalCoordinateSpace(localPos);
+                    touchCapture->touchMove(AGTouchInfo(localPos, screenPos, (TouchID) touch, touch));
+                }
+            }
+        }
+        else if(_touchHandlers.count(touch))
+        {
+            AGTouchHandler *touchHandler = _touchHandlers[touch];
+            [touchHandler touchesMoved:[NSSet setWithObject:touch] withEvent:event];
+        }
+        else if(_scrollZoomTouches[0] == touch || _scrollZoomTouches[1] == touch)
+        {
+            if(!didScroll)
+            {
+                didScroll = YES;
+                CGPoint p1 = [_scrollZoomTouches[0] locationInView:m_viewController.view];
+                CGPoint p1_1 = [_scrollZoomTouches[0] previousLocationInView:m_viewController.view];
+                CGPoint p2 = [_scrollZoomTouches[1] locationInView:m_viewController.view];
+                CGPoint p2_1 = [_scrollZoomTouches[1] previousLocationInView:m_viewController.view];
+                
+                CGPoint centroid = CGPointMake((p1.x+p2.x)/2, (p1.y+p2.y)/2);
+                CGPoint centroid_1 = CGPointMake((p1_1.x+p2_1.x)/2, (p1_1.y+p2_1.y)/2);
+                
+                GLvertex3f pos = [m_viewController worldCoordinateForScreenCoordinate:centroid];
+                GLvertex3f pos_1 = [m_viewController worldCoordinateForScreenCoordinate:centroid_1];
+                
+                m_renderModel.camera = m_renderModel.camera + (pos.xy() - pos_1.xy());
+                dbgprint_off("camera: %f, %f, %f\n", m_renderModel.camera.x, m_renderModel.camera.y, m_renderModel.camera.z);
+                
+                float dist = GLvertex2f(p1).distanceTo(GLvertex2f(p2));
+                float dist_1 = GLvertex2f(p1_1).distanceTo(GLvertex2f(p2_1));
+                if(!_passedZoomDeadzone &&
+                   (dist_1 > _initialZoomDist+AG_ZOOM_DEADZONE ||
+                    dist_1 < _initialZoomDist-AG_ZOOM_DEADZONE))
+                {
+                    dbgprint("passed zoom deadzone\n");
+                    _passedZoomDeadzone = YES;
+                }
+                if(_passedZoomDeadzone)
+                {
+                    float zoom = (dist - dist_1);
+                    m_renderModel.cameraZ += zoom;
+                }
+            }
+        }
+    }
+}
+
+void AGBaseTouchHandler::touchesEnded(NSSet<UITouch *> *touches, UIEvent *event)
+{
+    dbgprint_off("touchEnded, count = %lu\n", (unsigned long)[touches count]);
+    
+    for(UITouch *touch in touches)
+    {
+        if(_touchCaptures.count(touch))
+        {
+            AGInteractiveObject *touchCapture = _touchCaptures[touch];
+            if(touchCapture != NULL)
+            {
+                CGPoint screenPos = [touch locationInView:m_viewController.view];
+
+                if(touchCapture->renderFixed())
+                {
+                    GLvertex3f fixedPos = [m_viewController fixedCoordinateForScreenCoordinate:screenPos];
+                    touchCapture->touchUp(AGTouchInfo(fixedPos, screenPos, (TouchID) touch, touch));
+                }
+                else
+                {
+                    GLvertex3f localPos = [m_viewController worldCoordinateForScreenCoordinate:screenPos];
+                    if(touchCapture->parent())
+                        // touchDown/Move/Up events treat the position as if it were in the parent coordinate space
+                        localPos = touchCapture->parent()->globalToLocalCoordinateSpace(localPos);
+                    touchCapture->touchUp(AGTouchInfo(localPos, screenPos, (TouchID) touch, touch));
+                }
+
+                _touchCaptures.erase(touch);
+            }
+        }
+        else if(_touchHandlers.count(touch))
+        {
+            AGTouchHandler *touchHandler = _touchHandlers[touch];
+            [touchHandler touchesEnded:[NSSet setWithObject:touch] withEvent:event];
+            AGTouchHandler *nextHandler = [touchHandler nextHandler];
+            if(nextHandler)
+            {
+                dbgprint("queuing touchHandler: %s 0x%08lx\n", [NSStringFromClass([nextHandler class]) UTF8String], (unsigned long) nextHandler);
+                _touchHandlerQueue = nextHandler;
+            }
+            _touchHandlers.erase(touch);
+        }
+        else if(touch == _scrollZoomTouches[0] || touch == _scrollZoomTouches[1])
+        {
+            // return remaining touch to freetouches
+            if(touch == _scrollZoomTouches[0])
+                _freeTouches[_scrollZoomTouches[1]] = _scrollZoomTouches[1];
+            else
+                _freeTouches[_scrollZoomTouches[0]] = _scrollZoomTouches[0];
+            _scrollZoomTouches[0] = _scrollZoomTouches[1] = NULL;
+        }
+        
+        _freeTouches.erase(touch);
+        _touches.erase(touch);
+    }
+}
+
+void AGBaseTouchHandler::touchesCancelled(NSSet<UITouch *> *touches, UIEvent *event)
+{
+    touchesCancelled(touches, event);
+}
+
+void AGBaseTouchHandler::addTouchOutsideHandler(AGTouchHandler* handler)
+{
+    _touchOutsideHandlers.push_back(handler);
+}
+
+void AGBaseTouchHandler::removeTouchOutsideHandler(AGTouchHandler* handler)
+{
+    _touchOutsideHandlers.remove(handler);
+}
+
+void AGBaseTouchHandler::addTouchOutsideListener(AGInteractiveObject* object)
+{
+    _touchOutsideListeners.push_back(object);
+}
+
+void AGBaseTouchHandler::removeTouchOutsideListener(AGInteractiveObject* object)
+{
+    _touchOutsideListeners.remove(object);
+}
+
+void AGBaseTouchHandler::objectRemovedFromSketchModel(AGInteractiveObject* object)
+{
+    _removeFromTouchCapture(object);
+}
+
+void AGBaseTouchHandler::objectRemovedFromRenderModel(AGInteractiveObject* object)
+{
+    _removeFromTouchCapture(object);
+}
+
+void AGBaseTouchHandler::update(float t, float dt)
+{
+    for(auto kv : _touchHandlers)
+        [_touchHandlers[kv.first] update:t dt:dt];
+    [_touchHandlerQueue update:t dt:dt];
+}
+
+void AGBaseTouchHandler::render()
+{
+    for(auto kv : _touchHandlers)
+        [_touchHandlers[kv.first] render];
+    [_touchHandlerQueue render];
+}
+
+void AGBaseTouchHandler::_removeFromTouchCapture(AGInteractiveObject *object)
+{
+    // remove object and all children from touch capture
+    std::function<void (AGRenderObject *obj)> removeAll = [&removeAll, object, this] (AGRenderObject *obj)
+    {
+        AGInteractiveObject *intObj = dynamic_cast<AGInteractiveObject *>(obj);
+        if(intObj)
+            removevalues(_touchCaptures, intObj);
+        for(auto child : obj->children())
+            removeAll(child);
+    };
+    
+    removeAll(object);
+}
+
+void AGBaseTouchHandler::resignTouchHandler(AGTouchHandler* handler)
+{
+    removevalues(_touchHandlers, handler);
+    _touchOutsideHandlers.remove(handler);
+    if(handler == _touchHandlerQueue)
+        _touchHandlerQueue = nil;
+}
 
 
 AGViewController_::AGViewController_(AGViewController *viewController)
