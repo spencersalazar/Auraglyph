@@ -25,17 +25,17 @@ public:
     GLKMatrix4 fixedModelView;
     GLKMatrix4 projection;
     
-    float t;
+    float t = 0;
     GLvertex3f camera;
-    slewf cameraZ;
+    slewf cameraZ = slewf(0.4, 0);
     
     AGInteractiveObjectList dashboard;
     AGInteractiveObjectList objects;
     AGInteractiveObjectList fadingOut;
     
-    AGDashboard *uiDashboard;
+    AGDashboard *uiDashboard = nullptr;
     AGModalOverlay modalOverlay;
-    AGTutorial *currentTutorial;
+    AGTutorial *currentTutorial = nullptr;
 };
 
 

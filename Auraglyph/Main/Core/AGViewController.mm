@@ -129,8 +129,6 @@ static AGViewController * g_instance = nil;
     
     g_instance = self;
         
-    _renderModel.t = 0;
-    
     _proxy = new AGViewController_(self);
     _baseTouchHandler.reset(new AGBaseTouchHandler(self, _model, _renderModel));
     
@@ -149,10 +147,6 @@ static AGViewController * g_instance = nil;
 #endif
 
     [self setupGL];
-    
-    _renderModel.camera = GLvertex3f(0, 0, 0);
-    _renderModel.cameraZ.rate = 0.4;
-    _renderModel.cameraZ.reset(0);
     
     AGGraphManager::instance().setViewController(_proxy);
     
