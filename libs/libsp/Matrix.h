@@ -29,6 +29,8 @@ public:
     static Matrix4 makeTranslation(float tx, float ty, float tz);
     static Matrix4 makeScale(float sx, float sy, float sz);
     static Matrix4 makeRotation(float radians, float rx, float ry, float rz);
+    static Matrix4 makeFrustum(float left, float right, float bottom, float top,
+                               float nearZ, float farZ);
 
     Matrix4();
     Matrix4(const GLKMatrix4 &mat);

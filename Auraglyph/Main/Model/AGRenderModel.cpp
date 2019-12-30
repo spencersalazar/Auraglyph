@@ -28,13 +28,15 @@ void AGRenderModel::update(float dt)
 
 void AGRenderModel::updateMatrices()
 {
-    GLKMatrix4 projectionMatrix;
-    projectionMatrix = GLKMatrix4MakeFrustum(-m_screenBounds.size.width/2, m_screenBounds.size.width/2,
-                                             -m_screenBounds.size.height/2, m_screenBounds.size.height/2,
-                                             10.0f, 10000.0f);
+    /* PROJECTION MATRIX */
+    projection = Matrix4::makeFrustum(-m_screenBounds.size.width/2, m_screenBounds.size.width/2,
+                                      -m_screenBounds.size.height/2, m_screenBounds.size.height/2,
+                                      10.0f, 10000.0f);
     
-    fixedModelView = GLKMatrix4MakeTranslation(0, 0, -10.1f);
-    
+    /* FIXED MODEL/VIEW MATRIX (e.g does not move with camera) */
+    fixedModelView = Matrix4::makeTranslation(0, 0, -10.1f);
+        
+    // camera
     dbgprint_off("cameraZ: %f\n", (float) cameraZ);
     
     float cameraScale = 1.0;
@@ -45,20 +47,15 @@ void AGRenderModel::updateMatrices()
     if(cameraZ <= 0)
         camera.z = -0.1-(-1+powf(2, -cameraZ*0.045));
     
-    GLKMatrix4 baseModelViewMatrix = GLKMatrix4Translate(fixedModelView, camera.x, camera.y, camera.z);
+    /* MODEL/VIEW MATRIX */
+    modelView = fixedModelView.translate(camera.x, camera.y, camera.z);
     if(cameraScale > 1.0f)
-        baseModelViewMatrix = GLKMatrix4Scale(baseModelViewMatrix, cameraScale, cameraScale, 1.0f);
+        modelView.scaleInPlace(cameraScale, cameraScale, 1.0f);
     
-    // Compute the model view matrix for the object rendered with GLKit
-    GLKMatrix4 modelViewMatrix = GLKMatrix4Identity;
-    modelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, modelViewMatrix);
-    
-    modelView = modelViewMatrix;
-    projection = projectionMatrix;
-    
+    // update render object shared variables
     AGRenderObject::setProjectionMatrix(projection);
     AGRenderObject::setGlobalModelViewMatrix(modelView);
     AGRenderObject::setFixedModelViewMatrix(fixedModelView);
-    AGRenderObject::setCameraMatrix(GLKMatrix4MakeTranslation(camera.x, camera.y, camera.z));
+    AGRenderObject::setCameraMatrix(Matrix4::makeTranslation(camera.x, camera.y, camera.z));
 }
 
