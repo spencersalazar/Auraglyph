@@ -74,6 +74,8 @@ using namespace std;
 #define AG_ZOOM_DEADZONE (15)
 
 
+/** Basic model for Auraglyph sketch- nodes + freehand drawings
+ */
 class AGModel
 {
 public:
@@ -82,17 +84,49 @@ public:
     std::list<AGFreeDraw *> freedraws;
 };
 
+/** Rendering model (things that are drawn to screen)
+ */
+class AGRenderModel
+{
+public:
+    GLKMatrix4 modelView;
+    GLKMatrix4 fixedModelView;
+    GLKMatrix4 projection;
+    
+    float t;
+    GLvertex3f camera;
+    slewf cameraZ;
+    
+    AGInteractiveObjectList dashboard;
+    AGInteractiveObjectList objects;
+    AGInteractiveObjectList fadingOut;
+    
+    AGDashboard *uiDashboard;
+    AGModalOverlay modalOverlay;
+    AGTutorial *currentTutorial;
+};
+
+
+class AGBaseTouchHandler
+{
+public:
+    AGBaseTouchHandler(const AGModel& model);
+    
+    void touchesBegan(NSSet<UITouch *> *touches, UIEvent *event);
+    void touchesMoved(NSSet<UITouch *> *touches, UIEvent *event);
+    void touchesEnded(NSSet<UITouch *> *touches, UIEvent *event);
+    void touchesCancelled(NSSet<UITouch *> *touches, UIEvent *event);
+    
+private:
+    
+};
+
 
 @interface AGViewController ()
 {
-    GLKMatrix4 _modelView;
-    GLKMatrix4 _fixedModelView;
-    GLKMatrix4 _projection;
+    AGModel _model;
+    AGRenderModel _renderModel;
     
-    float _t;
-    
-    GLvertex3f _camera;
-    slewf _cameraZ;
     float _initialZoomDist;
     BOOL _passedZoomDeadzone;
     
@@ -102,13 +136,7 @@ public:
     map<UITouch *, AGTouchHandler *> _touchHandlers;
     map<UITouch *, AGInteractiveObject *> _touchCaptures;
     AGTouchHandler *_touchHandlerQueue;
-    
-    AGModel _model;
-    
-    AGInteractiveObjectList _dashboard;
-    AGInteractiveObjectList _objects;
-    AGInteractiveObjectList _fadingOut;
-    
+            
     AGInteractiveObjectList _touchOutsideListeners;
     list<AGTouchHandler *> _touchOutsideHandlers;
     
@@ -116,14 +144,10 @@ public:
     
     AGDrawMode _drawMode;
     
-    AGDashboard *_uiDashboard;
-    AGModalOverlay _modalOverlay;
-    
     AGFile _currentDocumentFile;
     std::vector<std::vector<GLvertex2f>> _currentDocName;
     
     AGViewController_ *_proxy;
-    AGTutorial *_currentTutorial;
 }
 
 @property (strong, nonatomic) EAGLContext *context;
@@ -162,9 +186,9 @@ static AGViewController * g_instance = nil;
     return [[NSBundle mainBundle] pathForResource:@"Orbitron-Medium.ttf" ofType:@""];
 }
 
-- (GLKMatrix4)modelViewMatrix { return _modelView; }
-- (GLKMatrix4)fixedModelViewMatrix { return _fixedModelView; }
-- (GLKMatrix4)projectionMatrix { return _projection; }
+- (GLKMatrix4)modelViewMatrix { return _renderModel.modelView; }
+- (GLKMatrix4)fixedModelViewMatrix { return _renderModel.fixedModelView; }
+- (GLKMatrix4)projectionMatrix { return _renderModel.projection; }
 
 - (void)viewDidLoad
 {
@@ -172,7 +196,7 @@ static AGViewController * g_instance = nil;
     
     g_instance = self;
         
-    _t = 0;
+    _renderModel.t = 0;
     
     _proxy = new AGViewController_(self);
     
@@ -192,9 +216,9 @@ static AGViewController * g_instance = nil;
 
     [self setupGL];
     
-    _camera = GLvertex3f(0, 0, 0);
-    _cameraZ.rate = 0.4;
-    _cameraZ.reset(0);
+    _renderModel.camera = GLvertex3f(0, 0, 0);
+    _renderModel.cameraZ.rate = 0.4;
+    _renderModel.cameraZ.reset(0);
     
     AGGraphManager::instance().setViewController(_proxy);
     
@@ -212,7 +236,7 @@ static AGViewController * g_instance = nil;
     [self initUI];
     
     if (AGSettings::instance().showTutorialOnLaunch()) {
-        _currentTutorial = AGTutorial::createInitialTutorial(_proxy);
+        _renderModel.currentTutorial = AGTutorial::createInitialTutorial(_proxy);
         [self _newDocument:NO];
     } else {
         /* load default program */
@@ -229,7 +253,7 @@ static AGViewController * g_instance = nil;
         }
         
         AGUtility::after(0.8, [self](){
-            _uiDashboard->unhide();
+            _renderModel.uiDashboard->unhide();
         });
     }
     
@@ -247,17 +271,17 @@ static AGViewController * g_instance = nil;
     // needed for worldCoordinateForScreenCoordinate to work
     [self updateMatrices];
     
-    _uiDashboard = new AGDashboard(_proxy);
-    _uiDashboard->init();
+    _renderModel.uiDashboard = new AGDashboard(_proxy);
+    _renderModel.uiDashboard->init();
     
     _drawMode = DRAWMODE_NODE;
     
     /* modal dialog */
-    _modalOverlay.init();
-    AGModalDialog::setGlobalModalOverlay(&_modalOverlay);
+    _renderModel.modalOverlay.init();
+    AGModalDialog::setGlobalModalOverlay(&_renderModel.modalOverlay);
     
     /* fade in */
-    _uiDashboard->hide(false);
+    _renderModel.uiDashboard->hide(false);
 }
 
 - (void)_updateFixedUIPosition
@@ -265,9 +289,9 @@ static AGViewController * g_instance = nil;
     // needed for worldCoordinateForScreenCoordinate to work
     [self updateMatrices];
     
-    _uiDashboard->onInterfaceOrientationChange();
+    _renderModel.uiDashboard->onInterfaceOrientationChange();
     
-    _modalOverlay.setScreenSize(GLvertex2f(self.view.bounds.size.width, self.view.bounds.size.height));
+    _renderModel.modalOverlay.setScreenSize(GLvertex2f(self.view.bounds.size.width, self.view.bounds.size.height));
 }
 
 - (void)dealloc
@@ -331,7 +355,7 @@ static AGViewController * g_instance = nil;
     assert([NSThread isMainThread]);
     
     _model.graph.addNode(node);
-    _objects.push_back(node);
+    _renderModel.objects.push_back(node);
 }
 
 - (void)removeNode:(AGNode *)node
@@ -351,7 +375,7 @@ static AGViewController * g_instance = nil;
         [self removeFromTouchCapture:node];
         
         _model.graph.removeNode(node);
-        _objects.remove(node);
+        _renderModel.objects.remove(node);
     }
 }
 
@@ -365,7 +389,7 @@ static AGViewController * g_instance = nil;
     assert([NSThread isMainThread]);
     assert(object);
     
-    _objects.push_back(object);
+    _renderModel.objects.push_back(object);
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object over:(AGInteractiveObject *)over
@@ -373,7 +397,7 @@ static AGViewController * g_instance = nil;
     assert([NSThread isMainThread]);
     assert(object);
     
-    insert_after(_objects, object, over);
+    insert_after(_renderModel.objects, object, over);
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object under:(AGInteractiveObject *)under
@@ -381,7 +405,7 @@ static AGViewController * g_instance = nil;
     assert([NSThread isMainThread]);
     assert(object);
     
-    insert_before(_objects, object, under);
+    insert_before(_renderModel.objects, object, under);
 }
 
 - (void)fadeOutAndDelete:(AGInteractiveObject *)object
@@ -394,17 +418,17 @@ static AGViewController * g_instance = nil;
     
     [self removeFromTouchCapture:object];
     
-    assert(!contains(_fadingOut, object));
-    if(!contains(_fadingOut, object)) {
+    assert(!contains(_renderModel.fadingOut, object));
+    if(!contains(_renderModel.fadingOut, object)) {
         object->renderOut();
-        _fadingOut.push_back(object);
+        _renderModel.fadingOut.push_back(object);
     }
     
-    _objects.remove(object);
+    _renderModel.objects.remove(object);
     AGNode *node = dynamic_cast<AGNode *>(object);
     if(node)
         _model.graph.removeNode(node);
-    _dashboard.remove(object);
+    _renderModel.dashboard.remove(object);
     
     AGFreeDraw *draw = dynamic_cast<AGFreeDraw *>(object);
     if(draw)
@@ -431,7 +455,7 @@ static AGViewController * g_instance = nil;
     assert([NSThread isMainThread]);
     
     _model.freedraws.push_back(freedraw);
-    _objects.push_back(freedraw);
+    _renderModel.objects.push_back(freedraw);
 }
 
 - (void)resignFreeDraw:(AGFreeDraw *)freedraw
@@ -440,7 +464,7 @@ static AGViewController * g_instance = nil;
     assert(freedraw);
     
     _model.freedraws.remove(freedraw);
-    _objects.remove(freedraw);
+    _renderModel.objects.remove(freedraw);
 }
 
 - (void)removeFreeDraw:(AGFreeDraw *)freedraw
@@ -449,7 +473,7 @@ static AGViewController * g_instance = nil;
     assert(freedraw);
     
     _model.freedraws.remove(freedraw);
-    _fadingOut.push_back(freedraw);
+    _renderModel.fadingOut.push_back(freedraw);
 }
 
 - (const list<AGFreeDraw *> &)freedraws
@@ -459,20 +483,20 @@ static AGViewController * g_instance = nil;
 
 - (void) showDashboard
 {
-    _uiDashboard->unhide();
+    _renderModel.uiDashboard->unhide();
 }
 
 - (void) hideDashboard
 {
-    _uiDashboard->hide();
+    _renderModel.uiDashboard->hide();
 }
 
 - (void)showTutorial:(AGTutorial *)tutorial
 {
-    if (tutorial != _currentTutorial)
-        SAFE_DELETE(_currentTutorial);
+    if (tutorial != _renderModel.currentTutorial)
+        SAFE_DELETE(_renderModel.currentTutorial);
     [self _newDocument:NO];
-    _currentTutorial = tutorial;
+    _renderModel.currentTutorial = tutorial;
 }
 
 - (void)addTouchOutsideListener:(AGInteractiveObject *)listener
@@ -520,19 +544,19 @@ static AGViewController * g_instance = nil;
                                              -self.view.bounds.size.height/2, self.view.bounds.size.height/2,
                                              10.0f, 10000.0f);
     
-    _fixedModelView = GLKMatrix4MakeTranslation(0, 0, -10.1f);
+    _renderModel.fixedModelView = GLKMatrix4MakeTranslation(0, 0, -10.1f);
     
-    dbgprint_off("cameraZ: %f\n", (float) _cameraZ);
+    dbgprint_off("cameraZ: %f\n", (float) _renderModel.cameraZ);
     
     float cameraScale = 1.0;
-    if(_cameraZ > 0)
-        _cameraZ.reset(0);
-    if(_cameraZ < -160)
-        _cameraZ.reset(-160);
-    if(_cameraZ <= 0)
-        _camera.z = -0.1-(-1+powf(2, -_cameraZ*0.045));
+    if(_renderModel.cameraZ > 0)
+        _renderModel.cameraZ.reset(0);
+    if(_renderModel.cameraZ < -160)
+        _renderModel.cameraZ.reset(-160);
+    if(_renderModel.cameraZ <= 0)
+        _renderModel.camera.z = -0.1-(-1+powf(2, -_renderModel.cameraZ*0.045));
     
-    GLKMatrix4 baseModelViewMatrix = GLKMatrix4Translate(_fixedModelView, _camera.x, _camera.y, _camera.z);
+    GLKMatrix4 baseModelViewMatrix = GLKMatrix4Translate(_renderModel.fixedModelView, _renderModel.camera.x, _renderModel.camera.y, _renderModel.camera.z);
     if(cameraScale > 1.0f)
         baseModelViewMatrix = GLKMatrix4Scale(baseModelViewMatrix, cameraScale, cameraScale, 1.0f);
     
@@ -540,13 +564,13 @@ static AGViewController * g_instance = nil;
     GLKMatrix4 modelViewMatrix = GLKMatrix4Identity;
     modelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, modelViewMatrix);
     
-    _modelView = modelViewMatrix;
-    _projection = projectionMatrix;
+    _renderModel.modelView = modelViewMatrix;
+    _renderModel.projection = projectionMatrix;
     
     AGRenderObject::setProjectionMatrix(projectionMatrix);
     AGRenderObject::setGlobalModelViewMatrix(modelViewMatrix);
-    AGRenderObject::setFixedModelViewMatrix(_fixedModelView);
-    AGRenderObject::setCameraMatrix(GLKMatrix4MakeTranslation(_camera.x, _camera.y, _camera.z));
+    AGRenderObject::setFixedModelViewMatrix(_renderModel.fixedModelView);
+    AGRenderObject::setCameraMatrix(GLKMatrix4MakeTranslation(_renderModel.camera.x, _renderModel.camera.y, _renderModel.camera.z));
 }
 
 - (GLvertex3f)worldCoordinateForScreenCoordinate:(CGPoint)p
@@ -556,10 +580,10 @@ static AGViewController * g_instance = nil;
     bool success;
     
     // get window-z coordinate at (0, 0, 0)
-    GLKVector3 probe = GLKMathProject(GLKVector3Make(0, 0, 0), _modelView, _projection, viewport);
+    GLKVector3 probe = GLKMathProject(GLKVector3Make(0, 0, 0), _renderModel.modelView, _renderModel.projection, viewport);
     
     GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, probe.z),
-                                      _modelView, _projection, viewport, &success);
+                                      _renderModel.modelView, _renderModel.projection, viewport, &success);
     
     return GLvertex3f(vec.x, vec.y, 0);
 }
@@ -570,50 +594,52 @@ static AGViewController * g_instance = nil;
         (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
     bool success;
     GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, 0.0f),
-                                      _fixedModelView, _projection, viewport, &success);
+                                      _renderModel.fixedModelView,
+                                      _renderModel.projection,
+                                      viewport, &success);
     
     return GLvertex3f(vec.x, vec.y, 0);
 }
 
 - (void)update
 {
-    if(_fadingOut.size() > 0) {
-        filter_delete(_fadingOut, [](AGInteractiveObject *&obj){
+    if(_renderModel.fadingOut.size() > 0) {
+        filter_delete(_renderModel.fadingOut, [](AGInteractiveObject *&obj){
             assert(obj);
             return obj->finishedRenderingOut();
         });
     }
     
-    _cameraZ.interp();
+    _renderModel.cameraZ.interp();
     
     [self updateMatrices];
     
     float dt = self.timeSinceLastUpdate;
-    _t += dt;
+    _renderModel.t += dt;
     
-    _uiDashboard->update(_t, dt);
+    _renderModel.uiDashboard->update(_renderModel.t, dt);
     
-    _modalOverlay.update(_t, dt);
+    _renderModel.modalOverlay.update(_renderModel.t, dt);
     
-    itmap_safe(_dashboard, ^(AGInteractiveObject *&object){
-        object->update(_t, dt);
+    itmap_safe(_renderModel.dashboard, ^(AGInteractiveObject *&object){
+        object->update(_renderModel.t, dt);
     });
-    itmap_safe(_objects, ^(AGInteractiveObject *&object){
-        object->update(_t, dt);
+    itmap_safe(_renderModel.objects, ^(AGInteractiveObject *&object){
+        object->update(_renderModel.t, dt);
     });
-    itmap_safe(_fadingOut, ^(AGInteractiveObject *&object){
-        object->update(_t, dt);
+    itmap_safe(_renderModel.fadingOut, ^(AGInteractiveObject *&object){
+        object->update(_renderModel.t, dt);
     });
     
     for(auto kv : _touchHandlers)
-        [_touchHandlers[kv.first] update:_t dt:dt];
-    [_touchHandlerQueue update:_t dt:dt];
+        [_touchHandlers[kv.first] update:_renderModel.t dt:dt];
+    [_touchHandlerQueue update:_renderModel.t dt:dt];
     
-    if(_currentTutorial)
+    if(_renderModel.currentTutorial)
     {
-        _currentTutorial->update(_t, dt);
-        if(_currentTutorial->isComplete())
-            SAFE_DELETE(_currentTutorial);
+        _renderModel.currentTutorial->update(_renderModel.t, dt);
+        if(_renderModel.currentTutorial->isComplete())
+            SAFE_DELETE(_renderModel.currentTutorial);
     }
 }
 
@@ -641,24 +667,24 @@ static AGViewController * g_instance = nil;
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
     // render objects
-    for(AGInteractiveObject *object : _objects)
+    for(AGInteractiveObject *object : _renderModel.objects)
         object->render();
     // render removeList
-    for(AGInteractiveObject *removeObject : _fadingOut)
+    for(AGInteractiveObject *removeObject : _renderModel.fadingOut)
         removeObject->render();
     // render user interface
-    _uiDashboard->render();
-    for(AGInteractiveObject *object : _dashboard)
+    _renderModel.uiDashboard->render();
+    for(AGInteractiveObject *object : _renderModel.dashboard)
         object->render();
     
     for(auto kv : _touchHandlers)
         [_touchHandlers[kv.first] render];
     [_touchHandlerQueue render];
     
-    if(_currentTutorial)
-        _currentTutorial->render();
+    if(_renderModel.currentTutorial)
+        _renderModel.currentTutorial->render();
     
-    _modalOverlay.render();
+    _renderModel.modalOverlay.render();
 }
 
 - (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)hitNode port:(int *)port
@@ -699,17 +725,17 @@ static AGViewController * g_instance = nil;
         AGInteractiveObject *touchCaptureTopLevelObject = NULL;
         
         // check modal overlay
-        touchCapture = _modalOverlay.hitTest(fixedPos);
+        touchCapture = _renderModel.modalOverlay.hitTest(fixedPos);
         if(touchCapture)
         {
-            touchCaptureTopLevelObject = &_modalOverlay;
+            touchCaptureTopLevelObject = &_renderModel.modalOverlay;
         }
         
         if(touchCapture == NULL)
         {
             // search dashboard items
             // search in reverse order
-            for(auto i = _dashboard.rbegin(); i != _dashboard.rend(); i++)
+            for(auto i = _renderModel.dashboard.rbegin(); i != _renderModel.dashboard.rend(); i++)
             {
                 AGInteractiveObject *object = *i;
                 
@@ -729,9 +755,9 @@ static AGViewController * g_instance = nil;
         
         if(touchCapture == NULL)
         {
-            touchCapture = _uiDashboard->hitTest(fixedPos);
+            touchCapture = _renderModel.uiDashboard->hitTest(fixedPos);
             if(touchCapture)
-                touchCaptureTopLevelObject = _uiDashboard;
+                touchCaptureTopLevelObject = _renderModel.uiDashboard;
         }
 
         // search pending handlers
@@ -748,7 +774,7 @@ static AGViewController * g_instance = nil;
         if(touchCapture == NULL && handler == nil)
         {
             // search in reverse order
-            for(auto i = _objects.rbegin(); i != _objects.rend(); i++)
+            for(auto i = _renderModel.objects.rbegin(); i != _renderModel.objects.rend(); i++)
             {
                 AGInteractiveObject *object = *i;
                 
@@ -948,8 +974,8 @@ static AGViewController * g_instance = nil;
                 GLvertex3f pos = [self worldCoordinateForScreenCoordinate:centroid];
                 GLvertex3f pos_1 = [self worldCoordinateForScreenCoordinate:centroid_1];
                 
-                _camera = _camera + (pos.xy() - pos_1.xy());
-                dbgprint_off("camera: %f, %f, %f\n", _camera.x, _camera.y, _camera.z);
+                _renderModel.camera = _renderModel.camera + (pos.xy() - pos_1.xy());
+                dbgprint_off("camera: %f, %f, %f\n", _renderModel.camera.x, _renderModel.camera.y, _renderModel.camera.z);
                 
                 float dist = GLvertex2f(p1).distanceTo(GLvertex2f(p2));
                 float dist_1 = GLvertex2f(p1_1).distanceTo(GLvertex2f(p2_1));
@@ -963,7 +989,7 @@ static AGViewController * g_instance = nil;
                 if(_passedZoomDeadzone)
                 {
                     float zoom = (dist - dist_1);
-                    _cameraZ += zoom;
+                    _renderModel.cameraZ += zoom;
                 }
             }
         }
@@ -1059,7 +1085,7 @@ static AGViewController * g_instance = nil;
             AGSettings::instance().setLastOpenedDocument(_currentDocumentFile);
         });
         
-        _dashboard.push_back(saveDialog);
+        _renderModel.dashboard.push_back(saveDialog);
     }
     else
     {
@@ -1081,7 +1107,7 @@ static AGViewController * g_instance = nil;
         AGDocumentManager::instance().remove(file);
     });
 
-    _dashboard.push_back(loadDialog);
+    _renderModel.dashboard.push_back(loadDialog);
 }
 
 - (void)_openLoadExample
@@ -1093,13 +1119,13 @@ static AGViewController * g_instance = nil;
         [self _loadDocument:doc];
     });
     
-    _dashboard.push_back(loadDialog);
+    _renderModel.dashboard.push_back(loadDialog);
 }
 
 - (void)_clearDocument
 {
     // delete all objects
-    itmap_safe(_objects, ^(AGInteractiveObject *&object){
+    itmap_safe(_renderModel.objects, ^(AGInteractiveObject *&object){
         [self fadeOutAndDelete:object];
     });
 }
