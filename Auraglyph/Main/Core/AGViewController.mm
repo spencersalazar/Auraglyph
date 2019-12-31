@@ -11,9 +11,7 @@
 // Basics
 #import "AGDef.h"
 #import "Geometry.h"
-#import "GeoGenerator.h"
 #import "spstl.h"
-#import "TexFont.h"
 #import "NSString+STLString.h"
 #import "AGUtility.h"
 #import "AGSettings.h"
@@ -26,12 +24,10 @@
 #import "AGRenderModel.h"
 
 // Managers/etc
-#import "AGHandwritingRecognizer.h"
 #import "AGGraphManager.h"
 #import "AGFileManager.h"
 #import "AGGraph.h"
 #import "AGAudioManager.h"
-#import "AGGenericShader.h"
 #import "AGActivityManager.h"
 #import "AGUndoManager.h"
 #import "AGAnalytics.h"
@@ -154,11 +150,8 @@ static AGViewController * g_instance = nil;
     midiManager->setup();
     
     self.audioManager = [AGAudioManager new];
-    // update matrices so that worldCoordinateForScreenCoordinate works
-    _renderModel.updateMatrices();
-    
-    /* preload hw recognizer */
-    (void) AGHandwritingRecognizer::instance();
+    // need to do this so worldCoordinateForScreenCoordinate works
+    _renderModel.setScreenBounds(self.view.bounds);
     
     [self initUI];
     
@@ -201,7 +194,7 @@ static AGViewController * g_instance = nil;
     _renderModel.uiDashboard = new AGDashboard(_proxy);
     _renderModel.uiDashboard->init();
      
-    self.drawMode = DRAWMODE_NODE;
+    _baseTouchHandler->setDrawMode(DRAWMODE_NODE);
     
     /* modal dialog */
     _renderModel.modalOverlay.init();

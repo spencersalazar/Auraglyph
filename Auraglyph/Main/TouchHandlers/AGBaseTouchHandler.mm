@@ -12,6 +12,8 @@
 #include "AGRenderModel.h"
 #include "AGDashboard.h"
 
+#import "AGHandwritingRecognizer.h"
+
 #import "AGTouchHandler.h"
 #import "AGConnectTouchHandler.h"
 #import "AGMoveNodeTouchHandler.h"
@@ -27,7 +29,10 @@
 
 AGBaseTouchHandler::AGBaseTouchHandler(AGViewController* viewController, AGModel& model, AGRenderModel& renderModel)
 : m_viewController(viewController), m_model(model), m_renderModel(renderModel)
-{ }
+{
+    // preload handwriting recognition engine
+    (void) AGHandwritingRecognizer::instance();
+}
 
 AGNode::HitTestResult AGBaseTouchHandler::hitTest(const GLvertex3f& pos, AGNode **hitNode, int* port)
 {
