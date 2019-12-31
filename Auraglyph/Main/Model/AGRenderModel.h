@@ -45,6 +45,9 @@ public:
     void update(float dt);
     void updateMatrices();
     
+    GLvertex3f screenToWorld(CGPoint p);
+    GLvertex3f screenToFixed(CGPoint p);
+    
 private:
     CGRect m_screenBounds;
 };

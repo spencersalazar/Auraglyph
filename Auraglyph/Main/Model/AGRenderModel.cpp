@@ -8,6 +8,34 @@
 
 #include "AGRenderModel.h"
 
+GLvertex3f AGRenderModel::screenToWorld(CGPoint p)
+{
+    int viewport[] = {
+        (int)m_screenBounds.origin.x, (int)(m_screenBounds.origin.y),
+        (int)m_screenBounds.size.width, (int)m_screenBounds.size.height
+    };
+    bool success;
+    
+    // get window-z coordinate at (0, 0, 0)
+    GLKVector3 probe = GLKMathProject(GLKVector3Make(0, 0, 0), modelView, projection, viewport);
+    
+    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, m_screenBounds.size.height-p.y, probe.z),
+                                      modelView, projection, viewport, &success);
+    
+    return GLvertex3f(vec.x, vec.y, 0);
+}
+
+GLvertex3f AGRenderModel::screenToFixed(CGPoint p)
+{
+    int viewport[] = { (int)m_screenBounds.origin.x, (int)(m_screenBounds.origin.y),
+        (int)m_screenBounds.size.width, (int)m_screenBounds.size.height };
+    bool success;
+    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, m_screenBounds.size.height-p.y, 0.0f),
+                                      fixedModelView, projection, viewport, &success);
+    
+    return GLvertex3f(vec.x, vec.y, 0);
+}
+
 void AGRenderModel::setScreenBounds(CGRect bounds)
 {
     m_screenBounds = bounds;

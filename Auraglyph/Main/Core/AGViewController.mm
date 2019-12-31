@@ -441,30 +441,12 @@ static AGViewController * g_instance = nil;
 
 - (GLvertex3f)worldCoordinateForScreenCoordinate:(CGPoint)p
 {
-    int viewport[] = { (int)self.view.bounds.origin.x, (int)(self.view.bounds.origin.y),
-        (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
-    bool success;
-    
-    // get window-z coordinate at (0, 0, 0)
-    GLKVector3 probe = GLKMathProject(GLKVector3Make(0, 0, 0), _renderModel.modelView, _renderModel.projection, viewport);
-    
-    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, probe.z),
-                                      _renderModel.modelView, _renderModel.projection, viewport, &success);
-    
-    return GLvertex3f(vec.x, vec.y, 0);
+    return _renderModel.screenToWorld(p);
 }
 
 - (GLvertex3f)fixedCoordinateForScreenCoordinate:(CGPoint)p
 {
-    int viewport[] = { (int)self.view.bounds.origin.x, (int)(self.view.bounds.origin.y),
-        (int)self.view.bounds.size.width, (int)self.view.bounds.size.height };
-    bool success;
-    GLKVector3 vec = GLKMathUnproject(GLKVector3Make(p.x, self.view.bounds.size.height-p.y, 0.0f),
-                                      _renderModel.fixedModelView,
-                                      _renderModel.projection,
-                                      viewport, &success);
-    
-    return GLvertex3f(vec.x, vec.y, 0);
+    return _renderModel.screenToFixed(p);
 }
 
 - (void)update

@@ -57,8 +57,8 @@ void AGBaseTouchHandler::touchesBegan(NSSet<UITouch *> *touches, UIEvent *event)
     for(UITouch *touch in touches)
     {
         CGPoint p = [touch locationInView:m_viewController.view];
-        GLvertex3f pos = [m_viewController worldCoordinateForScreenCoordinate:p];
-        GLvertex3f fixedPos = [m_viewController fixedCoordinateForScreenCoordinate:p];
+        GLvertex3f pos = m_renderModel.screenToWorld(p);
+        GLvertex3f fixedPos = m_renderModel.screenToFixed(p);
         AGTouchHandler *handler = nil;
         AGInteractiveObject *touchCapture = NULL;
         AGInteractiveObject *touchCaptureTopLevelObject = NULL;
@@ -279,12 +279,12 @@ void AGBaseTouchHandler::touchesMoved(NSSet<UITouch *> *touches, UIEvent *event)
                 
                 if(touchCapture->renderFixed())
                 {
-                    GLvertex3f fixedPos = [m_viewController fixedCoordinateForScreenCoordinate:screenPos];
+                    GLvertex3f fixedPos = m_renderModel.screenToFixed(screenPos);
                     touchCapture->touchMove(AGTouchInfo(fixedPos, screenPos, (TouchID) touch, touch));
                 }
                 else
                 {
-                    GLvertex3f localPos = [m_viewController worldCoordinateForScreenCoordinate:screenPos];
+                    GLvertex3f localPos = m_renderModel.screenToWorld(screenPos);
                     if(touchCapture->parent())
                         // touchDown/Move/Up events treat the position as if it were in the parent coordinate space
                         localPos = touchCapture->parent()->globalToLocalCoordinateSpace(localPos);
@@ -310,8 +310,8 @@ void AGBaseTouchHandler::touchesMoved(NSSet<UITouch *> *touches, UIEvent *event)
                 CGPoint centroid = CGPointMake((p1.x+p2.x)/2, (p1.y+p2.y)/2);
                 CGPoint centroid_1 = CGPointMake((p1_1.x+p2_1.x)/2, (p1_1.y+p2_1.y)/2);
                 
-                GLvertex3f pos = [m_viewController worldCoordinateForScreenCoordinate:centroid];
-                GLvertex3f pos_1 = [m_viewController worldCoordinateForScreenCoordinate:centroid_1];
+                GLvertex3f pos = m_renderModel.screenToWorld(centroid);
+                GLvertex3f pos_1 = m_renderModel.screenToWorld(centroid_1);
                 
                 m_renderModel.camera = m_renderModel.camera + (pos.xy() - pos_1.xy());
                 dbgprint_off("camera: %f, %f, %f\n", m_renderModel.camera.x, m_renderModel.camera.y, m_renderModel.camera.z);
@@ -350,12 +350,12 @@ void AGBaseTouchHandler::touchesEnded(NSSet<UITouch *> *touches, UIEvent *event)
 
                 if(touchCapture->renderFixed())
                 {
-                    GLvertex3f fixedPos = [m_viewController fixedCoordinateForScreenCoordinate:screenPos];
+                    GLvertex3f fixedPos = m_renderModel.screenToFixed(screenPos);
                     touchCapture->touchUp(AGTouchInfo(fixedPos, screenPos, (TouchID) touch, touch));
                 }
                 else
                 {
-                    GLvertex3f localPos = [m_viewController worldCoordinateForScreenCoordinate:screenPos];
+                    GLvertex3f localPos = m_renderModel.screenToWorld(screenPos);
                     if(touchCapture->parent())
                         // touchDown/Move/Up events treat the position as if it were in the parent coordinate space
                         localPos = touchCapture->parent()->globalToLocalCoordinateSpace(localPos);
