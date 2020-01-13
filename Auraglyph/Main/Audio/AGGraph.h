@@ -17,11 +17,13 @@ class AGConnection;
 class AGFreeDraw;
 class AGInteractiveObject;
 
+typedef std::list<AGNode *> AGNodeCollection;
+
 class AGGraph
 {
 public:
     
-    const std::list<AGNode *> &nodes() const;
+    const AGNodeCollection &nodes() const;
 
     bool hasNode(AGNode *node) const;
     AGNode *nodeWithUUID(const std::string &uuid) const;
@@ -33,7 +35,7 @@ public:
     void removeConnection(AGConnection *connection);
 
 private:
-    std::list<AGNode *> _nodes;
+    AGNodeCollection _nodes;
     std::map<std::string, AGNode *> _uuid2Node;
     
     std::map<std::string, AGConnection *> _connections;

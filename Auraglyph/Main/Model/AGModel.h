@@ -19,8 +19,16 @@ class AGFreedraw;
 class AGModel
 {
 public:
-    AGGraph graph;
-    std::list<AGFreeDraw *> freedraws;
+    
+    AGGraph& graph() { return m_graph; }
+    const AGGraph& graph() const { return m_graph; }
+    
+    std::list<AGFreeDraw *>& freedraws() { return m_freedraws; }
+    const std::list<AGFreeDraw *>& freedraws() const { return m_freedraws; }
+
+private:
+    AGGraph m_graph;
+    std::list<AGFreeDraw *> m_freedraws;
 };
 
 

@@ -38,7 +38,7 @@ AGNode::HitTestResult AGBaseTouchHandler::hitTest(const GLvertex3f& pos, AGNode 
 {
     AGNode::HitTestResult hit;
     
-    for(AGNode *node : m_model.graph.nodes())
+    for(AGNode *node : m_model.graph().nodes())
     {
         hit = node->hit(pos, port);
         if(hit != AGNode::HIT_NONE)
@@ -159,7 +159,7 @@ void AGBaseTouchHandler::touchesBegan(NSSet<UITouch *> *touches, UIEvent *event)
         // search node connections
         if(touchCapture == NULL && handler == nil)
         {
-            for(AGNode *node : m_model.graph.nodes())
+            for(AGNode *node : m_model.graph().nodes())
             {
                 for(AGConnection *connection : node->outbound())
                 {
