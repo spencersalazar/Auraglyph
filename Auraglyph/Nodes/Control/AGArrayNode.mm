@@ -400,7 +400,7 @@ public:
             m_valueRef = valueRef;
         }
         
-        virtual GLvertex3f position() { return m_arrayEditor->position()+m_pos; }
+        virtual GLvertex3f position() const { return m_arrayEditor->position()+m_pos; }
         virtual GLvertex2f size() { return m_size; }
 
     protected:
@@ -565,7 +565,7 @@ public:
     
     virtual bool doneEditing() { return m_doneEditing; }
     
-    virtual GLvertex3f position() { return m_node->position(); }
+    virtual GLvertex3f position() const { return m_node->position(); }
     virtual GLvertex2f size() { return GLvertex2f(m_width, m_height); }
     
 private:

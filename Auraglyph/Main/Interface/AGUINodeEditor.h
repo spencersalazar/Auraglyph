@@ -76,7 +76,7 @@ public:
     virtual bool doneEditing() { return m_doneEditing; }
     bool shouldRenderDrawline() { return false; }
     
-    virtual GLvertex3f position();
+    virtual GLvertex3f position() const;
     
     void renderOut();
     bool finishedRenderingOut();

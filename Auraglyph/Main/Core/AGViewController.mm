@@ -272,7 +272,7 @@ static AGViewController * g_instance = nil;
 {
     assert([NSThread isMainThread]);
     
-    _model.graph().addNode(node);
+    _model.addNode(node);
     _renderModel.objects.push_back(node);
 }
 
@@ -290,16 +290,21 @@ static AGViewController * g_instance = nil;
     // only process for removal if it is part of the node list in the first place
     if(_model.graph().hasNode(node))
     {
-        _model.graph().removeNode(node);
+        _model.removeNode(node);
         _renderModel.objects.remove(node);
         
         _baseTouchHandler->objectRemovedFromSketchModel(node);
     }
 }
 
-- (AGGraph *)graph
+- (const AGGraph *)graph
 {
     return &_model.graph();
+}
+
+- (AGModel&)model
+{
+    return _model;
 }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object
@@ -345,19 +350,19 @@ static AGViewController * g_instance = nil;
     _renderModel.objects.remove(object);
     AGNode *node = dynamic_cast<AGNode *>(object);
     if(node)
-        _model.graph().removeNode(node);
+        _model.removeNode(node);
     _renderModel.dashboard.remove(object);
     
     AGFreeDraw *draw = dynamic_cast<AGFreeDraw *>(object);
     if(draw)
-        _model.freedraws().remove(draw);
+        _model.removeFreedraw(draw);
 }
 
 - (void)addFreeDraw:(AGFreeDraw *)freedraw
 {
     assert([NSThread isMainThread]);
     
-    _model.freedraws().push_back(freedraw);
+    _model.addFreedraw(freedraw);
     _renderModel.objects.push_back(freedraw);
 }
 
@@ -366,7 +371,7 @@ static AGViewController * g_instance = nil;
     assert([NSThread isMainThread]);
     assert(freedraw);
     
-    _model.freedraws().remove(freedraw);
+    _model.removeFreedraw(freedraw);
     _renderModel.objects.remove(freedraw);
 }
 
@@ -375,7 +380,7 @@ static AGViewController * g_instance = nil;
     assert([NSThread isMainThread]);
     assert(freedraw);
     
-    _model.freedraws().remove(freedraw);
+    _model.removeFreedraw(freedraw);
     _renderModel.fadingOut.push_back(freedraw);
 }
 
@@ -557,7 +562,7 @@ static AGViewController * g_instance = nil;
         doc.addNode(docNode);
     }
     
-    itmap(_model.freedraws(), ^(AGFreeDraw *&freedraw) {
+    itmap(_model.freedraws(), ^(AGFreeDraw *const&freedraw) {
         AGDocument::Freedraw docFreedraw = freedraw->serialize();
         doc.addFreedraw(docFreedraw);
     });
@@ -774,9 +779,14 @@ void AGViewController_::addNodeToTopLevel(AGNode *node)
     [m_viewController addNode:node];
 }
 
-AGGraph *AGViewController_::graph()
+const AGGraph *AGViewController_::graph()
 {
     return [m_viewController graph];
+}
+
+AGModel& AGViewController_::model()
+{
+    return [m_viewController model];
 }
 
 void AGViewController_::showDashboard()

@@ -328,7 +328,7 @@ public:
     
     virtual bool doneEditing() override { return m_doneEditing; }
     
-    virtual GLvertex3f position() override { return m_node->position(); }
+    virtual GLvertex3f position() const override { return m_node->position(); }
     virtual GLvertex2f size() override { return GLvertex2f(m_width, m_height); }
 };
 

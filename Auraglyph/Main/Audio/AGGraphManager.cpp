@@ -29,7 +29,7 @@ void AGGraphManager::addNodeToTopLevel(AGNode *node)
     m_viewController->addNodeToTopLevel(node);
 }
 
-AGGraph *AGGraphManager::graph()
+const AGGraph *AGGraphManager::graph()
 {
     return m_viewController->graph();
 }

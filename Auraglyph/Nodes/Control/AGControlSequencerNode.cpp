@@ -459,7 +459,7 @@ public:
     
     virtual bool doneEditing() { return m_doneEditing; }
     
-    virtual GLvertex3f position() { return m_node->position(); }
+    virtual GLvertex3f position() const { return m_node->position(); }
     virtual GLvertex2f size() { return GLvertex2f(m_width, m_height); }
     
     virtual GLvrectf effectiveBounds()

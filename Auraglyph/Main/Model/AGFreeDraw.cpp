@@ -170,7 +170,7 @@ AGUIObject *AGFreeDraw::hitTest(const GLvertex3f &_t)
 #endif // 0
 }
 
-AGDocument::Freedraw AGFreeDraw::serialize()
+AGDocument::Freedraw AGFreeDraw::serialize() const
 {
     AGDocument::Freedraw fd;
     fd.uuid = uuid();

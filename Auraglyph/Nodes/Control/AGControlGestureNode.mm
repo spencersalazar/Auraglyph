@@ -30,7 +30,7 @@ public:
         m_size = GLvertex2f(200, 200);
     }
     
-    GLvertex3f position() override { return m_node->position(); }
+    GLvertex3f position() const override { return m_node->position(); }
     GLvertex2f size() override { return m_size; }
     
     void update(float t, float dt) override

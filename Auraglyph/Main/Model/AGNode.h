@@ -34,6 +34,7 @@
 using namespace std;
 
 
+class AGModel;
 class AGNode;
 class AGUINodeEditor;
 
@@ -149,6 +150,10 @@ public:
     void setTitle(const string &title) { m_title = title; }
     const string &title() const { return m_title; }
     
+    // set/get the model this node is a part of (if any)
+    void setModel(AGModel* model) { m_model = model; }
+    AGModel* model() { return m_model; }
+
     // TODO: render/push functions protected?
     // graphics
     virtual void update(float t, float dt);
@@ -248,7 +253,8 @@ private:
     static bool s_initNode;
     
     Mutex m_mutex;
-    
+    AGModel* m_model = nullptr;
+
     void _initBase();
     virtual void receiveControl_internal(int port, const AGControl &control);
     
