@@ -28,6 +28,12 @@ Matrix4 Matrix4::makeRotation(float radians, float rx, float ry, float rz)
     return Matrix4(GLKMatrix4MakeRotation(radians, rx, ry, rz));
 }
 
+Matrix4 Matrix4::makeFrustum(float left, float right, float bottom, float top,
+                             float nearZ, float farZ)
+{
+    return GLKMatrix4MakeFrustum(left, right, bottom, top, nearZ, farZ);
+}
+    
 Matrix4::Matrix4()
 {
     m_mat = GLKMatrix4Identity;

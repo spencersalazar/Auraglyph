@@ -110,7 +110,7 @@ public:
     virtual bool renderFixed() { return false; }
     
     virtual void setPosition(const GLvertex3f &pos) { m_pos = pos; }
-    virtual GLvertex3f position() { return m_pos; }
+    virtual GLvertex3f position() const { return m_pos; }
     virtual GLvertex2f size() { return GLvertex2f(); }
     // TODO: make non-virtual
     virtual GLvrectf effectiveBounds() { return GLvrectf(position()-size()*0.5, position()+size()*0.5); }

@@ -24,7 +24,7 @@ public:
     AGFreeDraw(const AGDocument::Freedraw &docFreedraw);
     ~AGFreeDraw();
     
-    const string &uuid() { return m_uuid; }
+    const string &uuid() const { return m_uuid; }
     
     virtual void update(float t, float dt);
     virtual void render();
@@ -36,7 +36,7 @@ public:
     const vector<GLvertex3f> &points();
     virtual AGUIObject *hitTest(const GLvertex3f &t);
     
-    virtual AGDocument::Freedraw serialize();
+    virtual AGDocument::Freedraw serialize() const;
     
 private:
     const string m_uuid;

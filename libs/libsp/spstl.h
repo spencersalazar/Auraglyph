@@ -24,6 +24,17 @@ void itmap(T &container, void (^func)(typename T::reference v))
 /*------------------------------------------------------------------------------
   itmap()
   Map a block to every item in a C++/STL iterable container
+ -----------------------------------------------------------------------------*/
+template<class T>
+void itmap(const T &container, void (^func)(typename T::const_reference v))
+{
+    for(typename T::const_iterator i = container.begin(); i != container.end(); i++)
+        func(*i);
+}
+
+/*------------------------------------------------------------------------------
+  itmap()
+  Map a block to every item in a C++/STL iterable container
   (with shortcircuit)
  -----------------------------------------------------------------------------*/
 template<class T>
@@ -73,25 +84,38 @@ void itmap_safe(T &container, void (^func)(typename T::reference v))
     }
 }
 
-/*------------------------------------------------------------------------------
- itfilter()
- Use a block to remove/filter elements from a C++/STL iterable container
- -----------------------------------------------------------------------------*/
+/**
+ Use a lambda to remove/filter elements from an iterable collection, with
+ optional postprocess lambda for removed elements.
+ */
 template<class T>
-void itfilter(T &container, bool (^func)(typename T::reference v))
+void itfilter(T &container, bool (^filt)(typename T::reference v))
 {
-    for(typename T::iterator i = container.begin(); i != container.end(); )
-    {
-        bool filt = func(*i);
-        
-        if(filt)
-        {
-            typename T::iterator d = i;
-            i++;
+    for(typename T::iterator i = container.begin(); i != container.end(); ) {
+        if(filt(*i)) {
+            // copy iterator to allow removal in loop
+            typename T::iterator d = i++;
             container.erase(d);
+        } else {
+            i++;
         }
-        else
-        {
+    }
+}
+
+/**
+ Use a lambda to remove/filter elements from an iterable collection, and delete
+ any filtered elements.
+ */
+template<class T>
+void filter_delete(T &container, bool (^filt)(typename T::reference v))
+{
+    for(typename T::iterator i = container.begin(); i != container.end(); ) {
+        if(filt(*i)) {
+            // copy iterator to allow removal in loop
+            typename T::iterator d = i++;
+            delete *d;
+            container.erase(d);
+        } else {
             i++;
         }
     }
@@ -112,5 +136,40 @@ void removevalues(T &map, const typename T::mapped_type &value)
             map.erase(kv2);
     }
 }
+
+/** Insert object before another object, or at the front of the collection.
+ */
+template<class T>
+void insert_before(T &container, typename T::const_reference value, typename T::const_reference before)
+{
+    typename T::iterator it_before = find(container.begin(), container.end(), before);
+    if(it_before != container.end()) {
+        container.insert(it_before, value);
+    } else {
+        container.push_front(value);
+    }
+}
+
+/** Insert object after another object, or at the back of the collection.
+ */
+template<class T>
+void insert_after(T &container, typename T::const_reference value, typename T::const_reference after)
+{
+    typename T::iterator it_after = find(container.begin(), container.end(), after);
+    if(it_after != container.end()) {
+        container.insert(++it_after, value);
+    } else {
+        container.push_back(value);
+    }
+}
+
+/** Existence test for value in collection.
+ */
+template<class T>
+bool contains(const T &collection, typename T::const_reference value)
+{
+    return find(collection.begin(), collection.end(), value) != collection.end();
+}
+
 
 #endif

@@ -449,7 +449,7 @@ AGUIStandardNodeEditor::~AGUIStandardNodeEditor()
     // sliders are child objects, so they get deleted automatically by AGRenderObject
 }
 
-GLvertex3f AGUIStandardNodeEditor::position()
+GLvertex3f AGUIStandardNodeEditor::position() const
 {
     return m_node->position();
 }

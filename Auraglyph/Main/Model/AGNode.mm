@@ -17,6 +17,7 @@
 #include "AGStyle.h"
 #include "AGControl.h"
 #include "AGGraphManager.h"
+#include "AGModel.h"
 
 #import "spstl.h"
 
@@ -44,7 +45,9 @@ void AGNode::connect(AGConnection * connection)
     connection->dst()->addInbound(connection);
     connection->dst()->unlock();
     
-    AGGraphManager::instance().graph()->addConnection(connection);
+    if (connection->src()->model()) {
+        connection->src()->model()->addConnection(connection);
+    }
 }
 
 void AGNode::disconnect(AGConnection * connection)
@@ -61,7 +64,9 @@ void AGNode::disconnect(AGConnection * connection)
     connection->dst()->removeInbound(connection);
     connection->dst()->unlock();
     
-    AGGraphManager::instance().graph()->removeConnection(connection);
+    if (connection->src()->model()) {
+        connection->src()->model()->removeConnection(connection);
+    }
 }
 
 void AGNode::initalizeNode()

@@ -26,7 +26,7 @@ public:
     
     void addNodeToTopLevel(AGNode *node);
     
-    AGGraph *graph();
+    const AGGraph *graph();
     
     void setViewController(AGViewController_ *viewController);
     

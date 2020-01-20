@@ -16,10 +16,11 @@
 #include "AGNode.h"
 #include <list>
 
+class AGModel;
+class AGGraph;
 class AGConnection;
 class AGFreeDraw;
 class AGInteractiveObject;
-class AGGraph;
 class AGTutorial;
 #ifdef __OBJC__
 @class AGTouchHandler;
@@ -42,7 +43,8 @@ enum AGDrawMode
 - (void)addNode:(AGNode *)node;
 - (void)removeNode:(AGNode *)node;
 - (void)resignNode:(AGNode *)node;
-- (AGGraph *)graph;
+- (const AGGraph *)graph;
+- (AGModel&)model;
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object;
 - (void)addTopLevelObject:(AGInteractiveObject *)object over:(AGInteractiveObject *)over;
@@ -114,7 +116,9 @@ public:
     void fadeOutAndDelete(AGInteractiveObject *object);
 
     void addNodeToTopLevel(AGNode *node);
-    AGGraph *graph();
+    const AGGraph *graph();
+    
+    AGModel& model();
     
     void showDashboard();
     void hideDashboard();

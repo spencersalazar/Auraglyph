@@ -13,6 +13,8 @@
 #include "AGRenderObject.h"
 #include "gfx.h"
 
+#include <list>
+
 
 #ifdef __LP64__ // arm64
 typedef uint64_t TouchID;
@@ -102,6 +104,9 @@ public:
     static void addTouchOutsideListener(AGInteractiveObject *);
     static void removeTouchOutsideListener(AGInteractiveObject *);
 };
+
+
+typedef std::list<AGInteractiveObject*> AGInteractiveObjectList;
 
 
 #endif /* AGInteractiveObject_hpp */
