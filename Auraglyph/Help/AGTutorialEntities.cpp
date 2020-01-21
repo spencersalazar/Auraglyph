@@ -166,7 +166,6 @@ public:
         // fraction of line that is visible
         float t_line = std::min(m_t/ANIM_TIME, 1.0f);
         // ease
-        // t_line = easing::cubic::easeInOut(t_line, 0, 1, 1);
         t_line = easeInOut(t_line);
         // draw
         drawLineLoop((GLvertex3f[]){
@@ -260,7 +259,6 @@ public:
         AGRenderObject::render();
         
         float t = min(m_tFig/CYCLE_TIME, 1.0f);
-        //t = easing::cubic::easeInOut(t, 0, 1, 1);
         t = easeInOut(t);
         int num = t*m_figure.size();
         
