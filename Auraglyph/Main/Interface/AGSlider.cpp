@@ -40,6 +40,9 @@ void AGSlider::update(float t, float dt)
     
     if (m_enableBlink) {
         m_blink.update(dt);
+        if (m_blink.isFinished()) {
+            m_blink.reset();
+        }
     }
 }
 
