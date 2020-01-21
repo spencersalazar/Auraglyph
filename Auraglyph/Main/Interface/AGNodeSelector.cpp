@@ -17,8 +17,6 @@
 
 static const float AGNODESELECTOR_RADIUS = 0.02*AGStyle::oldGlobalScale;
 
-std::list<AGUIMetaNodeSelector*> AGUIMetaNodeSelector::s_nodeSelectors;
-
 template<class NodeType, class ManagerType>
 class AGUINodeSelector : public AGUIMetaNodeSelector
 {
@@ -143,18 +141,12 @@ m_itemBlink(powcurvef(1, 0, 1.1, 0.75))
     
     m_xScale = lincurvef(AGStyle::open_animTimeX, AGStyle::open_squeezeHeight, 1);
     m_yScale = lincurvef(AGStyle::open_animTimeY, AGStyle::open_squeezeHeight, 1);
-    //    NSLog(@"scrollMax: %f", m_verticalScrollPos.max);
-    
-    s_nodeSelectors.push_back(this);
 }
 
 template<class NodeType, class ManagerType>
 AGUINodeSelector<NodeType, ManagerType>::~AGUINodeSelector()
 {
-    dbgprint_off("AGUINodeSelector::~AGUINodeSelector()");
     SAFE_DELETE(m_node);
-    
-    s_nodeSelectors.remove(this);
 }
 
 template<class NodeType, class ManagerType>

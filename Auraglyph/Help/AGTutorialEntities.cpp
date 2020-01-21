@@ -15,6 +15,10 @@
 #include "AGStyle.h"
 #include "GeoGenerator.h"
 
+// for searching node selectors
+// for searching node editors
+#include "AGRenderModel.h"
+
 // for hide/show UI
 #include "AGViewController.h"
 
@@ -339,14 +343,21 @@ protected:
         m_pause = getParameter("pause", 0);
         int item = getParameter("item", 0);
         
-        m_nodeSelector = *(AGUIMetaNodeSelector::nodeSelectors().begin());
-        
-        m_nodeSelector->blink(true, item);
+        for (auto object : environment.renderModel().objects) {
+            auto nodeSelector = dynamic_cast<AGUIMetaNodeSelector*>(object);
+            if (nodeSelector) {
+                m_nodeSelector = nodeSelector;
+                m_nodeSelector->blink(true, item);
+                break;
+            }
+        }
     }
     
     void finalizeInternal(AGTutorialEnvironment &environment) override
     {
-        m_nodeSelector->blink(false);
+        if (m_nodeSelector) {
+            m_nodeSelector->blink(false);
+        }
     }
 };
 
@@ -357,7 +368,6 @@ protected:
  */
 
 #include "AGUINodeEditor.h"
-#include "AGRenderModel.h"
 
 class AGBlinkNodeEditorTutorialAction : public AGTutorialAction
 {
