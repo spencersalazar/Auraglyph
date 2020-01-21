@@ -7,12 +7,17 @@
 //
 
 #include "AGTutorialEntity.h"
+#include "AGViewController.h"
 
 #pragma mark AGTutorialEnvironment
 
 AGTutorialEnvironment::AGTutorialEnvironment(AGViewController_ *viewController) : m_viewController(viewController) { }
 
 AGViewController_ *AGTutorialEnvironment::viewController() { return m_viewController; }
+
+AGModel& AGTutorialEnvironment::model() { return m_viewController->model(); }
+
+AGRenderModel& AGTutorialEnvironment::renderModel() { return m_viewController->renderModel(); }
 
 void AGTutorialEnvironment::store(const std::string &name, const Variant &variable)
 {
@@ -133,8 +138,6 @@ void AGTutorialStep::update(float t, float dt)
         }
         
         if(m_currentAction != m_actions.end() && (*m_currentAction)->canContinue()) {
-            (*m_currentAction)->finalize(*m_environment);
-            
             m_currentAction++;
             
             if(m_currentAction != m_actions.end()) {
@@ -144,7 +147,14 @@ void AGTutorialStep::update(float t, float dt)
             }
         }
         
-        m_activeActions.remove_if([](AGTutorialAction *action){ return action->isCompleted(); });
+        m_activeActions.remove_if([this](AGTutorialAction *action) {
+            if (action->isCompleted()) {
+                action->finalize(*m_environment);
+                return true;
+            } else {
+                return false;
+            }
+        });
     } else {
         if (m_pauseTime < m_pauseDuration.getFloat()) {
             m_pauseTime += dt;
@@ -209,6 +219,9 @@ void AGTutorialStep::prepareInternal(AGTutorialEnvironment &environment)
 
 void AGTutorialStep::finalizeInternal(AGTutorialEnvironment &environment)
 {
+    for(auto action : m_activeActions) {
+        action->finalize(environment);
+    }
     for(auto condition : m_conditions) {
         condition->finalize(environment);
     }

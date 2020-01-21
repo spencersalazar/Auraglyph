@@ -24,6 +24,8 @@
 #include <map>
 
 class AGViewController_;
+class AGModel;
+class AGRenderModel;
 
 #pragma mark AGTutorialEnvironment
 
@@ -42,6 +44,11 @@ public:
     /** */
     AGViewController_ *viewController();
     
+    /** */
+    AGModel& model();
+    /** */
+    AGRenderModel& renderModel();
+
     /** Store a variable in the environment. */
     void store(const std::string &name, const Variant &variable);
     
