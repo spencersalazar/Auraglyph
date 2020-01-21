@@ -111,7 +111,6 @@ static AGTutorialStep *_makeTutorialStep(AGTutorialAction *action,
 
 AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
 {
-    // GLvertex3f startPos = viewController->fixedCoordinateForScreenCoordinate(CGPointMake(bounds.origin.x+30, bounds.origin.y+30));
     Variant startPos = Variant([viewController] () {
         CGRect bounds = viewController->bounds();
         return viewController->fixedCoordinateForScreenCoordinate(CGPointMake(bounds.origin.x+100, bounds.origin.y+100));
@@ -443,18 +442,30 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::POINT_TO, {
             { "start", Variant([env](){
-                GLvertex3f node1Pos = env->fetch("node1_pos");
-                GLvertex3f outputNodePos = env->fetch("output_pos");
-                GLvertex3f midpoint = node1Pos+(outputNodePos-node1Pos)*0.5f;
-                GLvertex2f normal = normalToLine(node1Pos.xy(), outputNodePos.xy());
-                return midpoint+normal*20;
+                AGNode* node1 = env->model().graph().nodeWithUUID(env->fetch("node1_uuid"));
+                AGNode* outputNode = env->model().graph().nodeWithUUID(env->fetch("output_uuid"));
+                if (node1 && outputNode) {
+                    GLvertex3f node1Pos = node1->position();
+                    GLvertex3f outputNodePos = outputNode->position();
+                    GLvertex3f midpoint = node1Pos+(outputNodePos-node1Pos)*0.5f;
+                    GLvertex2f normal = normalToLine(node1Pos.xy(), outputNodePos.xy());
+                    return midpoint+normal*20;
+                } else {
+                    return GLvertex3f();
+                }
             })},
             { "end", Variant([env](){
-                GLvertex3f node1Pos = env->fetch("node1_pos");
-                GLvertex3f outputNodePos = env->fetch("output_pos");
-                GLvertex3f midpoint = node1Pos+(outputNodePos-node1Pos)*0.5f;
-                GLvertex2f normal = normalToLine(node1Pos.xy(), outputNodePos.xy());
-                return midpoint+normal*95;
+                AGNode* node1 = env->model().graph().nodeWithUUID(env->fetch("node1_uuid"));
+                AGNode* outputNode = env->model().graph().nodeWithUUID(env->fetch("output_uuid"));
+                if (node1 && outputNode) {
+                    GLvertex3f node1Pos = node1->position();
+                    GLvertex3f outputNodePos = outputNode->position();
+                    GLvertex3f midpoint = node1Pos+(outputNodePos-node1Pos)*0.5f;
+                    GLvertex2f normal = normalToLine(node1Pos.xy(), outputNodePos.xy());
+                    return midpoint+normal*95;
+                } else {
+                    return GLvertex3f();
+                }
             })},
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
