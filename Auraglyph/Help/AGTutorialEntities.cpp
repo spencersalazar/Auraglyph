@@ -14,7 +14,6 @@
 #include "Matrix.h"
 #include "AGStyle.h"
 #include "GeoGenerator.h"
-#include "Easing/Cubic.h"
 
 // for hide/show UI
 #include "AGViewController.h"
@@ -167,7 +166,8 @@ public:
         // fraction of line that is visible
         float t_line = std::min(m_t/ANIM_TIME, 1.0f);
         // ease
-        t_line = easing::cubic::easeInOut(t_line, 0, 1, 1);
+        // t_line = easing::cubic::easeInOut(t_line, 0, 1, 1);
+        t_line = easeInOut(t_line);
         // draw
         drawLineLoop((GLvertex3f[]){
             m_start, m_start + (m_end-m_start)*t_line
@@ -223,7 +223,6 @@ protected:
     constexpr static const float ARROW_LENGTH = 25;
     constexpr static const float ARROW_ANGLE = M_PI/5;
 
-    std::vector<GLvertex3f> m_figure;
     GLvertex3f m_start;
     GLvertex3f m_end;
     float m_t = 0;
@@ -234,9 +233,6 @@ protected:
         m_start = getParameter("start", GLvertex3f()).getVertex3();
         m_end = getParameter("end", GLvertex3f()).getVertex3();
         m_speed = getParameter("speed", 1).getFloat();
-
-        m_figure.push_back(m_start);
-        m_figure.push_back(m_end);
     }
 };
 
@@ -264,7 +260,8 @@ public:
         AGRenderObject::render();
         
         float t = min(m_tFig/CYCLE_TIME, 1.0f);
-        t = easing::cubic::easeInOut(t, 0, 1, 1);
+        //t = easing::cubic::easeInOut(t, 0, 1, 1);
+        t = easeInOut(t);
         int num = t*m_figure.size();
         
         float alpha = 1;
@@ -321,13 +318,13 @@ public:
     
     void update(float t, float dt) override
     {
-        if (m_t < m_pause)
+        if (m_t > m_pause)
             m_canContinue = true;
         else
             m_t += dt;
     }
     
-    bool canContinue() override { return false; }
+    bool canContinue() override { return m_canContinue; }
     
     bool isCompleted() override { return false; }
     
@@ -355,6 +352,66 @@ protected:
     }
 };
 
+
+#pragma mark AGBlinkNodeEditorTutorialAction
+
+/** AGBlinkNodeEditorTutorialAction
+ */
+
+#include "AGUINodeEditor.h"
+#include "AGRenderModel.h"
+
+class AGBlinkNodeEditorTutorialAction : public AGTutorialAction
+{
+public:
+    using AGTutorialAction::AGTutorialAction;
+    
+    void update(float t, float dt) override
+    {
+        if (m_t > m_pause)
+            m_canContinue = true;
+        else
+            m_t += dt;
+    }
+    
+    bool canContinue() override { return m_canContinue; }
+    
+    bool isCompleted() override { return false; }
+    
+protected:
+    
+    bool m_canContinue = false;
+    float m_t = 0;
+    float m_pause = 0;
+    
+    AGUIStandardNodeEditor* m_nodeEditor = nullptr;
+    
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        m_pause = getParameter("pause", 0);
+        std::string uuid = getParameter("uuid", 0);
+        int item = getParameter("item", 0);
+        
+        AGRenderModel& renderModel = environment.renderModel();
+        for (auto object : renderModel.objects) {
+            AGUIStandardNodeEditor* editor = dynamic_cast<AGUIStandardNodeEditor*>(object);
+            if (editor && editor->node()->uuid() == uuid) {
+                dbgprint("blinking node editor item %s:%i\n", uuid.c_str(), item);
+                m_nodeEditor = editor;
+                m_nodeEditor->blink(item);
+                break;
+            }
+        }
+    }
+    
+    void finalizeInternal(AGTutorialEnvironment &environment) override
+    {
+        if (m_nodeEditor) {
+            int item = getParameter("item", 0);
+            m_nodeEditor->blink(item, false);
+        }
+    }
+};
 
 
 #pragma mark AGCreateNodeTutorialAction
@@ -736,6 +793,9 @@ AGTutorialAction *AGTutorialActions::make(AGTutorialActions::Action type, const 
             break;
         case AGTutorialActions::BLINK_NODE_SELECTOR:
             action = new AGBlinkNodeSelectorTutorialAction(parameters);
+            break;
+        case AGTutorialActions::BLINK_NODE_EDITOR:
+            action = new AGBlinkNodeEditorTutorialAction(parameters);
             break;
         default:
             assert(0);
