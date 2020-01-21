@@ -17,6 +17,7 @@
 #include <list>
 
 class AGModel;
+class AGRenderModel;
 class AGGraph;
 class AGConnection;
 class AGFreeDraw;
@@ -45,6 +46,7 @@ enum AGDrawMode
 - (void)resignNode:(AGNode *)node;
 - (const AGGraph *)graph;
 - (AGModel&)model;
+- (AGRenderModel&)renderModel;
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object;
 - (void)addTopLevelObject:(AGInteractiveObject *)object over:(AGInteractiveObject *)over;
@@ -119,7 +121,8 @@ public:
     const AGGraph *graph();
     
     AGModel& model();
-    
+    AGRenderModel& renderModel();
+
     void showDashboard();
     void hideDashboard();
     
