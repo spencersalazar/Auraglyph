@@ -15,6 +15,10 @@
 #include "AGStyle.h"
 #include "GeoGenerator.h"
 
+// for hide/show graph
+#include "AGModel.h"
+#include "AGGraph.h"
+
 // for searching node selectors
 // for searching node editors
 #include "AGRenderModel.h"
@@ -131,6 +135,38 @@ private:
             environment.renderModel().uiDashboard->hide();
         else
             environment.renderModel().uiDashboard->unhide();
+    }
+};
+
+/** AGHideGraphTutorialAction
+ */
+class AGHideGraphTutorialAction : public AGTutorialAction
+{
+public:
+    using AGTutorialAction::AGTutorialAction;
+    
+    bool isCompleted() override { return true; }
+    
+    bool canContinue() override { return true; }
+    
+private:
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        int hide = getParameter("hide").getInt();
+        
+        for (auto node : environment.model().graph().nodes()) {
+            if (hide) {
+                node->hide();
+                for (auto connection : node->inbound()) {
+                    connection->hide();
+                }
+            } else {
+                node->unhide();
+                for (auto connection : node->inbound()) {
+                    connection->unhide();
+                }
+            }
+        }
     }
 };
 
@@ -355,8 +391,15 @@ protected:
     
     void finalizeInternal(AGTutorialEnvironment &environment) override
     {
-        if (m_nodeSelector) {
-            m_nodeSelector->blink(false);
+        int item = getParameter("item", 0);
+        
+        for (auto object : environment.renderModel().objects) {
+            auto nodeSelector = dynamic_cast<AGUIMetaNodeSelector*>(object);
+            if (nodeSelector && nodeSelector == m_nodeSelector) {
+                m_nodeSelector = nodeSelector;
+                m_nodeSelector->blink(true, item);
+                break;
+            }
         }
     }
 };
@@ -797,6 +840,9 @@ AGTutorialAction *AGTutorialActions::make(AGTutorialActions::Action type, const 
         case AGTutorialActions::HIDE_UI:
             action = new AGHideUITutorialAction(parameters);
             break;
+        case AGTutorialActions::HIDE_GRAPH:
+            action = new AGHideGraphTutorialAction(parameters);
+            break;
         case AGTutorialActions::SUGGEST_DRAW_NODE:
             action = new AGSuggestDrawNodeTutorialAction(parameters);
             break;
@@ -826,6 +872,9 @@ AGTutorialCondition *AGTutorialConditions::make(AGTutorialConditions::Condition 
     AGTutorialCondition *condition = nullptr;
     
     switch (type) {
+        case AGTutorialConditions::TAP_SCREEN:
+            return nullptr;
+            break;
         case AGTutorialConditions::DRAW_NODE:
             condition = new AGDrawNodeTutorialCondition(parameters);
             break;

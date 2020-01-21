@@ -542,6 +542,16 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
     }
     
+    /* hide the UI and graph */
+    {
+        steps.push_back(_makeTutorialStep(AGTutorialActions::make(AGTutorialActions::HIDE_UI, {
+            { "hide", 1 }
+        })));
+        steps.push_back(_makeTutorialStep(AGTutorialActions::make(AGTutorialActions::HIDE_GRAPH, {
+            { "hide", 1 }
+        })));
+    }
+    
     /* thats all for now folks */
     {
         std::list<AGTutorialAction*> actions;
@@ -578,10 +588,32 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
             { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 3.0 },
         }));
-
+        //        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+        //            { "text", "tap anywhere to" },
+        //            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
+        //            { "pause", 0.0 },
+        //        }));
+        //        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+        //            { "text", "exit this tutorial." },
+        //            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+        //            { "pause", 3.0 },
+        //        }));
+        
+        // conditions.push_back(AGTutorialConditions::make(AGTutorialConditions::TAP_SCREEN));
+        
         steps.push_back(_makeTutorialStep(actions, conditions, {
             { "pause", 3.0 }
         }));
+    }
+    
+    /* show the UI and graph */
+    {
+        steps.push_back(_makeTutorialStep(AGTutorialActions::make(AGTutorialActions::HIDE_UI, {
+            { "hide", 0 }
+        })));
+        steps.push_back(_makeTutorialStep(AGTutorialActions::make(AGTutorialActions::HIDE_GRAPH, {
+            { "hide", 0 }
+        })));
     }
     
     for(auto step : steps)
