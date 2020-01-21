@@ -73,9 +73,6 @@ enum AGDrawMode
 - (GLvertex3f)fixedCoordinateForScreenCoordinate:(CGPoint)p;
 - (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)node port:(int *)port;
 
-- (void) showDashboard;
-- (void) hideDashboard;
-
 - (void)showTutorial:(AGTutorial *)tutorial;
 
 + (NSString *)styleFontPath;
@@ -122,9 +119,6 @@ public:
     
     AGModel& model();
     AGRenderModel& renderModel();
-
-    void showDashboard();
-    void hideDashboard();
     
     void showTutorial(AGTutorial *tutorial);
 

@@ -385,16 +385,6 @@ static AGViewController * g_instance = nil;
     return _model.freedraws();
 }
 
-- (void) showDashboard
-{
-    _renderModel.uiDashboard->unhide();
-}
-
-- (void) hideDashboard
-{
-    _renderModel.uiDashboard->hide();
-}
-
 - (void)showTutorial:(AGTutorial *)tutorial
 {
     if (tutorial != _renderModel.currentTutorial)
@@ -736,10 +726,6 @@ const AGGraph *AGViewController_::graph() { return [m_viewController graph]; }
 AGModel& AGViewController_::model() { return [m_viewController model]; }
 
 AGRenderModel& AGViewController_::renderModel() { return [m_viewController renderModel]; }
-
-void AGViewController_::showDashboard() { [m_viewController showDashboard]; }
-
-void AGViewController_::hideDashboard() { [m_viewController hideDashboard]; }
 
 void AGViewController_::showTutorial(AGTutorial *tutorial) { [m_viewController showTutorial:tutorial]; }
 

@@ -20,7 +20,7 @@
 #include "AGRenderModel.h"
 
 // for hide/show UI
-#include "AGViewController.h"
+#include "AGDashboard.h"
 
 // for conditions / activity listening
 #include "AGActivity.h"
@@ -128,9 +128,9 @@ private:
         int hide = getParameter("hide").getInt();
         
         if (hide)
-            environment.viewController()->hideDashboard();
+            environment.renderModel().uiDashboard->hide();
         else
-            environment.viewController()->showDashboard();
+            environment.renderModel().uiDashboard->unhide();
     }
 };
 
