@@ -23,7 +23,7 @@ private:
     
 public:
     AGControlGestureNodeEditor(AGControlGestureNode *node) :
-    m_node(node), m_doneEditing(false)
+    AGUINodeEditor(node), m_node(node), m_doneEditing(false)
     {
         m_squeeze.open();
 

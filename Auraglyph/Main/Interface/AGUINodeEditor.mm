@@ -27,7 +27,7 @@ static const float AGNODESELECTOR_RADIUS = 0.02*AGStyle::oldGlobalScale;
  -----------------------------------------------------------------------------*/
 #pragma mark - AGUINodeEditor
 
-AGUINodeEditor::AGUINodeEditor() : m_pinned(false)
+AGUINodeEditor::AGUINodeEditor(AGNode* node) : m_node(node), m_pinned(false)
 {
     AGInteractiveObject::addTouchOutsideListener(this);
 }
@@ -280,7 +280,7 @@ void AGUIStandardNodeEditor::initializeNodeEditor()
 }
 
 AGUIStandardNodeEditor::AGUIStandardNodeEditor(AGNode *node) :
-m_node(node),
+AGUINodeEditor(node),
 m_hit(-1),
 m_editingPort(-1),
 m_t(0),

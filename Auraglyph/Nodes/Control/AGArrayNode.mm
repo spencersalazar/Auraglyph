@@ -439,8 +439,7 @@ public:
     static void initializeNodeEditor();
     
     AGUIArrayEditor(AGControlArrayNode *node) :
-    m_node(node),
-    m_doneEditing(false)
+    AGUINodeEditor(node), m_node(node), m_doneEditing(false)
     {
         m_width = 0.08f*AGStyle::oldGlobalScale;
         m_height = 0.02f*AGStyle::oldGlobalScale;

@@ -26,7 +26,7 @@ private:
     
 public:
     AGMatrixMixerEditor(AGAudioMatrixMixerNode *node) :
-    m_node(node), m_doneEditing(false)
+    AGUINodeEditor(node), m_node(node), m_doneEditing(false)
     {
         m_squeeze.open();
         

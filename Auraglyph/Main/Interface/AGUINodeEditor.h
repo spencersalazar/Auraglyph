@@ -35,7 +35,7 @@ class AGFileBrowser;
 class AGUINodeEditor : public AGUIObject
 {
 public:
-    AGUINodeEditor();
+    AGUINodeEditor(AGNode *node);
     virtual ~AGUINodeEditor();
     
     virtual bool doneEditing() = 0;
@@ -47,6 +47,11 @@ public:
     /* will close on touchOutside unless pinned */
     virtual void touchOutside();
     
+    AGNode* node() { return m_node; }
+
+protected:
+    AGNode* const m_node;
+
 private:
     bool m_pinned;
 };
@@ -104,14 +109,9 @@ private:
     GLuint m_buttonBoxOffset;
     GLuint m_itemEditBoxOffset;
     
-    AGNode * const m_node;
     string m_title;
     
     bool m_doneEditing;
-    
-//    GLKMatrix4 m_modelViewProjectionMatrix;
-//    GLKMatrix4 m_modelView;
-//    GLKMatrix3 m_normalMatrix;
     
     lincurvef m_xScale;
     lincurvef m_yScale;
@@ -126,7 +126,6 @@ private:
     int m_editingPort;
     
     std::list< std::vector<GLvertex3f> > m_drawline;
-    //    std::vector<GLvertex3f> m_currentDrawline;
     LTKTrace m_currentTrace;
     bool m_lastTraceWasRecognized;
     powcurvef m_currentDrawlineAlpha;
@@ -145,8 +144,6 @@ private:
     
     float m_t;
     
-    std::map<int, powcurvef> m_blinks;
-
     int hitTestX(const GLvertex3f &t, bool *inBbox);
 };
 

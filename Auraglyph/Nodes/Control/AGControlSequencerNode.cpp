@@ -35,6 +35,7 @@ public:
     static void initializeNodeEditor();
     
     AGUISequencerEditor(AGControlSequencerNode *node) :
+    AGUINodeEditor(node),
     m_node(node),
     m_doneEditing(false),
     m_pullTabDistance(0.5, GLvertex2f(0,0)),
