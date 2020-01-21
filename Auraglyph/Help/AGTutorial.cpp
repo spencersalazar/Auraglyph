@@ -10,11 +10,11 @@
 
 #include "Geometry.h"
 #include "AGStyle.h"
-#include "AGGraphManager.h"
-#include "Matrix.h"
 #include "AGViewController.h"
 #include "AGTutorialEntity.h"
 #include "AGTutorialEntities.h"
+#include "AGModel.h"
+#include "AGGraph.h"
 
 #include <string>
 
@@ -294,13 +294,14 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::POINT_TO, {
             { "start", Variant([env](){
-                // start position is based on env variable
-                GLvertex3f node1Pos = env->fetch("node1_pos");
-                return node1Pos+GLvertex3f(70, 0, 0);
+                // start position is based on sine node position
+                AGNode* node1 = env->model().graph().nodeWithUUID(env->fetch("node1_uuid"));
+                return node1->position()+GLvertex3f(70, 0, 0);
             })},
             { "end", Variant([env](){
-                GLvertex3f outputNodePos = env->fetch("output_pos");
-                return outputNodePos+GLvertex3f(-70, 0, 0);
+                // start position is based on output node position
+                AGNode* outputNode = env->model().graph().nodeWithUUID(env->fetch("output_uuid"));
+                return outputNode->position()+GLvertex3f(-70, 0, 0);
             })},
             { "pause", 0 },
         }));
