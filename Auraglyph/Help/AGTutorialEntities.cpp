@@ -392,8 +392,6 @@ protected:
     float m_t = 0;
     float m_pause = 0;
     
-    AGUIStandardNodeEditor* m_nodeEditor = nullptr;
-    
     void prepareInternal(AGTutorialEnvironment &environment) override
     {
         m_pause = getParameter("pause", 0);
@@ -405,8 +403,7 @@ protected:
             AGUIStandardNodeEditor* editor = dynamic_cast<AGUIStandardNodeEditor*>(object);
             if (editor && editor->node()->uuid() == uuid) {
                 dbgprint("blinking node editor item %s:%i\n", uuid.c_str(), item);
-                m_nodeEditor = editor;
-                m_nodeEditor->blink(item);
+                editor->blink(item);
                 break;
             }
         }
@@ -414,9 +411,16 @@ protected:
     
     void finalizeInternal(AGTutorialEnvironment &environment) override
     {
-        if (m_nodeEditor) {
-            int item = getParameter("item", 0);
-            m_nodeEditor->blink(item, false);
+        std::string uuid = getParameter("uuid", 0);
+        int item = getParameter("item", 0);
+        
+        AGRenderModel& renderModel = environment.renderModel();
+        for (auto object : renderModel.objects) {
+            AGUIStandardNodeEditor* editor = dynamic_cast<AGUIStandardNodeEditor*>(object);
+            if (editor && editor->node()->uuid() == uuid) {
+                editor->blink(item, false);
+                break;
+            }
         }
     }
 };
