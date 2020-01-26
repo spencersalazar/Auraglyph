@@ -44,8 +44,6 @@ constexpr static const float DEBUG_TEXT_SPEED_FACTOR = 4;
 //-----------------------------------------------------------------------------
 #pragma mark - ---ACTIONS---
 
-#pragma mark AGTextTutorialAction
-
 /** Tutorial step that simply displays text.
  */
 class AGTextTutorialAction : public AGTutorialAction
@@ -113,8 +111,6 @@ protected:
 };
 
 
-#pragma mark AGHideUITutorialAction
-
 /** AGHideUITutorialAction
  */
 class AGHideUITutorialAction : public AGTutorialAction
@@ -170,8 +166,6 @@ private:
     }
 };
 
-
-#pragma mark AGPointToTutorialAction
 
 /** AGPointToTutorialAction
  */
@@ -276,8 +270,6 @@ protected:
 };
 
 
-#pragma mark AGSuggestDrawNodeTutorialAction
-
 /** AGSuggestDrawNodeTutorialAction
  */
 
@@ -342,8 +334,6 @@ protected:
 };
 
 
-#pragma mark AGBlinkNodeSelectorTutorialAction
-
 /** AGBlinkNodeSelectorTutorialAction
  */
 
@@ -404,8 +394,6 @@ protected:
     }
 };
 
-
-#pragma mark AGBlinkNodeEditorTutorialAction
 
 /** AGBlinkNodeEditorTutorialAction
  */
@@ -469,8 +457,6 @@ protected:
 };
 
 
-#pragma mark AGCreateNodeTutorialAction
-
 /** AGCreateNodeTutorialAction
  */
 
@@ -532,8 +518,6 @@ protected:
 //-----------------------------------------------------------------------------
 #pragma mark - ---CONDITIONS---
 
-#pragma mark AGDrawNodeTutorialCondition
-
 /** AGDrawNodeTutorialCondition
  */
 class AGDrawNodeTutorialCondition : public AGTutorialCondition
@@ -588,8 +572,6 @@ private:
 };
 
 
-#pragma mark AGCreateNodeTutorialCondition
-
 /** AGCreateNodeTutorialCondition
  */
 class AGCreateNodeTutorialCondition : public AGTutorialCondition
@@ -641,8 +623,6 @@ private:
     }
 };
 
-
-#pragma mark AGCreateConnectionTutorialCondition
 
 /** AGCreateConnectionTutorialCondition
  */
@@ -696,8 +676,6 @@ private:
 };
 
 
-#pragma mark AGOpenNodeEditorTutorialCondition
-
 /** AGOpenNodeEditorTutorialCondition
  */
 class AGOpenNodeEditorTutorialCondition : public AGTutorialCondition
@@ -732,8 +710,6 @@ private:
     }
 };
 
-
-#pragma mark AGEditNodeTutorialCondition
 
 /** AGEditNodeTutorialCondition
  */
@@ -785,8 +761,6 @@ private:
     }
 };
 
-
-#pragma mark AGDeleteConnectionTutorialCondition
 
 /** AGDeleteConnectionTutorialCondition
  */
