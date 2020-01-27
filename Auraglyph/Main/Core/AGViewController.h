@@ -20,6 +20,7 @@
 
 class AGModel;
 class AGRenderModel;
+class AGBaseTouchHandler;
 class AGGraph;
 class AGConnection;
 class AGFreeDraw;
@@ -52,6 +53,7 @@ enum AGDrawMode
 - (const AGGraph *)graph;
 - (AGModel&)model;
 - (AGRenderModel&)renderModel;
+- (AGBaseTouchHandler&)baseTouchHandler;
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object;
 - (void)addTopLevelObject:(AGInteractiveObject *)object over:(AGInteractiveObject *)over;
@@ -71,9 +73,6 @@ enum AGDrawMode
 
 - (void)resignTouchHandler:(AGTouchHandler *)handler;
 
-- (GLKMatrix4)modelViewMatrix;
-- (GLKMatrix4)fixedModelViewMatrix;
-- (GLKMatrix4)projectionMatrix;
 - (GLvertex3f)worldCoordinateForScreenCoordinate:(CGPoint)p;
 - (GLvertex3f)fixedCoordinateForScreenCoordinate:(CGPoint)p;
 - (AGNode::HitTestResult)hitTest:(GLvertex3f)pos node:(AGNode **)node port:(int *)port;
@@ -124,6 +123,7 @@ public:
     
     AGModel& model();
     AGRenderModel& renderModel();
+    AGBaseTouchHandler& baseTouchHandler();
     
     void showTutorial(AGTutorial *tutorial);
 

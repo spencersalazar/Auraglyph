@@ -111,10 +111,6 @@ static AGViewController * g_instance = nil;
     return [[NSBundle mainBundle] pathForResource:@"Orbitron-Medium.ttf" ofType:@""];
 }
 
-- (GLKMatrix4)modelViewMatrix { return _renderModel.modelView; }
-- (GLKMatrix4)fixedModelViewMatrix { return _renderModel.fixedModelView; }
-- (GLKMatrix4)projectionMatrix { return _renderModel.projection; }
-
 - (AGDrawMode)drawMode{ return _baseTouchHandler->drawMode(); }
 - (void)setDrawMode:(AGDrawMode)mode { _baseTouchHandler->setDrawMode(mode); }
 
@@ -302,6 +298,8 @@ static AGViewController * g_instance = nil;
 - (AGModel&)model { return _model; }
 
 - (AGRenderModel&)renderModel { return _renderModel; }
+
+- (AGBaseTouchHandler&)baseTouchHandler { return *_baseTouchHandler; }
 
 - (void)addTopLevelObject:(AGInteractiveObject *)object
 {
@@ -726,6 +724,8 @@ const AGGraph *AGViewController_::graph() { return [m_viewController graph]; }
 AGModel& AGViewController_::model() { return [m_viewController model]; }
 
 AGRenderModel& AGViewController_::renderModel() { return [m_viewController renderModel]; }
+
+AGBaseTouchHandler& AGViewController_::baseTouchHandler() { return [m_viewController baseTouchHandler]; }
 
 void AGViewController_::showTutorial(AGTutorial *tutorial) { [m_viewController showTutorial:tutorial]; }
 
