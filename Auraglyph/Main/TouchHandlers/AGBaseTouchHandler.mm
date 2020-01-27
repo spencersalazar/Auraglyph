@@ -254,11 +254,13 @@ void AGBaseTouchHandler::touchesBegan(NSSet<UITouch *> *touches, UIEvent *event)
             return false;
         };
         
-        itmap_safe(_touchOutsideListeners, ^(AGInteractiveObject *&touchOutsideListener){
-            if(!has(touchOutsideListener, touchCapture))
-                touchOutsideListener->touchOutside();
+        itmap_safe(_touchOutsideListeners, ^(AGTouchOutsideListener*& touchOutsideListener){
+            auto outsideObject = touchOutsideListener->outsideObject();
+            if(outsideObject == nullptr || !has(outsideObject, touchCapture)) {
+                touchOutsideListener->touchedOutside();
+            }
         });
-        
+
         // TODO: what does __strong here really mean
         // TODO: convert AGTouchHandler to C++ class
         itmap_safe(_touchOutsideHandlers, ^(__strong AGTouchHandler *&outsideHandler){
@@ -399,7 +401,7 @@ void AGBaseTouchHandler::touchesEnded(NSSet<UITouch *> *touches, UIEvent *event)
 
 void AGBaseTouchHandler::touchesCancelled(NSSet<UITouch *> *touches, UIEvent *event)
 {
-    touchesCancelled(touches, event);
+    touchesEnded(touches, event);
 }
 
 void AGBaseTouchHandler::addTouchOutsideHandler(AGTouchHandler* handler)
@@ -412,14 +414,14 @@ void AGBaseTouchHandler::removeTouchOutsideHandler(AGTouchHandler* handler)
     _touchOutsideHandlers.remove(handler);
 }
 
-void AGBaseTouchHandler::addTouchOutsideListener(AGInteractiveObject* object)
+void AGBaseTouchHandler::addTouchOutsideListener(AGTouchOutsideListener* listener)
 {
-    _touchOutsideListeners.push_back(object);
+    _touchOutsideListeners.push_back(listener);
 }
 
-void AGBaseTouchHandler::removeTouchOutsideListener(AGInteractiveObject* object)
+void AGBaseTouchHandler::removeTouchOutsideListener(AGTouchOutsideListener* listener)
 {
-    _touchOutsideListeners.remove(object);
+    _touchOutsideListeners.remove(listener);
 }
 
 void AGBaseTouchHandler::objectRemovedFromSketchModel(AGInteractiveObject* object)

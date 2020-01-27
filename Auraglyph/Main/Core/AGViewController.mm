@@ -393,13 +393,13 @@ static AGViewController * g_instance = nil;
     _renderModel.currentTutorial = tutorial;
 }
 
-- (void)addTouchOutsideListener:(AGInteractiveObject *)listener
+- (void)addTouchOutsideListener:(AGTouchOutsideListener *)listener
 {
     assert([NSThread isMainThread]);
     _baseTouchHandler->addTouchOutsideListener(listener);
 }
 
-- (void)removeTouchOutsideListener:(AGInteractiveObject *)listener
+- (void)removeTouchOutsideListener:(AGTouchOutsideListener *)listener
 {
     assert([NSThread isMainThread]);
     

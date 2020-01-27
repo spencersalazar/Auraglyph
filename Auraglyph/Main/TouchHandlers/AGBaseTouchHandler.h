@@ -13,13 +13,31 @@
 class AGModel;
 class AGRenderModel;
 FORWARD_DECLARE_OBJC_CLASS(UIEvent);
+FORWARD_DECLARE_OBJC_CLASS(UITouch);
+FORWARD_DECLARE_OBJC_CLASS(AGTouchHandler);
 
 #ifdef __OBJC__
 #import <Foundation/Foundation.h>
 typedef NSSet<UITouch *> *AGTouchSet;
 #else
-typedef void AGTouchSet;
+typedef void* AGTouchSet;
 #endif // __OBJC__
+
+
+/** AGTouchOutsideListener
+ */
+class AGTouchOutsideListener
+{
+public:
+    /** Called when a touch occurs outside the object returned by outsideObject().
+     */
+    virtual void touchedOutside() = 0;
+    
+    /** Object that is to be touched outside. Return nullptr to simply be
+     notified of any touch.
+     */
+    virtual AGInteractiveObject* outsideObject() = 0;
+};
 
 /** Top level touch handler - process touch input
  */
@@ -35,8 +53,8 @@ public:
     
     void addTouchOutsideHandler(AGTouchHandler* handler);
     void removeTouchOutsideHandler(AGTouchHandler* handler);
-    void addTouchOutsideListener(AGInteractiveObject* object);
-    void removeTouchOutsideListener(AGInteractiveObject* object);
+    void addTouchOutsideListener(AGTouchOutsideListener* listener);
+    void removeTouchOutsideListener(AGTouchOutsideListener* listener);
 
     void resignTouchHandler(AGTouchHandler* handler);
     void objectRemovedFromSketchModel(AGInteractiveObject* object);
@@ -69,7 +87,7 @@ private:
     map<UITouch *, AGInteractiveObject *> _touchCaptures;
     AGTouchHandler *_touchHandlerQueue = nil;
             
-    AGInteractiveObjectList _touchOutsideListeners;
+    list<AGTouchOutsideListener*> _touchOutsideListeners;
     list<AGTouchHandler *> _touchOutsideHandlers;
 };
 

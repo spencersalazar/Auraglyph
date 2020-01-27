@@ -15,6 +15,7 @@
 #include "Animation.h"
 #include "AGInteractiveObject.h"
 #include "AGUserInterface.h"
+#include "AGBaseTouchHandler.h"
 
 #include "LTKTypes.h"
 #include "LTKTrace.h"
@@ -32,7 +33,7 @@ class AGFileBrowser;
  - AGUINodeEditor -
  Abstract base class of node editors.
  -----------------------------------------------------------------------------*/
-class AGUINodeEditor : public AGUIObject
+class AGUINodeEditor : public AGUIObject, public AGTouchOutsideListener
 {
 public:
     AGUINodeEditor(AGNode *node);
@@ -45,7 +46,8 @@ public:
     bool isPinned() { return m_pinned; }
     
     /* will close on touchOutside unless pinned */
-    virtual void touchOutside();
+    void touchedOutside() override;
+    AGInteractiveObject* outsideObject() override;
     
     AGNode* node() { return m_node; }
 

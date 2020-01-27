@@ -9,12 +9,13 @@
 #pragma once
 
 #include "AGInteractiveObject.h"
+#include "AGBaseTouchHandler.h"
 
 #include <string>
 #include <vector>
 #include <functional>
 
-class AGMenu : public AGInteractiveObject
+class AGMenu : public AGInteractiveObject, public AGTouchOutsideListener
 {
 public:
     AGMenu(const GLvertex3f &pos, const GLvertex2f &size);
@@ -33,7 +34,9 @@ public:
     void touchDown(const AGTouchInfo &t) override;
     void touchMove(const AGTouchInfo &t) override;
     void touchUp(const AGTouchInfo &t) override;
-    void touchOutside() override;
+    
+    void touchedOutside() override;
+    AGInteractiveObject* outsideObject() override { return this; }
     
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t) override;
     

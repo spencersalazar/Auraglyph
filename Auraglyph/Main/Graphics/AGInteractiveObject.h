@@ -34,6 +34,8 @@ typedef void *AGPlatformTouchInfo;
 typedef void *AGPlatformTouchInfo;
 #endif
 
+class AGTouchOutsideListener;
+
 //------------------------------------------------------------------------------
 // ### AGTouchInfo ###
 // Class representing a single touch.
@@ -67,7 +69,6 @@ public:
     virtual void touchDown(const AGTouchInfo &t) = 0;
     virtual void touchMove(const AGTouchInfo &t) = 0;
     virtual void touchUp(const AGTouchInfo &t) = 0;
-    virtual void touchOutside() { };
 
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t) = 0;
 };
@@ -101,8 +102,8 @@ public:
     
     void removeFromTopLevel();
     
-    static void addTouchOutsideListener(AGInteractiveObject *);
-    static void removeTouchOutsideListener(AGInteractiveObject *);
+    static void addTouchOutsideListener(AGTouchOutsideListener *);
+    static void removeTouchOutsideListener(AGTouchOutsideListener *);
 };
 
 

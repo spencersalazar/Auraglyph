@@ -229,7 +229,7 @@ void AGMenu::touchUp(const AGTouchInfo &t)
     }
 }
 
-void AGMenu::touchOutside()
+void AGMenu::touchedOutside()
 {
     
 }

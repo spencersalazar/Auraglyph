@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Spencer Salazar. All rights reserved.
 //
 
+#pragma once
+
 #ifdef __OBJC__
 #import <UIKit/UIKit.h>
 #import <GLKit/GLKit.h>
@@ -23,6 +25,8 @@ class AGConnection;
 class AGFreeDraw;
 class AGInteractiveObject;
 class AGTutorial;
+class AGTouchOutsideListener;
+
 #ifdef __OBJC__
 @class AGTouchHandler;
 #endif // __OBJC__
@@ -44,6 +48,7 @@ enum AGDrawMode
 - (void)addNode:(AGNode *)node;
 - (void)removeNode:(AGNode *)node;
 - (void)resignNode:(AGNode *)node;
+
 - (const AGGraph *)graph;
 - (AGModel&)model;
 - (AGRenderModel&)renderModel;
@@ -59,9 +64,9 @@ enum AGDrawMode
 - (void)removeFreeDraw:(AGFreeDraw *)freedraw;
 - (const list<AGFreeDraw *> &)freedraws;
 
-- (void)addTouchOutsideListener:(AGInteractiveObject *)listener;
+- (void)addTouchOutsideListener:(AGTouchOutsideListener *)listener;
 - (void)addTouchOutsideHandler:(AGTouchHandler *)listener;
-- (void)removeTouchOutsideListener:(AGInteractiveObject *)listener;
+- (void)removeTouchOutsideListener:(AGTouchOutsideListener *)listener;
 - (void)removeTouchOutsideHandler:(AGTouchHandler *)listener;
 
 - (void)resignTouchHandler:(AGTouchHandler *)handler;

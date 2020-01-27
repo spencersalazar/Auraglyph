@@ -47,7 +47,7 @@ void AGUINodeEditor::unpin()
     m_pinned = false;
 }
 
-void AGUINodeEditor::touchOutside()
+void AGUINodeEditor::touchedOutside()
 {
     if(!m_pinned)
     {
@@ -55,6 +55,12 @@ void AGUINodeEditor::touchOutside()
         AGInteractiveObject::removeTouchOutsideListener(this);
     }
 }
+
+AGInteractiveObject* AGUINodeEditor::outsideObject()
+{
+    return this;
+}
+
 
 
 /*------------------------------------------------------------------------------

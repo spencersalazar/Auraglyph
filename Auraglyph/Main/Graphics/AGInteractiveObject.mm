@@ -67,13 +67,13 @@ void AGInteractiveObject::removeFromTopLevel()
     [[AGViewController instance] fadeOutAndDelete:this];
 }
 
-void AGInteractiveObject::addTouchOutsideListener(AGInteractiveObject *listener)
+void AGInteractiveObject::addTouchOutsideListener(AGTouchOutsideListener *listener)
 {
     AGViewController *viewController = [AGViewController instance];
     [viewController addTouchOutsideListener:listener];
 }
 
-void AGInteractiveObject::removeTouchOutsideListener(AGInteractiveObject *listener)
+void AGInteractiveObject::removeTouchOutsideListener(AGTouchOutsideListener *listener)
 {
     [[AGViewController instance] removeTouchOutsideListener:listener];
 }
