@@ -586,20 +586,20 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "and tutorials." },
             { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 1.5 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "tap anywhere to" },
+            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "exit this tutorial." },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 3.0 },
         }));
-        //        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
-        //            { "text", "tap anywhere to" },
-        //            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
-        //            { "pause", 0.0 },
-        //        }));
-        //        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
-        //            { "text", "exit this tutorial." },
-        //            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
-        //            { "pause", 3.0 },
-        //        }));
         
-        // conditions.push_back(AGTutorialConditions::make(AGTutorialConditions::TAP_SCREEN));
+        conditions.push_back(AGTutorialConditions::make(AGTutorialConditions::TAP_SCREEN));
         
         steps.push_back(_makeTutorialStep(actions, conditions, {
             { "pause", 3.0 }

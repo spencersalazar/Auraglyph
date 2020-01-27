@@ -518,6 +518,49 @@ protected:
 //-----------------------------------------------------------------------------
 #pragma mark - ---CONDITIONS---
 
+
+/** AGTapScreenTutorialCondition
+ */
+class AGTapScreenTutorialCondition : public AGTutorialCondition, public AGTouchOutsideListener
+{
+public:
+    
+    using AGTutorialCondition::AGTutorialCondition;
+    
+    AGTutorialCondition::Status getStatus() override
+    {
+        return m_status;
+    }
+    
+    void touchedOutside() override
+    {
+        m_status = STATUS_CONTINUE;
+    }
+    
+    AGInteractiveObject * outsideObject() override
+    {
+        return nullptr;
+    }
+    
+private:
+    Status m_status = STATUS_INCOMPLETE;
+    GLvertex3f m_nodePosition = GLvertex3f();
+    
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        environment.viewController()->baseTouchHandler().addTouchOutsideListener(this);
+    }
+    
+    void finalizeInternal(AGTutorialEnvironment &environment) override
+    {
+        environment.viewController()->baseTouchHandler().removeTouchOutsideListener(this);
+    }
+};
+
+
+
+
+
 /** AGDrawNodeTutorialCondition
  */
 class AGDrawNodeTutorialCondition : public AGTutorialCondition
@@ -847,7 +890,7 @@ AGTutorialCondition *AGTutorialConditions::make(AGTutorialConditions::Condition 
     
     switch (type) {
         case AGTutorialConditions::TAP_SCREEN:
-            return nullptr;
+            return new AGTapScreenTutorialCondition(parameters);
             break;
         case AGTutorialConditions::DRAW_NODE:
             condition = new AGDrawNodeTutorialCondition(parameters);
