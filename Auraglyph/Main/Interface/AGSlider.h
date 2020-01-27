@@ -10,6 +10,7 @@
 #define AGSlider_h
 
 #include "AGInteractiveObject.h"
+#include "AGStyle.h"
 #include <functional>
 
 class AGSlider : public AGInteractiveObject
@@ -104,7 +105,7 @@ private:
     std::function<float (float, float)> m_validator;
     
     bool m_enableBlink;
-    powcurvef m_blink;
+    AGBlink m_blink;
 };
 
 

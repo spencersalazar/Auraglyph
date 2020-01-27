@@ -24,8 +24,7 @@ AGSlider::AGSlider(const GLvertex3f &position, float value)
 : m_value(value),
 m_update([](float){}), m_start([](float){}), m_stop([](float, float){}),
 m_validator([](float _old, float _new) { return _new; }),
-m_enableBlink(false),
-m_blink(powcurvef(1, 0, 1.1, 0.75))
+m_enableBlink(false)
 {
     setPosition(position);
     _updateValue(value);
@@ -39,10 +38,7 @@ void AGSlider::update(float t, float dt)
     AGRenderObject::update(t, dt);
     
     if (m_enableBlink) {
-        m_blink.update(dt);
-        if (m_blink.isFinished()) {
-            m_blink.reset();
-        }
+        m_blink.update(t, dt);
     }
 }
 
@@ -54,15 +50,11 @@ void AGSlider::render()
     
     if (!m_active && m_enableBlink) {
         // handle blink
-        AGStyle::foregroundColor().withAlpha(m_blink).set();
+        m_blink.backgroundColor().set();
         
         fillRect(m_pos.x, m_pos.y, m_size.x, m_size.y);
         
-        float alpha = easeInOut(m_blink, 3.25f, 0.3f);
-        auto fgColor = AGStyle::foregroundColor();
-        auto bgColor = AGStyle::frameBackgroundColor();
-        
-        valueColor = fgColor.alphaBlend(bgColor, alpha).withAlpha(m_renderState.alpha);
+        valueColor = m_blink.foregroundColor().withAlpha(m_renderState.alpha);
     } else {
         valueColor = AGStyle::foregroundColor().withAlpha(m_renderState.alpha);
     }

@@ -144,5 +144,37 @@ private:
     lincurvef m_yScale;
 };
 
+class AGBlink
+{
+public:
+    
+    AGBlink() : m_curve(powcurvef(1, 0, 1.1, 0.75)) { }
+    
+    void update(float t, float dt)
+    {
+        m_curve.update(dt);
+        if (m_curve.isFinished()) {
+            m_curve.reset();
+        }
+    }
+    
+    void reset() { m_curve.reset(); }
+    
+    float value() { return m_curve; }
+    
+    GLcolor4f backgroundColor() { return AGStyle::foregroundColor().withAlpha(m_curve); }
+    
+    GLcolor4f foregroundColor()
+    {
+        float alpha = easeInOut(m_curve, 3.25f, 0.3f);
+        auto fgColor = AGStyle::foregroundColor();
+        auto bgColor = AGStyle::frameBackgroundColor();
+        return fgColor.alphaBlend(bgColor, alpha);
+    }
+    
+private:
+    powcurvef m_curve;
+};
+
 
 #endif /* defined(__Auragraph__AGStyle__) */

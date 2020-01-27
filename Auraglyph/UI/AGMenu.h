@@ -40,6 +40,8 @@ public:
     
     virtual AGInteractiveObject *hitTest(const GLvertex3f &t) override;
     
+    void blink(bool enable = true);
+    
 private:
     
     GLvrectf _boundingBoxForItem(int item);
@@ -64,5 +66,8 @@ private:
     bool m_leftTab = false;
     int m_selectedItem = -1;
     powcurvef m_itemsAlpha;
+    
+    bool m_blinkEnable = false;
+    
 };
 

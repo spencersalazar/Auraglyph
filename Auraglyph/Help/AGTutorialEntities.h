@@ -76,7 +76,13 @@ public:
          - uuid (string) - uuid of node whose editor to blink
          - item (int) - row of item to blink (-1 = all items)
          */
-        
+        BLINK_DASHBOARD,
+        /* blink an item on the dashboard
+         parameters:
+         - item (string) - name of item to blink. possible options:
+         file, edit, settings, node, freedraw, eraser, trash
+         */
+
     };
     
     /** Helper function to create tutorial actions.

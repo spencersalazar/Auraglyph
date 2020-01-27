@@ -72,7 +72,7 @@ private:
     GLvertex3f m_lastTouch;
     bool m_done;
     
-    powcurvef m_itemBlink;
+    AGBlink m_itemBlink;
     int m_blinkItem = -1;
 };
 
@@ -117,8 +117,7 @@ AGUIMetaNodeSelector(pos),
 m_node(new NodeType(AGNodeManifest::defaultManifest(), pos)),
 m_hit(-1),
 m_done(false),
-m_manager(manager),
-m_itemBlink(powcurvef(1, 0, 1.1, 0.75))
+m_manager(manager)
 {
     m_node->init();
     
@@ -154,11 +153,8 @@ void AGUINodeSelector<NodeType, ManagerType>::update(float t, float dt)
 {
     m_verticalScrollPos.update(t, dt);
     
-    m_itemBlink.update(dt);
-    if (m_itemBlink.isFinished()) {
-        m_itemBlink.reset();
-    }
-    
+    m_itemBlink.update(t, dt);
+
     Matrix4 modelview = AGNode::globalModelViewMatrix();
     Matrix4 projection = AGNode::projectionMatrix();
     
@@ -277,14 +273,10 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
             Matrix4 blinkMat = Matrix4::makeTranslation(iconPos.x, iconPos.y, iconPos.z).scale(0.45f);
             clipShader.setLocalMatrix(blinkMat);
             
-            AGStyle::foregroundColor().withAlpha(m_itemBlink).set();
-            
+            m_itemBlink.backgroundColor().set();
             drawTriangleFan(clipShader, m_geo, m_geoSize, blinkMat);
             
-            float alpha = easeInOut(m_itemBlink, 3.25f, 0.3f);
-            auto fgColor = AGStyle::foregroundColor();
-            auto bgColor = AGStyle::frameBackgroundColor();
-            fgColor.alphaBlend(bgColor, alpha).set();
+            m_itemBlink.foregroundColor().set();
             
         } else {
             AGStyle::foregroundColor().set();
@@ -298,7 +290,7 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
     }
     
     if (m_blinkItem >= 0) {
-        // check if blink item is off screen
+        /* check if blink item is off screen */
         GLvertex3f iconPos = startPos + (xInc*(m_blinkItem%2)) + (yInc*(m_blinkItem/2));
         bool blinkTop = false, blinkBottom = false;
         if (iconPos.y-m_radius/2*0.9 > m_radius) {
@@ -308,6 +300,7 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
         }
         
         if (blinkTop || blinkBottom) {
+            /* if blinking item is offscreen, draw indicator */
             float marginY = 0.9f;
             float marginX = 0.95f;
             GLvertex2f blinkStart {
@@ -321,7 +314,7 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
             
             GLvrectf blinkBox { blinkStart, blinkStop };
 
-            AGStyle::foregroundColor().withAlpha(m_itemBlink).set();
+            AGStyle::foregroundColor().withAlpha(m_itemBlink.value()).set();
             
             glLineWidth(4.0f);
             clipShader.setLocalMatrix(Matrix4::identity);

@@ -28,6 +28,14 @@ public:
     
     void update(float t, float dt) override;
     
+    AGMenu* fileMenu() { return m_fileMenu; }
+    AGMenu* editMenu() { return m_editMenu; }
+    AGMenu* settingsMenu() { return m_settingsMenu; }
+    
+    AGUIIconButton* nodeModeButton() { return m_nodeButton; }
+    AGUIIconButton* freedrawModeButton() { return m_freedrawButton; }
+    AGUIIconButton* eraseModeButton() { return m_freedrawEraseButton; }
+
 private:
     AGViewController_ *m_viewController = nullptr;
     

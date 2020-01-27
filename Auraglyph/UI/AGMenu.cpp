@@ -234,6 +234,11 @@ void AGMenu::touchedOutside()
     
 }
 
+void AGMenu::blink(bool enable)
+{
+    
+}
+
 AGInteractiveObject *AGMenu::hitTest(const GLvertex3f &t)
 {
     if(pointInCircle(t.xy(), m_pos.xy(), m_size.x/2))
