@@ -66,6 +66,7 @@ void AGMenu::update(float t, float dt)
     m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
     
     m_itemsAlpha.update(dt);
+    m_blink.update(t, dt);
 }
 
 void AGMenu::render()
@@ -74,13 +75,21 @@ void AGMenu::render()
     
     if(!m_open)
     {
-        AGStyle::frameBackgroundColor().withAlpha(m_renderState.alpha).set();
+        if (m_blinkEnable) {
+            m_blink.backgroundColor().set();
+        } else {
+            AGStyle::frameBackgroundColor().withAlpha(m_renderState.alpha).set();
+        }
         // draw frame background (fill rect)
         drawTriangleFan(m_frameGeo.data(), m_frameGeo.size());
         
         AGStyle::foregroundColor().withAlpha(m_renderState.alpha).set();
         // draw frame (stroke rect)
         drawLineLoop(m_frameGeo.data(), m_frameGeo.size());
+        
+        if (m_blinkEnable) {
+            m_blink.foregroundColor().withAlpha(m_renderState.alpha).set();
+        }
         // draw icon
         drawGeometry(m_iconGeo.data(), m_iconGeo.size(), m_iconGeoKind);
     }
@@ -236,7 +245,10 @@ void AGMenu::touchedOutside()
 
 void AGMenu::blink(bool enable)
 {
-    
+    m_blinkEnable = enable;
+    if (enable) {
+        m_blink.reset();
+    }
 }
 
 AGInteractiveObject *AGMenu::hitTest(const GLvertex3f &t)

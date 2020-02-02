@@ -10,6 +10,7 @@
 
 #include "AGInteractiveObject.h"
 #include "AGBaseTouchHandler.h"
+#include "AGStyle.h"
 
 #include <string>
 #include <vector>
@@ -68,6 +69,6 @@ private:
     powcurvef m_itemsAlpha;
     
     bool m_blinkEnable = false;
-    
+    AGBlink m_blink;
 };
 
