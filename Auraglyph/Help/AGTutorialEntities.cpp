@@ -36,7 +36,7 @@
 #include <memory>
 
 
-constexpr static const float DEBUG_TEXT_SPEED_FACTOR = 4;
+constexpr static const float DEBUG_TEXT_SPEED_FACTOR = 1;
 
 
 //-----------------------------------------------------------------------------
@@ -457,6 +457,73 @@ protected:
 };
 
 
+/** AGBlinkDashboardTutorialAction
+ */
+
+#include "AGMenu.h"
+
+class AGBlinkDashboardTutorialAction : public AGTutorialAction
+{
+public:
+    using AGTutorialAction::AGTutorialAction;
+    
+    void update(float t, float dt) override
+    {
+        if (m_t > m_pause)
+            m_canContinue = true;
+        else
+            m_t += dt;
+    }
+    
+    bool canContinue() override { return m_canContinue; }
+    
+    bool isCompleted() override { return false; }
+    
+protected:
+    
+    bool m_canContinue = false;
+    float m_t = 0;
+    float m_pause = 0;
+    
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        m_pause = getParameter("pause", 0);
+        std::string item = getParameter("item", 0);
+        int enable = getParameter("enable", 1);
+
+        AGDashboard* dashboard = environment.renderModel().uiDashboard;
+        // file, edit, settings, node, freedraw, eraser, trash
+        if (item == "file") {
+            dashboard->fileMenu()->blink(enable);
+        } else if (item == "edit") {
+            dashboard->editMenu()->blink(enable);
+        } else if (item == "settings") {
+            dashboard->settingsMenu()->blink(enable);
+        }
+    }
+    
+    void finalizeInternal(AGTutorialEnvironment &environment) override
+    {
+        std::string uuid = getParameter("uuid", 0);
+        std::string item = getParameter("item", 0);
+        int enable = getParameter("enable", 1);
+        
+        // disable if this action originally enabled it
+        if (enable) {
+            AGDashboard* dashboard = environment.renderModel().uiDashboard;
+            // file, edit, settings, node, freedraw, eraser, trash
+            if (item == "file") {
+                dashboard->fileMenu()->blink(false);
+            } else if (item == "edit") {
+                dashboard->editMenu()->blink(false);
+            } else if (item == "settings") {
+                dashboard->settingsMenu()->blink(false);
+            }
+        }
+    }
+};
+
+
 /** AGCreateNodeTutorialAction
  */
 
@@ -871,6 +938,9 @@ AGTutorialAction *AGTutorialActions::make(AGTutorialActions::Action type, const 
             break;
         case AGTutorialActions::BLINK_NODE_EDITOR:
             action = new AGBlinkNodeEditorTutorialAction(parameters);
+            break;
+        case AGTutorialActions::BLINK_DASHBOARD:
+            action = new AGBlinkDashboardTutorialAction(parameters);
             break;
         default:
             assert(0);

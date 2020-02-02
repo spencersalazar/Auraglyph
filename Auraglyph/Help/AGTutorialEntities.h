@@ -81,6 +81,7 @@ public:
          parameters:
          - item (string) - name of item to blink. possible options:
          file, edit, settings, node, freedraw, eraser, trash
+         - enable (int) - whether to enable - 0: disable, 1: enable (default)
          */
 
     };

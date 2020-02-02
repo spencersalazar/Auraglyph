@@ -496,6 +496,11 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         std::list<AGTutorialCondition*> conditions;
         GLvertex3f currentTextPos = GLvertex3f();
         
+        /* file menu */
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
+            { "item", "file" },
+            { "enable", 1 },
+        }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "the file menu includes" },
             { "position", startPos+Variant(currentTextPos) },
@@ -511,15 +516,35 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
             { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 0.3 },
         }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
+            { "item", "file" },
+            { "enable", 0 },
+        }));
+        
+        /* edit menu */
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
+            { "item", "edit" },
+            { "enable", 1 },
+        }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "undo and redo are" },
             { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
             { "pause", 0.0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
-            { "text", "in the tools menu." },
+            { "text", "in the edit menu." },
             { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 0.3 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
+            { "item", "edit" },
+            { "enable", 0 },
+        }));
+
+        /* settings menu */
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
+            { "item", "settings" },
+            { "enable", 1 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "you can access the tutorial" },
@@ -535,6 +560,10 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
             { "text", "through the settings menu." },
             { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 3.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
+            { "item", "settings" },
+            { "enable", 0 },
         }));
 
         steps.push_back(_makeTutorialStep(actions, conditions, {
