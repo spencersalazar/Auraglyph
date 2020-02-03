@@ -43,12 +43,8 @@ public:
     
     virtual void blink(bool enable, int item = -1) override
     {
-        if (enable) {
-            m_blinkItem = item;
-            m_itemBlink.reset();
-        } else {
-            m_blinkItem = -1;
-        }
+        m_blinkItem = item;
+        m_itemBlink.activate(enable);
     }
     
     virtual void renderOut() override;
@@ -273,10 +269,10 @@ void AGUINodeSelector<NodeType, ManagerType>::render()
             Matrix4 blinkMat = Matrix4::makeTranslation(iconPos.x, iconPos.y, iconPos.z).scale(0.45f);
             clipShader.setLocalMatrix(blinkMat);
             
-            m_itemBlink.backgroundColor().set();
+            m_itemBlink.backgroundColor().withAlpha(m_renderState.alpha).set();
             drawTriangleFan(clipShader, m_geo, m_geoSize, blinkMat);
             
-            m_itemBlink.foregroundColor().set();
+            m_itemBlink.foregroundColor().withAlpha(m_renderState.alpha).set();
             
         } else {
             AGStyle::foregroundColor().set();

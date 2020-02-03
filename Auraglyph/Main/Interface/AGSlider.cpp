@@ -37,9 +37,7 @@ void AGSlider::update(float t, float dt)
 {
     AGRenderObject::update(t, dt);
     
-    if (m_enableBlink) {
-        m_blink.update(t, dt);
-    }
+    m_blink.update(t, dt);
 }
 
 void AGSlider::render()
@@ -48,9 +46,9 @@ void AGSlider::render()
     
     GLcolor4f valueColor;
     
-    if (!m_active && m_enableBlink) {
+    if (!m_active && m_blink.isActive()) {
         // handle blink
-        m_blink.backgroundColor().set();
+        m_blink.backgroundColor().withAlpha(m_renderState.alpha).set();
         
         fillRect(m_pos.x, m_pos.y, m_size.x, m_size.y);
         
@@ -210,8 +208,9 @@ void AGSlider::_updateValue(float value)
 
 void AGSlider::blink(bool enableBlink)
 {
-    m_enableBlink = enableBlink;
     if (enableBlink) {
-        m_blink.reset();
+        m_enableBlink = true;
     }
+    
+    m_blink.activate(enableBlink);
 }

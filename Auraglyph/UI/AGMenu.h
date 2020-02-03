@@ -68,7 +68,6 @@ private:
     int m_selectedItem = -1;
     powcurvef m_itemsAlpha;
     
-    bool m_blinkEnable = false;
     AGBlink m_blink;
 };
 

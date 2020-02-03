@@ -75,8 +75,8 @@ void AGMenu::render()
     
     if(!m_open)
     {
-        if (m_blinkEnable) {
-            m_blink.backgroundColor().set();
+        if (m_blink.isActive()) {
+            m_blink.backgroundColor().withAlpha(m_renderState.alpha).set();
         } else {
             AGStyle::frameBackgroundColor().withAlpha(m_renderState.alpha).set();
         }
@@ -87,7 +87,7 @@ void AGMenu::render()
         // draw frame (stroke rect)
         drawLineLoop(m_frameGeo.data(), m_frameGeo.size());
         
-        if (m_blinkEnable) {
+        if (m_blink.isActive()) {
             m_blink.foregroundColor().withAlpha(m_renderState.alpha).set();
         }
         // draw icon
@@ -245,10 +245,7 @@ void AGMenu::touchedOutside()
 
 void AGMenu::blink(bool enable)
 {
-    m_blinkEnable = enable;
-    if (enable) {
-        m_blink.reset();
-    }
+    m_blink.activate(enable);
 }
 
 AGInteractiveObject *AGMenu::hitTest(const GLvertex3f &t)
