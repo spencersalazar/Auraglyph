@@ -148,12 +148,25 @@ class AGBlink
 {
 public:
     
-    AGBlink() : m_curve(powcurvef(1, 0, 1.1, 0.75)) { }
+    AGBlink() : m_active(false), m_curve(powcurvef(1, 0, 1.1, 0.75))
+    {
+        // start at end
+        m_curve.finish();
+    }
+    
+    void activate(bool active = true)
+    {
+        if (active && !m_active) { m_curve.reset(); }
+        
+        m_active = active;
+    }
+    
+    bool isActive() { return m_active || !m_curve.isFinished(); }
     
     void update(float t, float dt)
     {
         m_curve.update(dt);
-        if (m_curve.isFinished()) {
+        if (m_active && m_curve.isFinished()) {
             m_curve.reset();
         }
     }
@@ -173,6 +186,7 @@ public:
     }
     
 private:
+    bool m_active;
     powcurvef m_curve;
 };
 
