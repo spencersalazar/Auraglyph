@@ -138,7 +138,7 @@ struct GLcolor4f
     
     inline GLcolor4f withAlpha(float alpha) const
     {
-        return GLcolor4f(r, g, b, alpha);
+        return GLcolor4f(r, g, b, a*alpha);
     }
     
     inline GLcolor4f blend(float _r, float _g, float _b, float _a = 1) const
