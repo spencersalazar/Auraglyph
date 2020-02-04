@@ -471,11 +471,14 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "and dragging it out." },
             { "position", startPos+Variant(currentTextPos += normalLineSpace) },
-            { "pause", 0.0 },
+            { "pause", 2.0 },
         }));
 
-        conditions.push_back(AGTutorialConditions::make(AGTutorialConditions::DELETE_CONNECTION, {
-            { "uuid", Variant([env]() { return env->fetch("conn1_uuid").getString(); })},
+        conditions.push_back(AGCompositeTutorialCondition::makeAnd((std::list<AGTutorialCondition*>) {
+            AGTutorialConditions::make(AGTutorialConditions::DELETE_CONNECTION, {
+                { "uuid", Variant([env]() { return env->fetch("conn1_uuid").getString(); })},
+            }),
+            AGTutorialConditions::make(AGTutorialConditions::ACTIONS_COMPLETED),
         }));
         
         steps.push_back(_makeTutorialStep(actions, conditions, {
@@ -650,6 +653,7 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
     AGTutorial *tutorial = new AGTutorial(steps, viewController);
     tutorial->init();
     tutorial->m_environment.reset(env);
+    env->setTutorial(tutorial);
     
     return tutorial;
 }

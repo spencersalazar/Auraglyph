@@ -44,6 +44,7 @@ AGTutorialEntity::~AGTutorialEntity() { }
 
 void AGTutorialEntity::prepare(AGTutorialEnvironment &environment)
 {
+    m_environment = &environment;
     prepareInternal(environment);
     m_onPrepare(environment);
 }

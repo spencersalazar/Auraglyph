@@ -35,6 +35,10 @@ public:
     
     void activityOccurred(AGActivity *activity) override;
     
+    const std::list<AGTutorialStep*>& steps() { return m_steps; }
+    
+    std::list<AGTutorialStep*>::iterator currentStep() { return m_currentStep; }
+    
 private:
     std::unique_ptr<AGTutorialEnvironment> m_environment;
     

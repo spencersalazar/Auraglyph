@@ -23,6 +23,7 @@
 #include <string>
 #include <map>
 
+class AGTutorial;
 class AGViewController_;
 class AGModel;
 class AGRenderModel;
@@ -41,6 +42,13 @@ public:
     /** */
     AGTutorialEnvironment(AGViewController_ *viewController);
     
+    /** Separate setter as currently environment needs to be created before
+     the tutorial.
+     */
+    void setTutorial(AGTutorial* tutorial) { m_tutorial = tutorial; }
+    /** */
+    AGTutorial* tutorial() { return m_tutorial; }
+    
     /** */
     AGViewController_ *viewController();
     
@@ -56,6 +64,8 @@ public:
     const Variant &fetch(const std::string &name, const Variant &_default=Variant());
     
 private:
+    /** */
+    AGTutorial* m_tutorial = nullptr;
     /** */
     AGViewController_ *m_viewController = nullptr;
     /** Map of named variables in this environment. */
@@ -107,6 +117,9 @@ protected:
     bool hasParameter(const std::string &name);
     /** Get parameter for this entity with specified name. */
     Variant getParameter(const std::string &name, Variant defaultValue = Variant());
+    
+    /** Get tutorial environment. */
+    AGTutorialEnvironment& environment() { return *m_environment; }
 
     /** Override to make subclass-specific set up when preparing this entity
      */
@@ -116,7 +129,7 @@ protected:
     virtual void finalizeInternal(AGTutorialEnvironment &environment);
     
 private:
-    
+    AGTutorialEnvironment* m_environment = nullptr;
     map<std::string, Variant> m_parameters;
     std::function<void (AGTutorialEnvironment &env)> m_onPrepare;
     std::function<void (AGTutorialEnvironment &env)> m_onFinalize;
@@ -211,6 +224,11 @@ public:
     void render() override;
     
     void activityOccurred(AGActivity *activity) override;
+    
+    const list<AGTutorialAction*>& actions() { return m_actions; }
+    list<AGTutorialAction*>::iterator currentAction() { return m_currentAction; }
+    const list<AGTutorialCondition*>& conditions() { return m_conditions; }
+
     
 private:
     /** Check if any conditions have been triggered */

@@ -7,6 +7,7 @@
 //
 
 #include "AGTutorialEntities.h"
+#include "AGTutorial.h"
 
 // for rendering
 #include "Geometry.h"
@@ -36,7 +37,7 @@
 #include <memory>
 
 
-constexpr static const float DEBUG_TEXT_SPEED_FACTOR = 1;
+constexpr static const float DEBUG_TEXT_SPEED_FACTOR = 1.5;
 
 
 //-----------------------------------------------------------------------------
@@ -579,6 +580,50 @@ protected:
 };
 
 
+AGTutorialAction *AGTutorialActions::make(AGTutorialActions::Action type, const map<std::string, Variant> &parameters)
+{
+    AGTutorialAction *action = nullptr;
+    
+    switch (type) {
+        case AGTutorialActions::TEXT:
+            action = new AGTextTutorialAction(parameters);
+            break;
+        case AGTutorialActions::POINT_TO:
+            action = new AGPointToTutorialAction(parameters);
+            break;
+        case AGTutorialActions::HIDE_UI:
+            action = new AGHideUITutorialAction(parameters);
+            break;
+        case AGTutorialActions::HIDE_GRAPH:
+            action = new AGHideGraphTutorialAction(parameters);
+            break;
+        case AGTutorialActions::SUGGEST_DRAW_NODE:
+            action = new AGSuggestDrawNodeTutorialAction(parameters);
+            break;
+        case AGTutorialActions::CREATE_NODE:
+            action = new AGCreateNodeTutorialAction(parameters);
+            break;
+        case AGTutorialActions::BLINK_NODE_SELECTOR:
+            action = new AGBlinkNodeSelectorTutorialAction(parameters);
+            break;
+        case AGTutorialActions::BLINK_NODE_EDITOR:
+            action = new AGBlinkNodeEditorTutorialAction(parameters);
+            break;
+        case AGTutorialActions::BLINK_DASHBOARD:
+            action = new AGBlinkDashboardTutorialAction(parameters);
+            break;
+        default:
+            assert(0);
+            break;
+    }
+    
+    assert(action != nullptr);
+    
+    action->init();
+    
+    return action;
+}
+
 
 //-----------------------------------------------------------------------------
 // CONDITIONS
@@ -899,66 +944,47 @@ private:
     Status m_status = STATUS_INCOMPLETE;
     
     bool m_matchAny = false;
-    std::unique_ptr<AGTimer> m_timer;
     
     void prepareInternal(AGTutorialEnvironment &environment) override
     {
         m_matchAny = !hasParameter("uuid");
+        
+        // check if already completed
+        std::string uuid = getParameter("uuid");
+        if (uuid.length() && environment.model().graph().connectionWithUUID(uuid) == nullptr) {
+            m_status = STATUS_CONTINUE;
+        }
     }
 };
 
 
-#pragma mark - ---Helpers---
-
-AGTutorialAction *AGTutorialActions::make(AGTutorialActions::Action type, const map<std::string, Variant> &parameters)
+/** AGActionsCompletedTutorialCondition
+ */
+class AGActionsCompletedTutorialCondition : public AGTutorialCondition
 {
-    AGTutorialAction *action = nullptr;
+public:
+    using AGTutorialCondition::AGTutorialCondition;
     
-    switch (type) {
-        case AGTutorialActions::TEXT:
-            action = new AGTextTutorialAction(parameters);
-            break;
-        case AGTutorialActions::POINT_TO:
-            action = new AGPointToTutorialAction(parameters);
-            break;
-        case AGTutorialActions::HIDE_UI:
-            action = new AGHideUITutorialAction(parameters);
-            break;
-        case AGTutorialActions::HIDE_GRAPH:
-            action = new AGHideGraphTutorialAction(parameters);
-            break;
-        case AGTutorialActions::SUGGEST_DRAW_NODE:
-            action = new AGSuggestDrawNodeTutorialAction(parameters);
-            break;
-        case AGTutorialActions::CREATE_NODE:
-            action = new AGCreateNodeTutorialAction(parameters);
-            break;
-        case AGTutorialActions::BLINK_NODE_SELECTOR:
-            action = new AGBlinkNodeSelectorTutorialAction(parameters);
-            break;
-        case AGTutorialActions::BLINK_NODE_EDITOR:
-            action = new AGBlinkNodeEditorTutorialAction(parameters);
-            break;
-        case AGTutorialActions::BLINK_DASHBOARD:
-            action = new AGBlinkDashboardTutorialAction(parameters);
-            break;
-        default:
-            assert(0);
-            break;
+    AGTutorialCondition::Status getStatus() override
+    {
+        auto currentStep = *(environment().tutorial()->currentStep());
+        if (currentStep->currentAction() == currentStep->actions().end()) {
+            return STATUS_CONTINUE;
+        } else {
+            return STATUS_INCOMPLETE;
+        }
     }
-    
-    assert(action != nullptr);
-    
-    action->init();
-    
-    return action;
-}
+};
+
 
 AGTutorialCondition *AGTutorialConditions::make(AGTutorialConditions::Condition type, const map<std::string, Variant> &parameters)
 {
     AGTutorialCondition *condition = nullptr;
     
     switch (type) {
+        case AGTutorialConditions::ACTIONS_COMPLETED:
+            return new AGActionsCompletedTutorialCondition(parameters);
+            break;
         case AGTutorialConditions::TAP_SCREEN:
             return new AGTapScreenTutorialCondition(parameters);
             break;
