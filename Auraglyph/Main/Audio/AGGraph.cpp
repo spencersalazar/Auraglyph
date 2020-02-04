@@ -41,7 +41,11 @@ void AGGraph::removeNode(AGNode *node)
 
 AGConnection *AGGraph::connectionWithUUID(const std::string &uuid) const
 {
-    return _connections.at(uuid);
+    if (_connections.count(uuid)) {
+        return _connections.at(uuid);
+    } else {
+        return nullptr;
+    }
 }
 
 void AGGraph::addConnection(AGConnection *connection)
