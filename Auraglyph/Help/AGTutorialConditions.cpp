@@ -25,13 +25,78 @@
 #include <memory>
 
 
-constexpr static const float DEBUG_TEXT_SPEED_FACTOR = 1.5;
-
-
 //-----------------------------------------------------------------------------
 // CONDITIONS
 //-----------------------------------------------------------------------------
 #pragma mark - ---CONDITIONS---
+
+AGCompositeTutorialCondition* AGCompositeTutorialCondition::makeOr(const std::list<AGTutorialCondition*>& conditions)
+{
+    return new AGCompositeTutorialCondition(OR, conditions);
+}
+
+AGCompositeTutorialCondition* AGCompositeTutorialCondition::makeAnd(const std::list<AGTutorialCondition*>& conditions)
+{
+    return new AGCompositeTutorialCondition(AND, conditions);
+}
+
+AGCompositeTutorialCondition::AGCompositeTutorialCondition(Operator op, const std::list<AGTutorialCondition*>& conditions)
+: m_op(op), m_conditions(conditions)
+{ }
+
+AGCompositeTutorialCondition::~AGCompositeTutorialCondition()
+{
+    for (auto condition : m_conditions) {
+        delete condition;
+    }
+}
+
+void AGCompositeTutorialCondition::prepareInternal(AGTutorialEnvironment &environment)
+{
+    for (auto condition : m_conditions) {
+        condition->prepare(environment);
+    }
+}
+
+void AGCompositeTutorialCondition::finalizeInternal(AGTutorialEnvironment &environment)
+{
+    for (auto condition : m_conditions) {
+        condition->finalize(environment);
+    }
+}
+    
+void AGCompositeTutorialCondition::activityOccurred(AGActivity *activity)
+{
+    for (auto condition : m_conditions) {
+        condition->activityOccurred(activity);
+    }
+}
+    
+AGCompositeTutorialCondition::Status AGCompositeTutorialCondition::getStatus()
+{
+    if (m_op == Operator::OR) {
+        for (auto condition : m_conditions) {
+            if (condition->getStatus() == STATUS_CONTINUE) {
+                return STATUS_CONTINUE;
+            }
+        }
+        
+        return STATUS_INCOMPLETE;
+        
+    } else if (m_op == Operator::AND) {
+        for (auto condition : m_conditions) {
+            if (condition->getStatus() != STATUS_CONTINUE) {
+                return STATUS_INCOMPLETE;
+            }
+        }
+        
+        return STATUS_CONTINUE;
+        
+    } else {
+        // wat
+        return STATUS_INCOMPLETE;
+    }
+}
 
 
 /** AGTapScreenTutorialCondition
