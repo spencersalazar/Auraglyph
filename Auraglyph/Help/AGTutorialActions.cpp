@@ -166,6 +166,39 @@ private:
 };
 
 
+#include "AGUINodeEditor.h"
+
+/** AGCloseEditorsTutorialAction
+ */
+class AGCloseEditorsTutorialAction : public AGTutorialAction
+{
+public:
+    using AGTutorialAction::AGTutorialAction;
+    
+    bool isCompleted() override { return true; }
+    
+    bool canContinue() override { return true; }
+    
+private:
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        // store editors in list and delete them after the loop
+        // (deleting within the loop
+        std::list<AGUINodeEditor*> editors;
+        for (auto object : environment.renderModel().objects) {
+            auto editor = dynamic_cast<AGUINodeEditor*>(object);
+            if (editor) {
+                editors.push_back(editor);
+            }
+        }
+        
+        for (auto editor : editors) {
+            editor->removeFromTopLevel();
+        }
+    }
+};
+
+
 /** AGPointToTutorialAction
  */
 class AGPointToTutorialAction : public AGTutorialAction
@@ -597,6 +630,9 @@ AGTutorialAction *AGTutorialActions::make(AGTutorialActions::Action type, const 
             break;
         case AGTutorialActions::HIDE_GRAPH:
             action = new AGHideGraphTutorialAction(parameters);
+            break;
+        case AGTutorialActions::CLOSE_EDITORS:
+            action = new AGCloseEditorsTutorialAction(parameters);
             break;
         case AGTutorialActions::SUGGEST_DRAW_NODE:
             action = new AGSuggestDrawNodeTutorialAction(parameters);

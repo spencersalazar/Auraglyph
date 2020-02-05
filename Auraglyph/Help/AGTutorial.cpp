@@ -575,8 +575,9 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
     }
     
-    /* hide the UI and graph */
+    /* hide the UI and graph, close editors */
     {
+        steps.push_back(_makeTutorialStep(AGTutorialActions::make(AGTutorialActions::CLOSE_EDITORS)));
         steps.push_back(_makeTutorialStep(AGTutorialActions::make(AGTutorialActions::HIDE_UI, {
             { "hide", 1 }
         })));
