@@ -12,7 +12,6 @@
 #include "AGStyle.h"
 #include "AGViewController.h"
 #include "AGTutorialEntity.h"
-#include "AGTutorialEntities.h"
 #include "AGModel.h"
 #include "AGGraph.h"
 
@@ -107,6 +106,8 @@ static AGTutorialStep *_makeTutorialStep(AGTutorialAction *action,
 }
 
 
+#include "AGTutorialActions.h"
+#include "AGTutorialConditions.h"
 #include "AGHandwritingRecognizer.h"
 
 AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
