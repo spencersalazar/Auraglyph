@@ -518,7 +518,7 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "create new patches." },
             { "position", startPos+Variant(currentTextPos += normalLineSpace) },
-            { "pause", 0.3 },
+            { "pause", 3.0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
             { "item", "file" },
@@ -538,7 +538,7 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "in the edit menu." },
             { "position", startPos+Variant(currentTextPos += normalLineSpace) },
-            { "pause", 0.3 },
+            { "pause", 3.0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
             { "item", "edit" },

@@ -35,7 +35,7 @@
 #include <vector>
 
 
-constexpr static const float DEBUG_TEXT_SPEED_FACTOR = 4;
+constexpr static const float DEBUG_TEXT_SPEED_FACTOR = 1.25;
 
 
 //-----------------------------------------------------------------------------
