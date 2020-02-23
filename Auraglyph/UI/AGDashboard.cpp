@@ -202,12 +202,16 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
         // TODO: analytics
         m_viewController->loadExample();
     });
+#endif // AG_BETA
+    
     m_settingsMenu->addMenuItem("Tutorial", [this](){
         dbgprint("Tutorial\n");
         // TODO: analytics
         AGTutorial *tutorial = AGTutorial::createInitialTutorial(m_viewController);
         m_viewController->showTutorial(tutorial);
     });
+    
+#ifndef AG_BETA
     m_settingsMenu->addMenuItem("Settings", [this](){
         dbgprint("Settings\n");
         // TODO: analytics
