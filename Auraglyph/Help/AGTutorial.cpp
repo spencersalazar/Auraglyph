@@ -523,6 +523,7 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
             { "item", "file" },
             { "enable", 0 },
+            { "pause", 0.5 },
         }));
         
         /* edit menu */
@@ -543,6 +544,7 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
             { "item", "edit" },
             { "enable", 0 },
+            { "pause", 0.5 },
         }));
 
         /* settings menu */
@@ -572,7 +574,8 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
             { "item", "settings" },
-            { "enable", 0.5 },
+            { "enable", 0 },
+            { "pause", 0.5 },
         }));
 
         steps.push_back(_makeTutorialStep(actions, conditions, {
@@ -619,7 +622,7 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
             { "item", "node" },
-            { "enable", 0 },
+            { "enable", 0.5 },
         }));
         
         /* freedraw tool */
@@ -644,6 +647,7 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
             { "item", "freedraw" },
             { "enable", 0 },
+            { "pause", 0.5 },
         }));
         
         /* eraser tool */
@@ -662,7 +666,8 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
             { "item", "eraser" },
-            { "enable", 0.5 },
+            { "enable", 1 },
+            { "pause", 0.5 },
         }));
 
         steps.push_back(_makeTutorialStep(actions, conditions, {
