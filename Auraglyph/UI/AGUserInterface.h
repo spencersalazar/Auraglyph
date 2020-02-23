@@ -13,6 +13,7 @@
 #include "Geometry.h"
 #include "Animation.h"
 #include "AGInteractiveObject.h"
+#include "AGStyle.h"
 
 #include <string>
 #include <vector>
@@ -197,6 +198,8 @@ public:
     void setIconMode(IconMode m);
     IconMode getIconMode();
     
+    void blink(bool blink);
+    
 private:
     GLvertex3f *m_boxGeo;
     AGRenderInfoV m_iconInfo;
@@ -205,6 +208,8 @@ private:
     int m_iconGeoType;
     
     IconMode m_iconMode;
+    
+    AGBlink m_blink;
 };
 
 

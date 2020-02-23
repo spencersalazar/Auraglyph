@@ -330,6 +330,11 @@ AGUIIconButton::IconMode AGUIIconButton::getIconMode()
     return m_iconMode;
 }
 
+void AGUIIconButton::blink(bool blink)
+{
+    m_blink.activate(blink);
+}
+
 void AGUIIconButton::update(float t, float dt)
 {
     AGRenderObject::update(t, dt);
@@ -341,6 +346,8 @@ void AGUIIconButton::update(float t, float dt)
     
     m_renderState.modelview = GLKMatrix4Translate(parentModelview, m_pos.x, m_pos.y, m_pos.z);
     m_renderState.normal = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(m_renderState.modelview), NULL);
+    
+    m_blink.update(t, dt);
 }
 
 void AGUIIconButton::render()
@@ -359,15 +366,19 @@ void AGUIIconButton::render()
     }
     else if(m_iconMode == ICONMODE_CIRCLE)
     {
-        // fill circle
-        if(isPressed())
-        {
+        if(isPressed() && !(m_latch && m_blink.isActive())) {
+            // fill circle
             AGStyle::lightColor().withAlpha(m_renderState.alpha).set();
             drawTriangleFan(m_boxGeo, 48);
-        }
-        // stroke circle + fill circle in bg color
-        else
-        {
+        } else if (m_blink.isActive()) {
+            // blink
+            // even if pressed in latch mode
+            m_blink.backgroundColor().withAlpha(m_renderState.alpha).set();
+            drawTriangleFan(m_boxGeo, 48);
+            AGStyle::lightColor().withAlpha(m_renderState.alpha).set();
+            drawLineLoop(m_boxGeo+1, 47);
+        } else {
+            // stroke circle + fill circle in bg color
             AGStyle::frameBackgroundColor().withAlpha(m_renderState.alpha).set();
             drawTriangleFan(m_boxGeo, 48);
             AGStyle::lightColor().withAlpha(m_renderState.alpha).set();
@@ -375,8 +386,10 @@ void AGUIIconButton::render()
         }
     }
     
-    if(isPressed())
+    if(isPressed() && !(m_latch && m_blink.isActive()))
         AGStyle::darkColor().withAlpha(m_renderState.alpha).set();
+    else if (m_blink.isActive())
+        m_blink.foregroundColor().withAlpha(m_renderState.alpha).set();
     else
         AGStyle::lightColor().withAlpha(m_renderState.alpha).set();
     

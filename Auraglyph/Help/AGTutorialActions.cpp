@@ -531,6 +531,12 @@ protected:
             dashboard->editMenu()->blink(enable);
         } else if (item == "settings") {
             dashboard->settingsMenu()->blink(enable);
+        } else if (item == "node") {
+            dashboard->nodeModeButton()->blink(enable);
+        } else if (item == "freedraw") {
+            dashboard->freedrawModeButton()->blink(enable);
+        } else if (item == "eraser") {
+            dashboard->eraseModeButton()->blink(enable);
         }
     }
     
@@ -550,6 +556,12 @@ protected:
                 dashboard->editMenu()->blink(false);
             } else if (item == "settings") {
                 dashboard->settingsMenu()->blink(false);
+            } else if (item == "node") {
+                dashboard->nodeModeButton()->blink(false);
+            } else if (item == "freedraw") {
+                dashboard->freedrawModeButton()->blink(false);
+            } else if (item == "eraser") {
+                dashboard->eraseModeButton()->blink(false);
             }
         }
     }

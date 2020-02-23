@@ -511,12 +511,12 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
             { "pause", 0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
-            { "text", "functions to save, load" },
+            { "text", "functions to save, load," },
             { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
-            { "text", "create new patches." },
+            { "text", "or create new patches." },
             { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 3.0 },
         }));
@@ -556,6 +556,11 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
             { "pause", 0.0 },
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "view documentation," },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 0.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "and configure Auraglyph" },
             { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 0.0 },
@@ -567,7 +572,97 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
             { "item", "settings" },
+            { "enable", 0.5 },
+        }));
+
+        steps.push_back(_makeTutorialStep(actions, conditions, {
+            { "pause", 0.01 }
+        }));
+    }
+        
+    /* ui buttons 2 */
+    {
+        std::list<AGTutorialAction*> actions;
+        std::list<AGTutorialCondition*> conditions;
+        GLvertex3f currentTextPos = GLvertex3f();
+        
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "node, free draw, and eraser" },
+            { "position", startPos+Variant(currentTextPos) },
+            { "pause", 0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "tools affect how drawing" },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "is interpreted in Auraglyph." },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 1.0 },
+        }));
+        
+        /* node tool */
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
+            { "item", "node" },
+            { "enable", 1 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "the node tool lets you" },
+            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
+            { "pause", 0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "draw new nodes." },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 3.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
+            { "item", "node" },
             { "enable", 0 },
+        }));
+        
+        /* freedraw tool */
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
+            { "item", "freedraw" },
+            { "enable", 1 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "with the freedraw tool you" },
+            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
+            { "pause", 0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "can freely annotate and" },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "and decorate your patches." },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 3.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
+            { "item", "freedraw" },
+            { "enable", 0 },
+        }));
+        
+        /* eraser tool */
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
+            { "item", "eraser" },
+            { "enable", 1 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "the eraser tool can clean" },
+            { "position", startPos+Variant(currentTextPos += mediumLineSpace) },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
+            { "text", "up existing freedraws." },
+            { "position", startPos+Variant(currentTextPos += normalLineSpace) },
+            { "pause", 3.0 },
+        }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::BLINK_DASHBOARD, {
+            { "item", "eraser" },
+            { "enable", 0.5 },
         }));
 
         steps.push_back(_makeTutorialStep(actions, conditions, {
