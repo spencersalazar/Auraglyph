@@ -1,5 +1,6 @@
 
 NODES=nodes.json
+INFO=control.txt audio.txt
 GENERATOR=./generate_docs.py
 
 docs: index.html audio.html control.html
@@ -7,10 +8,10 @@ docs: index.html audio.html control.html
 index.html: audio.html
 	cp audio.html index.html
 
-audio.html: $(NODES) $(GENERATOR)
+audio.html: $(NODES) $(GENERATOR) audio.txt
 	$(GENERATOR) audio < $(NODES) > audio.html
 
-control.html: $(NODES) $(GENERATOR)
+control.html: $(NODES) $(GENERATOR) control.txt
 	$(GENERATOR) control < $(NODES) > control.html
 
 DEPLOY_FILES=index.html audio.html control.html \

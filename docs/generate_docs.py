@@ -43,6 +43,25 @@ def generate_page(nodes, nodetype):
         node_html += generate_node(node, nodetype)
     return html.format(title=title, nodes=node_html, toc=toc, menu=menu)
 
+
+##------------------------------------------------------------------------------
+## process_info
+##------------------------------------------------------------------------------
+def process_info_to_html(info, p_attr=""):
+    # get lines
+    lines = info.splitlines()
+    # filter non-empty lines
+    lines = filter(lambda l: len(l)>0, info.splitlines())
+    # format in <p>'s
+    if p_attr:
+        p_tag = "<p {attr}>".format(attr=p_attr)
+    else:
+        p_tag = "<p>"
+    lines_html = ["{p_tag}{txt}</p>".format(p_tag=p_tag, txt=l) for l in lines]
+    # join with newlines
+    return "\n".join(lines_html)
+
+
 ##------------------------------------------------------------------------------
 ## generate_menu
 ##------------------------------------------------------------------------------
@@ -52,23 +71,22 @@ def generate_menu(node_types, selected):
             <div class="container">
                 {items}
             </div>
-            <p class="description">{info}</p>
+            {info}
         </div>
 '''
     item_html = r'''<div class="item"><a href="{url}">{name}</a></div>'''
     selected_html = r'''<div class="item selected">{name}</div>'''
-    info = ''
     info_file_path = selected+'.txt'
     if os.path.exists(info_file_path):
         with open(info_file_path, "r") as f:
-            info = f.read()
+            info_html = process_info_to_html(f.read(), 'class="description"')
     items = ''
     for node_type in node_types:
         if node_type == selected:
             items += selected_html.format(name=node_type)
         else:
             items += item_html.format(name=node_type, url=node_type+'.html')
-    return html.format(items=items, info=info)
+    return html.format(items=items, info=info_html)
 
 ##------------------------------------------------------------------------------
 ## generate_toc

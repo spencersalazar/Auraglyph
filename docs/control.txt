@@ -1,1 +1,3 @@
 Control nodes generate short control signals for high-level control of audio nodes or other control nodes. They include sequencers, orientation sensors, timers, scale creators, counters, and others. 
+
+You can create a control node by drawing a square shape. 
