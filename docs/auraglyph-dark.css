@@ -51,6 +51,10 @@ h1 a {
     color: #F9BB02;
 }
 
+#node_summary a {
+    color: #F9BB02;
+}
+
 .node {
     background-color: #0C1021;
 }

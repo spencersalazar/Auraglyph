@@ -28,6 +28,10 @@ def generate_page(nodes, nodetype):
 {toc}
         </div>
 
+        <div class="summary"><a id="summary"/>
+{summary}
+        </div>
+
         <div class="nodes">
 {nodes}
         </div>
@@ -39,9 +43,10 @@ def generate_page(nodes, nodetype):
     node_html = ''
     menu = generate_menu(['audio', 'control'], nodetype)
     toc = generate_toc(nodes)
+    summary = generate_summary(nodetype, nodes)
     for node in nodes:
         node_html += generate_node(node, nodetype)
-    return html.format(title=title, nodes=node_html, toc=toc, menu=menu)
+    return html.format(title=title, nodes=node_html, toc=toc, menu=menu, summary=summary)
 
 
 ##------------------------------------------------------------------------------
@@ -100,6 +105,37 @@ def generate_toc(nodes):
     return toc
 
 ##------------------------------------------------------------------------------
+## generate_summary
+##------------------------------------------------------------------------------
+def generate_summary(nodetype, nodes):
+    html = r'''
+        <div id="node_summary">
+            <div class="container">
+                {items}
+            </div>
+        </div>
+'''
+    item_tmpl = r'''<a href="#{name}">
+    <div class="node_summary_item">
+    {icon}
+    {label}
+    </div>
+</a>'''
+    label_tmpl = r'''<p class="node_summary_item_text">{text}</p>'''
+    items = []
+    size_to_scale = 0.25/100
+    size = 80
+    for node in nodes:
+        node_symbol = generate_node_symbol(node["icon"], nodetype, 
+            size=str(size)+"px", scale=str(size*size_to_scale))
+        label_html = label_tmpl.format(text=node["name"])
+        item_html = item_tmpl.format(icon=node_symbol, name=node["name"], label=label_html)
+        items.append(item_html)
+
+    return html.format(items="\n".join(items))
+
+
+##------------------------------------------------------------------------------
 ## generate_node
 ##------------------------------------------------------------------------------
 def generate_node(node, nodetype):
@@ -148,45 +184,45 @@ def generate_node_header(node, nodetype):
 ##------------------------------------------------------------------------------
 ## generate_node_symbol
 ##------------------------------------------------------------------------------
-def generate_node_symbol(icon, nodetype):
+def generate_node_symbol(icon, nodetype, size="5em", scale="0.125"):
     html = r'''
-<svg width="5em" height="5em" transform="">
+<svg width="{size}" height="{size}" transform="">
 {icon_base}
 {icon_geo}
 </svg>
 '''
     if node_type == 'audio':
-        icon_base = generate_audio_node_base()
+        icon_base = generate_audio_node_base(scale)
     elif node_type == 'control':
-        icon_base = generate_control_node_base()
+        icon_base = generate_control_node_base(scale)
     
     if icon["type"] == "line_strip":
-        icon_geo = generate_line_strip(icon["geo"])
+        icon_geo = generate_line_strip(icon["geo"], scale)
     elif icon["type"] == "lines":
-        icon_geo = generate_lines(icon["geo"])
+        icon_geo = generate_lines(icon["geo"], scale)
     elif icon["type"] == "line_loop":
-        icon_geo = generate_line_loop(icon["geo"])
+        icon_geo = generate_line_loop(icon["geo"], scale)
     else:
         icon_geo = ""
-    return html.format(icon_base=icon_base, icon_geo=icon_geo)
+    return html.format(icon_base=icon_base, icon_geo=icon_geo, size=size)
 
 ##------------------------------------------------------------------------------
 ## generate_control_node_base
 ##------------------------------------------------------------------------------
-def generate_control_node_base():
-    html = r'''    <rect x="-50" y="-50" width="500" height="500" fill="#0C1021" stroke="none" transform="scale(0.125)"/>
-    <rect x="16" y="16" width="368" height="368" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale(0.125)"/>
+def generate_control_node_base(scale="0.125"):
+    html = r'''    <rect x="-50" y="-50" width="500" height="500" fill="#0C1021" stroke="none" transform="scale({scale})"/>
+    <rect x="16" y="16" width="368" height="368" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale({scale})"/>
 '''
-    return html
+    return html.format(scale=scale)
 
 ##------------------------------------------------------------------------------
 ## generate_audio_node_base
 ##------------------------------------------------------------------------------
-def generate_audio_node_base():
-    html = r'''    <circle cx="200" cy="200" r="250" fill="#0C1021" stroke="none" transform="scale(0.125)"/>
-    <circle cx="200" cy="200" r="184" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale(0.125)"/>
+def generate_audio_node_base(scale="0.125"):
+    html = r'''    <circle cx="200" cy="200" r="250" fill="#0C1021" stroke="none" transform="scale({scale})"/>
+    <circle cx="200" cy="200" r="184" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale({scale})"/>
 '''
-    return html
+    return html.format(scale=scale)
 
 ##------------------------------------------------------------------------------
 ## filter_point
@@ -200,10 +236,10 @@ def filter_point(point):
 ##------------------------------------------------------------------------------
 ## generate_lines
 ##------------------------------------------------------------------------------
-def generate_lines(geo):
+def generate_lines(geo, scale="0.125"):
     svg = r'''    <polyline points="{points}" 
 stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />
+transform="scale({scale})" />
 '''
     lines = ''
     for i in range(int(len(geo)/2)):
@@ -211,29 +247,29 @@ transform="scale(0.125)" />
         point1 = filter_point(geo[i*2+1])
         points = "{x0},{y0} {x1},{y1}".format(x0=point0["x"], y0=point0["y"],
                                               x1=point1["x"], y1=point1["y"])
-        lines += svg.format(points=points)
+        lines += svg.format(points=points, scale=scale)
     return lines
 
 ##------------------------------------------------------------------------------
 ## generate_line_strip
 ##------------------------------------------------------------------------------
-def generate_line_strip(geo):
+def generate_line_strip(geo, scale="0.125"):
     svg = r'''    <polyline points="{points}" 
 stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />'''
+transform="scale({scale})" />'''
     points = ''
     for point in geo:
         point = filter_point(point)
         points += "{x},{y} ".format(x=point["x"], y=point["y"])
-    return svg.format(points=points)
+    return svg.format(points=points, scale=scale)
 
 ##------------------------------------------------------------------------------
 ## generate_line_strip
 ##------------------------------------------------------------------------------
-def generate_line_loop(geo):
+def generate_line_loop(geo, scale="0.125"):
     svg = r'''    <polyline points="{points}" 
 stroke="#F9BB02" fill="none" stroke-width="10" 
-transform="scale(0.125)" />'''
+transform="scale({scale})" />'''
     points = ''
     for point in geo:
         point = filter_point(point)
@@ -242,7 +278,7 @@ transform="scale(0.125)" />'''
         # re-add first point to end of loop
         point = filter_point(geo[0])
         points += "{x},{y} ".format(x=point["x"], y=point["y"])
-    return svg.format(points=points)
+    return svg.format(points=points, scale=scale)
 
 ##------------------------------------------------------------------------------
 ## generate_node_members
