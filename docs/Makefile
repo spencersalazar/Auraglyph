@@ -16,11 +16,16 @@ control.html: $(NODES) $(GENERATOR) control.txt
 
 DEPLOY_FILES=index.html audio.html control.html \
     auraglyph-doc.css auraglyph-dark.css auraglyph-fonts.css
-DEPLOY_SERVER=auraglyph.io
-DEPLOY_PATH=auragly.ph/docs/
+DEPLOY_SERVER0=auraglyph.io
+DEPLOY_SERVER1=auraglyph.io
+DEPLOY_PATH0=auragly.ph/docs/
+DEPLOY_PATH1=auraglyph.io/docs/
 
 .PHONY=deploy
 deploy: $(DEPLOY_FILES)
-	scp $(DEPLOY_FILES) $(DEPLOY_SERVER):$(DEPLOY_PATH)
+	ssh $(DEPLOY_SERVER0) 'mkdir -p "$(DEPLOY_PATH0)"'
+	scp $(DEPLOY_FILES) $(DEPLOY_SERVER0):$(DEPLOY_PATH0)
+	ssh $(DEPLOY_SERVER1) 'mkdir -p "$(DEPLOY_PATH1)"'
+	scp $(DEPLOY_FILES) $(DEPLOY_SERVER1):$(DEPLOY_PATH1)
 
 install: docs
