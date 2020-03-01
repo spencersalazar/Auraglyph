@@ -77,6 +77,7 @@ def generate_menu(node_types, selected):
                 {items}
             </div>
             {info}
+            <p class="description">Click on a node's icon below to learn more about its functionality. </p>
         </div>
 '''
     item_html = r'''<div class="item"><a href="{url}">{name}</a></div>'''
@@ -174,7 +175,9 @@ def generate_node_header(node, nodetype):
                     </div>
                 </div>
 '''
-    node_symbol = generate_node_symbol(node["icon"], nodetype)
+    size_to_scale = 0.25/100
+    size = 60
+    node_symbol = generate_node_symbol(node["icon"], nodetype, str(size)+"px", str(size*size_to_scale))
     node_name = node["name"]
     node_desc = node["desc"]
     return html.format(node_symbol=node_symbol, 
@@ -210,8 +213,10 @@ def generate_node_symbol(icon, nodetype, size="5em", scale="0.125"):
 ## generate_control_node_base
 ##------------------------------------------------------------------------------
 def generate_control_node_base(scale="0.125"):
-    html = r'''    <rect x="-50" y="-50" width="500" height="500" fill="#0C1021" stroke="none" transform="scale({scale})"/>
-    <rect x="16" y="16" width="368" height="368" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale({scale})"/>
+#     html = r'''    <rect x="-50" y="-50" width="500" height="500" fill="#0C1021" stroke="none" transform="scale({scale})"/>
+#     <rect x="16" y="16" width="368" height="368" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale({scale})"/>
+# '''
+    html = r'''    <rect x="16" y="16" width="368" height="368" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale({scale})"/>
 '''
     return html.format(scale=scale)
 
@@ -219,8 +224,10 @@ def generate_control_node_base(scale="0.125"):
 ## generate_audio_node_base
 ##------------------------------------------------------------------------------
 def generate_audio_node_base(scale="0.125"):
-    html = r'''    <circle cx="200" cy="200" r="250" fill="#0C1021" stroke="none" transform="scale({scale})"/>
-    <circle cx="200" cy="200" r="184" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale({scale})"/>
+#     html = r'''    <circle cx="200" cy="200" r="250" fill="#0C1021" stroke="none" transform="scale({scale})"/>
+#     <circle cx="200" cy="200" r="184" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale({scale})"/>
+# '''
+    html = r'''    <circle cx="200" cy="200" r="184" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale({scale})"/>
 '''
     return html.format(scale=scale)
 
