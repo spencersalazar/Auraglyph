@@ -4,6 +4,10 @@ import json
 import sys
 import os
 
+
+def html_escape(s):
+    return s.encode('ascii', 'xmlcharrefreplace').decode('utf8')
+
 ##------------------------------------------------------------------------------
 ## generate_page
 ##------------------------------------------------------------------------------
@@ -164,7 +168,7 @@ def generate_node(node, nodetype):
 ## generate_node_header
 ##------------------------------------------------------------------------------
 def generate_node_header(node, nodetype):
-    html = r'''
+    tmpl = r'''
                 <div class="node_header">
                     <div class="node_symbol" width="5em" height="5em">
 {node_symbol}
@@ -179,8 +183,8 @@ def generate_node_header(node, nodetype):
     size = 60
     node_symbol = generate_node_symbol(node["icon"], nodetype, str(size)+"px", str(size*size_to_scale))
     node_name = node["name"]
-    node_desc = node["desc"]
-    return html.format(node_symbol=node_symbol, 
+    node_desc = html_escape(node["desc"])
+    return tmpl.format(node_symbol=node_symbol, 
                        node_name=node_name, 
                        node_desc=node_desc)
 
@@ -188,7 +192,7 @@ def generate_node_header(node, nodetype):
 ## generate_node_symbol
 ##------------------------------------------------------------------------------
 def generate_node_symbol(icon, nodetype, size="5em", scale="0.125"):
-    html = r'''
+    tmpl = r'''
 <svg width="{size}" height="{size}" transform="">
 {icon_base}
 {icon_geo}
@@ -207,7 +211,7 @@ def generate_node_symbol(icon, nodetype, size="5em", scale="0.125"):
         icon_geo = generate_line_loop(icon["geo"], scale)
     else:
         icon_geo = ""
-    return html.format(icon_base=icon_base, icon_geo=icon_geo, size=size)
+    return tmpl.format(icon_base=icon_base, icon_geo=icon_geo, size=size)
 
 ##------------------------------------------------------------------------------
 ## generate_control_node_base
@@ -216,9 +220,9 @@ def generate_control_node_base(scale="0.125"):
 #     html = r'''    <rect x="-50" y="-50" width="500" height="500" fill="#0C1021" stroke="none" transform="scale({scale})"/>
 #     <rect x="16" y="16" width="368" height="368" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale({scale})"/>
 # '''
-    html = r'''    <rect x="16" y="16" width="368" height="368" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale({scale})"/>
+    tmpl = r'''    <rect x="16" y="16" width="368" height="368" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale({scale})"/>
 '''
-    return html.format(scale=scale)
+    return tmpl.format(scale=scale)
 
 ##------------------------------------------------------------------------------
 ## generate_audio_node_base
@@ -227,9 +231,9 @@ def generate_audio_node_base(scale="0.125"):
 #     html = r'''    <circle cx="200" cy="200" r="250" fill="#0C1021" stroke="none" transform="scale({scale})"/>
 #     <circle cx="200" cy="200" r="184" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale({scale})"/>
 # '''
-    html = r'''    <circle cx="200" cy="200" r="184" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale({scale})"/>
+    tmpl = r'''    <circle cx="200" cy="200" r="184" stroke="#F9BB02" fill="none" stroke-width="10" transform="scale({scale})"/>
 '''
-    return html.format(scale=scale)
+    return tmpl.format(scale=scale)
 
 ##------------------------------------------------------------------------------
 ## filter_point
@@ -291,7 +295,7 @@ transform="scale({scale})" />'''
 ## generate_node_members
 ##------------------------------------------------------------------------------
 def generate_node_members(members, type):
-    html = r'''            <h3 class="node_section_header">{member_type}s</h3>
+    tmpl = r'''            <h3 class="node_section_header">{member_type}s</h3>
             <div class="members {member_type}s">
 {node_members}
             </div>
@@ -299,19 +303,20 @@ def generate_node_members(members, type):
     node_members = ''
     for member in members:
         node_members += generate_node_member(member, type)
-    return html.format(node_members=node_members, member_type=type)
+    return tmpl.format(node_members=node_members, member_type=type)
 
 ##------------------------------------------------------------------------------
 ## generate_node_member
 ##------------------------------------------------------------------------------
 def generate_node_member(member, type):
-    html = r'''
+    tmpl = r'''
                 <div class="member input">
                     <p class="member_name {member_type}_name">{member_name}</p>
                     <p class="member_desc {member_type}_desc">{member_desc}</p>
                 </div>
 '''
-    return html.format(member_name=member["name"], member_desc=member["desc"], 
+    return tmpl.format(member_name=member["name"], 
+                       member_desc=html_escape(member["desc"]), 
                        member_type=type)
 
 nodes = json.load(sys.stdin)
