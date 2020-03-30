@@ -143,20 +143,17 @@ h1 a { color: black; text-decoration: none; }
     margin-bottom: 0.25em;
 }
 
-.nodes
+.nodes, #node_summary
 {
-    clear: right;
-    margin-left: 9em;
-    margin-right: 0em;
+    width: 85%;
+    max-width: 64em;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #node_summary {
-    width: 85%;
-    max-width: 64em;
     padding-bottom: 2em;
     margin-bottom: 4em;
-    margin-left: auto;
-    margin-right: auto;
     border-bottom: 1px solid #F9BB02;
     /* background-color: red; */
 }
@@ -178,10 +175,6 @@ h1 a { color: black; text-decoration: none; }
 
 .node_summary_item:hover {
     background-color: rgba(255, 255, 255, 0.1);
-}
-
-.node_summary_item svg {
-    /* background-color: red; */
 }
 
 .node_summary_item p {
@@ -227,12 +220,6 @@ h1 a { color: black; text-decoration: none; }
 
 .node_header_info {
     padding-bottom: 1px;
-}
-
-.node_section_header
-{
-/*    clear: left;*/
-/*    overflow: hidden;*/
 }
 
 .node_desc
