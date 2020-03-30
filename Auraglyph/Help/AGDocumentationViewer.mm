@@ -46,6 +46,7 @@
         WKWebViewConfiguration *config = [WKWebViewConfiguration new];
         _webView = [[WKWebView alloc] initWithFrame:rect configuration:config];
         _webView.backgroundColor = bgColor;
+        _webView.opaque = NO;
         NSURL *indexUrl = [[NSBundle mainBundle] URLForResource:@"docs/index.html" withExtension:@""];
         NSURL *dirUrl = [[NSBundle mainBundle] bundleURL];
         [_webView loadFileURL:indexUrl allowingReadAccessToURL:dirUrl];
