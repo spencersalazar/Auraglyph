@@ -27,6 +27,7 @@ class AGTutorial;
 class AGViewController_;
 class AGModel;
 class AGRenderModel;
+class AGBaseTouchHandler;
 
 #pragma mark AGTutorialEnvironment
 
@@ -56,6 +57,8 @@ public:
     AGModel& model();
     /** */
     AGRenderModel& renderModel();
+    /** */
+    AGBaseTouchHandler& interactionModel();
 
     /** Store a variable in the environment. */
     void store(const std::string &name, const Variant &variable);

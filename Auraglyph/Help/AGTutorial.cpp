@@ -131,6 +131,13 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         })));
     }
     
+    /* set to draw node mode */
+    {
+        steps.push_back(_makeTutorialStep(AGTutorialActions::make(AGTutorialActions::SELECT_TOOL, {
+            { "tool", "node" }
+        })));
+    }
+    
     /* intro / draw a circle */
     {
         std::list<AGTutorialAction*> actions;

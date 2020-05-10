@@ -578,7 +578,7 @@ public:
     
     void update(float t, float dt) override
     {
-        if (m_t < m_pause)
+        if (m_t > m_pause)
             m_canContinue = true;
         else
             m_t += dt;
@@ -626,6 +626,54 @@ protected:
 };
 
 
+/** AGSelectToolTutorialAction
+ */
+
+#include "AGViewController.h" // for AGDrawMode
+#include "AGBaseTouchHandler.h"
+
+class AGSelectToolTutorialAction : public AGTutorialAction
+{
+public:
+    using AGTutorialAction::AGTutorialAction;
+    
+    void update(float t, float dt) override
+    {
+        if (m_t > m_pause) {
+            m_canContinue = true;
+        } else {
+            m_t += dt;
+        }
+    }
+    
+    bool canContinue() override { return m_canContinue; }
+    
+    bool isCompleted() override { return m_canContinue; }
+    
+protected:
+    
+    bool m_canContinue = false;
+    float m_t = 0;
+    float m_pause = 0;
+    
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        m_pause = getParameter("pause", 0);
+        
+        // select the tool
+        std::string tool = getParameter("tool").getString();
+        
+        if(tool == "node") {
+            environment.interactionModel().setDrawMode(DRAWMODE_NODE);
+        } else if (tool == "freedraw") {
+            environment.interactionModel().setDrawMode(DRAWMODE_FREEDRAW);
+        } else if (tool == "eraser") {
+            environment.interactionModel().setDrawMode(DRAWMODE_FREEDRAW_ERASE);
+        }
+    }
+};
+
+
 AGTutorialAction *AGTutorialActions::make(AGTutorialActions::Action type, const map<std::string, Variant> &parameters)
 {
     AGTutorialAction *action = nullptr;
@@ -642,6 +690,9 @@ AGTutorialAction *AGTutorialActions::make(AGTutorialActions::Action type, const 
             break;
         case AGTutorialActions::HIDE_GRAPH:
             action = new AGHideGraphTutorialAction(parameters);
+            break;
+        case AGTutorialActions::SELECT_TOOL:
+            action = new AGSelectToolTutorialAction(parameters);
             break;
         case AGTutorialActions::CLOSE_EDITORS:
             action = new AGCloseEditorsTutorialAction(parameters);

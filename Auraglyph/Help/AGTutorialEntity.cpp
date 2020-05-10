@@ -19,6 +19,8 @@ AGModel& AGTutorialEnvironment::model() { return m_viewController->model(); }
 
 AGRenderModel& AGTutorialEnvironment::renderModel() { return m_viewController->renderModel(); }
 
+AGBaseTouchHandler& AGTutorialEnvironment::interactionModel() { return m_viewController->baseTouchHandler(); }
+
 void AGTutorialEnvironment::store(const std::string &name, const Variant &variable)
 {
     m_variables[name] = variable;
