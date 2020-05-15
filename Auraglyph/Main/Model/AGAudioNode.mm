@@ -364,6 +364,7 @@ float *AGAudioNode::inputPortVector(int paramId)
 #include "Nodes/Audio/AGAudioTriangleWaveNode.cpp"
 #include "Nodes/Audio/AGAudioWaveformNode.cpp"
 #include "Nodes/Audio/AGAudioDistortionNode.cpp"
+#include "Nodes/Audio/AGAudioExpMapNode.cpp"
 
 //------------------------------------------------------------------------------
 // ### AGNodeManager ###
@@ -383,7 +384,9 @@ const AGNodeManager &AGNodeManager::audioNodeManager()
         
         nodeTypes.push_back(new AGAudioSquareWaveNode::Manifest);
         nodeTypes.push_back(new AGAudioTriangleWaveNode::Manifest);
-        
+
+        // nodeTypes.push_back(new AGAudioExpMapNode::Manifest);
+
         nodeTypes.push_back(new AGAudioWaveformNode::Manifest);
         nodeTypes.push_back(new AGAudioNoiseNode::Manifest);
         

@@ -73,7 +73,6 @@
 		096F42051D9CF04600600717 /* AGWaveformAudioNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096F42031D9CF04600600717 /* AGWaveformAudioNode.cpp */; };
 		0973FB9C1FC10815004CC25A /* agoutput-nobg.png in Resources */ = {isa = PBXBuildFile; fileRef = 0973FB991FC10815004CC25A /* agoutput-nobg.png */; };
 		0973FB9D1FC10815004CC25A /* auraglyph-title.png in Resources */ = {isa = PBXBuildFile; fileRef = 0973FB9B1FC10815004CC25A /* auraglyph-title.png */; };
-		097519BD218CF35300FF8D1B /* AGAudioDistortionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 097519BC218CF35300FF8D1B /* AGAudioDistortionNode.cpp */; };
 		0985E5361D8C952800B536C8 /* AGInteractiveObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0985E5341D8C952800B536C8 /* AGInteractiveObject.mm */; };
 		0987409C17B98D7C0098511A /* AGNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0987409A17B98D7C0098511A /* AGNode.mm */; };
 		098740A317BA2EA70098511A /* AGAudioManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 098740A217BA2EA70098511A /* AGAudioManager.mm */; };
@@ -139,6 +138,7 @@
 		09CA6790229CC8980017B93B /* libTheAmazingAudioEngine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 09CA6715229CC3110017B93B /* libTheAmazingAudioEngine.a */; };
 		09CA6792229CC8A40017B93B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09CA6791229CC8A40017B93B /* AVFoundation.framework */; };
 		09CA6794229CC8AA0017B93B /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09CA6793229CC8AA0017B93B /* Accelerate.framework */; };
+		09D0006324687D8100B0CA72 /* AGAudioExpMapNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09D0006224687D8100B0CA72 /* AGAudioExpMapNode.cpp */; };
 		09D45A9A238A8F4400F6D10E /* AGRendering.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09D45A98238A8F4400F6D10E /* AGRendering.cpp */; };
 		09D8C3FF1A0A4DF2008D788A /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 09D8C3FE1A0A4DF2008D788A /* OFL.txt */; };
 		09DC3D521FBD3729008B960F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 09DC3D511FBD3729008B960F /* LaunchScreen.storyboard */; };
@@ -566,6 +566,7 @@
 		09CA674A229CC6B30017B93B /* spdsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spdsp.h; sourceTree = "<group>"; };
 		09CA6791229CC8A40017B93B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		09CA6793229CC8AA0017B93B /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		09D0006224687D8100B0CA72 /* AGAudioExpMapNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGAudioExpMapNode.cpp; sourceTree = "<group>"; };
 		09D45A98238A8F4400F6D10E /* AGRendering.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGRendering.cpp; sourceTree = "<group>"; };
 		09D45A99238A8F4400F6D10E /* AGRendering.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGRendering.h; sourceTree = "<group>"; };
 		09D8C3FE1A0A4DF2008D788A /* OFL.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
@@ -752,6 +753,7 @@
 				09230FD01F3FEC5700DF06B5 /* AGAudioTriangleWaveNode.cpp */,
 				09230FD11F3FEC5700DF06B5 /* AGAudioWaveformNode.cpp */,
 				097519BC218CF35300FF8D1B /* AGAudioDistortionNode.cpp */,
+				09D0006224687D8100B0CA72 /* AGAudioExpMapNode.cpp */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -1533,7 +1535,6 @@
 				09DDE4B92231AA4A008ACF0B /* AGDrawNodeTouchHandler.mm in Sources */,
 				09CA675E229CC6B40017B93B /* Buffers.cpp in Sources */,
 				09DDE4BD2231AA4A008ACF0B /* AGEraseFreedrawTouchHandler.mm in Sources */,
-				097519BD218CF35300FF8D1B /* AGAudioDistortionNode.cpp in Sources */,
 				09CA6759229CC6B40017B93B /* spRandom.cpp in Sources */,
 				09030CF11EFEFEFB00D4A4F2 /* AGMenu.cpp in Sources */,
 				095786191F031ED800286358 /* AGDashboard.cpp in Sources */,
@@ -1584,6 +1585,7 @@
 				09C3C66123EA74CA004D126B /* AGTutorialActions.cpp in Sources */,
 				096E3B2823B9D17B00FE3BE1 /* AGBaseTouchHandler.mm in Sources */,
 				492B3D601F3740C800E5E7F0 /* AGControlMidiCCIn.mm in Sources */,
+				09D0006324687D8100B0CA72 /* AGAudioExpMapNode.cpp in Sources */,
 				09B01A042085DA9C0071C8EC /* AGUILoadDialog.cpp in Sources */,
 				0987409C17B98D7C0098511A /* AGNode.mm in Sources */,
 				090F717D22558C6500C415C4 /* AGTutorialEntity.cpp in Sources */,
