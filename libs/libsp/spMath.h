@@ -26,4 +26,16 @@ static inline float normAngle(float th)
 }
 
 
+template<typename T>
+T sum(T a, T b) {
+  return a + b;
+}
+
+template<typename T, typename... Args>
+T sum(T a, Args... args) {
+  return a + sum(args...);
+}
+
+
+
 #endif

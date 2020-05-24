@@ -65,7 +65,7 @@ Type rescale(Type v, Type minIn, Type maxIn, Type minOut, Type maxOut, Type powe
     Type unit = (v-minIn)/(maxIn-minIn);
     if(power != 1.0f)
         unit = powf(unit, power);;
-    return minOut+(unit*(maxOut-maxIn));
+    return minOut+(unit*(maxOut-minOut));
 }
 
 /**
