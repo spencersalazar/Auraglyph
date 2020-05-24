@@ -83,7 +83,7 @@ public:
         }
     }
     
-    static void advance(const Params p, State& s, const float dt)
+    static float advance(const Params p, State& s, const float dt)
     {
         if (s.mode == State::SUSTAIN) {
             // no change
@@ -112,6 +112,8 @@ public:
             
             s.currentLevel = evaluate(p, s);
         }
+        
+        return s.currentLevel;
     }
     
     static void keyOn(const Params p, State& s)
@@ -296,28 +298,48 @@ public:
     void _renderIcon() override
     {
         int numPoints = 50;
-        float insetScale = G_RATIO-1;
-        float xInset = 50*insetScale;
-        float yScale = 50*insetScale/G_RATIO;
         float scale = 50;
         
         std::vector<GLvertex2f> points(numPoints);
         
-        stk::ADSR adsr;
-        float attackTime = param(PARAM_ATTACK);
-        float decayTime = param(PARAM_DECAY);
-        float sustainLevel = param(PARAM_SUSTAIN);
-        float releaseTime = param(PARAM_RELEASE);
-        adsr.setAllTimes(attackTime, decayTime, sustainLevel, releaseTime);
+        ADSR adsr;
+        adsr.params.attackTime = param(PARAM_ATTACK);
+        adsr.params.decayTime = param(PARAM_DECAY);
+        adsr.params.sustainLevel = param(PARAM_SUSTAIN);
+        adsr.params.releaseTime = param(PARAM_RELEASE);
+
+        const float durationWithoutSustain = sum(adsr.params.attackTime, adsr.params.decayTime, adsr.params.releaseTime);
+        const float sustainTime = durationWithoutSustain * 0.33f;
+        const float duration = durationWithoutSustain + sustainTime;
         
-        float sustainTime = 0.5;
-        float length = sum(attackTime, decayTime, sustainTime, releaseTime);
+        // time per point
+        const float dt = duration / (numPoints-1);
+        
+        adsr.keyOn(adsr.params, adsr.state);
+        float timeInSustain = 0;
+        
+        const Matrix4 translate = Matrix4::makeTranslation(-scale/2, -scale/2, 0);
         
         for (int i = 0; i < numPoints; i++) {
-            float x = float(i)/float(numPoints-1)*length;
+            const float t = float(i)/float(numPoints-1);
+            const float v = adsr.state.currentLevel;
+            
+            ADSR::advance(adsr.params, adsr.state, dt);
+            
+            if (adsr.state.mode == ADSR::State::SUSTAIN) {
+                timeInSustain += dt;
+            }
+            
+            if (timeInSustain >= sustainTime) {
+                adsr.keyOff(adsr.params, adsr.state);
+            }
+            
+            const float x = t * scale;
+            const float y = v * scale;
+            points[i] = GLvertex2f{ x, y };
         }
         
-        drawLineStrip(points.data(), numPoints);
+        drawLineStrip(points.data(), numPoints, translate);
     }
 
     
