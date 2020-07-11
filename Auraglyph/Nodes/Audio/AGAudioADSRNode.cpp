@@ -118,15 +118,14 @@ public:
         float virtual_input = numInputsForPort(PARAM_INPUT, AGRate::RATE_AUDIO) == 0 ? 1.0f : 0.0f;
         float *inputv = inputPortVector(PARAM_INPUT);
         
-        for(int i = 0; i < nFrames; i++)
-        {
-            if(triggerv[i] != m_prevTrigger)
-            {
-                if(triggerv[i] > 0)
+        for(int i = 0; i < nFrames; i++) {
+            if(triggerv[i] != m_prevTrigger) {
+                if(triggerv[i] > 0) {
                     m_adsr.keyOn();
-                    else
-                        m_adsr.keyOff();
-                        }
+                } else {
+                    m_adsr.keyOff();
+                }
+            }
             m_prevTrigger = triggerv[i];
             
             m_outputBuffer[chanNum][i] = m_adsr.tick() * (inputv[i] + virtual_input) * gainv[i];
@@ -136,17 +135,16 @@ public:
     
     virtual void receiveControl(int port, const AGControl &control) override
     {
-        switch(port)
-        {
-            case 2:
-            {
+        switch(port) {
+            case 2: {
                 int fire = 0;
                 control.mapTo(fire);
-                if(fire)
+                if(fire) {
                     m_adsr.keyOn();
-                    else
-                        m_adsr.keyOff();
-                        }
+                } else {
+                    m_adsr.keyOff();
+                }
+            }
         }
     }
     
