@@ -66,7 +66,7 @@ void AGSlider::render()
         valueMV.translateInPlace(-m_size.x/2+AGSlider_TextMargin, -m_textSize.y/2, 0);
     }
     valueMV.scaleInPlace(AGSlider_TextScale, AGSlider_TextScale, AGSlider_TextScale);
-    text->render(m_str, valueColor, valueMV, projection());
+    text->render(m_valueStr, valueColor, valueMV, projection());
     
     if (m_active) {
         // shade bounding box
@@ -190,12 +190,13 @@ void AGSlider::_updateValue(float value)
 
     m_value = m_validator(m_value, value);
     
-    if(m_type == CONTINUOUS)
-        snprintf(m_str, BUF_SIZE-1, "%.3lG", m_value);
-    else
-        snprintf(m_str, BUF_SIZE-1, "%li", (long int) m_value);
+    if(m_type == CONTINUOUS) {
+        m_valueStr = m_formatter.format(m_value);
+    } else {
+        m_valueStr = m_formatter.format((long int) m_value);
+    }
     
-    m_textSize.x = text->width(m_str)*AGSlider_TextScale;
+    m_textSize.x = text->width(m_valueStr)*AGSlider_TextScale;
     m_textSize.y = text->height()*AGSlider_TextScale;
     
     m_update(m_value);

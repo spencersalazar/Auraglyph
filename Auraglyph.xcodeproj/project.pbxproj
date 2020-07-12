@@ -151,6 +151,7 @@
 		09DDE4BE2231AA4A008ACF0B /* AGSelectNodeTouchHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09DDE4B72231AA49008ACF0B /* AGSelectNodeTouchHandler.mm */; };
 		09E5EC8218A46F7300B21D97 /* AGControl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC8018A46F7300B21D97 /* AGControl.mm */; };
 		09E5EC8718A5A88100B21D97 /* ADSR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09E5EC8618A5A88100B21D97 /* ADSR.cpp */; };
+		09EA994624BAAB790085D501 /* AGNumberFormatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09EA994524BAAB790085D501 /* AGNumberFormatter.cpp */; };
 		09EE657F1EFB59BE00B4ED62 /* AGAudioRecorder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09EE657D1EFB59BE00B4ED62 /* AGAudioRecorder.mm */; };
 		09F29D7A1CC73D7A00502C01 /* libfeatureextractorcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851017B354BE0065EF8E /* libfeatureextractorcommon.a */; };
 		09F29D7B1CC73D8000502C01 /* libshaperecommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095E851917B354BE0065EF8E /* libshaperecommon.a */; };
@@ -590,6 +591,8 @@
 		09E5EC8018A46F7300B21D97 /* AGControl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGControl.mm; sourceTree = "<group>"; };
 		09E5EC8118A46F7300B21D97 /* AGControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGControl.h; sourceTree = "<group>"; };
 		09E5EC8618A5A88100B21D97 /* ADSR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ADSR.cpp; sourceTree = "<group>"; };
+		09EA994424BAAB790085D501 /* AGNumberFormatter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGNumberFormatter.h; sourceTree = "<group>"; };
+		09EA994524BAAB790085D501 /* AGNumberFormatter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGNumberFormatter.cpp; sourceTree = "<group>"; };
 		09EE657D1EFB59BE00B4ED62 /* AGAudioRecorder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGAudioRecorder.mm; sourceTree = "<group>"; };
 		09EE657E1EFB59BE00B4ED62 /* AGAudioRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAudioRecorder.h; sourceTree = "<group>"; };
 		09EE67311EFDB6F800B4ED62 /* EZAudio.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EZAudio.xcodeproj; path = EZAudio/EZAudio.xcodeproj; sourceTree = "<group>"; };
@@ -917,6 +920,7 @@
 			isa = PBXGroup;
 			children = (
 				092CF2692239F379002C523D /* Core */,
+				09EA994024BAAB580085D501 /* Util */,
 				092CF2642239F0AD002C523D /* Audio */,
 				092CF2652239F0C8002C523D /* Graphics */,
 				092CF2672239F11C002C523D /* Model */,
@@ -1296,6 +1300,15 @@
 			path = include;
 			sourceTree = "<group>";
 		};
+		09EA994024BAAB580085D501 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				09EA994424BAAB790085D501 /* AGNumberFormatter.h */,
+				09EA994524BAAB790085D501 /* AGNumberFormatter.cpp */,
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
 		498438591F1EF40B00FB2914 /* PGMidi */ = {
 			isa = PBXGroup;
 			children = (
@@ -1628,6 +1641,7 @@
 				498438621F1EF40B00FB2914 /* PGMidi.mm in Sources */,
 				09CA674D229CC6B40017B93B /* Mutex.cpp in Sources */,
 				498438631F1EF40B00FB2914 /* PGMidiAllSources.mm in Sources */,
+				09EA994624BAAB790085D501 /* AGNumberFormatter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

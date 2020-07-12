@@ -10,7 +10,9 @@
 #define AGSlider_h
 
 #include "AGInteractiveObject.h"
+#include "AGNumberFormatter.h"
 #include "AGStyle.h"
+
 #include <functional>
 
 class AGSlider : public AGInteractiveObject
@@ -89,8 +91,8 @@ private:
     
     Alignment m_alignment = ALIGN_CENTER;
     
-    constexpr const static size_t BUF_SIZE = 32;
-    char m_str[BUF_SIZE];
+    AGNumberFormatter m_formatter;
+    std::string m_valueStr;
     
     float m_ytravel = 0;
     bool m_active = false;
