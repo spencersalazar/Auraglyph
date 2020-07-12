@@ -66,6 +66,7 @@ void AGSlider::render()
         valueMV.translateInPlace(-m_size.x/2+AGSlider_TextMargin, -m_textSize.y/2, 0);
     }
     valueMV.scaleInPlace(AGSlider_TextScale, AGSlider_TextScale, AGSlider_TextScale);
+    valueMV.scaleInPlace(m_textWidthScale, m_textWidthScale, m_textWidthScale);
     text->render(m_valueStr, valueColor, valueMV, projection());
     
     if (m_active) {
@@ -192,12 +193,25 @@ void AGSlider::_updateValue(float value)
     
     if(m_type == CONTINUOUS) {
         m_valueStr = m_formatter.format(m_value);
+        
+        float boxWidth = (m_size.x-AGSlider_TextMargin*2)/AGSlider_TextScale;
+        bool hasDecimal = (m_valueStr.find('.') != std::string::npos);
+        auto numChars = m_valueStr.size();
+        std::string templateStr = std::string(hasDecimal?".":"") + std::string(numChars-(hasDecimal?1:0), '0');
+        TexFont *text = AGStyle::standardFont64();
+        float templateWidth = text->width(templateStr);
+        if (templateWidth > boxWidth) {
+            m_textWidthScale = boxWidth/templateWidth;
+        } else {
+            m_textWidthScale = 1;
+        }
     } else {
         m_valueStr = m_formatter.format((long int) m_value);
+        m_textWidthScale = 1;
     }
     
-    m_textSize.x = text->width(m_valueStr)*AGSlider_TextScale;
-    m_textSize.y = text->height()*AGSlider_TextScale;
+    m_textSize.x = text->width(m_valueStr)*AGSlider_TextScale*m_textWidthScale;
+    m_textSize.y = text->height()*AGSlider_TextScale*m_textWidthScale;
     
     m_update(m_value);
     

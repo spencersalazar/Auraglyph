@@ -83,6 +83,7 @@ private:
     
     GLvertex2f m_size;
     GLvertex2f m_textSize;
+    float m_textWidthScale = 1;
     
     float m_startValue = 0;
     double m_value = 0;
