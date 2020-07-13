@@ -13,6 +13,7 @@
 #include "AGGenericShader.h"
 #include "GeoGenerator.h"
 #include "Animation.h"
+#include "spMath.h"
 
 #include <sstream>
 
@@ -102,7 +103,7 @@ void AGSlider::touchMove(const AGTouchInfo &t)
     else if(m_scale == EXPONENTIAL)
         travelFactor = 4;
     
-    float amount = floorf(m_ytravel/travelFactor);
+    float amount = signum(m_ytravel)*floorf(fabsf(m_ytravel)/travelFactor);
     m_ytravel = fmodf(m_ytravel, travelFactor);
     
     double inc;
@@ -118,15 +119,15 @@ void AGSlider::touchMove(const AGTouchInfo &t)
         if(m_type == DISCRETE)
             inc = std::max(1.0, inc);
         
-        dbgprint("log %f oom %i inc %f ", log, oom, inc);
-        dbgprint("ytravel %f ", m_ytravel);
+        dbgprint_off("log %f oom %i inc %f ", log, oom, inc);
+        dbgprint_off("ytravel %f ", m_ytravel);
     }
     else
     {
         inc = 1;
     }
     
-    dbgprint("amount %f m_ytravel' %f\n", amount, m_ytravel);
+    dbgprint_off("amount %f m_ytravel' %f\n", amount, m_ytravel);
     
     _updateValue(m_value + amount*inc);
     

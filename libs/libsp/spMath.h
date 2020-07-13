@@ -25,5 +25,13 @@ static inline float normAngle(float th)
     return fmodf(th, 2.0f*M_PI) + (th<0)*2.0f*M_PI;
 }
 
+template<typename T>
+T signum(T val)
+{
+    if (val < 0) { return T(-1); }
+    if (val > 0) { return T(1); }
+    return T(0);
+}
+
 
 #endif
