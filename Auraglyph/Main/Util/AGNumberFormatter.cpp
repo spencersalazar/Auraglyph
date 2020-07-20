@@ -48,7 +48,7 @@ std::string AGNumberFormatter::format(double val)
     int numDigits = 1;
     int factor = 1;
     
-    if (absVal > 1) {
+    if (absVal >= 1) {
         while (absVal/factor >= 10.f && numDigits <= MAX_DIGITS) {
             factor *= 10;
             numDigits += 1;
@@ -70,7 +70,7 @@ std::string AGNumberFormatter::format(double val)
     } else {
         int precision = std::max(0, DEFAULT_PRECISION-numDigits+1);
         snprintf(m_buf, BUF_SIZE-1, "%.*f", precision, val);
-        clearTrailingZeros = true;
+        if (precision > 0) { clearTrailingZeros = true; }
     }
         
     if (clearTrailingZeros) {

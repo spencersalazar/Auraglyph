@@ -155,7 +155,11 @@ GLvertex2f AGSlider::size()
 
 void AGSlider::setSize(const GLvertex2f &size)
 {
-    m_size = size;
+    if (m_size != size) {
+        m_size = size;
+        // value render transform depends on size
+        _updateValue(m_value);
+    }
 }
 
 void AGSlider::setValue(float value)
