@@ -729,3 +729,11 @@ AGBaseTouchHandler& AGViewController_::baseTouchHandler() { return [m_viewContro
 
 void AGViewController_::showTutorial(AGTutorial *tutorial) { [m_viewController showTutorial:tutorial]; }
 
+void AGViewController_::openUrl(const std::string& url)
+{
+    
+    
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithSTLString:url]]
+                                       options:[NSDictionary dictionary]
+                             completionHandler:^(BOOL success) { }];
+}

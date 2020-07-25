@@ -126,6 +126,8 @@ public:
     AGBaseTouchHandler& baseTouchHandler();
     
     void showTutorial(AGTutorial *tutorial);
+    
+    void openUrl(const std::string& url);
 
 private:
     AGViewController *m_viewController = nil;

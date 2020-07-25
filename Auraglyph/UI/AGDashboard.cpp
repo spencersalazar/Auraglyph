@@ -218,11 +218,21 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
 //    });
 #endif // AG_BETA
     
-    m_settingsMenu->addMenuItem("Trainer", [this](){
-        dbgprint("Trainer\n");
-        AGAnalytics::instance().eventTrainer();
-        m_viewController->showTrainer();
+    //    m_settingsMenu->addMenuItem("Trainer", [this](){
+    //        dbgprint("Trainer\n");
+    //        AGAnalytics::instance().eventTrainer();
+    //        m_viewController->showTrainer();
+    //    });
+    m_settingsMenu->addMenuItem("Support", [this](){
+        dbgprint("Support\n");
+        // TODO: analytics
+        
+        AGModalDialog::showModalDialog("Open the Auraglyph support forum in Safari?",
+                                       "ok",
+                                       [this](){ m_viewController->openUrl("https://forum.auraglyph.io"); },
+                                       "cancel");
     });
+
     m_settingsMenu->addMenuItem("About", [this](){
         dbgprint("About\n");
         // TODO: analytics
