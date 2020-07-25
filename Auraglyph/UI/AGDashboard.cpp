@@ -197,11 +197,11 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
     });
     
 #ifndef AG_BETA
-    m_settingsMenu->addMenuItem("Examples", [this](){
-        dbgprint("Examples\n");
-        // TODO: analytics
-        m_viewController->loadExample();
-    });
+//    m_settingsMenu->addMenuItem("Examples", [this](){
+//        dbgprint("Examples\n");
+//        // TODO: analytics
+//        m_viewController->loadExample();
+//    });
 #endif // AG_BETA
     
     m_settingsMenu->addMenuItem("Tutorial", [this](){
@@ -212,10 +212,10 @@ AGDashboard::AGDashboard(AGViewController_ *viewController)
     });
     
 #ifndef AG_BETA
-    m_settingsMenu->addMenuItem("Settings", [this](){
-        dbgprint("Settings\n");
-        // TODO: analytics
-    });
+//    m_settingsMenu->addMenuItem("Settings", [this](){
+//        dbgprint("Settings\n");
+//        // TODO: analytics
+//    });
 #endif // AG_BETA
     
     m_settingsMenu->addMenuItem("Trainer", [this](){
