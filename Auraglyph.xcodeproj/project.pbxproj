@@ -1787,7 +1787,7 @@
 				CODE_SIGN_ENTITLEMENTS = Auraglyph/Auraglyph.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 9GU9FHJ3JC;
 				ENABLE_BITCODE = NO;
@@ -1809,7 +1809,7 @@
 					"$(PROJECT_DIR)/libs/LipiTk/lib",
 					"$(PROJECT_DIR)/libs/GoogleAnalytics",
 				);
-				MARKETING_VERSION = 0.7;
+				MARKETING_VERSION = 1;
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = io.auraglyph.auraglyph;
 				PRODUCT_NAME = Auraglyph;
@@ -1829,7 +1829,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 9GU9FHJ3JC;
 				ENABLE_BITCODE = NO;
@@ -1851,7 +1851,7 @@
 					"$(PROJECT_DIR)/libs/LipiTk/lib",
 					"$(PROJECT_DIR)/libs/GoogleAnalytics",
 				);
-				MARKETING_VERSION = 0.7;
+				MARKETING_VERSION = 1;
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = io.auraglyph.auraglyph;
 				PRODUCT_NAME = Auraglyph;
@@ -1924,7 +1924,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 9GU9FHJ3JC;
 				ENABLE_BITCODE = NO;
@@ -1947,7 +1947,7 @@
 					"$(PROJECT_DIR)/libs/LipiTk/lib",
 					"$(PROJECT_DIR)/libs/GoogleAnalytics",
 				);
-				MARKETING_VERSION = 0.7;
+				MARKETING_VERSION = 1;
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = io.auraglyph.auraglyph;
 				PRODUCT_NAME = Auraglyph;
