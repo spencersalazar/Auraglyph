@@ -101,9 +101,9 @@ void AGSlider::touchMove(const AGTouchInfo &t)
     if(m_scale == LINEAR)
         travelFactor = 12;
     else if(m_scale == EXPONENTIAL)
-        travelFactor = 4;
+        travelFactor = 2;
     
-    float amount = signum(m_ytravel)*floorf(fabsf(m_ytravel)/travelFactor);
+    float amount = truncf(m_ytravel/travelFactor);
     m_ytravel = fmodf(m_ytravel, travelFactor);
     
     double inc;
@@ -113,8 +113,8 @@ void AGSlider::touchMove(const AGTouchInfo &t)
         float val = m_value;
         if(val == 0) val = 0.1;
         float log = log10f(fabs(val))-0.1;
-        int oom = (int)floorf(log);
-        inc = powf(10, oom-1);
+        int oom = (int)floorf(log); // order of magnitude
+        inc = powf(10, oom-2);
         
         if(m_type == DISCRETE)
             inc = std::max(1.0, inc);
