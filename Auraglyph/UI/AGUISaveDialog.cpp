@@ -23,6 +23,8 @@ private:
     
     AGSqueezeAnimation m_squeeze;
     
+    powcurvef m_promptAlpha;
+    
     AGUIButton *m_saveButton;
     AGUIButton *m_clearButton;
     AGUIButton *m_cancelButton;
@@ -34,7 +36,8 @@ private:
     
 public:
     AGUIConcreteSaveDialog(const AGDocument &doc, const GLvertex3f &pos) :
-    m_doc(doc)
+    m_doc(doc),
+    m_promptAlpha(powcurvef(0, 1, 0.5, 2))
     {
         setPosition(pos);
         
@@ -78,9 +81,8 @@ public:
         });
         addChild(m_cancelButton);
         
+        m_promptAlpha.forceTo(1);
     }
-    
-    virtual ~AGUIConcreteSaveDialog() { }
     
     virtual GLKMatrix4 localTransform() override
     {
@@ -92,6 +94,7 @@ public:
     virtual void update(float t, float dt) override
     {
         m_squeeze.update(t, dt);
+        m_promptAlpha.update(dt);
         
         m_renderState.projection = projectionMatrix();
         m_renderState.modelview = GLKMatrix4Multiply(fixedModelViewMatrix(), localTransform());
@@ -124,6 +127,18 @@ public:
         for(auto figure : m_name)
             drawLineStrip(figure.data(), figure.size());
         
+        if (m_promptAlpha > 0.01) {
+            const std::string str = "(draw something to remember your sketch by)";
+            TexFont* text = AGStyle::standardFont64();
+            float scale = 0.5f;
+            float width = text->width(str);
+            float height = text->ascender();
+            float alpha = m_promptAlpha * (G_RATIO-1);
+            Matrix4 textModelView = modelview().scale(scale).translate(-width/2, -height/2, 0);
+            text->render(str, AGStyle::foregroundColor().withAlpha(alpha),
+                         textModelView, projectionMatrix());
+        }
+        
         AGInteractiveObject::render();
     }
     
@@ -138,6 +153,10 @@ public:
     {
         m_name.push_back(vector<GLvertex2f>());
         m_name.back().push_back(t.position.xy());
+        
+        if (m_promptAlpha >= 1) {
+            m_promptAlpha.reset(1, 0);
+        }
     }
     
     virtual void touchMove(const AGTouchInfo &t) override
