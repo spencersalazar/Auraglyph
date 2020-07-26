@@ -109,15 +109,6 @@ public:
     void setTitle(const std::string &title);
     const std::string &title();
     
-//    enum ActionType
-//    {
-//        ACTION_ONTOUCHDOWN,
-//        ACTION_ONTOUCHUP,
-//    };
-//    
-//    void setActionType(ActionType t) { m_actionType = t; }
-//    ActionType getActionType() { return m_actionType; }
-    
     enum InteractionType
     {
         INTERACTION_UPDOWN,
@@ -150,7 +141,6 @@ protected:
     bool m_hitOnTouchDown;
     bool m_latch;
     
-//    ActionType m_actionType;
     InteractionType m_interactionType;
     
     void (^m_action)();
