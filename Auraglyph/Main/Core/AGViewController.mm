@@ -459,11 +459,11 @@ static AGViewController * g_instance = nil;
     
     _baseTouchHandler->update(_renderModel.t, dt);
     
-    if(_renderModel.currentTutorial)
-    {
+    if(_renderModel.currentTutorial) {
         _renderModel.currentTutorial->update(_renderModel.t, dt);
-        if(_renderModel.currentTutorial->isComplete())
+        if(_renderModel.currentTutorial->isComplete()) {
             SAFE_DELETE(_renderModel.currentTutorial);
+        }
     }
 }
 
@@ -751,8 +751,6 @@ void AGViewController_::showTutorial(AGTutorial *tutorial) { [m_viewController s
 
 void AGViewController_::openUrl(const std::string& url)
 {
-    
-    
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithSTLString:url]]
                                        options:[NSDictionary dictionary]
                              completionHandler:^(BOOL success) { }];
