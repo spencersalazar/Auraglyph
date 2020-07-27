@@ -259,7 +259,7 @@ void AGRenderObject::renderChildren()
 void AGRenderObject::renderOut()
 {
     m_renderingOut = true;
-    m_alpha.reset(1, 0);
+    m_alpha.reset(m_alpha, 0);
     
     for(list<AGRenderObject *>::iterator i = m_children.begin(); i != m_children.end(); i++)
         (*i)->renderOut();
