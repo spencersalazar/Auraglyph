@@ -42,6 +42,8 @@ public:
     
     std::list<AGTutorialStep*>::iterator currentStep() { return m_currentStep; }
     
+    void showExitTutorialButton(bool show);
+    
 private:
     std::unique_ptr<AGTutorialEnvironment> m_environment;
     

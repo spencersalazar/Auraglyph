@@ -40,6 +40,7 @@ AGTutorial::AGTutorial(std::list<AGTutorialStep*> &steps, AGViewController_ *vie
     m_exitButton = new AGUIButton("skip tutorial", position, GLvertex2f(buttonWidth, buttonHeight));
     m_exitButton->init();
     m_exitButton->setRenderFixed(true);
+    m_exitButton->hide(false);
     m_exitButton->setAction([this](){
         complete();
     });
@@ -113,6 +114,15 @@ void AGTutorial::activityOccurred(AGActivity *activity)
 {
     if(m_currentStep != m_steps.end()) {
         (*m_currentStep)->activityOccurred(activity);
+    }
+}
+
+void AGTutorial::showExitTutorialButton(bool show)
+{
+    if (show) {
+        m_exitButton->unhide();
+    } else {
+        m_exitButton->hide();
     }
 }
 
@@ -198,6 +208,9 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
             { "position", startPos+Variant(currentTextPos += normalLineSpace) },
             { "pause", 2 },
         }));
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::HIDE_EXIT_BUTTON, {
+            { "hide", 0 }
+        }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "to start, draw a circle." },
             { "position", startPos+Variant(currentTextPos += largeLineSpace) },
@@ -224,6 +237,10 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
         std::list<AGTutorialCondition*> conditions;
         GLvertex3f currentTextPos = GLvertex3f();
 
+        /* ensure exit button is visible */
+        actions.push_back(AGTutorialActions::make(AGTutorialActions::HIDE_EXIT_BUTTON, {
+            { "hide", 0 }
+        }));
         actions.push_back(AGTutorialActions::make(AGTutorialActions::TEXT, {
             { "text", "awesome!" },
             { "position", startPos+Variant(currentTextPos) },
@@ -718,6 +735,9 @@ AGTutorial *AGTutorial::createInitialTutorial(AGViewController_ *viewController)
             { "hide", 1 }
         })));
         steps.push_back(_makeTutorialStep(AGTutorialActions::make(AGTutorialActions::HIDE_GRAPH, {
+            { "hide", 1 }
+        })));
+        steps.push_back(_makeTutorialStep(AGTutorialActions::make(AGTutorialActions::HIDE_EXIT_BUTTON, {
             { "hide", 1 }
         })));
     }

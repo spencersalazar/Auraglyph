@@ -29,11 +29,15 @@ public:
                               - start (vertex3) - start position of arrow
                               - end (vertex3) - end position of arrow
                               */
-        HIDE_UI,             /* hide/show UI
+        HIDE_UI,             /* hide/show UI (default shown)
                               parameters:
                               - hide (int) - boolean to hide (1) or show (0) the UI
                               */
-        HIDE_GRAPH,          /* hide/show graph (nodes + connections)
+        HIDE_GRAPH,          /* hide/show graph (nodes + connections) (default shown)
+                              parameters:
+                              - hide (int) - boolean to hide (1) or show (0) the graph
+                              */
+        HIDE_EXIT_BUTTON,    /* hide/show exit tutorial button (default hidden)
                               parameters:
                               - hide (int) - boolean to hide (1) or show (0) the graph
                               */

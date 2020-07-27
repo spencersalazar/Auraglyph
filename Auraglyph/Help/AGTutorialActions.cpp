@@ -661,6 +661,30 @@ protected:
 };
 
 
+/** AGHideExitTutorialButtonAction
+ */
+
+#include "AGTutorial.h"
+
+class AGHideExitTutorialButtonAction : public AGTutorialAction
+{
+public:
+    using AGTutorialAction::AGTutorialAction;
+    
+    bool isCompleted() override { return true; }
+    
+    bool canContinue() override { return true; }
+    
+private:
+    void prepareInternal(AGTutorialEnvironment &environment) override
+    {
+        int hide = getParameter("hide").getInt();
+        
+        environment.tutorial()->showExitTutorialButton(!hide);
+    }
+};
+
+
 AGTutorialAction *AGTutorialActions::make(AGTutorialActions::Action type, const map<std::string, Variant> &parameters)
 {
     AGTutorialAction *action = nullptr;
@@ -677,6 +701,9 @@ AGTutorialAction *AGTutorialActions::make(AGTutorialActions::Action type, const 
             break;
         case AGTutorialActions::HIDE_GRAPH:
             action = new AGHideGraphTutorialAction(parameters);
+            break;
+        case AGTutorialActions::HIDE_EXIT_BUTTON:
+            action = new AGHideExitTutorialButtonAction(parameters);
             break;
         case AGTutorialActions::SELECT_TOOL:
             action = new AGSelectToolTutorialAction(parameters);
