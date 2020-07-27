@@ -27,7 +27,7 @@
 #pragma mark - AGUIButton
 
 AGUIButton::AGUIButton(const std::string &title, const GLvertex3f &pos, const GLvertex3f &size) :
-m_action(nil)
+m_actionBlock(nil), m_action([](){ })
 {
     m_hit = m_hitOnTouchDown = m_latch = false;
     m_interactionType = INTERACTION_UPDOWN;
@@ -51,8 +51,8 @@ m_action(nil)
 
 AGUIButton::~AGUIButton()
 {
-    if(m_action != nil) Block_release(m_action);
-    m_action = nil;
+    if(m_actionBlock != nil) Block_release(m_actionBlock);
+    m_actionBlock = nil;
 }
 
 void AGUIButton::update(float t, float dt)
@@ -138,8 +138,7 @@ void AGUIButton::touchDown(const GLvertex3f &t)
     if(m_interactionType == INTERACTION_LATCH)
     {
         m_latch = !m_latch;
-        if(m_action)
-            m_action();
+        m_action();
     }
 }
 
@@ -150,7 +149,7 @@ void AGUIButton::touchMove(const GLvertex3f &t)
 
 void AGUIButton::touchUp(const GLvertex3f &t)
 {
-    if(m_interactionType == INTERACTION_UPDOWN && m_hit && m_action)
+    if(m_interactionType == INTERACTION_UPDOWN && m_hit)
         m_action();
     
     m_hit = false;
@@ -163,7 +162,13 @@ GLvrectf AGUIButton::effectiveBounds()
 
 void AGUIButton::setAction(void (^action)())
 {
-    m_action = Block_copy(action);
+    m_actionBlock = Block_copy(action);
+    m_action = [this](){ m_actionBlock(); };
+}
+
+void AGUIButton::setAction(const std::function<void ()>& action)
+{
+    m_action = action;
 }
 
 bool AGUIButton::isPressed()

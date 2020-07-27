@@ -17,6 +17,7 @@
 
 #include <string>
 #include <vector>
+#include <functional>
 
 // forward declaration
 class AGUINodeEditor;
@@ -100,6 +101,7 @@ public:
     virtual GLvertex2f size() { return m_size.xy(); }
     
     void setAction(void (^action)());
+    void setAction(const std::function<void ()>& action);
     bool isPressed();
     void setLatched(bool latched);
     
@@ -143,7 +145,8 @@ protected:
     
     InteractionType m_interactionType;
     
-    void (^m_action)();
+    void (^m_actionBlock)();
+    std::function<void ()> m_action;
 };
 
 
