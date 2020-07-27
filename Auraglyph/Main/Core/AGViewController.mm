@@ -711,7 +711,27 @@ GLvertex3f AGViewController_::worldCoordinateForScreenCoordinate(CGPoint p) { re
 
 GLvertex3f AGViewController_::fixedCoordinateForScreenCoordinate(CGPoint p) { return [m_viewController fixedCoordinateForScreenCoordinate:p]; }
 
+GLvertex3f AGViewController_::worldCoordinateForScreenCoordinate(const GLvertex2f& p)
+{
+    CGPoint p_ = CGPointMake(p.x, p.y);
+    return [m_viewController worldCoordinateForScreenCoordinate:p_];
+}
+
+GLvertex3f AGViewController_::fixedCoordinateForScreenCoordinate(const GLvertex2f& p)
+{
+    CGPoint p_ = CGPointMake(p.x, p.y);
+    return [m_viewController fixedCoordinateForScreenCoordinate:p_];
+}
+
 CGRect AGViewController_::bounds() { return m_viewController.view.bounds; }
+
+GLvrectf AGViewController_::screenBounds()
+{
+    CGRect bounds_ = bounds();
+    GLvertex2f bl { float(bounds_.origin.x), float(bounds_.origin.y+bounds_.size.height) };
+    GLvertex2f ur { float(bounds_.origin.x+bounds_.size.width), float(bounds_.origin.y) };
+    return GLvrectf(bl, ur);
+}
 
 void AGViewController_::addTopLevelObject(AGInteractiveObject *object) { [m_viewController addTopLevelObject:object]; }
 

@@ -112,8 +112,11 @@ public:
     
     GLvertex3f worldCoordinateForScreenCoordinate(CGPoint p);
     GLvertex3f fixedCoordinateForScreenCoordinate(CGPoint p);
-    
+    GLvertex3f worldCoordinateForScreenCoordinate(const GLvertex2f& p);
+    GLvertex3f fixedCoordinateForScreenCoordinate(const GLvertex2f& p);
+
     CGRect bounds();
+    GLvrectf screenBounds();
     
     void addTopLevelObject(AGInteractiveObject *object);
     void fadeOutAndDelete(AGInteractiveObject *object);
