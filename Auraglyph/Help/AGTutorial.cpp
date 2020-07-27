@@ -18,6 +18,10 @@
 #include "AGGraph.h"
 #include "AGUserInterface.h"
 
+// needed to create an output node
+#include "AGAudioNode.h"
+#include "AGAudioManager.h"
+
 #include <string>
 
 
@@ -103,6 +107,27 @@ void AGTutorial::complete()
     
     m_environment->renderModel().uiDashboard->unhide();
     m_environment->model().hide(false);
+    
+    // create an output node if needed
+    bool hasOutputNode = false;
+    for (auto node : m_environment->model().graph().nodes()) {
+        hasOutputNode = (dynamic_cast<AGAudioOutputNode *>(node) != nullptr);
+        if (hasOutputNode) {
+            break;
+        }
+    }
+    
+    if (!hasOutputNode) {
+        AGNode *node = AGNodeManager::nodeManagerForClass(AGDocument::Node::AUDIO).createNodeOfType("Output", { 0, 0, 0 });
+        // animate in
+        node->unhide();
+        
+        m_environment->model().addNode(node);
+        m_environment->renderModel().objects.push_back(node);
+        
+        AGAudioOutputNode *outputNode = dynamic_cast<AGAudioOutputNode *>(node);
+        outputNode->setOutputDestination(AGAudioManager_::instance().masterOut());
+    }
 }
 
 bool AGTutorial::isComplete()
