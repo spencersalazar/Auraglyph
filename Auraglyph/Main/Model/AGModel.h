@@ -75,6 +75,8 @@ public:
     void addFreedraw(AGFreeDraw *freedraw);
     void removeFreedraw(AGFreeDraw *freedraw);
     
+    void hide(bool hide_);
+    
 private:
     AGGraph m_graph;
     std::list<AGFreeDraw *> m_freedraws;

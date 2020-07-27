@@ -58,3 +58,20 @@ void AGModel::removeFreedraw(AGFreeDraw *freedraw)
         listener->freedrawRemovedFromModel(this, freedraw);
     });
 }
+
+void AGModel::hide(bool hide_)
+{
+    for (auto node : m_graph.nodes()) {
+        if (hide_) {
+            node->hide();
+            for (auto connection : node->inbound()) {
+                connection->hide();
+            }
+        } else {
+            node->unhide();
+            for (auto connection : node->inbound()) {
+                connection->unhide();
+            }
+        }
+    }
+}

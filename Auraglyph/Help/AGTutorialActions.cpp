@@ -148,20 +148,7 @@ private:
     void prepareInternal(AGTutorialEnvironment &environment) override
     {
         int hide = getParameter("hide").getInt();
-        
-        for (auto node : environment.model().graph().nodes()) {
-            if (hide) {
-                node->hide();
-                for (auto connection : node->inbound()) {
-                    connection->hide();
-                }
-            } else {
-                node->unhide();
-                for (auto connection : node->inbound()) {
-                    connection->unhide();
-                }
-            }
-        }
+        environment.model().hide(hide);
     }
 };
 
