@@ -13,7 +13,10 @@
 #include "AGViewController.h"
 #include "AGTutorialEntity.h"
 #include "AGModel.h"
+#include "AGRenderModel.h"
+#include "AGDashboard.h"
 #include "AGGraph.h"
+#include "AGUserInterface.h"
 
 #include <string>
 
@@ -28,6 +31,19 @@ AGTutorial::AGTutorial(std::list<AGTutorialStep*> &steps, AGViewController_ *vie
     m_activeSteps.push_back(*m_currentStep);
     
     AGActivityManager::instance().addActivityListener(this);
+    
+    float buttonWidth = 175;
+    float buttonHeight = 25;
+    GLvrectf bounds = viewController->screenBounds();
+    GLvertex2f screenPosition { bounds.bl.x+(bounds.ur.x-bounds.bl.x)/2-buttonWidth/2, bounds.bl.y-25 };
+    GLvertex3f position = viewController->fixedCoordinateForScreenCoordinate(screenPosition);
+    m_exitButton = new AGUIButton("skip tutorial", position, GLvertex2f(buttonWidth, buttonHeight));
+    m_exitButton->init();
+    m_exitButton->setRenderFixed(true);
+    m_exitButton->setAction([this](){
+        complete();
+    });
+    viewController->renderModel().dashboard.push_back(m_exitButton);
 }
 
 AGTutorial::~AGTutorial()
@@ -36,11 +52,15 @@ AGTutorial::~AGTutorial()
         delete step;    
     m_steps.clear();
     
+    m_environment->viewController()->fadeOutAndDelete(m_exitButton);
+    
     AGActivityManager::instance().removeActivityListener(this);
 }
 
 void AGTutorial::update(float t, float dt)
 {
+    AGRenderObject::update(t, dt);
+    
     if(!isComplete()) {
         for(auto step : m_activeSteps)
             step->update(t, dt);
@@ -54,8 +74,7 @@ void AGTutorial::update(float t, float dt)
             
             if (m_currentStep != m_steps.end()) {
                 // prepare next step
-                if(m_currentStep != m_steps.end())
-                {
+                if(m_currentStep != m_steps.end()) {
                     (*m_currentStep)->prepare(*m_environment);
                     (*m_currentStep)->update(t, dt);
                     m_activeSteps.push_back(*m_currentStep);
@@ -73,6 +92,16 @@ void AGTutorial::render()
         for(auto step : m_activeSteps)
             step->render();
     }
+    
+    AGRenderObject::render();
+}
+
+void AGTutorial::complete()
+{
+    m_currentStep = m_steps.end();
+    
+    m_environment->renderModel().uiDashboard->unhide();
+    m_environment->model().hide(false);
 }
 
 bool AGTutorial::isComplete()

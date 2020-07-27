@@ -8,16 +8,18 @@
 
 #pragma once
 
-#include "AGRenderObject.h"
+#include "AGInteractiveObject.h"
 #include "AGActivityManager.h"
 #include "Variant.h"
 
 #include <list>
 #include <map>
+#include <memory>
 
 class AGTutorialStep;
 class AGTutorialEnvironment;
 class AGViewController_;
+class AGUIButton;
 
 class AGTutorial : public AGRenderObject, public AGActivityListener
 {
@@ -31,6 +33,7 @@ public:
     virtual void update(float t, float dt) override;
     virtual void render() override;
     
+    void complete();
     bool isComplete();
     
     void activityOccurred(AGActivity *activity) override;
@@ -45,4 +48,6 @@ private:
     std::list<AGTutorialStep*> m_steps;
     std::list<AGTutorialStep*> m_activeSteps;
     std::list<AGTutorialStep*>::iterator m_currentStep;
+    
+    AGUIButton* m_exitButton = nullptr;
 };
