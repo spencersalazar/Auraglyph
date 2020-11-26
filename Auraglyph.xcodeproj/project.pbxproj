@@ -45,6 +45,7 @@
 		0944E8C11DCB322700EB8087 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0944E8C01DCB322700EB8087 /* libsqlite3.tbd */; };
 		0944E8C31DCB323000EB8087 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0944E8C21DCB323000EB8087 /* libz.tbd */; };
 		0944E8C61DCB325D00EB8087 /* AGAnalytics.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0944E8C41DCB325D00EB8087 /* AGAnalytics.mm */; };
+		094DB17D256CF9C10001EB5A /* Geoglyph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 094DB17C256CF9C10001EB5A /* Geoglyph.cpp */; };
 		095786191F031ED800286358 /* AGDashboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 095786171F031ED800286358 /* AGDashboard.cpp */; };
 		0957DF4321D9AFC400D6A69C /* AGModalDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0957DF4121D9AFC400D6A69C /* AGModalDialog.cpp */; };
 		095D12C417ACA36C0048A012 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 095D12C317ACA36C0048A012 /* UIKit.framework */; };
@@ -358,6 +359,10 @@
 		0944E8C21DCB323000EB8087 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		0944E8C41DCB325D00EB8087 /* AGAnalytics.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AGAnalytics.mm; sourceTree = "<group>"; };
 		0944E8C51DCB325D00EB8087 /* AGAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGAnalytics.h; sourceTree = "<group>"; };
+		094DB17B256CF9C10001EB5A /* Geoglyph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Geoglyph.h; sourceTree = "<group>"; };
+		094DB17C256CF9C10001EB5A /* Geoglyph.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Geoglyph.cpp; sourceTree = "<group>"; };
+		094DB181256D97050001EB5A /* json_fwd.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = json_fwd.hpp; sourceTree = "<group>"; };
+		094DB182256D97050001EB5A /* json.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = json.hpp; sourceTree = "<group>"; };
 		095786171F031ED800286358 /* AGDashboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AGDashboard.cpp; sourceTree = "<group>"; };
 		095786181F031ED800286358 /* AGDashboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGDashboard.h; sourceTree = "<group>"; };
 		0957DF4121D9AFC400D6A69C /* AGModalDialog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AGModalDialog.cpp; sourceTree = "<group>"; };
@@ -965,6 +970,17 @@
 			path = GoogleAnalytics;
 			sourceTree = "<group>";
 		};
+		094DB177256CF8A20001EB5A /* Net */ = {
+			isa = PBXGroup;
+			children = (
+				094DB181256D97050001EB5A /* json_fwd.hpp */,
+				094DB182256D97050001EB5A /* json.hpp */,
+				094DB17B256CF9C10001EB5A /* Geoglyph.h */,
+				094DB17C256CF9C10001EB5A /* Geoglyph.cpp */,
+			);
+			path = Net;
+			sourceTree = "<group>";
+		};
 		095D12B717ACA36C0048A012 = {
 			isa = PBXGroup;
 			children = (
@@ -1013,6 +1029,7 @@
 				0939D3552068D4C500EB3C1B /* Help */,
 				09030CEC1EFEFDDE00D4A4F2 /* UI */,
 				09B674411D6D9D6500F84E09 /* Nodes */,
+				094DB177256CF8A20001EB5A /* Net */,
 				0913437A21B6642C00FE275F /* Trainer */,
 				0989130F189F6D3A00AB98AD /* Images */,
 				095D12CE17ACA36C0048A012 /* Supporting Files */,
@@ -1577,6 +1594,7 @@
 				09CA674F229CC6B40017B93B /* ES2Render.mm in Sources */,
 				0923100E1F46163200DF06B5 /* AGUndoManager.cpp in Sources */,
 				093395741A088849009E4802 /* AGControlNode.mm in Sources */,
+				094DB17D256CF9C10001EB5A /* Geoglyph.cpp in Sources */,
 				09F3C50818A5A8C300E499AF /* Stk.cpp in Sources */,
 				09CA6752229CC6B40017B93B /* NSString+STLString.mm in Sources */,
 				09439750229D164A0083999B /* AGInterAppAudioManager.mm in Sources */,
@@ -1787,7 +1805,7 @@
 				CODE_SIGN_ENTITLEMENTS = Auraglyph/Auraglyph.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 9GU9FHJ3JC;
 				ENABLE_BITCODE = NO;
@@ -1829,7 +1847,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 9GU9FHJ3JC;
 				ENABLE_BITCODE = NO;
@@ -1924,7 +1942,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 9GU9FHJ3JC;
 				ENABLE_BITCODE = NO;
