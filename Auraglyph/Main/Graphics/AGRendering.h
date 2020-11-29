@@ -10,6 +10,7 @@
 
 #include "Geometry.h"
 #include "Matrix.h"
+#include <vector>
 
 class AGGenericShader;
 
@@ -39,11 +40,13 @@ public:
     void drawLineLoop(AGGenericShader &shader, GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform);
     void drawLineLoop(AGGenericShader &shader, GLvertex3f geo[], unsigned long size, const GLKMatrix4 &xform);
     
-    void drawLineStrip(GLvertex2f geo[], unsigned long size);
+    // void drawLineStrip(GLvertex2f geo[], unsigned long size);
     void drawLineStrip(GLvertex3f geo[], unsigned long size);
     void drawLineStrip(GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform);
     void drawLineStrip(AGGenericShader &shader, GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform);
-    
+    void drawLineStrip(const std::vector<GLvertex2f>& geo);
+    void drawLineStrip(const std::vector<GLvertex2f>& geo, float width);
+
     void fillRect(float x, float y, float width, float height);
     void fillRect(AGGenericShader &shader, float x, float y, float width, float height);
     void fillRect(AGGenericShader &shader, float x, float y, float width, float height, const Matrix4& xform);

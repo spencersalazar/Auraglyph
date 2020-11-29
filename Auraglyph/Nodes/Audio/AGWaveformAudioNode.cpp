@@ -186,18 +186,18 @@ public:
         // draw y-axis
         glLineWidth(1.0f);
         AGStyle::foregroundColor().set();
-        drawLineStrip((GLvertex2f[]) {
+        drawLineStrip({
             m_waveformPos + GLvertex2f{ -m_waveformSize.x*0.5f,  m_waveformSize.y*0.5f },
             m_waveformPos + GLvertex2f{ -m_waveformSize.x*0.5f, -m_waveformSize.y*0.5f },
-        }, 2);
+        });
         
         // draw x-axis
         glLineWidth(1.0f);
         AGStyle::foregroundColor().set();
-        drawLineStrip((GLvertex2f[]) {
+        drawLineStrip({
             m_waveformPos + GLvertex2f{ -m_waveformSize.x*0.5f, 0 },
             m_waveformPos + GLvertex2f{  m_waveformSize.x*0.5f, 0 },
-        }, 2);
+        });
         
         // draw waveform
         glLineWidth(3.0f);
@@ -222,10 +222,10 @@ public:
             }
             AGStyle::foregroundColor().withAlpha(alpha).set();
             
-            drawLineStrip((GLvertex2f[]) {
+            drawLineStrip({
                 m_waveformPos + GLvertex2f{ phaseOffset*m_waveformSize.x,  m_waveformSize.y*0.5f },
                 m_waveformPos + GLvertex2f{ phaseOffset*m_waveformSize.x, -m_waveformSize.y*0.5f },
-            }, 2);
+            });
         }
         
         //AGRenderObject::render();
@@ -400,14 +400,14 @@ void AGAudioWaveformNode::_renderIcon()
     float w = radius*1.3, h = w*0.3, t = h*0.75, rot = -M_PI*0.8f;
     GLvertex2f offset(-w/2,0);
     
-    drawLineStrip((GLvertex2f[]) {
+    drawLineStrip({
         rotateZ(offset+GLvertex2f( w/2,      0), rot),
         rotateZ(offset+GLvertex2f( w/2-t,  h/2), rot),
         rotateZ(offset+GLvertex2f(-w/2,    h/2), rot),
         rotateZ(offset+GLvertex2f(-w/2,   -h/2), rot),
         rotateZ(offset+GLvertex2f( w/2-t, -h/2), rot),
         rotateZ(offset+GLvertex2f( w/2,      0), rot),
-    }, 6);
+    });
 }
 
 AGUINodeEditor *AGAudioWaveformNode::createCustomEditor()

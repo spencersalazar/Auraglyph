@@ -159,21 +159,6 @@ void AGRendering::drawLineLoop(AGGenericShader &shader, GLvertex3f geo[], unsign
     glDrawArrays(GL_LINE_LOOP, 0, (int) size);
 }
 
-void AGRendering::drawLineStrip(GLvertex2f geo[], unsigned long size)
-{
-    AGGenericShader &shader = AGGenericShader::instance();
-    
-    shader.useProgram();
-    
-    shader.setModelViewMatrix(modelview());
-    shader.setProjectionMatrix(projection());
-    
-    glVertexAttribPointer(AGVertexAttribPosition, 2, GL_FLOAT, false, 0, geo);
-    glEnableVertexAttribArray(AGVertexAttribPosition);
-    
-    glDrawArrays(GL_LINE_STRIP, 0, (int) size);
-}
-
 void AGRendering::drawLineStrip(GLvertex2f geo[], unsigned long size, const GLKMatrix4 &xform)
 {
     AGGenericShader &shader = AGGenericShader::instance();
@@ -215,6 +200,38 @@ void AGRendering::drawLineStrip(GLvertex3f geo[], unsigned long size)
     glEnableVertexAttribArray(AGVertexAttribPosition);
     
     glDrawArrays(GL_LINE_STRIP, 0, (int) size);
+}
+
+void AGRendering::drawLineStrip(const std::vector<GLvertex2f>& geo)
+{
+    AGGenericShader &shader = AGGenericShader::instance();
+    
+    shader.useProgram();
+    
+    shader.setModelViewMatrix(modelview());
+    shader.setProjectionMatrix(projection());
+    
+    glVertexAttribPointer(AGVertexAttribPosition, 2, GL_FLOAT, false, 0, geo.data());
+    glEnableVertexAttribArray(AGVertexAttribPosition);
+    
+    glDrawArrays(GL_LINE_STRIP, 0, (int) geo.size());
+}
+
+void AGRendering::drawLineStrip(const std::vector<GLvertex2f>& geo, float width)
+{
+    AGGenericShader &shader = AGGenericShader::instance();
+    
+    shader.useProgram();
+    
+    glLineWidth(width);
+    
+    shader.setModelViewMatrix(modelview());
+    shader.setProjectionMatrix(projection());
+    
+    glVertexAttribPointer(AGVertexAttribPosition, 2, GL_FLOAT, false, 0, geo.data());
+    glEnableVertexAttribArray(AGVertexAttribPosition);
+    
+    glDrawArrays(GL_LINE_STRIP, 0, (int) geo.size());
 }
 
 void AGRendering::fillCenteredRect(float width, float height)

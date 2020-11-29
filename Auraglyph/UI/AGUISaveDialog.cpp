@@ -125,7 +125,7 @@ public:
         
         glLineWidth(4.0f);
         for(auto figure : m_name)
-            drawLineStrip(figure.data(), figure.size());
+            drawLineStrip(figure);
         
         if (m_promptAlpha > 0.01) {
             const std::string str = "(draw something to remember your sketch by)";

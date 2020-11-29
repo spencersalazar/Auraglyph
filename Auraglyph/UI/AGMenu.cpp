@@ -162,10 +162,10 @@ void AGMenu::render()
             fgColor.set();
             
             // draw bar on left side
-            drawLineStrip((GLvertex2f[]) {
+            drawLineStrip({
                 { -m_size.x/2+AGMenu_ItemInset, itemHeight + m_size.y/2 },
                 { -m_size.x/2+AGMenu_ItemInset, itemHeight - m_size.y/2 },
-            }, 2);
+            });
             
             // render item title
             GLKMatrix4 modelView = m_renderState.modelview;

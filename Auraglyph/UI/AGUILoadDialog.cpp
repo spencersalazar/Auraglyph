@@ -296,10 +296,10 @@ public:
             // load it up and draw
             glVertexAttrib4fv(AGVertexAttribColor, (const float *) &AGStyle::foregroundColor());
             glLineWidth(1.0);
-            drawLineStrip((GLvertex2f[]) {
+            drawLineStrip({
                 { m_size.x/2*scroll_bar_margin, m_size.y/2*scroll_bar_margin-scroll_bar_y },
                 { m_size.x/2*scroll_bar_margin, m_size.y/2*scroll_bar_margin-(scroll_bar_y+scroll_bar_height) },
-            }, 2);
+            });
         }
     }
     
